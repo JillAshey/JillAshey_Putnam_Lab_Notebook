@@ -14,11 +14,12 @@ wwww.putnamlab.com
 ### Contact me
 
 jillashey@my.uri.edu
+
 Twitter: @JillAshey
 
 
 ## <center>Curriculum Vitae</center>
-<center>Last updated 05/05/2020</center>
+<center>Last updated 05/21/2020</center>
 
 
 ### Education
@@ -84,4 +85,4 @@ Graduate Research Fellow (GRFP), NSF | 2020 - 2025
 
 Honors Fellowship for Undergraduate Research, William & Mary Charles Center | 2018 - 2019
 
-Undergraduate Research Fellow (REU), NSF | 2018
+Undergraduate Research Fellow (REU), NSF | 2018 
