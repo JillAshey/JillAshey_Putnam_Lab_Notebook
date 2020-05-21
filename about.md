@@ -24,9 +24,12 @@ Twitter: @JillAshey
 
 ### Education
 2020 - present
-PhD student, Department of Biological Sciences at the University of Rhode Island
+
+University of Rhode Island; PhD student, Department of Biological Sciences 
+
 
 2016 - 2019
+
 The College of William and Mary; B.S. Biology, magna cum laude with Honors in Biological Research
 
 ### Professional Experience
