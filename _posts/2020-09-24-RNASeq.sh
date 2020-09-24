@@ -5,19 +5,20 @@ title: RNA-Seq
 date: '2020-09-24'
 categories: Code
 tags: [RNASeq, Bioinformatics]
+projects: Sediment Stress
 ---
 
 # Goal: Obtain gene counts from _O. faveolata_ RNA-Seq data
 
 ### 1) Check data integrity
 
-#####a) Count all files to make sure all downloaded
+##### a) Count all files to make sure all downloaded
 
 ```
 ls -1 | wc -l
 ```
 
-#####b) Verify data integrity with md5sum
+##### b) Verify data integrity with md5sum
 
 ```
 md5sum *.fastq.gz > checkmd5.md5
@@ -25,7 +26,7 @@ md5sum -c checkmd5.md5
 ```
 Should output 'OK' next to each file name 
 
-#####c) Count number of reads per file 
+##### c) Count number of reads per file 
 
 Fastq files have a specifc format (see here) with 4 lines per read. To count the number of reads, only 1 in every 4 rows needs to be counted.
 
@@ -36,7 +37,7 @@ zgrep -c "^>" *fastq.gz
 
 ### 2) Evaluate quality of reads 
 
-#####a) Run FastQC to check read quality
+##### a) Run FastQC to check read quality
 
 [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) is a tool to help identify any discrepancies or problems in your data. 
 
@@ -49,7 +50,7 @@ fastqc $file --outdir /path/to/results/fastqc_results/raw
 done
 ```
 
-#####b) Run MultiQC to visualize quality checks
+##### b) Run MultiQC to visualize quality checks
 
 [MultiQC](https://multiqc.info) works with FastQC output to aggregate and present results in user-friendly way.
 
@@ -71,7 +72,7 @@ scp -r jillashey@xx:/path/to/results/multiqc/raw/multiqc_data /my/local/computer
 
 ### 3) Trim reads
 
-#####a) Unzip files
+##### a) Unzip files
 
 Trimmomatic can't run if files are zipped
 
@@ -79,7 +80,7 @@ Trimmomatic can't run if files are zipped
 gunzip *fastq.gz
 ```
 
-#####b) Run Trimmomatic to trim reads and clean adaptors. 
+##### b) Run Trimmomatic to trim reads and clean adaptors. 
 
 [Trimmomatic](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf) trims fastq data and removes adapters.
 
@@ -96,7 +97,7 @@ done
 
 ### 4) Evaluate quality of trimmed reads 
 
-#####a) Check file integrity
+##### a) Check file integrity
 
 Count number of files
 
@@ -110,7 +111,7 @@ Count number of lines per read
 zgrep -c "^>" *fastq.trim.fq
 ```
 
-#####b) Run FastQC to check read quality of trimmed reads
+##### b) Run FastQC to check read quality of trimmed reads
 
 ```
 module load FastQC/0.11.8-Java-1.8 
@@ -121,7 +122,7 @@ fastqc $file --outdir /path/to/results/fastqc_results/trimmed
 done
 ```
 
-#####c) Run MultiQC to visualize quality checks
+##### c) Run MultiQC to visualize quality checks
 
 ```
 module load MultiQC/1.7-foss-2018b-Python-2.7.15
@@ -141,7 +142,7 @@ scp -r jillashey@xx:/path/to/results/multiqc_results/trimmed/multiqc_data /my/lo
 
 STAR also requires a genome fasta file and genome annotation file.
 
-#####a) Generate genome index
+##### a) Generate genome index
 
 ```
 module load STAR/2.5.3a-foss-2016b
@@ -153,7 +154,7 @@ STAR --runThreadN 10 \
 --sjdbGTFfile /path/to/genome/annotation/Ofav/GCF_002042975.1_ofav_dov_v1_genomic.gff
 ```
 
-#####b) Align reads to genome
+##### b) Align reads to genome
 
 ```
 # symbolically link to existing directory 
@@ -183,13 +184,13 @@ done
 
 ### Obtain gene count with stringTie
 
-#####a) Move BAM files (aligned and sorted by coordinates) to stringTie folder 
+##### a) Move BAM files (aligned and sorted by coordinates) to stringTie folder 
 
 ```
 mv *Aligned.sortedByCoord.out.bam /path/to/stringTie/Ofav/BAM
 ```
 
-#####b) Assemble and estimate reads 
+##### b) Assemble and estimate reads 
 
 ```
 module load StringTie/2.1.1-GCCcore-7.3.0
@@ -203,7 +204,7 @@ for i in ${array1[@]}; do
 done
 ```
 
-#####c) Merge stringTie gtf results 
+##### c) Merge stringTie gtf results 
 
 ```
 # move GTF files to their own folder 
@@ -217,7 +218,7 @@ module load StringTie/2.1.1-GCCcore-7.3.0
 stringtie --merge -p 8 -G /path/to/genome/annotation/Ofav/GCF_002042975.1_ofav_dov_v1_genomic.gff -o stringtie_ofav_merged.gtf ofav_mergelist.txt
 ```
 
-d) Assess assembly quality
+##### d) Assess assembly quality
 
 ```
 module load gffcompare/0.11.5-foss-2018b
@@ -225,7 +226,7 @@ module load gffcompare/0.11.5-foss-2018b
 gffcompare -r /path/to/genome/annotation/Ofav/GCF_002042975.1_ofav_dov_v1_genomic.gff -o Ofav.merged stringtie_ofav_merged.gtf
 ```
 
-e) Re-estimate assembly 
+##### e) Re-estimate assembly 
 
 ```
 module load StringTie/2.1.1-GCCcore-7.3.0
@@ -243,7 +244,7 @@ done
 mv *merge.gtf ../GTF_merge
 ```
 
-f) Create gene matrix
+##### f) Create gene matrix
 
 ```
 module load StringTie/2.1.1-GCCcore-7.3.0
@@ -262,7 +263,7 @@ done
 python prepDE.py -g gene_count_ofav_matrix.csv -i sample_list_ofav.txt
 ```
 
-g) Secure-copy gene counts onto local computer
+##### g) Secure-copy gene counts onto local computer
 
 ```
 scp jillashey@xxx:/path/to/stringTie/Ofav/GTF_merge/gene_count_ofav_matrix.csv /my/local/computer/ 
