@@ -9,6 +9,8 @@ projects: GSO Astrangia
 
 ## Goal: create and execute histology protocol
 
+*Adapted from protocol by Dr. Beth Lenz*
+
 #### Materials and Equipment 
 - [50 mL falcon tubes](https://www.fishersci.com/shop/products/falcon-50ml-conical-centrifuge-tubes-2/p-193321)
 - [500 mL containers](https://www.amazon.com/Containers-Stackable-Reusable-Plastic-Container/dp/B077G76C6J/ref=sr_1_6?crid=1O2K0TWGXLGA5&dchild=1&keywords=ziplock+containers+with+lids&qid=1613143193&sprefix=ziplock+c%2Caps%2C181&sr=8-6)
