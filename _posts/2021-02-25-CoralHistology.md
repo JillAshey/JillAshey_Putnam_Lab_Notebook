@@ -66,6 +66,18 @@ Samples should be taken from tanks, removed from their individual plugs, and pla
 
 If sample is not fully immersed in buffer, add more buffer until sample is fully immersed. 
 
-##### 9) Store samples in a cool, dark place for up to 48 hrs. 
+##### 9) Store samples in a cool, dark place (currently in fridge for flammables) 
 
-to be continued....
+Samples can remain in Zfix for up to 6 months 
+
+##### 10) Pour off Zfix and replace with ethanol
+
+Pour Zfix from sample containers into a designated waste container (once waste container is full, fill out [this form](https://web.uri.edu/ehs/online-pickup/) to request hazardous waste pick-up). Refill the containers with the same volume of 70% ethanol. 
+
+To do:
+
+- decalcification with HCl and ETNA
+
+- find histology place and get quote
+
+- once histology place confirmed, prep the samples  in specified way as detailed by the histology place
