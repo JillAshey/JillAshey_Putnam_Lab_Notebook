@@ -61,9 +61,9 @@ Current - 2020 |	**Transcriptomic responses of Caribbean and Pacific corals to s
 2. **Ashey, J.** and Rivest, E.B. Physiological responses in the juvenile Eastern oyster _Crassostrea virginica_ with differing environmental histories. William & Mary Undergraduate Research Symposium. Williamsburg, VA. Poster presentation, September 2018. 
 1. **Ashey, J.** and Rivest, E.B. Physiological responses in the juvenile Eastern oyster _Crassostrea virginica_ with differing environmental histories. NSF REU final presentation. Gloucester Point, VA. Oral presentation, August 2018. 
 
-###FELLOWSHIPS, AWARDS, AND HONORS
+### FELLOWSHIPS, AWARDS, AND HONORS
 
-######TOTAL $174,000
+###### TOTAL $174,000
 
 Date(s)|Award|Granting agency
  ---|---|---
