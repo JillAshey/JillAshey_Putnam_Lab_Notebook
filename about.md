@@ -13,79 +13,79 @@ wwww.putnamlab.com
 
 ### Contact me
 
-jillashey@my.uri.edu
+jillashey@uri.edu
 
 Twitter: @JillAshey
 
 
 ## <center>Curriculum Vitae</center>
-<center>Last updated 05/21/2020</center>
+<center>Last updated 06/11/2021</center>
 
 
-### Education
-2020 - present
-
-University of Rhode Island; PhD student, Department of Biological Sciences 
+### Education 
 
 
-2016 - 2019
+Date|Position|Affiliation
+ ---|---|---
+Current |	**PhD student, Evolution and Marine Biology** | University of Rhode Island, Kingston, RI
+| Dissertation (working title)  |  Temperature effects on intra- and trans-generational responses in temperate coral _Astrangia poculata_
+2019 |	**B.S. Biology, English (minor)** | The College of Wialliam & Mary, Williamsburg, VA
+| Thesis | Effect of environmental history on physiology and acute stress response of the Eastern oyster (_Crassostrea virginica_)
 
-The College of William and Mary; B.S. Biology, magna cum laude with Honors in Biological Research
-
-### Professional Experience
-
-**Ocean Acidification Intern | 2019**
-Dr. Emily Hall, Mote Marine Laboratory
-- Designed and maintained experiments on coral physiology in relation to ocean acidification, temperature, and nutrient concentrations; gained experience with coral husbandry
-- Used various lab and field techniques to analyze carbonate chemistry, water quality, and coral physiology
-
-**Research Technician / Volunteer | 2019**
-Dr. Emily Rivest, Virginia Institute of Marine Science
-- Assisted with set-up and maintenance of aquarium system during experiments with oyster larvae; gained experience with larval husbandry and analysis in hatchery setting
-- Analyzed carbonate chemistry of tanks in aquarium system
-
-**Undergraduate Honors Researcher | 2017-2019**
-Dr. Emily Rivest, Virginia Institute of Marine Science
-- Developed and implemented independent research questions regarding how
-environmental history impacts the physiological ability of oysters (Crassostrea virginica) to respond to stress.
-- Analyzed carbonate chemistry of water samples and performed assays on oyster tissue samples.
-
-**NSF Undergraduate Research Fellow (REU) | Summer 2018**
-Dr. Emily Rivest, Virginia Institute of Marine Science
-- Investigated how the environmental history of juvenile oysters (Crassostrea virginica) influenced their physiology and growth
-- Used various field, lab, and molecular techniques to assess water and tissue samples.
-- Engaged local high school students in my field work to teach them about oysters and their local watershed.
+	
+### Research experience 
 
 
-### Outreach and Teaching Experience
-
-**Teaching Assistant for Animal Physiology Laboratory | Spring 2019**
-Dr. Paul Heideman, William & Mary Biology Department
-- Communicate new physiological concepts and lab techniques to undergraduate students
-- Facilitate the set-up and break-down of lab
-
-**Visiting Elementary School Instructor | 2018 - 2019**
-Flemington, NJ
-- Presented topics in marine science (ocean acidification, climate change, oysters) to 3rd and 4th graders through presentations, games, and activities.
+Date|Project|Affiliation
+ ---|---|---
+Current |	**The role of epigenetics in trans-generational acclimatization of temperate and tropical corals** Advisor: Dr. Hollie Putnam| University of Rhode Island, Kingston, RI
+Current - 2020 |	**Transcriptomic responses of Caribbean and Pacific corals to sediment stress** Advisor: Dr. Hollie Putnam| University of Rhode Island, Kingston, RI
+2019 |	**Effects of temperature and pCO2 on bleaching in _Acropora_ species** Advisor: Dr. Emily Hall | Mote Marine Laboratory, Summerland Key, FL
+2019 |	**Carry-over effects in larval Eastern oysters in response to temperature and pCO2 stress** Advisors: Dr. Emily Rivest, Annie Schatz | Virginia Institute of Marine Science, Gloucester Point, VA
+2017 - 2019 |	**Effect of environmental history on physiology and acute stress response of the Eastern oyster** Advisor: Dr. Emily Rivest | Virginia Institute of Marine Science, Gloucester Point, VA
 
 
-### Presentations and Publications
-Ashey, J and Rivest, EB. Effect of environmental history on physiology and acute stress response of the Eastern oyster (Crassostrea virginica). Coastal and Estuarine Research Foundation. 15 minute oral presentation, November 5, 2019.
+### PUBLICATIONS
 
-Ashey, J. Environmental History and Marine Invertebrate Physiology. Mote Marine Lab Brown-Bag Seminar. 15 minute oral presentation, October 2019.
+2. **Ashey, J.**, McKelvie, H., Freeman, J., Shpilker, P., Cowen, L., Seneca, F., and Putnam, H.M. Transcriptomic responses of Caribbean and Pacific corals to sediment stress. _In prep_. 
+1. **Ashey, J.** and Rivest, E.B. Effect of environmental history on physiology and acute stress response of the Eastern oyster (_Crassostrea virginica_). _In revision_. Marine Ecology Progress Series.
 
-Ashey, J and Rivest, EB. Effect of environmental history on physiology and acute stress response of the Eastern oyster (Crassostrea virginica). William & Mary Biology Honors thesis defense. One hour oral presentation, May 2, 2019.
+### PRESENTATIONS
 
-Ashey, J and Rivest, EB. Physiological responses in the juvenile Eastern oyster Crassostrea virginica with differing environmental histories. Poster presentation at William & Mary Undergraduate Research Symposium. September 2018.
+8. Shpilker, P., McKelvie, H., Freeman, J., **Ashey, J.**, Putnam, H.M., Seneca, F., and Cowen, L.   Contrasting RNA-Seq analysis pipelines for a non-model organism: the stony coral _Pocillopora damicornis_. Intelligent Systems for Molecular Biology and European Conference on Computational Biology. 2021.
+7. **Ashey, J.** and Rivest, E.B. Effect of environmental history on physiology and acute stress response of the Eastern oyster (_Crassostrea virginica_). National Shellfish Association. Virtual conference. Oral presentation, March 2021. 
+6. **Ashey, J.**, McKelvie, H., Freeman, J., Shpilker, P., Cowen, L., Seneca, F., and Putnam, H. Transcriptomic responses of Caribbean and Pacific corals to sediment stress. Pacific Symposium on Biocomputing. Virtual conference. Poster and oral presentation, January 2021. 
+5. Freeman, J., **Ashey, J.**, Shpilker, P, McKelvie, H., Putnam, H., Greenberg, J., Cowen, L., Couch, A., and Daniels, N. MEDFORD: a human and machine readable markup language to facilitate FAIR coral metadata. Pacific Symposium on Biocomputing. Virtual conference. Poster and oral presentation, January 2021. 
+4. **Ashey, J.** and Rivest, E.B. Effect of environmental history on physiology and acute stress response of the Eastern oyster (_Crassostrea virginica_). Coastal and Estuarine Research Foundation. Mobile, AL. Oral presentation, November 2019. 
+3. **Ashey, J.** and Rivest, E.B. Effect of environmental history on physiology and acute stress response of the Eastern oyster (_Crassostrea virginica_). William & Mary Biology Honors oral thesis defense. Williamsburg, VA. May 2019. 
+2. **Ashey, J.** and Rivest, E.B. Physiological responses in the juvenile Eastern oyster _Crassostrea virginica_ with differing environmental histories. William & Mary Undergraduate Research Symposium. Williamsburg, VA. Poster presentation, September 2018. 
+1. **Ashey, J.** and Rivest, E.B. Physiological responses in the juvenile Eastern oyster _Crassostrea virginica_ with differing environmental histories. NSF REU final presentation. Gloucester Point, VA. Oral presentation, August 2018. 
 
-Ashey, J and Rivest, EB. Physiological responses in the juvenile Eastern oyster Crassostrea virginica with differing environmental histories. NSF REU final presentation, 20 minute oral presentation. August 2018.
+###FELLOWSHIPS, AWARDS, AND HONORS
 
-Ashey, J and Rivest, EB. Effect of environmental history on physiology and acute stress response of the Eastern oyster (Crassostrea virginica). Association for the Sciences of Limnology and Oceanography. In prep.
+######TOTAL $174,000
+
+Date(s)|Award|Granting agency
+ ---|---|---
+2022 - 2021 | The Nature Conservancy Global Marine Initiative Student Research Award ($24,000) | The Nature Conservancy
+2025 - 2020 | Graduate Research Fellowship ($138,000) | National Science Foundation
+2019 - 2018 | Honors Fellowship ($6,000) | Charles Center, College of William & Mary
+2018 | Research Experience for Undergraduates (REU) ($6,000) | National Science Foundation, Virginia Institute of Marine Science
 
 
-### Awards
-Graduate Research Fellow (GRFP), NSF | 2020 - 2025
+### OUTREACH AND TEACHING 
 
-Honors Fellowship for Undergraduate Research, William & Mary Charles Center | 2018 - 2019
+Date(s)|Role|Organization
+ ---|---|---
+ 2020 - present | Scientist | Skype a Scientist
+ 2020 - present | Research mentor to undergraduates (5 students currently) | University of Rhode Island, Kingston RI
+2019 | Teaching Assistant for Principles of Animal Physiology (BIOL 432)| College of William and Mary, Williamsburg VA
+2018 - 2019 | Visiting Elementary School Instructor | Flemington-Raritan School District, Flemington NJ
+2016 - 2018 | Middle School Mentor | Women in Leadership club, College of William and Mary, Williamsburg VA
 
-Undergraduate Research Fellow (REU), NSF | 2018 
+
+### CERTIFICATIONS AND BADGES	
+2020			Diversity and Inclusion Badge, University of Rhode Island 
+
+2020 			Advanced Open Water Diver, NAUI
+
