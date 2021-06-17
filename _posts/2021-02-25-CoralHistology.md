@@ -74,6 +74,12 @@ Samples can remain in Zfix for up to 6 months
 
 Pour Zfix from sample containers into a designated waste container (once waste container is full, fill out [this form](https://web.uri.edu/ehs/online-pickup/) to request hazardous waste pick-up). Refill the containers with the same volume of 70% ethanol. 
 
+##### 10) Decalcify coral
+
+To see decalcification protocol, go [here](https://github.com/chloe-gilligan/Gilligan_Putnam_Lab_Notebook/blob/master/_posts/2021-06-14-Decalcification.md)
+
+
+
 To do:
 
 - decalcification with HCl and ETNA
