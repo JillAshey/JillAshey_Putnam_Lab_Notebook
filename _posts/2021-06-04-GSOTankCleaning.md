@@ -33,6 +33,19 @@ For ambient tanks, unplug chiller (connected to Apex), circulating pump, and chi
 
 Remove standpipe at the back of tank by pulling and twisting it until it comes out. Don't wiggle the standpipe too much, as that could crack the tank.
 
-##### 7) Once tank is drained, use brush to scrub dirt from sides of tank. Use rags to wipe inside of tank clean. 
+##### 7) Once tank is drained, use brushes to scrub dirt from sides of tank. Use rags to wipe inside of tank clean. 
 
 ##### 8) Read out light/temp Hobo loggers using Hobo Connect app. 
+
+Readout protocol can be found in the GSO Daily Measurements [markdown](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2021-06-15-GSODailyMeasurements.md), section IV. 
+
+##### 9) When the tank is cleaned, put the standpipe back in and turn on the water. Once all equipment (i.e., pumps and heaters) is submerged in the water, everything can be plugged back in. 
+
+Check to see that the chiller pump is definitely pumping water through the chiller and adjust tubes and/or pump as needed. 
+
+##### 10) Put the clean rack with the clean corals back in the tank. 
+
+##### 11) Once all tanks are cleaned, check to see that all equipment is plugged in and running and that there is adequate flow in all tanks. Check the Apex Fusion app to make sure the temperatures in all tanks are in the desired range. 
+
+The temperatures on the Apex Fusion app will increase when you are cleaning the tank because the temperature probes are exposed to the warmer air for a period of time. Note the date and time which the tank was cleaned for future reference. 
+
