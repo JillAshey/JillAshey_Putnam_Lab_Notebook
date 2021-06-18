@@ -15,7 +15,7 @@ projects: GSO Astrangia
 
 | Instrument  | Measurement | Measurement frequency
 | ------------- | ------------- | ------------- | 
-|  | Temperature (°C) | Daily
+| Traceable Digital Thermometer | Temperature (°C) | Daily
 | Orion Star A325 Thermoscientific pH/conductivity meter | pH (mV) and conductivity (psu) | Daily
 | Apogee underwater quantum meter (MQ-510) | Light (µmol m-2s-1) | 2x week
 | HOBO pendant MX2202 data logger | Temperature (°C) and light (lux) | Read out weekly
@@ -50,7 +50,7 @@ Record all data in lab notebook or Astrangia binder. Be sure to write **initials
 | Calibration  | Instruments | Measurement frequency | Solutions  
 | ------------- | ------------- | ------------- | ------------- | 
 pH | Orion Star A325 Thermoscientific pH/conductivity meter (pH probe); TEMP PROBE | 2x week | Dickson Lab Tris standard
-Conductivity | Orion Star A325 Thermoscientific pH/conductivity meter (cond. probe) | 2x week | 
+Conductivity | Orion Star A325 Thermoscientific pH/conductivity meter (cond. probe) | 2x week | Conductivity standard, 50,000 µS/cm 
 Apex temperature probes | Temp PROBE | 1x week | NA
 
 #### pH Tris calibrations
