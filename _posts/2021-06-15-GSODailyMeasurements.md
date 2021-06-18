@@ -6,6 +6,11 @@ categories: Protocols
 tags: [Protocols]
 projects: GSO Astrangia 
 ---
+
+## GSO *Astrangia* Experiment: Daily Measurements 
+
+**About**: This post outlines daily tasks to be completed at GSO for J. Ashey's *Astrangia* experiment. It is adapted from [protocols](https://github.com/Putnam-Lab/Lab_Management/blob/master/Lab_Resourses/GSO_Wetlab_Protocols/GSO_Wetlab_Protocols.md) created by DMB and SJG. More information about OA experiments and carbonate chemistry is also in these protocols. 
+
 ### Equipment needed 
 
 | Instrument  | Measurement | Measurement frequency
@@ -13,18 +18,15 @@ projects: GSO Astrangia
 |  | Temperature (°C) | Daily
 | Orion Star A325 Thermoscientific pH/conductivity meter | pH (mV) and conductivity (psu) | Daily
 | Apogee underwater quantum meter (MQ-510) | Light (µmol m-2s-1) | 2x week
+| HOBO pendant MX2202 data logger | Temperature (°C) and light (lux) | Read out weekly
 
-##### In this protocol, I will outline the necessary tasks as a daily routine at GSO
-
-### Before getting started
+### Before getting started...
 
 Think critically about your experiment
 
 - What is the duration of your experiment?
 - How often are you sampling/measuring responses?
 - What is the nature of your treatment(s) and experimental design?
-
-In this protocol, I will outline the necessary tasks as a daily routine
 
 Record all data in lab notebook or Astrangia binder. Be sure to write **initials and the date for each entry**.
 
@@ -75,7 +77,6 @@ Apex temperature probes | Temp PROBE | 1x week | NA
 #### Conductivity calibration
 
 #### Apex temperature probe calibration
-**About**:
 
 1. Turn the temperature probe on and put the metal tip in the tank. 
 2. Wait for the probe to settle within 0.1°C and record the temperature in the lab notebook (can do this during daily measurements).
@@ -90,10 +91,9 @@ Apex temperature probes | Temp PROBE | 1x week | NA
 11. After calibrations for all tanks are completed, turn off the temperature meter, rinse the probe with DI water, and dry with a kimwipe. 
 
 
-
 ### III. Discrete measurements 
 
-Use the Astrangia binder to record data for daily measurements. There are pre-printed data sheets to record data. The headers should look like: 
+Use the Astrangia binder with pre-printed data sheets to record daily measurements. The data sheet headers should look like: 
 
 | Date | Time | Tank | Temperature | pH (mV) | Salinity | Light | Initials |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | 
@@ -153,24 +153,21 @@ Use the Astrangia binder to record data for daily measurements. There are pre-pr
 5. This will take you to the configuration details of that particular logger. At the bottom of the screen, click the icon that has a square with an arrow pointing out to read the data from the logger. The screen will say 'Readout Complete' when this is finished. 
 6. Navigate back to the Devices screen. At the bottom of the screen, next to 'Devices', click on the HOBO files icon. This will take you to your data files 
 7. At the top right hand of the screen, click the folder icon. This will give you a list of the data files most recently downloaded. Click on the file that corresponds to the serial number of the specific logger. 
-8. Youl'll now see a plot 
-
-
-
-
-
-
-
-
-General check 
-
-1. Check flow in all tanks. If flow is too low or high, adjust using the orange knob. Keep in mind that adjusting the flow in one tank will (slightly) affect the flow going to the other tanks. Depending on the incoming water temperature, the flow rate will affect the tank temperatures. If the incoming water temperature is affecting the tank temperatures, adjust flow rates accordingly.
-2. Using the suction cups, put the heaters back on the side of the tank if they have fallen off. 
-3. Wipe off the light loggers with thumb so they can accurately measure light. 
+8. Youl'll now see temperature and light data from the logger on a plot. To export the data, click the three dots in the upper right hand corner of the screen. Then click the icon with the square and the arrow pointing out of the square. 
+9. Click 'Export to CSV'. 
+10. Once the exporting is completed, click 'Share'. You can either airdrop it to your computer or email it to yourself. Once the file is on your computer, rename it with the tank number and date. 
 
 
 ### V. Data logging and backup
 
 1. Take pictures of lab notebook and Astrangia binder and upload them to the Google Drive. Make sure date, initials, and page number is visible in every picture. 
-2. Update Daily CSV file with data you just collected and save the file. 
-3. With the updated CSV, run the Daily R Markdown script. This will generate new daily measurement plots to upload to Github. 
+2. Update [Daily CSV file](https://github.com/JillAshey/Astrangia_repo/blob/main/data/DailyMeasurements.csv) with data you just collected and save the file. 
+3. With the updated CSV, run the Daily R Markdown [script](https://github.com/JillAshey/Astrangia_repo/blob/main/scripts/Daily.Rmd). This will generate new daily measurement plots that can be uploaded to Github. 
+
+
+### VI. General check & reminders
+
+1. Check flow in all tanks. If flow is too low or high, adjust using the orange knob. Keep in mind that adjusting the flow in one tank will (slightly) affect the flow going to the other tanks. Depending on the incoming water temperature, the flow rate will affect the tank temperatures. If the incoming water temperature is affecting the tank temperatures, adjust flow rates accordingly.
+2. Using the suction cups, put the heaters back on the side of the tank if they have fallen off. 
+3. Wipe off the light loggers with thumb so they can accurately measure light. 
+4. Before leaving for the day, check the Apex Fusion app to ensure temperatures are still in your desired range. 
