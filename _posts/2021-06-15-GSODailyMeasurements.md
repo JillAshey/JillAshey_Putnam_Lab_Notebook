@@ -39,6 +39,7 @@ Record all data in lab notebook or Astrangia binder. Be sure to write **initials
 - All lights are on; if one is turned off, unplug it, wait one minute and plug it back in. 
 - All chiller tubing is properly placed in ambient tanks (i.e., not falling out) and one of the pumps in the ambient tank is connected to the tubing. 
 - All equipment is plugged in, either to the outlets on the back of the tanks, the outlets against the back wall, or the Apex system. 
+	- If a row or rows of tanks have no light, that means the breaker for that wall outlet tripped. To turn it back on, go to the small gray boxes labelled C and D directly outside the lab door to the left. These are the circuit breakers for all the outlets in our room. Open box C (key is on top of one of the boxes). If one of the switches has a red rectangle next to it, this means that this circuit has tripped. To turn it back on, flip the switch off and then back on. Check to make sure everything has come back on in the tanks. Write down the circuits that tripped (the number next to the switches in the box) and the time, and let Ed know. 
 
 2.**Check the Apex Fusion app** on your phone or computer. Make sure these data match the desired conditions in each tank.
 
@@ -67,7 +68,8 @@ Apex temperature probes | Temp PROBE | 1x week | NA
 6. Wait for mV value to settle (will say 'ready'), and record the pH and temperature in the lab notebook.
 7. Warm the tube of Tris solution by gently holding the tube in your hand. Be careful to not hold the container for too long or too aggressively, as the temperature will increase too fast for calibration measurements. 
 8. Record temperature and pH measurements across the desired range, with increments of about ~0.5-1°C. Read the temperature value as soon as the pH meter states 'ready' instead of 'stabilizing'.
-9. Start a new CSV file (using the header below) named today's date (yyyymmdd.csv) and input the pH and temperature calibration measurements. Save the data to your pH_Tris data folder. 
+9. After the calibration is complete, turn off temperature and pH meters, rinse probes with DI water, and dry with a kimwipe. 
+10. Start a new CSV file (using the header below) named today's date (yyyymmdd.csv) and input the pH and temperature calibration measurements. Save the data to your pH_Tris data folder. 
 	- Use these headers in the CSV file:
 
 | mVTris | TTemp |
@@ -75,6 +77,14 @@ Apex temperature probes | Temp PROBE | 1x week | NA
 
 
 #### Conductivity calibration
+
+1. Fill a 50 mL falcon tube with ~30-35 mL of Conductivity standard, 50,000 µS/cm. 
+2. Put the conductivity probe in the standard and turn on the meter. 
+3. Click set-up. 
+4. Click conductivity channel. 
+5. Click mode & settings. 
+6. Look at the number in the box labelled Cell K. It should be in the range of 0.46 - 0.50. Record that number in your lab notebook. 
+7. After the calibration is complete, turn off the conductivity meters rinse the probe with DI water, and dry with a kimwipe. 
 
 #### Apex temperature probe calibration
 

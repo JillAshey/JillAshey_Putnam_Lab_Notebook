@@ -76,14 +76,18 @@ Pour Zfix from sample containers into a designated waste container (once waste c
 
 ##### 10) Decalcify coral
 
-To see decalcification protocol, go [here](https://github.com/chloe-gilligan/Gilligan_Putnam_Lab_Notebook/blob/master/_posts/2021-06-14-Decalcification.md)
+Make a 10% hydrochloric acid solution in a plastic beaker/container and place coral in solution. The coral may bubble or fizz slightly. Leave the coral to decalcify - this may take several hours or days. 
 
+To see expanded decalcification protocol, go [here](https://github.com/chloe-gilligan/Gilligan_Putnam_Lab_Notebook/blob/master/_posts/2021-06-14-Decalcification.md).
 
+##### 11) Once decalcification is complete, store tissue in falcon tube in 20% Z-fix. 
 
-To do:
+If necessary, examine the now-decalcified coral tissue under a dissecting microscope. To see the dissecting microscope protocol, go [here](https://github.com/chloe-gilligan/Gilligan_Putnam_Lab_Notebook/blob/master/_posts/2021-06-24-Dissecting-Microscope.md). 
 
-- decalcification with HCl and ETNA
+##### 12) Ship tissue to histology laboratory.
 
-- find histology place and get quote
+For the GSO Astrangia project, we used [Pacific Pathology](https://pacificpathology.com) for our histology needs. We requested serial section slides in H+E (Hemotoxylin and eosin stain). 
 
-- once histology place confirmed, prep the samples  in specified way as detailed by the histology place
+Make sure tissue is in 20% Z-fix solution (or 10% formalin) in a falcon tube before shipping. Wrap the top of the tube with parafilm and put the tube in two zip-lock bags. 
+
+###### Pacific Pathology contact information: Pacific Pathology Inc., 9292 Chesapeake Drive, Suite 100, San Diego, CA 92123; (858) 576-9630; research@pacificpathology.com
