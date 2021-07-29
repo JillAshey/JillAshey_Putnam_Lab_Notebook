@@ -11,6 +11,15 @@ projects: GSO Astrangia
 
 **About**: This post outlines the steps for making squaricals. The squaricals will be used to hold larvae after spawning and fertilization. 
 
+### Materials & Equipment needed 
+- Squaricals 
+- Drill & hole saw 
+- 1/2'' PVC pipe, couplers, and elbows 
+- Water line tubing (blue silicone)
+- Hot glue
+- Zipties
+ 
+
 1. Drill a 1/2'' hole into the squarical between the 20 and 22 quart mark with a hole saw. 
 2. Put a 1/2'' PVC coupler through the hole
 Using hot glue and blue rubber tubing, seal the coupler with the hole. There should be no outlets or holes. 
