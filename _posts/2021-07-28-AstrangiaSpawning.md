@@ -37,3 +37,7 @@ projects: GSO Astrangia
 
 - Think critically about your experiment and make a tiered plan for data collection. There is a lot that can go awry during spawning and it's important to be able to make game-time decisions.
 - Prep all materials! Label tubes, make datasheets, etc. See how to make squaricals [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2021-07-28-MakingSquaricals.md). 
+
+### Protocol Steps 
+
+1. 
