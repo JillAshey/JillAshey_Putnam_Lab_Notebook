@@ -23,7 +23,7 @@ projects: GSO Astrangia
 1. Drill a 1/2'' hole into the squarical between the 20 and 22 quart mark with a hole saw. 
 2. Cut a section of blue tubing (xx cm) and cut it in half length-wise. Put the tubing in the hole so it outlines the hole's diameter (think o-ring). Put a 1/2'' PVC coupler through the hole. 
 
-3. Using hot glue, seal the coupler with the hole. There should be no outlets or holes. 
+3. Using hot glue, glue the coupler in the hole. Fill any remaining openings between the hole's edge and coupler with hot glue.
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/squarical1.png)
 
@@ -45,7 +45,7 @@ projects: GSO Astrangia
 
 6. Cut a section of blue tubing (xx cm) and cut it in half length-wise. Put the tubing in the hole so it outlines the hole's diameter (think o-ring). Put a 1/2'' PVC coupler through the hole. 
 
-7. Using hot glue, seal the coupler with the hole. There should be no outlets or holes.
+7. Using hot glue, glue the coupler in the hole. Fill any remaining openings between the hole's edge and coupler with hot glue.
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/banjo1.png)
 
