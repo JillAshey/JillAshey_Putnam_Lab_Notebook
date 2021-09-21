@@ -19,7 +19,7 @@ Twitter: @JillAshey
 
 
 ## <center>Curriculum Vitae</center>
-<center>Last updated 06/11/2021</center>
+<center>Last updated 09/21/2021</center>
 
 
 ### Education 
@@ -48,7 +48,7 @@ Current - 2020 |	**Transcriptomic responses of Caribbean and Pacific corals to s
 ### PUBLICATIONS
 
 2. **Ashey, J.**, McKelvie, H., Freeman, J., Shpilker, P., Cowen, L., Seneca, F., and Putnam, H.M. Transcriptomic responses of Caribbean and Pacific corals to sediment stress. _In prep_. 
-1. **Ashey, J.** and Rivest, E.B. Effect of environmental history on physiology and acute stress response of the Eastern oyster (_Crassostrea virginica_). _In revision_. Marine Ecology Progress Series.
+1. **Ashey, J.** and Rivest, E.B. Effect of environmental history on physiology and acute stress response of the Eastern oyster (_Crassostrea virginica_). Marine Ecology Progress Series. 674: 115-130. https://doi.org/10.3354/meps13826.
 
 ### PRESENTATIONS
 
