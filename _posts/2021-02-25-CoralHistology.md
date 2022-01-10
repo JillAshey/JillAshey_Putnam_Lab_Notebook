@@ -23,6 +23,9 @@ projects: GSO Astrangia
 - Funnnel
 - Personal Protective Equipment (glasses, lab coat, gloves)
 - Cooler 
+- Kim wipes
+- Heat sealer
+- Vacuum bags 
 
 #### Protocol Steps 
 
@@ -76,11 +79,13 @@ Pour Zfix from sample containers into a designated waste container (once waste c
 
 ##### 10) Decalcify coral
 
-Make a 10% hydrochloric acid solution in a plastic beaker/container and place coral in solution. The coral may bubble or fizz slightly. Leave the coral to decalcify - this may take several hours or days. 
+In a fume good, make a 10% hydrochloric acid solution in a plastic beaker/container and place coral in solution. The coral may bubble or fizz slightly. Leave the coral to decalcify - this may take several hours or days. 
 
 To see expanded decalcification protocol, go [here](https://github.com/chloe-gilligan/Gilligan_Putnam_Lab_Notebook/blob/master/_posts/2021-06-14-Decalcification.md).
 
 ##### 11) Once decalcification is complete, store tissue in falcon tube in 20% Z-fix. 
+
+Once the coral is fully decalcified, put one piece of decalcified tissue in a 15 mL falcon tube to send to Pacific Pathology. Put the other piece in a 15/50 mL falcon tube and store in fridge as backup. Parafilm the top of all tubes.
 
 If necessary, examine the now-decalcified coral tissue under a dissecting microscope. To see the dissecting microscope protocol, go [here](https://github.com/chloe-gilligan/Gilligan_Putnam_Lab_Notebook/blob/master/_posts/2021-06-24-Dissecting-Microscope.md). 
 
@@ -88,6 +93,11 @@ If necessary, examine the now-decalcified coral tissue under a dissecting micros
 
 For the GSO Astrangia project, we used [Pacific Pathology](https://pacificpathology.com) for our histology needs. We requested serial section slides in H+E (Hemotoxylin and eosin stain). 
 
-Make sure tissue is in 20% Z-fix solution (or 10% formalin) in a falcon tube before shipping. Wrap the top of the tube with parafilm and put the tube in two zip-lock bags. 
+To prep samples for shipping, make sure the tops of 15 mL falcon tubes w/ samples are parafilmed. Wrap a kim wipe around the falcon tube, place it in small vacuum bag, and seal the bag with a heat sealer. Put all bagged samples in a 1-gallon ziploc bag with paper towels; don't overfill the bag, make sure the bag can still be closed. Make and print a list of sample IDs. To ship, put the ziploc bag and the printed sample ID list in a box, tape a shipping label on it, and put it on the shelf in the downstairs loading dock reserved for outgoing deliveries. Talk to Hollie about shipping label info. 
 
 ###### Pacific Pathology contact information: Pacific Pathology Inc., 9292 Chesapeake Drive, Suite 100, San Diego, CA 92123; (858) 576-9630; research@pacificpathology.com
+
+Slide scanner at Brown:
+
+- [Rates](https://www.brown.edu/research/facilities/bioimaging/rates)
+- [Equipment](https://www.brown.edu/research/facilities/bioimaging/microscopes#SlideScanner)
