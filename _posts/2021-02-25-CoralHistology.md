@@ -83,17 +83,22 @@ In a fume good, make a 10% hydrochloric acid solution in a plastic beaker/contai
 
 To see expanded decalcification protocol, go [here](https://github.com/chloe-gilligan/Gilligan_Putnam_Lab_Notebook/blob/master/_posts/2021-06-14-Decalcification.md).
 
-##### 11) Once decalcification is complete, store tissue in falcon tube in 20% Z-fix. 
+##### 11) Once decalcification is complete, cut out 1-3 polyps and put them into individual, pre-labelled 1.5 mL tubes. 
 
-Once the coral is fully decalcified, put one piece of decalcified tissue in a 15 mL falcon tube to send to Pacific Pathology. Put the other piece in a 15/50 mL falcon tube and store in fridge as backup. Parafilm the top of all tubes.
+Once the coral is fully decalcified, pour off any excess HCl and put the tissue on a plastic petri dish. Using a scalpel, dissect out 3 individual polyps. Put them into the 1.5mL tubes and add 20% Z-fix to the tube. Close the tube and parafilm the top. Put the rest of the decalcified tissue in a pre-labelled 15 mL tube, and store all tubes in fridge.
 
-If necessary, examine the now-decalcified coral tissue under a dissecting microscope. To see the dissecting microscope protocol, go [here](https://github.com/chloe-gilligan/Gilligan_Putnam_Lab_Notebook/blob/master/_posts/2021-06-24-Dissecting-Microscope.md). 
+If the coral polyps are very small, dissect polyps under the dissecting microscope. To see the dissecting microscope protocol, go [here](https://github.com/chloe-gilligan/Gilligan_Putnam_Lab_Notebook/blob/master/_posts/2021-06-24-Dissecting-Microscope.md).  
 
 ##### 12) Ship tissue to histology laboratory.
 
 For the GSO Astrangia project, we used [Pacific Pathology](https://pacificpathology.com) for our histology needs. We requested serial section slides in H+E (Hemotoxylin and eosin stain). 
 
-To prep samples for shipping, make sure the tops of 15 mL falcon tubes w/ samples are parafilmed. Wrap a kim wipe around the falcon tube, place it in small vacuum bag, and seal the bag with a heat sealer. Put all bagged samples in a 1-gallon ziploc bag with paper towels; don't overfill the bag, make sure the bag can still be closed. Make and print a list of sample IDs. To ship, put the ziploc bag and the printed sample ID list in a box, tape a shipping label on it, and put it on the shelf in the downstairs loading dock reserved for outgoing deliveries. Talk to Hollie about shipping label info. 
+If shipping 1.5 mL tubes: To prep samples for shipping, make sure the tops of 1.5 mL falcon tubes w/ samples are parafilmed. Put the freezer box with the 1.5 mL tubes in a ziplock bag and stuff it with paper towels and/or kim wipes. Close the ziplock and double and/or triple bag it using ziplock bags. 
+
+If shipping 15 mL tubes: To prep samples for shipping, make sure the tops of 15 mL falcon tubes w/ samples are parafilmed. Wrap a kim wipe around the falcon tube, place it in small vacuum bag, and seal the bag with a heat sealer. Put all bagged samples in a 1-gallon ziploc bag with paper towels; don't overfill the bag, make sure the bag can still be closed. 
+
+
+Print out sheet of info about the request and URI contacts for PP and include it in the box. To ship, put the ziploc bag(s) and the printed info sheet in a box, stuff it with paper towels, and tape shut. Find the weight and dimensions of the box (will be needed for shipping). Using the UPS/FedEx website, print out a shipping label and tape it on the box; ask Hollie or other lab member how to create shipping label. Once the box is ready, put it on the shelf in the downstairs loading dock reserved for outgoing deliveries.
 
 ###### Pacific Pathology contact information: Pacific Pathology Inc., 9292 Chesapeake Drive, Suite 100, San Diego, CA 92123; (858) 576-9630; research@pacificpathology.com
 
