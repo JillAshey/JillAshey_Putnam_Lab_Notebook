@@ -15,7 +15,8 @@ info about slide scanner
 
 ### Before: 
 
-- Contact Geoff Williams (manager of the facility; email xxxx) to set up payment methods and other logistics. Schedule a time to complete slide scanner training with Geoff - this needs to be done before using. 
+- Contact Geoff Williams (manager of the facility; email xxxx) to see if the scanner is available, as well as set up payment methods and other logistics (cc Hollie on these emails). 
+- Schedule a time to complete slide scanner training with Geoff - this needs to be done before using the slide scanner independently. 
 - Slide scanner is in Sidney Frank Hall for Life Sciences, BioMedCenter, room BMC 005. Building & slide scanner room require swipe access w/ Brown ID. 
 	- Get a temporary Brown ID (talk to Geoff) or have one of the Brown researchers let you in (which is a little annoying, I would just try to get the ID). 
 - Make account and sign up for slide scanner sessions on [iLabs](https://brown.ilab.agilent.com/landing/1314 
@@ -57,7 +58,7 @@ info about slide scanner
 
 #### Shutting down
 
-#####Parking!!!
+##### Parking!!!
 
 I am a very anxious parker, so here is some parking info: 
 
