@@ -7,6 +7,9 @@ tags: [Protocols]
 projects: GSO Astrangia 
 ---
 
+## Goal: Establish coral and tank cleaning protocols for GSO Astrangia
+
+
 Cleaning of experimental tanks at GSO (Blout 104) should occur at least once a week. To clean each tank, do the following:
 
 ##### 1) Fill trays with water and remove coral rack from tank. 

@@ -7,6 +7,8 @@ tags: [Protocols, Reproduction]
 projects: GSO Astrangia 
 ---
 
+## Goal: make squaricals to hold coral larvae
+
 ## GSO *Astrangia* Experiment: Making squaricals
 
 **About**: This post outlines the steps for making squaricals. The squaricals will be used to hold larvae after spawning and fertilization. 

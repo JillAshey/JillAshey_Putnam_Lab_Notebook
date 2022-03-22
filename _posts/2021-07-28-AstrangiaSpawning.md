@@ -7,6 +7,8 @@ tags: [Protocols, Reproduction]
 projects: GSO Astrangia 
 ---
 
+## Goals: create spawning and fertilization protocol for Astrangia 2021
+
 ## GSO *Astrangia* Experiment: Spawning & Fertilization
 
 **About**: This post outlines the steps for spawning and fertilization in *Astrangia poculata*. 

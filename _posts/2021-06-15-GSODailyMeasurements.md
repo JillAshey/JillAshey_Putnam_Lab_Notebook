@@ -7,6 +7,8 @@ tags: [Protocols]
 projects: GSO Astrangia 
 ---
 
+## Goal: Create daily measurements protocol for GSO Astrangia
+
 ## GSO *Astrangia* Experiment: Daily Measurements 
 
 **About**: This post outlines daily tasks to be completed at GSO for J. Ashey's *Astrangia* experiment. It is adapted from [protocols](https://github.com/Putnam-Lab/Lab_Management/blob/master/Lab_Resourses/GSO_Wetlab_Protocols/GSO_Wetlab_Protocols.md) created by DMB and SJG. More information about OA experiments and carbonate chemistry is also in these protocols. 
