@@ -29,7 +29,7 @@ Working area:
 
 Airbrush set up: 
 
-4. Get out the Iwata air compressor from cabinet xx and plug it in. The air compressor does not need to be on the sterile pad. Get the airbrush and connecting hose out from cabinet xx.
+4. Get out the Iwata air compressor from cabinet B D6 and plug it in. The air compressor does not need to be on the sterile pad. Get the airbrush and connecting hose out from cabinet B D7.
 5. Connect one end of the connecting hose to the air compressor. Connect the other end to the airbrush. **add picture**
 6. Fill the airbrush bottle with cold PBS solution. Cap the bottle and attach to airbrush. **add picture**
 
@@ -61,10 +61,8 @@ Label tubes with sample ID, airbrushed date, initials, and what the tissue will 
 
 13. Using the sterilized clippers, clip a small section. Put this section in the 2 mL bead tube. Immediately add 1 mL of DNA/RNA shield and put in the third dry ice cooler. Move one half of the fragment back into the whirlpak. 
 
-Clip or use biopsy punch? **add this later.** 
-
 14. Close the whirlpak with the fragment in it and put it in the third cooler. This will be backup sample for molecular extractions.
-15. To store, put the clipped fragment in the bead tube in a designated freezer box and store in the G -80°C freezer. Put the whirlpak in a bag labeled xxxxxx and store in the G -80°C freezer. 
+15. To store, put the clipped fragment in the bead tube in a designated freezer box and store in the G -80°C freezer. Put the whirlpak in a bag labeled 'Astrangia fragments clipped' and store in the G -80°C freezer. 
 
 ### Airbrushing 
 
@@ -86,19 +84,15 @@ Clip or use biopsy punch? **add this later.**
 
 ### Homogenization
 
-25. Get out the handheld homogenizer located in xxxx and plug it in. Connect the large micro-homogenizer piece. 
-26. Fill two 15 mL falcon tubes with DI water II (labeled "DI water II", your initials, and date made), a 15 mL falcon tube with 50% bleach (labeled "50% bleach", your initials, and date made), and a 15 mL falcon tube with 70% ethanol (labeled "ethanol", your initials, and date made). -- **check with emma on this**. Sterilize the microhomogenizer by dipping the piece in the appropriate 15 mL falcon tube in this order:
-- DI water II
+25. Get out the handheld homogenizer located in B D8 and plug it in. Connect the large micro-homogenizer piece. 
+26. Label three 50 mL falcon tubes - one with 10% bleach, one with 70% ethanol, and one with DI water (add the date and initials). Sterilize the microhomogenizer by dipping and running the piece in the appropriate falcon tube in this order:
 - 10% bleach
-- DI water II
 - 70% ethanol
 - DI water II
 27. Wipe down with a kimwipe.
 28. Place the microhomogenizer in the coral tissue homogenate 50 mL tube and turn it on starting at a low speed. Gradually increase the speed of the microhomogenizer until it is at max speed. Homogenize for 1 minute. 
 
 > If the sample still looks chunky, continue homogenizing and make a note of length of time and speed of microhomogenizer.
-
-29. Sterilize homogenizer between samples using 10% bleach and 70% ethanol. 
 
 ### Aliquot 
 
@@ -111,7 +105,7 @@ Clip or use biopsy punch? **add this later.**
 
 > If there isn't enough homogenate for all aliquots, think about your research questions and make educated decision on what metrics would be best to look at.
 
-30. Place the 50 mL tube of tissue homogenate stock in a bag labeled xxxxx and store in the J -80°C freezer. 
+30. Place the 50 mL tube of tissue homogenate stock in a bag labeled 'Astrangia remaining homogenate phys' and store in the J -80°C freezer. 
 31. Put chlorophyll, protein, and cell count homogenate in their designated freezer boxes and store in the G -80°C freezer. 
 32. Put the 15 mL AFDW tube on a tube rack and store in the J -80°C freezer. 
 
