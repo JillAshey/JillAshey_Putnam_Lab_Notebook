@@ -16,7 +16,28 @@ Important things to remember before starting:
 - Never touch fragment with your fingers
 - Sterilize materials between each sample with 10% bleach and 70% ethanol
 
+### Diagram protocol
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/AirbrushingDiagram.png)
+
 ### Equipment/materials
+
+- Iwata airbrush set - includes airbrush, air compressor, bottle, hose, etc
+- [Homogenizer kit](https://proscientific.com/micro-sample-homogenizer-kits/standard-micro-homogenizer-package/)
+- P1000 pipette and tips 
+- 1.5, 15, and 50 mL tubes 
+- 2 mL tubes w/ glass beads 
+- DNA/RNA shield 
+- PBS
+- 70% ethanol 
+- 10% and 20% bleach
+- DI water 
+- Paper towels/kim wipes 
+- Foil
+- Sterile pads
+- Various sizes of clippers and tweezers 
+- Coolers w/ dry ice 
+- Ziplock bags and small containers 
 
 ### Set-up
 
@@ -59,7 +80,7 @@ Label tubes with sample ID, airbrushed date, initials, and what the tissue will 
 
 > If sample is too small or breaks into lots of little pieces: prioritize clippings for molecular samples. If there is still sample left over, airbrush whatever is there and aliquot out that tissue homogenate. If there is too little homogenate to do all the aliquots, prioritize the aliquots in this order: carbohydrates, protein/TAC, chlorophyll a, cell counts, ash free dry weight. Make a note that this sample does not have all the aliquots and let Jill know.
 
-13. Using the sterilized clippers, clip a small section. Put this section in the 2 mL bead tube. Immediately add 1 mL of DNA/RNA shield and put in the third dry ice cooler. Move one half of the fragment back into the whirlpak. 
+13. Using the sterilized clippers, clip a small section. Put this section in the 2 mL tube with the glass beads in it. Immediately add 1 mL of DNA/RNA shield and put in the third dry ice cooler. Move one half of the fragment back into the whirlpak. 
 
 14. Close the whirlpak with the fragment in it and put it in the third cooler. This will be backup sample for molecular extractions.
 15. To store, put the clipped fragment in the bead tube in a designated freezer box and store in the G -80°C freezer. Put the whirlpak in a bag labeled 'Astrangia fragments clipped' and store in the G -80°C freezer. 
