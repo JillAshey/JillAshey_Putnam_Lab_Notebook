@@ -62,15 +62,16 @@ Airbrush set up:
 Sample labeling: 
 
 9. Collect necessary tubes and ziplock bags, and label for each sample. Label each tube with the specific assay that it will be used for. The following is needed for each sample: **add pictures**
-	- one 2 mL bead tube with 0.5 mm beads (used for DNA/RNA extractions)
+	- one 2 mL bead tube with 0.5 mm beads (used for DNA/RNA extractions; "DNA/RNA")
 	- one 2 mL tube for chlorophyll a ("Chl")
 	- one 2 mL tube for cell counts ("CC")
 	- one 2 mL tube for protein/TAC ("Prot")
 	- one 2 mL tube for carbohydrates ("Carb")
 	- one 15 mL tube for ash free dry weight ("AFDW")
-	- one 50 mL tube for remaining homogenate 
+	- one 50 mL tube for remaining homogenate ("Remaining Homogenate") 
 	- one ziplock bag for airbrushing
-Label tubes with sample ID, airbrushed date, initials, and what the tissue will be used for.
+
+Label tubes with sample ID, airbrushed date, initials, and what the tissue will be used for (the words in quotes above). Label the ziplock bag with just the sample ID
 
 ### Coral clipping 
 
