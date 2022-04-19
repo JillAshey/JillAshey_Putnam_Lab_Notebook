@@ -9,7 +9,7 @@ projects: GSO Astrangia
 
 ## Goal: Create workflow for using Olympus V200 slide scanner at Brown
 
-info about slide scanner 
+The [Olympus VS200 Slide Scanner](https://biomedcorefacilities.brown.edu/bioimaging-facility/olympus-vs200-slide-scanner) is located at Brown University. It is an automated slide scanner for imaging H&E slides. This system is ideally suited for imaging a large field of view at high resolution.  
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/SlideScanner.jpeg)
 
