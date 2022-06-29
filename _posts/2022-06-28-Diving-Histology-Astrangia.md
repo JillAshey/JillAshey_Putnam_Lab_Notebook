@@ -17,6 +17,8 @@ I am interested in monitoring the gamete development of *A. poculata* by the wee
 
 ### Before diving: 
 
+Coordinate with your dive budy on what day/time you will dive. 
+
 - Locate the white Putnam lab cooler. On the top of the cooler is written 20% Zfix and No Live Animals. It should be on the red shelving or under the old Thornber hood.
 - Check the contents of the cooler. Inside the cooler, there should be a 50mL falcon tube rack, sharpie, white tape, 500mL bottle of Zfix (may not be full), extra unlabeled 50mL tubes, parafilm, and a ziplock bag with waste label saying 'Solid waste with residual 20% Zfix in FSW'. 
 	- If any of these items are not in the cooler, find them and put them in the cooler. Info on where to find the Zfix is below
