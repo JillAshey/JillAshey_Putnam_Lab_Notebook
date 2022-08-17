@@ -64,6 +64,7 @@ Drill, PVC and mesh size may differ between systems and species.
 - Cut 1/2" PVC pipe into 2-3 inch pieces. Attach one of the piece to the coupler in the 3" PVC piece. Once attached, secure a 1/2" PVC elbow to the end of the piece.  
 
 - Lay the 3" PVC on mesh and cut out the mesh needed to cover the open PVC part. Using hot glue, glue the mesh to the 3" PVC. Do this for both sides. These are the finished banjo filters!
+	- The mesh size of the banjos will depend on the size of the larvae being studied. For example, I used 53um mesh for Astrangia and 153um mesh for M. cap and P. acuta. 
 
 - Attach the other end of the elbow on the banjo filter to the pipe inside of the squarical. 
 
@@ -76,7 +77,7 @@ Drill, PVC and mesh size may differ between systems and species.
 
 ![](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/squarical9.png?raw=true)
 
-12. If necessary, glue a ziptie on edge of squarical to hold incoming water tubing. If filtered seawater is needed, clip a container with a mesh bottom to the side of the filter and direct the incoming water tubing there. 
+- If necessary, glue a ziptie on edge of squarical to hold incoming water tubing. If filtered seawater is needed, clip a container with a mesh bottom to the side of the filter and direct the incoming water tubing there. 
 
 ![](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/squarical10.png?raw=true)
 
