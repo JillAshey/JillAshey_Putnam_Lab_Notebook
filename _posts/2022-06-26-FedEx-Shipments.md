@@ -11,7 +11,7 @@ projects: Hawaii 2022
 
 Shipping via Fedex 
 
-I'm shipping corals (*Montipora capitata*) to URI from Hawaii. This post(add link) details how I will ship the corals. This post gives information on how to ship via Fedex for the Putnam lab.
+I'm shipping corals (*Montipora capitata*) to URI from Hawaii. This [post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2022-08-27-CoralShipping.md) details how I will ship the corals. This post gives information on how to ship via Fedex for the Putnam lab.
 
 If you want to ship a package from URI: 
 

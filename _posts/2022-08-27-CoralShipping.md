@@ -32,10 +32,5 @@ I shipped ~48 *Montipora capitata* clippings from HIMB to URI in June 2022. This
 8. once all corals are in, cover them with another layer of damp handtowels 
 9. activate a handwarmer and tape it to the inside of the cooler lid. this will keep the corals warm as they travel 
 10. use duct tape to tape the cooler shut securely. tape a piece of paper that says this end up for proper orientation throughout the trip
-11. ship! This post gives info on how to ship for the Putnam lab. 
+11. ship! This [post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2022-06-26-FedEx-Shipments.md) gives info on how to ship for the Putnam lab. 
 
-
-
-make sure you do this so that the corals are in the cooler for as little time as possible. so only do it when you are ready to go to Fedex
-
-fedex shipping here
