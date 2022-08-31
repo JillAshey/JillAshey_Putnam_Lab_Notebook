@@ -13,7 +13,8 @@ I shipped ~48 *Montipora capitata* clippings from HIMB to URI in June 2022. This
 
 ### Equipment and materials 
 
-- Small to medium [cooler]((https://www.target.com/p/igloo-retro-picnic-basket-25qt-cooler-dark-jade/-/A-83800999#lnk=sametab)) 
+- Small to medium cooler
+	- I used a [25qt cooler](https://www.target.com/p/igloo-retro-picnic-basket-25qt-cooler-dark-jade/-/A-83800999#lnk=sametab)
 - Hand towels 
 - Paper towels 
 - Hand warmer 
@@ -26,11 +27,11 @@ I shipped ~48 *Montipora capitata* clippings from HIMB to URI in June 2022. This
 2. Put the corals in a flow-through seawater tank. Check an hour post collection to see how they're doing. Record all details of the aquarium system 
 3. Use zipties and waterproof paper to make tags and attach them to the corals. 
 4. Let the corals stay in these tanks for at least 24 hours to let them acclimatize.
-5. take half of the handtowels having been submerged in seawater and put them at the bottom of the cooler, making sure its covering all surface of the bottom. 
+5. Take half of the handtowels having been submerged in seawater and put them at the bottom of the cooler, making sure its covering all surface of the bottom. 
 6. Dunk 2 paper towels in seawater and wring them until they are still soaking wet, which is not a lot. Take an individual coral (with its tag), wrap it in the paper towel, and put it in the cooler.
 7. Do this for all corals, placing the paper towels gently on top of each other. 
-8. once all corals are in, cover them with another layer of damp handtowels 
-9. activate a handwarmer and tape it to the inside of the cooler lid. this will keep the corals warm as they travel 
-10. use duct tape to tape the cooler shut securely. tape a piece of paper that says this end up for proper orientation throughout the trip
-11. ship! This [post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2022-06-26-FedEx-Shipments.md) gives info on how to ship for the Putnam lab. 
+8. Once all corals are in, cover them with another layer of damp handtowels 
+9. Activate a handwarmer and tape it to the inside of the cooler lid. this will keep the corals warm as they travel 
+10. Use duct tape to tape the cooler shut securely. tape a piece of paper that says this end up for proper orientation throughout the trip
+11. Ship! This [post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2022-06-26-FedEx-Shipments.md) gives info on how to ship for the Putnam lab. 
 
