@@ -7,11 +7,11 @@ tags: [Protocols, Reproduction]
 projects: GSO Astrangia 
 ---
 
-## GSO *Astrangia* Experiment: Making squaricals
+## GSO *Astrangia* Experiment: protocol for making squaricals
 
 **About**: This post outlines the steps for making squaricals. The squaricals will be used to hold Astrangia larvae after spawning and fertilization. Our trusty post-doc, Dr. Ariana Huffmyer, developed the squarical design. With modifications, they can be used in different systems and with different species. 
 
-### Materials & Equipment needed 
+### Materials & Equipment 
 - Squaricals 
 - Drill & 1/2" hole saw 
 - 10ft of 1/2" PVC 
