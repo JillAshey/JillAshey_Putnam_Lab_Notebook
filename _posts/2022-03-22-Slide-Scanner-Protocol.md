@@ -79,6 +79,8 @@ The [Olympus VS200 Slide Scanner](https://biomedcorefacilities.brown.edu/bioimag
 	- Carefully push the slide as far as it can go to the right so that the bottom right corner of the slide is close to the triangle shape (also bottom right corner)
 	- Repeat for all slides 
 - Put the tray back in scanner. If the tray is properly sitting in the scanning, a green light will turn on next to the tray. If the green light does not turn on, readjust the tray until it does. It doesn't matter which slot the tray gets placed in. 
+
+
 - Repeat this for all trays/slides. 
 - Close the door. All trays should have green light next to them
 - Click lock door at the bottom right of the screen
