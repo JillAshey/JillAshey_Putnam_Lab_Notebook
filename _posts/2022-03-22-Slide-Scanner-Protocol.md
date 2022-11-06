@@ -11,7 +11,7 @@ projects: GSO Astrangia
 
 The [Olympus VS200 Slide Scanner](https://biomedcorefacilities.brown.edu/bioimaging-facility/olympus-vs200-slide-scanner) is located at Brown University. It is an automated slide scanner for imaging H&E slides. This system is ideally suited for imaging a large field of view at high resolution.  
 
-![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/SlideScanner.jpeg)
+![scanner](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/SlideScanner.jpeg)
 
 ### Before: 
 
@@ -65,27 +65,35 @@ The [Olympus VS200 Slide Scanner](https://biomedcorefacilities.brown.edu/bioimag
 - Click Exchange Trays in the top left hand corner. The door should unlock. When the door unlocks, you should hear a click and the green light at the top left hand side of the door should turn off. 
 - Open the door
 - The trays are in slots in the scanner. If a tray is in a specific slot, a green light will turn on next to each tray, indicating that the scanner knows that there is a tray there. Check to make sure all trays have a green light next to them. If they do not, remove the tray and put it back in until the light turns green. 
-	- **Add picture of open door**
+
+![scanner](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/trays-in-scanner.png)
+
 - There should be 15 trays inside and each holds up to 6 slides. The scanner can do up to 90 slides during a session. Calculate how many trays needed for your scanning project. 
 - Remove one tray and place it on the table. Do not remove them all at once, there isn't enough table space to hold all of the trays. 
-	- **Add picture of empty tray**
-	- The tray is labeled with how to orient the slide in the tray and which way to insert the tray back into the slot. 
+
+![](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/empty-tray.png?raw=true)
+
+- The tray is labeled with how to orient the slide in the tray and which way to insert the tray back into the slot. 
 - Load slides onto the tray
 	- The slide slots are labeled on the tray. Start with slide slot 1
 	- Slide back the silver knob at the top of the tray so that the silver arm also slides back. 
 	- Put your slide in that slide slot, making sure the label is oriented the correct way.
-	- **Add picture of loading slide**
-	- Slide the knob back down so that the silver arm secures the slide in place 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/loading-slide.png)
+
+- Slide the knob back down so that the silver arm secures the slide in place 
 	- Carefully push the slide as far as it can go to the right so that the bottom right corner of the slide is close to the triangle shape (also bottom right corner)
 	- Repeat for all slides 
 - Put the tray back in scanner. If the tray is properly sitting in the scanning, a green light will turn on next to the tray. If the green light does not turn on, readjust the tray until it does. It doesn't matter which slot the tray gets placed in. 
 
+![](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/slides-on-tray-in-scanner.png?raw=true)
 
 - Repeat this for all trays/slides. 
 - Close the door. All trays should have green light next to them
 - Click lock door at the bottom right of the screen
 - The software should recognize how many trays have slides on them and the number of slides on each tray. On the screen, trays with slides on them will show up on the screen as white bars next to each numbered slot. Check to make sure the scanner is recognizing all trays and all slides. If it is not, adjust slide/tray and try again. Make sure it recognizes all trays and slides before proceeding
-	- **Add picture of slide sensing loading software**
+
+![](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/software-recognizing-tray.png?raw=true)
 
 #### Scanning
 
@@ -113,6 +121,8 @@ There are lots of different scanning settings for this software. Read the manual
 	- It's tedious to do this for all your slides, but the slide scanner is going to save you significantly more time in the long run :)  
 - Once all slides are named and the scan areas are created, click start scan
 - Slides are now scanning! It will take a few mins per slide
+
+![](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/scanning-in-progress.png?raw=true)
 
 #### Shutting down
 
