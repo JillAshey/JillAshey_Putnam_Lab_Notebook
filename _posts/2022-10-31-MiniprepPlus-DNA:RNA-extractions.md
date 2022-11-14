@@ -47,7 +47,7 @@ Before extractions, I bead beat the JA samples, as they were already in bead tub
 - Centrifuge for 3 minutes at 9000 rct
 - Transfer 300 μL into new tube
 
-Used this protocol (XXXXX; mine) for extractions and QC. 
+Used this [protocol](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2022-10-25-MiniprepPlus-DNA:RNA-extractions.md) (mine) for extractions and QC. 
 
 ### Quality Control 
 
