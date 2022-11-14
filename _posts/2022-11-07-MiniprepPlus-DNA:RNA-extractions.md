@@ -45,7 +45,7 @@ Samples were flash frozen, clipped, and put in 1.5 mL bead tube in 1 mL of DNA/R
 
 ### Protocol 
 
-Before extractions, I bead beat the JA samples, as they were already in bead tubes
+Before extractions, I bead beat samples, as they were already in bead tubes
 
 - Bead beat for 1 minute at max speed 
 - Quick spin down in smol centrifuge 
