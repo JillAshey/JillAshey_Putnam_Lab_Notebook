@@ -77,3 +77,7 @@ Used this [protocol](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/
 | AST-1065 | Sample   | 11.8         | 11.5         | 16.4         | 16.2         |
 
 #### Gel 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20221107.png)
+
+Most of the samples look good! I had some issues with loading the gel, so some of the bands don't look as clear. But the gel + Qubit values seem like the DNA & RNA is high quality 
