@@ -24,7 +24,7 @@ Samples that I used today:
 
 JA samples were flash frozen, clipped, and put in 1.5 mL bead tube in 1 mL of DNA/RNA shield. ZD samples were clipped and put in DNA/RNA shield. E1 and A7 were already extracted by ZD, but I wanted a positive control. 
 
-ADD PICTURE OF SAMPLES
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/samples_20221031.png)
 
 ### Materials 
 
@@ -67,6 +67,5 @@ I am pretty happy with these results! I'm not sure why AST-1772 values is crazy 
 
 #### Gel 
 
-ADD PICTURE OF GEL 
-
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20221031.png)
 
