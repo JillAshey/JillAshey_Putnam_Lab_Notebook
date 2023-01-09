@@ -71,3 +71,7 @@ Used this [protocol](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/
 | AST-1567 | Sample   | 24           | 23.6         | 31.2         | 31.2         |
 
 #### Gel
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20230109.png)
+
+Gel and Qubit values look good. Some bands are a little faint on the gel, but I think that was my error in loading the gel. 
