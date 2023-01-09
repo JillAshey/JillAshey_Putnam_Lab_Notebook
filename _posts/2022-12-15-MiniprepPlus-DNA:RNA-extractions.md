@@ -74,4 +74,8 @@ Qubit was done on 12/16/22.
 
 #### Gel 
 
-STILL NEED TO DO GEL FOR THESE SAMPLES
+Gel was done on 1/6/23.
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20230106.jpg)
+
+Gel looks good!
