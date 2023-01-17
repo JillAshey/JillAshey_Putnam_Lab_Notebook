@@ -81,4 +81,6 @@ Used this [protocol](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/
 
 #### Gel 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20230116.png)
 
+AST-2060 did not have any detectable DNA, but it had a strong gel band. All samples look good!
