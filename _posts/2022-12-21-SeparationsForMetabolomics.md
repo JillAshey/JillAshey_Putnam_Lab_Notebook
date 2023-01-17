@@ -42,20 +42,20 @@ Before starting, label the desired tubes. The sample processing list is [here](h
 ##### Sample type separation order: C12 controls, C13 dark, C13 light
 
 1. Thaw sample (2 mL screw cap tube w/ 1 mL of larvae) on dry ice. 
-2. Add 300 uL of ice cold DI water to sample 
+2. Add 300 uL of ice cold DI water to sample.
 3. Homogenize the sample for 1 minute on ice (or until larvae are completely homogenized). Use the homogenizer tip to get all the larvae from the sides of the tube. 
 4. Remove 150 uL of the homogenized holobiont and place into new tube (#-Holo).
-	- Store on dry ice for further processing or put into -80C.
+	- Store on dry ice for further processing or put into -80&deg;C.
 5. Remove the remaining homogenate and place into new tube (#-Sym)
-	- This will be around 150-250 uL of liquid. The volume will be variable because there may be excess seawater in the larval samples
-6. Spin the "Sym" tube at 9000g for 3 minutes at 4C. 
+	- This will be around 150-250 uL of liquid. The volume will be variable because there may be excess seawater in the larval samples.
+6. Spin the "Sym" tube at 9000g for 3 minutes at 4&deg;C. 
 	- Make sure the homogenate in the "Sym" tube is liquid (as opposed to slushy) prior to centrifuging. 
 	- If supernatant is cloudy after centrifugation, spin again for 1 minute. 
 7. Remove the supernatant and place into new tube (#-Host)
 	- This will be around 150-250 uL of liquid.
-	- Store on dry ice for further processing or put into -80C.
+	- Store on dry ice for further processing or put into -80&deg;C.
 8. The "Sym" tube now only contains a symbiont pellet. 
-	- Add 150uL of DI water to the tube with the symbiont pellet. Either pipette up and down to mix or store on dry ice for further processing / put into -80C.
+	- Add 150uL of DI water to the tube with the symbiont pellet. Either pipette up and down to mix or store on dry ice for further processing / put into -80&deg;C.
 	- The symbiont pellet is very dense and didn't break up easily when pipetting up/down and vortexing. I added the DI water to the tubes and froze them without mixing. I will thaw and fully mix if we end up doing metabolite extractions on the symbiont fractions. 
 9. All sample fractions (Holo, Host, Sym) can be stored “Pre-Processing” freezer box in the -80C
 10. **Critical!!!!** In between samples, clean the homogenizer to prevent cross-contamination
