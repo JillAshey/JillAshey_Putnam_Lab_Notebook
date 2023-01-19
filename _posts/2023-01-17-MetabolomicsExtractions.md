@@ -33,6 +33,7 @@ The samples used in this extraction are from A. Huffmyer's 2021 *M. capitata* la
 * 10% bleach 
 * 70% ethanol 
 * DI water 
+* Alkaline soap
 
 ##### Prior to extractions, autoclave all glassware. 
 
@@ -105,10 +106,14 @@ Autosampler vials:
 4. Add sample to ice cold dounce with 500 uL of ice cold extraction buffer. Record how much sample volume is added to dounce. Pipette up/down to make sure all host material is removed from tube. 
 5. Let sample sit on dry ice for 5 minutes. 
 6. Homogenize sample on dry ice for 1 minute with the dounce. 
+	- The sample may freeze over the 5 minutes. If that happens, continue to dounce until it unfreezes then start the 1 minute homogenization.
+	- After homogenization, put glassware in a cup of 10% alkaline soap.
 7. Transfer extract to new 1.5 mL tube (Tube #-Host-A).
 8. Centrifuge for 10 minutes at 15,000g at 4&deg;C.
 9. Remove 500 uL of the supernatent to new 1.5 mL tube (Tube #-Host-B).
 10. Add 44 uL of 15% ammonium bicarbonate. Vortex and spin down in bench-top centrifuge.
 11. Add 100 uL from Tube B into duplicate labeled autosampler vials (#-Host-A and #-Host-B).
 12. Store the two 1.5 mL extract tubes (A & B) and the two autosampler vials at -80&deg;C in the "Post-extraction" freezer box.
-13. Clean equipment with 10% bleach, 70% ethanol and DI water between every sample. Autoclave all dounces and glassware for next extraction/next day. 
+13. Clean equipment with 10% bleach, 70% ethanol and DI water between every sample. Rinse the dounces with water. Autoclave all dounces and glassware for next extraction/next day. 
+
+Pictures of extraction set-up
