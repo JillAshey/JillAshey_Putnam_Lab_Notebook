@@ -277,5 +277,27 @@ ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/46_1.fastq .
 
 The metadata information for the RNASeq sequences can be found [here](https://github.com/JillAshey/SedimentStress/blob/master/Data/NCBI_upload/SRA_metadata_SedStress_RNASeq.xlsx). 
 
-The path for downloading is `/data/putnamlab/jillashey/Francois_data/raw_file_rnaseq_sra`
+The path for downloading is `/data/putnamlab/jillashey/Francois_data/raw_file_rnaseq_sra`. 
+
+To upload files, log on to Andromeda and enter the following: 
+
+```
+cd /data/putnamlab/jillashey/Francois_data/raw_file_rnaseq_sra/
+
+ftp -i
+
+open ftp-private.ncbi.nlm.nih.gov
+
+# enter name and password given on SRA webpage 
+
+cd uploads/jillashey_uri.edu_tLoKCBDA
+
+mkdir sedstress_upload_rnaseq
+
+cd sedstress_upload_rnaseq
+
+mput *
+```
+
+The upload to SRA will proceed for each file with messages “transfer complete” when each is uploaded. Keep computer active until all uploads are finished.
 
