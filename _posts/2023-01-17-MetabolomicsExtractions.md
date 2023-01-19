@@ -117,3 +117,7 @@ Autosampler vials:
 13. Clean equipment with 10% bleach, 70% ethanol and DI water between every sample. Rinse the dounces with water. Autoclave all dounces and glassware for next extraction/next day. 
 
 Pictures of extraction set-up
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/metabolomic-extractions-2.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/metabolomic-extractions-1.png)
