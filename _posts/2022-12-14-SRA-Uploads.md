@@ -40,7 +40,7 @@ I created a new submission on [NCBI Submission Portal](https://submit.ncbi.nlm.n
 
 Submitted at 2:18PM 20221213 to NCBI. Submission ID is SUB12414011; BioProject ID is PRJNA911752.
 
-2. BioSamples 
+#### 2. BioSamples 
 
 Using the Invertebrate attribute table b/c I'm uploading adult coral samples. I deleted some of the columns that I wasn't using. 
 
@@ -169,6 +169,113 @@ The BioSamples were approved under the following numbers:
 | SAMN32615102 | 44_T2_Pc_12_day7-11 | 44_T2_Pc_12_day7-11 | Porites compressa     | 46720   | Not applicable | Coral host | PRJNA911752 | [https://urldefense.proofpoint.com/v2/url?u=https-3A__www.ncbi.nlm.nih.gov_biosample_32615102&d=DwICaQ&c=dWz0sRZOjEnYSN4E4J0dug&r=KUseGI4Qwpm9-NbxDBrNYrvYsbD-4T-z_8gk9Y6taoM&m=2GkksC654PvYSGuTvpbnN0fFXc_KpFSFoXn322A0LFL7teVg9Xh391E-7JYq3Uf8&s=HAiRoqGHhx4Rx0Z8CKnnlXuIMNPaYpPJwrlqEOnMxqM&e=](https://urldefense.proofpoint.com/v2/url?u=https-3A__www.ncbi.nlm.nih.gov_biosample_32615102&d=DwICaQ&c=dWz0sRZOjEnYSN4E4J0dug&r=KUseGI4Qwpm9-NbxDBrNYrvYsbD-4T-z_8gk9Y6taoM&m=2GkksC654PvYSGuTvpbnN0fFXc_KpFSFoXn322A0LFL7teVg9Xh391E-7JYq3Uf8&s=HAiRoqGHhx4Rx0Z8CKnnlXuIMNPaYpPJwrlqEOnMxqM&e=) |
 | SAMN32615103 | 46_T5_Pc_22_day7-12 | 46_T5_Pc_22_day7-12 | Porites compressa     | 46720   | Not applicable | Coral host | PRJNA911752 | [https://urldefense.proofpoint.com/v2/url?u=https-3A__www.ncbi.nlm.nih.gov_biosample_32615103&d=DwICaQ&c=dWz0sRZOjEnYSN4E4J0dug&r=KUseGI4Qwpm9-NbxDBrNYrvYsbD-4T-z_8gk9Y6taoM&m=2GkksC654PvYSGuTvpbnN0fFXc_KpFSFoXn322A0LFL7teVg9Xh391E-7JYq3Uf8&s=0JBmneEAmG1u15f0oRxGsbZSwt48GySahfR3cejgd7c&e=](https://urldefense.proofpoint.com/v2/url?u=https-3A__www.ncbi.nlm.nih.gov_biosample_32615103&d=DwICaQ&c=dWz0sRZOjEnYSN4E4J0dug&r=KUseGI4Qwpm9-NbxDBrNYrvYsbD-4T-z_8gk9Y6taoM&m=2GkksC654PvYSGuTvpbnN0fFXc_KpFSFoXn322A0LFL7teVg9Xh391E-7JYq3Uf8&s=0JBmneEAmG1u15f0oRxGsbZSwt48GySahfR3cejgd7c&e=) |
 
-The Sample Names look weird because of markdown formatting.
+#### 3. SRA - RNASeq gene expression 
 
+First, set up folder in Andromeda that contains symlinks to only the raw sequence files that we want to upload to NCBI.
+
+```
+cd /data/putnamlab/jillashey/Francois_data
+mkdir raw_file_rnaseq_sra
+cd raw_file_rnaseq_sra
+
+# Symlink FL samples 
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/17_ctl2_Of_ZTH_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/18_T33_Of_VLL.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/19_T33_Ac_WK.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/20_T12_Mc_PWC.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/21_T33_Mc_EOU.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/22_ctl2_Mc_TWF_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/23_ctl1_Of_CTX_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/24_T12_Ac_FM.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/25_ctl1_Ac_GF_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/26_T12_Of_WCL.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/27_ctl2_Ac_YG_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/28_ctl1_Mc_GBM_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/29_T23_Mc_PND.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/30_T23_Of_RPG.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/31_T22_Ac_UV.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/32_T22_Of_EVR.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/33_T43_Mc_RFV.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/34_T22_Mc_SVS.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/35_T43_Ac_MT.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/36_T43_Of_JJN.fastq . 
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/37_T13_Ac_ML.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/38_T23_Ac_IN.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/39_T13_Mc_FJE.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/40_T13_Of_GWS.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/41_ctl3_Ac_RN_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/42_ctl3_Mc_MGR_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/43_ctl3_Of_JVP_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/44_T41_Of_PVT_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/45_T41_Ac_SC_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/46_T41_Mc_QYH_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/47_T31_Ac_JB.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/48_T31_Of_JNO.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/49_T31_Mc_SWQ.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/50_T21_Of_YZB.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/51_T42_Of_UOF.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/52_T11_Ac_II.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/53_T21_Ac_NH.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/54_T42_Ac_JQ.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/55_T32_Mc_TWP.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/56_T42_Mc_JAW.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/57_T32_Ac_NM.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/58_T21_Mc_EAH.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/59_T11_Of_TQP.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/60_T32_Of_WXY.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Florida/data/raw/61_T11_Mc_RAP.fastq .
+
+# Symlink HI samples
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/1_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/2_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/4_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/11_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/28_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/35_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/36_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/38_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/39_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/41_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/42_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/47_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/6_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/7_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/8_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/9_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/21_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/22_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/23_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/25_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/26_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/27_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/29_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/34_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/5_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/10_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/13_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/14_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/15_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/16_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/19_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/20_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/40_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/45_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/48_2.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/3_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/12_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/17_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/18_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/24_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/30_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/32_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/33_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/37_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/43_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/44_1.fastq .
+ln -s /data/putnamlab/jillashey/Francois_data/Hawaii/data/raw/46_1.fastq .
+``` 
+
+The metadata information for the RNASeq sequences can be found [here](https://github.com/JillAshey/SedimentStress/blob/master/Data/NCBI_upload/SRA_metadata_SedStress_RNASeq.xlsx). 
+
+The path for downloading is `/data/putnamlab/jillashey/Francois_data/raw_file_rnaseq_sra`
 
