@@ -33,7 +33,7 @@ I created a new submission on [NCBI Submission Portal](https://submit.ncbi.nlm.n
 - General info
 	- Release date set as Dec. 20, 2022 to allow time for edits 
 	- Project title is "Characterizing transcriptomic responses to sedimentation across location and morphology in reef-building corals"
-	- Project description is "Gene expression in response to sedimentation across location (Florida, Hawai'i) and morphology (branching, intermediate, massive). Data includes RNAseq (gene expression) sequences from 6 reef-building coral species (*Montipora capitata*, *Pocillopora acuta*, *Porites lobata*, *Acropora cervicornis*, *Montestraea cavernosa*, and *Orbicella faveolata*)"
+	- Project description is "Gene expression in response to sedimentation across location (Florida, Hawai'i) and morphology (branching, intermediate, massive). Data includes RNAseq (gene expression) sequences from 6 reef-building coral species (*Montipora capitata*, *Pocillopora acuta*, *Porites lobata*, *Acropora cervicornis*, *Montestraea cavernosa*, and *Orbicella faveolata*)
 	- Project is not part of a larger initiative already registered with NCBI
 	- Grants associated with this project: 
 		- # 1939795 and # 1939263 Harnessing the Data Revolution; National Science Foundation 
@@ -301,3 +301,6 @@ mput *
 
 The upload to SRA will proceed for each file with messages “transfer complete” when each is uploaded. Keep computer active until all uploads are finished.
 
+Continue with the submission by selecting the preload folder on SRA.
+
+RNAseq sequence files were submitted under SUB12548346.
