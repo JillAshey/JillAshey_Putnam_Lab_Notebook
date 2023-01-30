@@ -62,7 +62,7 @@ Used this [protocol](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/
 
 #### Qubit results 
 
-| Tube     | Type     | DNA 1 (ng/L) | DNA 2 (ng/L) | RNA 1 (ng/L) | RNA 2 (ng/L) |
+| Tube     | Type     | DNA 1 (ng/uL) | DNA 2 (ng/uL) | RNA 1 (ng/uL) | RNA 2 (ng/uL) |
 | -------- | -------- | ------------ | ------------ | ------------ | ------------ |
 | S1       | Standard | 182.64       | NA           | 405.57       | NA           |
 | S2       | Standard | 21330.17     | NA           | 8333.92      | NA           |

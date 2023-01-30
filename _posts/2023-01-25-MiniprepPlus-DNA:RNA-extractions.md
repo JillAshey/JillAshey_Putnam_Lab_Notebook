@@ -82,4 +82,6 @@ QC was done the following day (1/26/23).
 
 #### Gel 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20230126.png)
 
+Gel looks good! 

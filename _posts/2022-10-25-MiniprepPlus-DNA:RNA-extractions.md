@@ -157,7 +157,7 @@ Qubit assesses sample quantity. Protocol based on [Z. Dellaert](https://zdellaer
 
 DNA results 
 
-| Tube | Standards | DNA 1 (ng/L) | DNA 2 (ng/L) |
+| Tube | Standards | DNA 1 (ng/uL) | DNA 2 (ng/uL) |
 | ---- | --------- | ------------ | ------------ |
 | S1   | 208.46    |              |              |
 | S2   | 24328.01  |              |              |
@@ -173,7 +173,7 @@ DNA results
 
 RNA results 
 
-| Tube | Standards | DNA 1 (ng/L) | DNA 2 (ng/L) |
+| Tube | Standards | DNA 1 (ng/uL) | DNA 2 (ng/uL) |
 | ---- | --------- | ------------ | ------------ |
 | S1   | 208.46    |              |              |
 | S2   | 24328.01  |              |              |

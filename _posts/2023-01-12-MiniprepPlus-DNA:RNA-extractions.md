@@ -61,7 +61,7 @@ QC was done the following day (1/13/23).
 
 #### Qubit results 
 
-| Tube     | Type     | DNA 1 (ng/L) | DNA 2 (ng/L) | RNA 1 (ng/L) | RNA 2 (ng/L) |
+| Tube     | Type     | DNA 1 (ng/uL) | DNA 2 (ng/uL) | RNA 1 (ng/uL) | RNA 2 (ng/uL) |
 | -------- | -------- | ------------ | ------------ | ------------ | ------------ |
 | S1       | Standard | 187.78       | NA           | 403.35       | NA           |
 | S2       | Standard | 20508.25     | NA           | 8699.95      | NA           |

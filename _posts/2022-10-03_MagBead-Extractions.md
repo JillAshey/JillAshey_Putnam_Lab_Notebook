@@ -118,7 +118,7 @@ I don't think I washed the DNA/RNA correctly for this extraction. I totally skip
 
 I followed this Qubit protocol (add here xxxx) for DNA/RNA quantity assessment.
 
-| Tube          | Tyoe     | DNA 1 (ng/L) | DNA 2 (ng/L) | RNA 1 (ng/L) | RNA 2 (ng/L) |
+| Tube          | Tyoe     | DNA 1 (ng/uL) | DNA 2 (ng/uL) | RNA 1 (ng/uL) | RNA 2 (ng/uL) |
 | ------------- | -------- | ------------ | ------------ | ------------ | ------------ |
 | S1            | Standard | 189.65       |              | 462.79       |              |
 | S2            | Standard | 39772.31     |              | 10112.53     |              |
