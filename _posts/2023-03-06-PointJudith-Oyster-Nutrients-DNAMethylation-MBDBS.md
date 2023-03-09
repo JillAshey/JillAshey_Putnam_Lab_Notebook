@@ -13,8 +13,6 @@ As a lab, we have been working on an oyster paper that details the responses of 
 
 ES ran the methylation data through the [nf-core methylseq](https://nf-co.re/methylseq/usage) pipeline, but there are some discrepancies in the QC outputs that we need to resolve. Methylseq doesn't appear to be recognizing the adapter bp and so isn't properly trimming them. [Here](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2022-05-09-Point-Judith-Oyster-DNA-Methylation-(MBD-BS).md) is ES notebook post detailing her methylseq runs. To address this, I will run the methylseq pipeline but run each step individually (as opposed to the steps being run in the pipeline wrapper). 
 
-20230306
-
 ### Set up data in my directory 
 
 Original data lives here: `/data/putnamlab/KITT/hputnam/20200119_Oyst_Nut/MBDBS`
@@ -576,7 +574,7 @@ done
 multiqc --interactive fastqc_results/trim5
 ```
 
-`sbatch fastqc_trim5.sh`; Submitted batch job
+`sbatch fastqc_trim5.sh`; Submitted batch job 241185
 
 ### Look at fastqc results 
 
@@ -595,3 +593,57 @@ As a reminder, these are the parameters from each trimming run:
 
 #### Fastqc plots 
 
+ES, JA trim1, JA trim2, JA trim3
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/ES_JA_oyster_trim1_2_3_4.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/ES_JA_oyster_trim1_2_3_4_adapter.png)
+
+
+
+**Discuss results w/ lab**
+
+### Bismark 
+
+[Bismark](https://github.com/FelixKrueger/Bismark) is a program to map bisulfite treated sequencing reads to a genome of interest and perform methylation calls in a single step. Methylseq uses Bismark in its workflow. 
+
+Bismark needs Bowtie2 or HISAT2 and Samtools to properly run. **Discuss w/ lab which to use**
+
+#### Prepare genome 
+
+First step is indexing the genome to prepare it for alignment. 
+
+In scripts folder: `nano bismark_genome_prep.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="bismark_genome_prep_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bismark_genome_prep_output" #once your job is completed, any final job report comments will be put in this file
+
+source /usr/share/Modules/init/sh # load the module function
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
+
+module load Bismark/0.23.1-foss-2021b
+module load Bowtie2/2.4.4-GCC-11.2.0
+
+bismark_genome_preparation --path_to_aligner BOWTIE2 OR HISAT2 --verbose PATH/TO/GENOME/
+
+```
+
+
+#### Align reads 
+
+#### Deduplicate alignments 
+
+#### Extract methylation calls 
+
+#### Sample report 
