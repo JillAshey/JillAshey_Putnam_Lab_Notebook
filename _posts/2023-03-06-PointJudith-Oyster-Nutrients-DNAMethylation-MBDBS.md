@@ -127,7 +127,9 @@ scp jillashey@ssh3.hac.uri.edu:/data/putnamlab/jillashey/Oys_Nutrient/MBDBS/mult
 - This is ES initial report: https://github.com/hputnam/Cvir_Nut_Int/blob/master/output/MBDBS/initial_multiqc_report.html
 - This is my initial report: https://github.com/hputnam/Cvir_Nut_Int/blob/master/output/MBDBS/JA/raw_multiqc_report.html 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/ES_JA_oyster_raw.png)
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/ES_JA_oyster_raw_adapter.png)
 
 
 Mine & ES report seem to be the same. That's a good sign (I believe)! Now can move onto trimming w/ Trim Galore.
@@ -142,10 +144,10 @@ I'm going to do several iterations of trimming so I'm going to make different tr
 
 ```
 cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results
-mkdir trim1 trim2 trim3 trim4
+mkdir trim1 trim2 trim3 trim4 trim5
 
 cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data
-mkdir trim1 trim2 trim3 trim4
+mkdir trim1 trim2 trim3 trim4 trim5
 ```
 
 ##### Attempt 1
@@ -373,7 +375,36 @@ So I don't think I can trim more than 100 bp. Let's try 99 bp in trim_galore4.sh
 
 ##### Attempt 5 
 
-Based on the fastqc results, it looks like the 
+Based on the fastqc results, it looks like the reads are still relatively low quality at the end of the reads. I'm going to add the `--quality` flag and set the Phred score to 30.
+
+In scripts folder: `nano trim_galore5.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="trim_galore5_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="trim_galore5_output" #once your job is completed, any final job report comments will be put in this file
+
+source /usr/share/Modules/init/sh # load the module function
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/raw
+
+module load Trim_Galore/0.6.7-GCCcore-11.2.0
+
+for file in "HPB10_S44" "HPB11_S45" "HPB12_S46" "HPB1_S35" "HPB2_S36" "HPB3_S37" "HPB4_S38" "HPB5_S39" "HPB6_S40" "HPB7_S41" "HPB8_S42" "HPB9_S43"
+do 
+trim_galore --paired ${file}_L001_R1_001.fastq.gz ${file}_L001_R2_001.fastq.gz --quality 30 -o /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim5/
+done
+```
+
+`sbatch trim_galore5.sh`; Submitted batch job 241165
 
 ### Run Fastqc on trimmed data 
 
@@ -512,3 +543,55 @@ multiqc --interactive fastqc_results/trim4
 ```
 
 `sbatch fastqc_trim4.sh`; Submitted batch job 241148
+
+##### Attempt 5
+
+In scripts folder: `nano fastqc_trim5.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="fastqc_trim5_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="fastqc_trim5_output" #once your job is completed, any final job report comments will be put in this file
+
+source /usr/share/Modules/init/sh # load the module function
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
+
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+for file in /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim5/*fq.gz
+do 
+fastqc $file --outdir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results/trim5
+done
+
+multiqc --interactive fastqc_results/trim5
+```
+
+`sbatch fastqc_trim5.sh`; Submitted batch job
+
+### Look at fastqc results 
+
+#### Trimming overview 
+
+As a reminder, these are the parameters from each trimming run:
+
+|                     | Trim1 | Trim2 | Trim3 | Trim4 | Trim5 |
+| ------------------- | ----- | ----- | ----- | ----- | ----- |
+| `paired`             | Yes   | Yes   | Yes   | Yes   | Yes   |
+| `clip_r1`             | NA    | 10    | 10    | 99    | NA    |
+| `clip_r2`             | NA    | 10    | 10    | 99    | NA    |
+| `three_prime_clip_r1` | NA    | 10    | 20    | 99    | NA    |
+| `three_prime_clip_r2` | NA    | 10    | 20    | 99    | NA    |
+| `quality`             | NA    | NA    | NA    | NA    | 30    |
+
+#### Fastqc plots 
+
