@@ -127,7 +127,8 @@ scp jillashey@ssh3.hac.uri.edu:/data/putnamlab/jillashey/Oys_Nutrient/MBDBS/mult
 - This is ES initial report: https://github.com/hputnam/Cvir_Nut_Int/blob/master/output/MBDBS/initial_multiqc_report.html
 - This is my initial report: https://github.com/hputnam/Cvir_Nut_Int/blob/master/output/MBDBS/JA/raw_multiqc_report.html 
 
-ADD PLOTS
+
+
 
 Mine & ES report seem to be the same. That's a good sign (I believe)! Now can move onto trimming w/ Trim Galore.
 
@@ -136,6 +137,16 @@ Mine & ES report seem to be the same. That's a good sign (I believe)! Now can mo
 Going to trim w/ [Trim Galore](https://github.com/FelixKrueger/TrimGalore/blob/master/Docs/Trim_Galore_User_Guide.md), as this is what methylseq uses for trimming purposes. 
 
 Two versions of trim galore on URI Andromeda: `all/Trim_Galore/0.6.6-GCC-10.2.0-Python-2.7.18` and `all/Trim_Galore/0.6.7-GCCcore-11.2.0`. I'm going to use the newest one. 
+
+I'm going to do several iterations of trimming so I'm going to make different trimming folders in my data and fastqc_results folder.
+
+```
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results
+mkdir trim1 trim2 trim3 trim4
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data
+mkdir trim1 trim2 trim3 trim4
+```
 
 ##### Attempt 1
 
@@ -164,7 +175,7 @@ module load Trim_Galore/0.6.7-GCCcore-11.2.0
 
 for file in "HPB10_S44" "HPB11_S45" "HPB12_S46" "HPB1_S35" "HPB2_S36" "HPB3_S37" "HPB4_S38" "HPB5_S39" "HPB6_S40" "HPB7_S41" "HPB8_S42" "HPB9_S43"
 do 
-trim_galore --paired ${file}_L001_R1_001.fastq.gz ${file}_L001_R2_001.fastq.gz -o /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim/
+trim_galore --paired ${file}_L001_R1_001.fastq.gz ${file}_L001_R2_001.fastq.gz -o /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim1/
 done
 ```
 
@@ -231,6 +242,139 @@ Parameters
 - `--three_prime_clip_R1` removes XX bp after the 3' end of read 1 AFTER adapter/quality trimming has been performed
 - `--three_prime_clip_R2` removes XX bp after the 3' end of read 2 AFTER adapter/quality trimming has been performed
 
+Running her first iteration (`--clip_r1 10 \ --clip_r2 10 \ --three_prime_clip_r1 10 --three_prime_clip_r2 10 \`). I'm clipping 10 bp from the 5' end of reads 1 and 2. After adapter/quality trimming has been done, 10 bp will also be clipped from the 3' end of reads 1 and 2. 
+
+In scripts folder: `nano trim_galore2.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="trim_galore2_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="trim_galore2_output" #once your job is completed, any final job report comments will be put in this file
+
+source /usr/share/Modules/init/sh # load the module function
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/raw
+
+module load Trim_Galore/0.6.7-GCCcore-11.2.0
+
+for file in "HPB10_S44" "HPB11_S45" "HPB12_S46" "HPB1_S35" "HPB2_S36" "HPB3_S37" "HPB4_S38" "HPB5_S39" "HPB6_S40" "HPB7_S41" "HPB8_S42" "HPB9_S43"
+do 
+trim_galore --paired ${file}_L001_R1_001.fastq.gz ${file}_L001_R2_001.fastq.gz --clip_r1 10 --clip_r2 10 --three_prime_clip_r1 10 --three_prime_clip_r2 10 -o /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim2/
+done
+```
+
+`sbatch trim_galore2.sh`; Submitted batch job 241069
+
+##### Attempt 3
+
+Running her second iteration (`--clip_r1 10 \ --clip_r2 10 \ --three_prime_clip_r1 20 --three_prime_clip_r2 20 \`)
+
+In scripts folder: `nano trim_galore3.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="trim_galore3_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="trim_galore3_output" #once your job is completed, any final job report comments will be put in this file
+
+source /usr/share/Modules/init/sh # load the module function
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/raw
+
+module load Trim_Galore/0.6.7-GCCcore-11.2.0
+
+for file in "HPB10_S44" "HPB11_S45" "HPB12_S46" "HPB1_S35" "HPB2_S36" "HPB3_S37" "HPB4_S38" "HPB5_S39" "HPB6_S40" "HPB7_S41" "HPB8_S42" "HPB9_S43"
+do 
+trim_galore --paired ${file}_L001_R1_001.fastq.gz ${file}_L001_R2_001.fastq.gz --clip_r1 10 --clip_r2 10 --three_prime_clip_r1 20 --three_prime_clip_r2 20 -o /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim3/
+done
+```
+
+`sbatch trim_galore3.sh`; Submitted batch job 241074
+
+##### Attempt 4
+
+Running her third iteration: `--clip_r1 150 \ --clip_r2 150 \ --three_prime_clip_r1 150 --three_prime_clip_r2 150 \`
+
+In scripts folder: `nano trim_galore4.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="trim_galore4_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="trim_galore4_output" #once your job is completed, any final job report comments will be put in this file
+
+source /usr/share/Modules/init/sh # load the module function
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/raw
+
+module load Trim_Galore/0.6.7-GCCcore-11.2.0
+
+for file in "HPB10_S44" "HPB11_S45" "HPB12_S46" "HPB1_S35" "HPB2_S36" "HPB3_S37" "HPB4_S38" "HPB5_S39" "HPB6_S40" "HPB7_S41" "HPB8_S42" "HPB9_S43"
+do 
+trim_galore --paired ${file}_L001_R1_001.fastq.gz ${file}_L001_R2_001.fastq.gz --clip_r1 150 --clip_r2 150 --three_prime_clip_r1 150 --three_prime_clip_r2 150 -o /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim4/
+done
+```
+
+`sbatch trim_galore4.sh`; Submitted batch job 241075
+
+This failed - error file said that "The 5' clipping value for read 1 should have a sensible value (> 0 and < read length)". So the value should be greater than 0 and less than the read length (300?). But isn't our read length 300 and 150 is less than 300? Changing `clip_r1`, `clip_r2`, `three_prime_clip_r1`, and `three_prime_clip_r2` to 100 instead of 150 and seeing how that works. Submitted batch job 241088. Failed agian, same error as before.
+
+In the trim galore source [code](https://github.com/FelixKrueger/TrimGalore/blob/master/trim_galore), it looks like trimming is only possible if its between 0 and less than 100. See code here: 
+
+```
+  if (defined $clip_r1){ # trimming 5' bases of read 1
+      unless ($clip_r1 > 0 and $clip_r1 < 100){
+      die "The 5' clipping value for read 1 should have a sensible value (> 0 and < read length)\n\n";
+      }
+  }
+
+  if (defined $clip_r2){ # trimming 5' bases of read 2
+      unless ($clip_r2 > 0 and $clip_r2 < 100){
+      die "The 5' clipping value for read 2 should have a sensible value (> 0 and < read length)\n\n";
+      }
+  }
+
+  ### Trimming at the 3' end
+  if (defined $three_prime_clip_r1){ # trimming 3' bases of read 1
+      unless ($three_prime_clip_r1 > 0 and $three_prime_clip_r1 < 100){
+      die "The 3' clipping value for read 1 should have a sensible value (> 0 and < read length)\n\n";
+      }
+  }
+
+  if (defined $three_prime_clip_r2){ # trimming 3' bases of read 2
+      unless ($three_prime_clip_r2 > 0 and $three_prime_clip_r2 < 100){
+      die "The 3' clipping value for read 2 should have a sensible value (> 0 and < read length)\n\n";
+      }
+```
+
+So I don't think I can trim more than 100 bp. Let's try 99 bp in trim_galore4.sh just to see if it will work. Submitted batch job 241090.
+
+##### Attempt 5 
+
+Based on the fastqc results, it looks like the 
+
 ### Run Fastqc on trimmed data 
 
 ##### Attempt 1 
@@ -257,13 +401,114 @@ cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
 module load FastQC/0.11.9-Java-11
 module load MultiQC/1.9-intel-2020a-Python-3.8.2
 
-for file in /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim/*fq.gz
+for file in /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim1/*fq.gz
 do 
-fastqc $file --outdir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results/trim
+fastqc $file --outdir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results/trim1
 done
 
-multiqc --interactive fastqc_results/trim
+multiqc --interactive fastqc_results/trim1
 ```
 
 `sbatch fastqc_trim1.sh`; Submitted batch job 241058
 
+##### Attempt 2
+
+In scripts folder: `nano fastqc_trim2.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="fastqc_trim2_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="fastqc_trim2_output" #once your job is completed, any final job report comments will be put in this file
+
+source /usr/share/Modules/init/sh # load the module function
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
+
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+for file in /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim2/*fq.gz
+do 
+fastqc $file --outdir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results/trim2
+done
+
+multiqc --interactive fastqc_results/trim2
+```
+
+`sbatch fastqc_trim2.sh`; Submitted batch job 241100
+
+##### Attempt 3
+
+In scripts folder: `nano fastqc_trim3.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="fastqc_trim3_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="fastqc_trim3_output" #once your job is completed, any final job report comments will be put in this file
+
+source /usr/share/Modules/init/sh # load the module function
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
+
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+for file in /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim3/*fq.gz
+do 
+fastqc $file --outdir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results/trim3
+done
+
+multiqc --interactive fastqc_results/trim3
+```
+
+`sbatch fastqc_trim3.sh`; Submitted batch job 241125
+
+##### Attempt 4
+
+In scripts folder: `nano fastqc_trim4.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="fastqc_trim4_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="fastqc_trim4_output" #once your job is completed, any final job report comments will be put in this file
+
+source /usr/share/Modules/init/sh # load the module function
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
+
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+for file in /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim4/*fq.gz
+do 
+fastqc $file --outdir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results/trim4
+done
+
+multiqc --interactive fastqc_results/trim4
+```
+
+`sbatch fastqc_trim4.sh`; Submitted batch job 241148
