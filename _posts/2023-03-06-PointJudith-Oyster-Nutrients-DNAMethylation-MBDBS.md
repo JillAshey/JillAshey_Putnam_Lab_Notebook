@@ -599,7 +599,11 @@ ES, JA trim1, JA trim2, JA trim3
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/ES_JA_oyster_trim1_2_3_4_adapter.png)
 
+JA trim4, JA trim5
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/JA_oyster_trim4_5.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/JA_oyster_trim4_5_adapter.png)
 
 **Discuss results w/ lab**
 
