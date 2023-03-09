@@ -235,5 +235,35 @@ Parameters
 
 ##### Attempt 1 
 
+In scripts folder: `nano fastqc_trim1.sh`
 
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="fastqc_trim1_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="fastqc_trim1_output" #once your job is completed, any final job report comments will be put in this file
+
+source /usr/share/Modules/init/sh # load the module function
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
+
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+for file in /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim/*fq.gz
+do 
+fastqc $file --outdir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results/trim
+done
+
+multiqc --interactive fastqc_results/trim
+```
+
+`sbatch fastqc_trim1.sh`; Submitted batch job 241058
 
