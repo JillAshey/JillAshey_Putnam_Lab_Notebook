@@ -78,3 +78,8 @@ Here's a table that Zoe & I put together that outlines our expected v. observed 
 | AST-2403    | 30.6                        | 3060   | 1224                    | 81.6                               | 44.1                          | 661.5          | 0.5404412       |
 |             |                             |        |                         |                                    |                               |                |                 |
 | *Calculations*             |                             | =B\*100 | =C\*0.4                  | =D/15                               |                               | =H\*15          | =G/D             |
+
+**Things to test**: 
+
+- Letting DNase/RNase free water sit on spin column for 1-2 mins
+- Eluting in 25 µL instead of 15 µL
