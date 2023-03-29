@@ -54,3 +54,13 @@ This [tutorial](https://scienceparkstudygroup.github.io/rna-seq-lesson/02-experi
 - Should all genes be held to the same effect size? What subset of the genes (i.e., all genes, filtered genes, differentially expressed genes) should we be considering here?
 - If the analysis says I need more replicates, what can I do? 
 	- From my reading, it seems like biological replicates are more important than sequencing depth
+
+#### Other papers to look at
+
+- [Ching et al. 2014](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4201821/) - Power analysis and sample size estimation for RNA-Seq differential expression
+- [Zhao et al. 2018](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-018-2191-5) - RnaSeqSampleSize: real data based sample size estimation for RNA sequencing
+	- This is another R package, but uses different parameters (see [vignette](http://www.bioconductor.org/packages/release/bioc/vignettes/RnaSeqSampleSize/inst/doc/RnaSeqSampleSize.pdf))
+
+
+
+
