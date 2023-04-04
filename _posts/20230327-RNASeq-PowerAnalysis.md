@@ -11,13 +11,28 @@ projects: Sediment stress
 
 My sediment stress paper is in review at PeerJ and they need info about power analysis calculation and info on biological & technical replicates. They recommended using the R package [RNASeqPower](https://bioconductor.org/packages/release/bioc/html/RNASeqPower.html) for power analysis/sample size calculation. 
 
-From PeerJ: "A suitable wording for the power analysis would be something like: 'The statistical power of this experimental design, calculated in RNASeqPower is 0.84' (replace the program name if you used a different tool and provide the actual calculated power)."
+From PeerJ:
+
+Please edit your manuscript to include BOTH:
+
+1. a power analysis calculation (software tools are available, e.g. https://doi.org/doi:10.18129/B9.bioc.RNASeqPower (see usage instructions)) AND
+2. information on biological and technical replicates used to achieve the claimed statistical power
+
+ "A suitable wording for the power analysis would be something like: 'The statistical power of this experimental design, calculated in RNASeqPower is 0.84' (replace the program name if you used a different tool and provide the actual calculated power)."
 
 ### Power analysis 
 
-From the vignette: 
+What is an RNASeq power analysis? Why do a power analysis?
+
+- An RNASeq power analysis is a statistical method used to estimate the number of samples required to detect differential gene expression with a certain degree of statistical pwoer 
+	- Selecting optimal number of biological replicates to achieve desired statistical power (sample size estimation)
+	- Estimating the likelihood of successfully finding statistical significance in dataset (power estimation)
+
+From the RNASeqPower vignette: 
 A formal sample size calculation for comparison of two groups will involve five factors, each of which is an argument to the rnapower function.
 - The depth of sequencing and consequent expected count μ for a given transcript, argument depth.- The coefficient of variation of counts within each of the two groups, argument cv.- The relative expression that we wish to detect ∆, argument effect.- The target false positive rate α and false negative rate β desired (or power = 1 − β), arguments alpha and power.- The number of samples n in each group, argument n
+
+In my study, I have 6 species from 2 locations. Does this mean I should do a power analysis for each species? I'll start w/ Acerv from FL. 
 
 First, I'm going to calculate the coefficient of variation of each gene in the filtered gene count matrix.
 

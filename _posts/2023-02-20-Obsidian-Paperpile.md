@@ -19,3 +19,6 @@ These two softwares can be used in conjunction with one another to keep track of
 ln -s "/Users/jillashey/Google Drive/My Drive/Paperpile" "/Users/jillashey/Documents/Obsidian Vault/Untitled/__Paperpile"
 
 ```
+
+https://elizabethbutlermd.com/obsidian-notes/
+
