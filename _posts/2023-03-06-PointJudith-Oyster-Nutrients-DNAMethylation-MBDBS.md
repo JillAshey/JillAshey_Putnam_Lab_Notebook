@@ -615,7 +615,17 @@ Bismark needs Bowtie2 or HISAT2 and Samtools to properly run. **Discuss w/ lab w
 
 #### Prepare genome 
 
-First step is indexing the genome to prepare it for alignment. 
+First step is indexing the genome to prepare it for alignment. The genome needs to be either a .fa, .fa.gz, .fasta or .fasta.gz file extension. The genome in `/data/putnamlab/shared/Oyst_Nut_RNA/references/` is a .fna file, so I need to rename it. I also need to download the genome files because I can't access them in the shared folder. 
+
+```
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/022/765/GCF_002022765.2_C_virginica-3.0/GCF_002022765.2_C_virginica-3.0_genomic.fna.gz
+gunzip GCF_002022765.2_C_virginica-3.0_genomic.fna.gz
+
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/022/765/GCF_002022765.2_C_virginica-3.0/GCF_002022765.2_C_virginica-3.0_genomic.gff.gz
+gunzip GCF_002022765.2_C_virginica-3.0_genomic.gff.gz
+
+cp GCF_002022765.2_C_virginica-3.0_genomic.fna GCF_002022765.2_C_virginica-3.0_genomic.fa
+```
 
 In scripts folder: `nano bismark_genome_prep.sh`
 
@@ -632,19 +642,53 @@ In scripts folder: `nano bismark_genome_prep.sh`
 #SBATCH --error="bismark_genome_prep_error" #if your job fails, the error report will be put in this file
 #SBATCH --output="bismark_genome_prep_output" #once your job is completed, any final job report comments will be put in this file
 
-source /usr/share/Modules/init/sh # load the module function
+module load Bismark/0.23.1-foss-2021b
+module load Bowtie2/2.4.4-GCC-11.2.0
 
-cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
+bismark_genome_preparation --verbose /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/refs
+
+echo "Bismark genome prep complete" $(date)
+```
+
+Submitted batch job 246354
+
+#### Align reads 
+
+I'm going to use the data from trim5 for now. No adapter content is present and the quality is high for all reads. 
+
+In scripts folder: `nano bismark_align.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="bismark_align_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bismark_align_output" #once your job is completed, any final job report comments will be put in this file
 
 module load Bismark/0.23.1-foss-2021b
 module load Bowtie2/2.4.4-GCC-11.2.0
 
-bismark_genome_preparation --path_to_aligner BOWTIE2 OR HISAT2 --verbose PATH/TO/GENOME/
+echo "Starting Bismark alignment" $(date)
 
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim5
+
+for file in "HPB10_S44" "HPB11_S45" "HPB12_S46" "HPB1_S35" "HPB2_S36" "HPB3_S37" "HPB4_S38" "HPB5_S39" "HPB6_S40" "HPB7_S41" "HPB8_S42" "HPB9_S43"
+do 
+bismark --multicore 10 --bam --non_directional --output_dir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark/alignment --temp_dir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark/temp --unmapped --ambiguous --genome /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/refs -1 ${file}_L001_R1_001_val_1.fq.gz -2 ${file}_L001_R2_001_val_2.fq.gz 
+done
+
+echo "Bismark alignment complete!" $(date)
 ```
 
+Submitted batch job 246358
 
-#### Align reads 
+
 
 #### Deduplicate alignments 
 
