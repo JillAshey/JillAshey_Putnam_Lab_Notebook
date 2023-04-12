@@ -611,7 +611,7 @@ JA trim4, JA trim5
 
 [Bismark](https://github.com/FelixKrueger/Bismark) is a program to map bisulfite treated sequencing reads to a genome of interest and perform methylation calls in a single step. Methylseq uses Bismark in its workflow. 
 
-Bismark needs Bowtie2 or HISAT2 and Samtools to properly run. **Discuss w/ lab which to use**
+Bismark needs Bowtie2 or HISAT2 and Samtools to properly run. 
 
 #### Prepare genome 
 
@@ -688,10 +688,239 @@ echo "Bismark alignment complete!" $(date)
 
 Submitted batch job 246358
 
-
+Should I include the score_min and/or the relax_mismatches agrument? **Discuss w/ lab**
 
 #### Deduplicate alignments 
 
+It looks like the paired reads were 'merged' into one bam file. 
+
+In scripts folder: `nano bismark_deduplicate.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="bismark_deduplicate_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bismark_deduplicate_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Bismark/0.23.1-foss-2021b
+
+echo "Starting Bismark deduplication" $(date)
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark/alignment
+
+for file in *bam
+do
+deduplicate_bismark --paired --bam --output_dir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark/deduplicate $file
+done
+
+echo "Bismark deduplication complete!" $(date)
+```
+
+Submitted batch job 246895
+
+Do the files need to be sorted or indexed via Samtools before moving on to the next step? **Discuss w/ lab**
+
+I'm going to sort and index using samtools for downstream analysis. Based on Javie's code [here](https://github.com/jarcasariego/ACER_clonal_divergence/blob/main/WGBS/code/20201221_Bismark_WGBS_ACER.sub).
+
+In scripts folder: `nano sort_index.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="sort_index_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="sort_index_output" #once your job is completed, any final job report comments will be put in this file
+
+module load SAMtools/1.16.1-GCC-11.3.0
+
+echo "Starting to sort and index the deduplicated bam files" $(date)
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark/deduplicate
+
+for file in *deduplicated.bam
+do
+samtools sort $file -o /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark/deduplicate/${file}_dedup.sort.bam
+done 
+
+for file in *dedup.sort.bam
+do
+samtools index $file
+done
+
+echo "Sorting and indexing complete!" $(date)
+```
+
+Submitted batch job 246904
+
 #### Extract methylation calls 
 
+Should I use the deduplicated.bam or dedup.sort.bam? I'm going to use the deduplicated.bam for now. 
+
+First, make a folder for the results
+
+```
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark
+mkdir methyl_extract
+```
+
+Now in the scripts folder: `nano bismark_methyl_extract.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="bismark_methyl_extract_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bismark_methyl_extract_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Bismark/0.23.1-foss-2021b
+module load SAMtools/1.16.1-GCC-11.3.0
+
+echo "Starting to extract methylation calls" $(date)
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark/deduplicate
+
+for file in *deduplicated.bam
+do 
+bismark_methylation_extractor --paired-end --bedGraph --scaffolds --cytosine_report --genome_folder /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/refs --output /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark/methyl_extract $file
+done
+
+echo "Methylation extraction complete!" $(date)
+```
+
+Submitted batch job 246909. This took about 2.5 hours
+
+Organize directory 
+
+```
+mkdir CHH CHG CpG
+mv CHG_* CHG
+mv CHH_* CHH
+mv CpG_* CpG
+```
+
 #### Sample report 
+
+There are two reports to generate - `bismark2report` and `bismark2summary`. `bismark2report` generates a seperate HTML file for each sample, but `bismark2summary` reports a summary of all the samples. Both take different arguments. 
+
+##### `bismark2report`
+
+This module requires an alignment report file and has optional arguments for deduplication report, splitting report, m-bias report and nucleotide report. The alignment report files were generated in the Bismark alignment step and the dedup, splitting and m-bias reports were generated in the methylation extraction step. I'm going to make a new directory for the report files. 
+
+I'm going to move the alignment report files into the methyl_extract folder to make it easier to run the code. 
+
+```
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark
+mkdir logs 
+
+# alignment reports
+cd alignment
+mv *bismark_bt2_PE_report.txt ../logs
+
+# deduplication reports 
+cd ../deduplicate/
+mv *val_1_bismark_bt2_pe.deduplication_report.txt ../logs
+
+# splitting & mbias reports 
+cd ../methyl_extract/
+mv *deduplicated.M-bias.txt ../logs
+mv *deduplicated_splitting_report.txt ../logs
+```
+
+Now run the report. I'm going to run each one individually because it won't take that much time. 
+
+
+```
+module load Bismark/0.23.1-foss-2021b
+
+bismark2report --alignment_report HPB10_S44_L001_R1_001_val_1_bismark_bt2_PE_report.txt --dedup_report HPB10_S44_L001_R1_001_val_1_bismark_bt2_pe.deduplication_report.txt --splitting_report HPB10_S44_L001_R1_001_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt --mbias_report HPB10_S44_L001_R1_001_val_1_bismark_bt2_pe.deduplicated.M-bias.txt 
+
+bismark2report --alignment_report HPB11_S45_L001_R1_001_val_1_bismark_bt2_PE_report.txt --dedup_report HPB11_S45_L001_R1_001_val_1_bismark_bt2_pe.deduplication_report.txt --splitting_report HPB11_S45_L001_R1_001_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt --mbias_report HPB11_S45_L001_R1_001_val_1_bismark_bt2_pe.deduplicated.M-bias.txt 
+
+bismark2report --alignment_report HPB12_S46_L001_R1_001_val_1_bismark_bt2_PE_report.txt --dedup_report HPB12_S46_L001_R1_001_val_1_bismark_bt2_pe.deduplication_report.txt --splitting_report HPB12_S46_L001_R1_001_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt --mbias_report HPB12_S46_L001_R1_001_val_1_bismark_bt2_pe.deduplicated.M-bias.txt 
+
+bismark2report --alignment_report HPB1_S35_L001_R1_001_val_1_bismark_bt2_PE_report.txt --dedup_report HPB1_S35_L001_R1_001_val_1_bismark_bt2_pe.deduplication_report.txt --splitting_report HPB1_S35_L001_R1_001_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt --mbias_report HPB1_S35_L001_R1_001_val_1_bismark_bt2_pe.deduplicated.M-bias.txt 
+
+bismark2report --alignment_report HPB2_S36_L001_R1_001_val_1_bismark_bt2_PE_report.txt --dedup_report HPB2_S36_L001_R1_001_val_1_bismark_bt2_pe.deduplication_report.txt --splitting_report HPB2_S36_L001_R1_001_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt --mbias_report HPB2_S36_L001_R1_001_val_1_bismark_bt2_pe.deduplicated.M-bias.txt 
+
+bismark2report --alignment_report HPB3_S37_L001_R1_001_val_1_bismark_bt2_PE_report.txt --dedup_report HPB3_S37_L001_R1_001_val_1_bismark_bt2_pe.deduplication_report.txt --splitting_report HPB3_S37_L001_R1_001_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt --mbias_report HPB3_S37_L001_R1_001_val_1_bismark_bt2_pe.deduplicated.M-bias.txt 
+
+bismark2report --alignment_report HPB4_S38_L001_R1_001_val_1_bismark_bt2_PE_report.txt --dedup_report HPB4_S38_L001_R1_001_val_1_bismark_bt2_pe.deduplication_report.txt --splitting_report HPB4_S38_L001_R1_001_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt --mbias_report HPB4_S38_L001_R1_001_val_1_bismark_bt2_pe.deduplicated.M-bias.txt 
+
+bismark2report --alignment_report HPB5_S39_L001_R1_001_val_1_bismark_bt2_PE_report.txt --dedup_report HPB5_S39_L001_R1_001_val_1_bismark_bt2_pe.deduplication_report.txt --splitting_report HPB5_S39_L001_R1_001_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt --mbias_report HPB5_S39_L001_R1_001_val_1_bismark_bt2_pe.deduplicated.M-bias.txt 
+
+bismark2report --alignment_report HPB6_S40_L001_R1_001_val_1_bismark_bt2_PE_report.txt --dedup_report HPB6_S40_L001_R1_001_val_1_bismark_bt2_pe.deduplication_report.txt --splitting_report HPB6_S40_L001_R1_001_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt --mbias_report HPB6_S40_L001_R1_001_val_1_bismark_bt2_pe.deduplicated.M-bias.txt 
+
+bismark2report --alignment_report HPB7_S41_L001_R1_001_val_1_bismark_bt2_PE_report.txt --dedup_report HPB7_S41_L001_R1_001_val_1_bismark_bt2_pe.deduplication_report.txt --splitting_report HPB7_S41_L001_R1_001_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt --mbias_report HPB7_S41_L001_R1_001_val_1_bismark_bt2_pe.deduplicated.M-bias.txt 
+
+bismark2report --alignment_report HPB8_S42_L001_R1_001_val_1_bismark_bt2_PE_report.txt --dedup_report HPB8_S42_L001_R1_001_val_1_bismark_bt2_pe.deduplication_report.txt --splitting_report HPB8_S42_L001_R1_001_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt --mbias_report HPB8_S42_L001_R1_001_val_1_bismark_bt2_pe.deduplicated.M-bias.txt 
+
+bismark2report --alignment_report HPB9_S43_L001_R1_001_val_1_bismark_bt2_PE_report.txt --dedup_report HPB9_S43_L001_R1_001_val_1_bismark_bt2_pe.deduplication_report.txt --splitting_report HPB9_S43_L001_R1_001_val_1_bismark_bt2_pe.deduplicated_splitting_report.txt --mbias_report HPB9_S43_L001_R1_001_val_1_bismark_bt2_pe.deduplicated.M-bias.txt 
+```
+
+##### `bismark2summary`
+
+Which bam files should I use (ie ones from the alignment directory or the deduplicate directory)? I'm going to use the ones in `/data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark/alignment`. It needs the associated alignment report files and the bam files. I'm going to copy the bam files into the logs file. 
+
+```
+module load Bismark/0.23.1-foss-2021b
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark/alignment
+cp *bam ../logs/
+
+cd ../logs
+bismark2summary *bam
+```
+#### MultiQC 
+
+In the logs directory, run MultiQC on the data 
+
+```
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+multiqc -f --filename multiqc_report . \
+      -m custom_content -m picard -m qualimap -m bismark -m samtools -m preseq -m cutadapt -m fastqc
+```
+
+##### MultiQC results 
+
+
+### Bismark - attempt #2
+
+This time, I'm going to run the Bismark pipeline with the arguments `--relax_mismatches` and `--score_min` in the alignment step. 
+	
+
+
+
+
+
+
+
+
+
+
+### Thoughts 
+
+- Arguments that I should've used?
+	- `--relax_mismatches`
+	- `--score_min`
+	
+Try iterations with `--relax_mismatches` and `--score_min L,0,-0.9`
