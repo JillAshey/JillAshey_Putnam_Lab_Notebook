@@ -847,7 +847,6 @@ mv *deduplicated_splitting_report.txt ../logs
 
 Now run the report. I'm going to run each one individually because it won't take that much time. 
 
-
 ```
 module load Bismark/0.23.1-foss-2021b
 
