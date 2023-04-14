@@ -899,12 +899,26 @@ multiqc -f --filename multiqc_report . \
       -m custom_content -m picard -m qualimap -m bismark -m samtools -m preseq -m cutadapt -m fastqc
 ```
 
+Secure copy the file to the github repo
+
 ##### MultiQC results 
 
+![alignment rates](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_alignment1.png)
+
+![deduplication](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_dedup1.png)
+
+![strand alignment](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_alignment_indivstrands1.png)
+
+![cytosine methylation](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_cytosine_methylation1.png)
+
+![M-bias CpG read 1](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_m-bias1_R1.png)
+
+![M-bias CpG read 2](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_m-bias1_R2.png)
+
+The M-bias gets pretty wacky towards the end of the read, similar to one of the methyseq results from ES. 
 
 ### Bismark - attempt #2
 
-This time, I'm going to run the Bismark pipeline with the arguments `--relax_mismatches` and `--score_min` in the alignment step. 
 	
 
 
@@ -919,7 +933,11 @@ This time, I'm going to run the Bismark pipeline with the arguments `--relax_mis
 ### Thoughts 
 
 - Arguments that I should've used?
-	- `--relax_mismatches`
-	- `--score_min`
+	- `--relax_mismatches` - seems to only be in the methylseq pipeline 
+	- `--non_directional` - ES included this in her code
+		- Is it relevant to include?
+		- Include in alignment step 
+	- `--score_min` - Sets a function governing the minimum alignment score needed for an alignment to be considered "valid" (i.e. good enough to report). This is a function of read length. For instance, specifying L,0,-0.2 sets the minimum-score function f to f(x) = 0 + -0.2 * x, where x is the read length. 
+		- Javie has code [here](https://github.com/jarcasariego/ACER_clonal_divergence/blob/main/WGBS/code/20201209_Alignment_test_WGBS_ACER.sub) where he evaluated `--score_min` at -0.2, -0.4, -0.6, -0.9, -1.2, and -1.5. He ended up going with the `-score_min L,0,-0.9`
+		- Include in alignment step 
 	
-Try iterations with `--relax_mismatches` and `--score_min L,0,-0.9`
