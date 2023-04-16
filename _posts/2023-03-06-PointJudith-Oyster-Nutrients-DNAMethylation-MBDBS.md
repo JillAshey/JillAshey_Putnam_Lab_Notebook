@@ -1011,7 +1011,21 @@ Submitted batch job 251642
 
 ##### FastQC results for trim6 iteration
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/sequence_counts_trim6.png)
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/sequence_quality_trim6.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/per_sequence_quality_trim6.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/GC_content_trim6.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/sequence_length_trim6.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/sequence_duplication_trim6.png)
+
+No adapter content present! 
+
+Based on the QC info, I'm going to continue with trim6 and bismark. 
 
 ### Bismark - iteration 2
 
@@ -1060,6 +1074,104 @@ done
 echo "Bismark alignment complete! - 2nd iteration" $(date)
 ```
 
-Still trying to decide if I should edit the `--score_min` argument. The default is `--score_min L,0,-0.2`. I'm going to run this script first and go from there. 
+Still trying to decide if I should edit the `--score_min` argument. The default is `--score_min L,0,-0.2`. I'm going to run this script first and go from there. Submitted batch job 251643. 
 
+#### Deduplicate reads
 
+In scripts folder: `nano bismark_deduplicate2.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="bismark_deduplicate2_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bismark_deduplicate2_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Bismark/0.23.1-foss-2021b
+
+echo "Starting Bismark deduplication - 2nd iteration" $(date)
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark2
+
+for file in *bismark_bt2_pe.bam 
+do
+deduplicate_bismark --paired --bam $file
+done
+
+echo "Bismark deduplication complete! - 2nd iteration" $(date)
+```
+
+Submitted batch job 251645
+
+Sort reads?????? 
+
+#### Extract methylation calls 
+
+Using the deduplicated.bam files 
+
+In scripts folder: `nano bismark_methyl_extract2.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="bismark_methyl_extract2_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bismark_methyl_extract2_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Bismark/0.23.1-foss-2021b
+module load SAMtools/1.16.1-GCC-11.3.0
+
+echo "Starting to extract methylation calls - 2nd iteration" $(date)
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark2
+
+for file in *deduplicated.bam
+do 
+bismark_methylation_extractor --paired-end --bedGraph --scaffolds --cytosine_report --genome_folder /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/refs $file
+done
+
+echo "Methylation extraction complete - 2nd iteration!" $(date)
+```
+
+Submitted batch job 251646
+
+#### QC / sample reports 
+
+In the above code, I ran `bismark2report` for each sample, but I don't think I'm going to do that this time, as I didn't really end up using/looking at those files. I can always come back to it if needed. I will run `bismark2summary` and MultiQC. 
+
+Should I use the .bam files from the alignment step or the deduplication step? I'll try w/ both. 
+
+First, run bismark2summary code 
+
+```
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark2
+
+module load Bismark/0.23.1-foss-2021b
+
+bismark2summary *bismark_bt2_pe.bam 
+# scp summary to local computer 
+
+bismark2summary *bismark_bt2_pe.deduplicated.bam 
+# scp summary to local computer 
+```
+
+Now run MultiQC
+
+```
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+multiqc -f --filename multiqc_report . \
+      -m custom_content -m picard -m qualimap -m bismark -m samtools -m preseq -m cutadapt -m fastqc
+```
