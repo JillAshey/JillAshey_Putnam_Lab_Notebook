@@ -1170,3 +1170,17 @@ module load MultiQC/1.9-intel-2020a-Python-3.8.2
 multiqc -f --filename multiqc_report . \
       -m custom_content -m picard -m qualimap -m bismark -m samtools -m preseq -m cutadapt -m fastqc
 ```
+
+##### MultiQC results 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_alignment2.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_dedup2.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_alignment_indivstrands2.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_cytosine_methylation2.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_m-bias2_R1.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_m-bias2_R2.png)
