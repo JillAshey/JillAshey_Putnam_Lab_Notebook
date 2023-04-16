@@ -1151,8 +1151,6 @@ Submitted batch job 251646
 
 In the above code, I ran `bismark2report` for each sample, but I don't think I'm going to do that this time, as I didn't really end up using/looking at those files. I can always come back to it if needed. I will run `bismark2summary` and MultiQC. 
 
-Should I use the .bam files from the alignment step or the deduplication step? I'll try w/ both. 
-
 First, run bismark2summary code 
 
 ```
@@ -1161,9 +1159,6 @@ cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark2
 module load Bismark/0.23.1-foss-2021b
 
 bismark2summary *bismark_bt2_pe.bam 
-# scp summary to local computer 
-
-bismark2summary *bismark_bt2_pe.deduplicated.bam 
 # scp summary to local computer 
 ```
 
