@@ -917,18 +917,9 @@ Secure copy the file to the github repo
 
 The M-bias gets pretty wacky towards the end of the read, similar to one of the methyseq results from ES. 
 
-### Bismark - attempt #2
+STILL NEED TO DO QUALIMAP FOR ALIGNMENT QC AND PRESEQ FOR SAMPLE COMPLEXITY (as detailed in the [methylseq pipline](https://nf-co.re/methylseq/2.3.0))!!!
 
-	
-
-
-
-
-
-
-
-
-
+- need to ask Kevin Bryan to add both [Qualimap](http://qualimap.conesalab.org/doc_html/command_line.html) and [Preseq](https://github.com/smithlabcode/preseq) to Andromeda 
 
 ### Thoughts 
 
@@ -938,3 +929,137 @@ The M-bias gets pretty wacky towards the end of the read, similar to one of the 
 		- Javie has code [here](https://github.com/jarcasariego/ACER_clonal_divergence/blob/main/WGBS/code/20201209_Alignment_test_WGBS_ACER.sub) where he evaluated `--score_min` at -0.2, -0.4, -0.6, -0.9, -1.2, and -1.5. He ended up going with the `-score_min L,0,-0.9`
 		- Include in alignment step 
 	
+20230416
+
+After talking with the lab about the results, we decided to do another trimming iteration. Looking at the sequence quality histogram from the raw QC file, it seems that the quality drips below a 20 phred score around 227 bp. I'm going to trim the 5' end by 75 bp and then proceed w/ Bismark. 
+
+### Trim sequences 
+
+Make folders from trim6 iteration
+
+```
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results
+mkdir trim6
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data
+mkdir trim6
+```
+
+#### Attempt 6
+
+In scripts folder: `nano trim_galore6.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="trim_galore6_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="trim_galore6_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Trim_Galore/0.6.7-GCCcore-11.2.0
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/raw
+
+for file in "HPB10_S44" "HPB11_S45" "HPB12_S46" "HPB1_S35" "HPB2_S36" "HPB3_S37" "HPB4_S38" "HPB5_S39" "HPB6_S40" "HPB7_S41" "HPB8_S42" "HPB9_S43"
+do 
+trim_galore --paired ${file}_L001_R1_001.fastq.gz ${file}_L001_R2_001.fastq.gz --clip_r1 75 --clip_r2 75 --quality 30 -o /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim6/
+done
+```
+
+Submitted batch job 251641
+
+### Run Fastqc on trimmed data 
+
+#### Attempt 6
+
+In scripts folder: `nano fastqc_trim6.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="fastqc_trim6_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="fastqc_trim6_output" #once your job is completed, any final job report comments will be put in this file
+
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
+
+
+for file in /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim6/*fq.gz
+do 
+fastqc $file --outdir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results/trim6
+done
+
+multiqc --interactive fastqc_results/trim6
+```
+
+Submitted batch job 251642
+
+##### FastQC results for trim6 iteration
+
+
+
+### Bismark - iteration 2
+
+I'm going to make a new directory for the 2nd iteration of Bismark. I'm also not going to make separate folders for the alignment/dedup info like last time because it seems like the downstream analysis may be easier with everything all in one folder. 
+
+```
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
+mkdir bismark2
+```
+
+#### Prepare genome 
+
+I already prepped genome in a Bismark iteration above, so I don't need to do it again. Can move on to aligning reads! 
+
+#### Align reads 
+
+Using the data from trim 6 iteration. XXXXXXXXXX
+
+In scripts folder: `nano bismark_align2.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="bismark_align2_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bismark_align2_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Bismark/0.23.1-foss-2021b
+module load Bowtie2/2.4.4-GCC-11.2.0
+
+echo "Starting Bismark alignment - 2nd iteration" $(date)
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim6
+
+for file in "HPB10_S44" "HPB11_S45" "HPB12_S46" "HPB1_S35" "HPB2_S36" "HPB3_S37" "HPB4_S38" "HPB5_S39" "HPB6_S40" "HPB7_S41" "HPB8_S42" "HPB9_S43"
+do 
+bismark --multicore 10 --bam --non_directional --output_dir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark2 --temp_dir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark/temp --unmapped --ambiguous --genome /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/refs -1 ${file}_L001_R1_001_val_1.fq.gz -2 ${file}_L001_R2_001_val_2.fq.gz 
+done
+
+echo "Bismark alignment complete! - 2nd iteration" $(date)
+```
+
+Still trying to decide if I should edit the `--score_min` argument. The default is `--score_min L,0,-0.2`. I'm going to run this script first and go from there. 
+
+
