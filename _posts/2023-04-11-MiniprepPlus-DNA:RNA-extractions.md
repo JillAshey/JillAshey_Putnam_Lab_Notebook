@@ -72,4 +72,7 @@ Used this [protocol](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/
 
 #### Gel 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20230414.JPG)
+
+I messed up the gel the first time so I had to rerun it. I took 9ul from the 90ul stock so these samples only have ~81ul left. 
 
