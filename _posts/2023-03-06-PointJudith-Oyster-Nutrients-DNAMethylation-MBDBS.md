@@ -1042,7 +1042,7 @@ I already prepped genome in a Bismark iteration above, so I don't need to do it 
 
 #### Align reads 
 
-Using the data from trim 6 iteration. XXXXXXXXXX
+Using the data from trim 6 iteration.
 
 In scripts folder: `nano bismark_align2.sh`
 
@@ -1184,3 +1184,130 @@ multiqc -f --filename multiqc_report . \
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_m-bias2_R1.png)
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_m-bias2_R2.png)
+
+Okay M-bias is still all over the place. I'm going to try another iteration of Bismark with a less stringent alignment score (
+
+### Bismark - iteration 3
+
+I'm going to make a new directory for the 3rd iteration of Bismark. I'm also not going to make separate folders for the alignment/dedup info like last time because it seems like the downstream analysis may be easier with everything all in one folder. 
+
+```
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
+mkdir bismark3
+```
+
+I'll be using trim6 data for this iteration. 
+
+#### Prepare genome 
+
+I already prepped genome in a Bismark iteration above, so I don't need to do it again. Can move on to aligning reads! 
+
+#### Align reads 
+
+Using the data from trim 6 iteration.
+
+In scripts folder: `nano bismark_align3.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="bismark_align3_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bismark_align3_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Bismark/0.23.1-foss-2021b
+module load Bowtie2/2.4.4-GCC-11.2.0
+
+echo "Starting Bismark alignment - 3rd iteration" $(date)
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim6
+
+for file in "HPB10_S44" "HPB11_S45" "HPB12_S46" "HPB1_S35" "HPB2_S36" "HPB3_S37" "HPB4_S38" "HPB5_S39" "HPB6_S40" "HPB7_S41" "HPB8_S42" "HPB9_S43"
+do 
+bismark --multicore 10 --bam --non_directional --score_min L,0,-0.9 --output_dir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark3 --temp_dir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark/temp --unmapped --ambiguous --genome /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/refs -1 ${file}_L001_R1_001_val_1.fq.gz -2 ${file}_L001_R2_001_val_2.fq.gz 
+done
+
+echo "Bismark alignment complete! - 3rd iteration" $(date)
+```
+
+For this iteration, I changed the score min argument from -0.2 to -0.9. Hopefully, this will help with the M-bias that we've seen in the methylation data. 
+
+STILL NEED TO RUN 
+
+#### Deduplicate reads
+
+In scripts folder: `nano bismark_deduplicate3.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="bismark_deduplicate3_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bismark_deduplicate3_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Bismark/0.23.1-foss-2021b
+
+echo "Starting Bismark deduplication - 3rd iteration" $(date)
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark3
+
+for file in *bismark_bt2_pe.bam 
+do
+deduplicate_bismark --paired --bam $file
+done
+
+echo "Bismark deduplication complete! - 3rd iteration" $(date)
+```
+
+STILL NEED TO RUN 
+
+Sort reads?????? 
+
+#### Extract methylation calls 
+
+Using the deduplicated.bam files 
+
+In scripts folder: `nano bismark_methyl_extract3.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="bismark_methyl_extract3_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bismark_methyl_extract3_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Bismark/0.23.1-foss-2021b
+module load SAMtools/1.16.1-GCC-11.3.0
+
+echo "Starting to extract methylation calls - 3rd iteration" $(date)
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark3
+
+for file in *deduplicated.bam
+do 
+bismark_methylation_extractor --paired-end --bedGraph --scaffolds --cytosine_report --genome_folder /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/refs $file
+done
+
+echo "Methylation extraction complete - 3rd iteration!" $(date)
+```
+
+STILL NEED TO RUN 
+
