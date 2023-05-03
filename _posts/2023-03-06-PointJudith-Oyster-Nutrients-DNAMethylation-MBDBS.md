@@ -1185,7 +1185,7 @@ multiqc -f --filename multiqc_report . \
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_m-bias2_R2.png)
 
-Okay M-bias is still all over the place. I'm going to try another iteration of Bismark with a less stringent alignment score (
+Okay M-bias is still all over the place. I'm going to try another iteration of Bismark with a less stringent alignment score.
 
 ### Bismark - iteration 3
 
@@ -1238,7 +1238,7 @@ echo "Bismark alignment complete! - 3rd iteration" $(date)
 
 For this iteration, I changed the score min argument from -0.2 to -0.9. Hopefully, this will help with the M-bias that we've seen in the methylation data. 
 
-STILL NEED TO RUN 
+Submitted batch job 244196
 
 #### Deduplicate reads
 
@@ -1271,7 +1271,7 @@ done
 echo "Bismark deduplication complete! - 3rd iteration" $(date)
 ```
 
-STILL NEED TO RUN 
+Submitted batch job 246166
 
 Sort reads?????? 
 
@@ -1309,5 +1309,30 @@ done
 echo "Methylation extraction complete - 3rd iteration!" $(date)
 ```
 
-STILL NEED TO RUN 
+Submitted batch job 246167
+
+#### QC / sample reports 
+
+Above in bismark iteration 1, I ran `bismark2report` for each sample, but I don't think I'm going to do that this time, as I didn't really end up using/looking at those files. I can always come back to it if needed. I will run `bismark2summary` and `MultiQC`.
+
+First, run bismark2summary code
+
+```
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark3
+
+module load Bismark/0.23.1-foss-2021b
+
+bismark2summary *bismark_bt2_pe.bam 
+``` 
+
+Now run MultiQC
+
+```
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+multiqc -f --filename multiqc_report . \
+      -m custom_content -m picard -m qualimap -m bismark -m samtools -m preseq -m cutadapt -m fastqc
+```
+
+Secure copy files to local computer
 
