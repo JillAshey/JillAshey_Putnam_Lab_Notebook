@@ -1336,3 +1336,119 @@ multiqc -f --filename multiqc_report . \
 
 Secure copy files to local computer
 
+##### MultiQC results 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_alignment3.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_strand_alignment3.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_deduplication3.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_cytosine_methylation3.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_mbias3_R1.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_mbias3_R2.png)
+
+M-bias still all over the place. It starts to get pretty wonky around 150 bp, so let me try to cut 150 bp out. Going to try another trimming iteration in which I cut 99 bp and then 51 bp (I can only cut 99 bp at a time w/ trim galore).
+
+### Trim sequences 
+
+Make folders from trim7 iteration
+
+```
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results
+mkdir trim7
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data
+mkdir trim7
+cd trim7
+mkdir 99_bp_cut
+mkdir 150_bp_cut
+```
+
+#### Attempt 7
+
+In scripts folder: `nano trim_galore7.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="trim_galore7_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="trim_galore7_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Trim_Galore/0.6.7-GCCcore-11.2.0
+
+echo "Trimming 150 bp from sequences - trim iteration 7" $(date)
+
+# Cut 99 bp first 
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/raw
+
+for file in "HPB10_S44" "HPB11_S45" "HPB12_S46" "HPB1_S35" "HPB2_S36" "HPB3_S37" "HPB4_S38" "HPB5_S39" "HPB6_S40" "HPB7_S41" "HPB8_S42" "HPB9_S43"
+do 
+trim_galore --paired ${file}_L001_R1_001.fastq.gz ${file}_L001_R2_001.fastq.gz --clip_r1 99 --clip_r2 99 --quality 30 -o /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim7/99_bp_cut/
+done
+
+echo "Trimmed 99 bp from seqs so far" $(date)
+
+# Cut another 51 bp 
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim7/99_bp_cut
+
+for file in "HPB10_S44" "HPB11_S45" "HPB12_S46" "HPB1_S35" "HPB2_S36" "HPB3_S37" "HPB4_S38" "HPB5_S39" "HPB6_S40" "HPB7_S41" "HPB8_S42" "HPB9_S43"
+do 
+trim_galore --paired ${file}_L001_R1_001_val_1.fq.gz ${file}_L001_R1_001_val_2.fq.gz  --clip_r1 51 --clip_r2 51 --quality 30 -o /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim7/150_bp_cut/
+done
+
+echo "Trimmed another 51 bp from seqs - trimming complete!" $(date)
+```
+
+Submitted batch job 246341
+
+### Trim sequences 
+
+#### Attempt 7
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="fastqc_trim7_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="fastqc_trim7_output" #once your job is completed, any final job report comments will be put in this file
+
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
+
+
+for file in /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim7/150_bp_cut/*fq.gz
+do 
+fastqc $file --outdir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results/trim7
+done
+
+multiqc --interactive fastqc_results/trim7
+```
+
+STILL NEED TO RUN
+
+
+
+
+
+
+NEXT THINGS TO DO: 
+- add multiQC info from bismark iteration 3 
+- do another trimming iteration in which I cut <150 bp and then run bismark
