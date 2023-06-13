@@ -17,11 +17,21 @@ If you want to ship a package from URI:
 
 1. Package the items into a secure container. Seal the container, making sure all the necessary information is inside the package. 
 2. Log in to [FedEx](https://www.fedex.com/en-us/home.html). URI has a shipping deal with them so we pay a special URI rate. You will be logged in as Denise Brown. Ask Hollie or Denise for the username and password for the account.
-3. At the top of the page, click Shipping. Then click Create a Shipment
-4. This will take you to a page to create a shipment. Fill in the following information: 
+3. At the top of the page, click shipping. Then click Create a shipment
+
+
+
+
+3. Click rate & ship. 
+4. Fill in the addresses that the package is being shipped from and to.
+5. Select 'Your Packaging' from the drop-down menu (unless you are using a FedEx specific container).
+6. It will then ask for the number of packages, weight per package and dimensions per package. Measure the package dimensions and enter them. Use the scale in the lab to weigh the package and enter that. If you are shipping more than one package, click add another package and repeat this step.
+7. Select your ship date. 
+8. Fedex will now calculate your account specific rates. It will give you some shipping options and prices. Select whatever the shipping option you need (overnight, 2Day, standard, etc). 
+9. This will take you to a page to create a shipment. Fill in the following information: 
 	- 1) enter From information (name, address, phone number)
 	- 2) enter To information (name, address, phone number)
-	- 3) Specify the ship date, number of packages, weight of packages, service type, package type and dimensions. 
+	- 3) Specify the ship date, number of packages, weight of packages, service type, package type and dimensions. This is basically the same information from steps 4-6
 	- 4) Under Billing Details, bill transportation should automatically be UNIT3BIO-820. Do not change this unless specified to. Under 'Your reference', put Hollie's name so Denise knows who to bill.
 		- There are other optional steps here. 
 		- Under Pickup/Dropoff, select whether you will be dropping off the package at a Fedex location or scheduling a pickup. If scheduling a pickup, select the date and time span that you would like the package to be picked up. **IMPORTANT**: if you schedule a pickup at URI, you MUST take the package down to the loading dock and put it on/near the shelving unit by the large garage type door. If you do not, your package will not be picked up!!!!!
@@ -31,3 +41,8 @@ If you want to ship a package from URI:
 10. A shipping label will be generated. Confirm all information on the label is correct. Print the shipping label and tape it to the package using clear packing tape.
 	- Make a note of the tracking number so you can track the package
 11. Put the package at the scheduled pick up spot or drop it off at a FedEx store. Tell Hollie and the package recipient that the package has shipped and include the tracking number. 
+
+		
+		
+		
+		

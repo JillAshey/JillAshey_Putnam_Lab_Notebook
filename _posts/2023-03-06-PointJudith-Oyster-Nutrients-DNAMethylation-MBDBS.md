@@ -1359,12 +1359,13 @@ Make folders from trim7 iteration
 ```
 cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results
 mkdir trim7
+cd trim7
+mkdir 99_bp_cut 150_bp_cut
 
 cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data
 mkdir trim7
 cd trim7
-mkdir 99_bp_cut
-mkdir 150_bp_cut
+mkdir 99_bp_cut 150_bp_cut
 ```
 
 #### Attempt 7
@@ -1415,6 +1416,10 @@ Submitted batch job 246341
 
 #### Attempt 7
 
+Going to run fastQC for both the 99 bp cut and the 150 bp cut 
+
+In scripts folder: `nano fastqc_trim7.sh`
+
 ```
 #!/bin/bash
 #SBATCH -t 24:00:00
@@ -1433,22 +1438,180 @@ module load MultiQC/1.9-intel-2020a-Python-3.8.2
 
 cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
 
+echo "QC for 99 bp cut" $(date)
+for file in /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim7/99_bp_cut/*fq.gz
+do 
+fastqc $file --outdir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results/trim7/99_bp_cut
+done
+multiqc --interactive fastqc_results/trim7/99_bp_cut
 
+echo "QC for 150 bp cut" $(date)
 for file in /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim7/150_bp_cut/*fq.gz
 do 
-fastqc $file --outdir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results/trim7
+fastqc $file --outdir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results/trim7/150_bp_cut
 done
-
-multiqc --interactive fastqc_results/trim7
+multiqc --interactive fastqc_results/trim7/150_bp_cut
 ```
 
-STILL NEED TO RUN
+Submitted batch job 246394
 
+ADD QC RESULTS 
 
+Based on the QC info, I'm going to move forward with the analysis of 99 bp cut. The 150 bp cut looks like it totally erased the entirety of R2 for all samples. 
 
+### Bismark - iteration 4
 
+I'm going to make a new directory for the 4th iteration of Bismark. I'm also not going to make separate folders for the alignment/dedup info like last time because it seems like the downstream analysis may be easier with everything all in one folder. 
 
+```
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
+mkdir bismark4
+```
 
-NEXT THINGS TO DO: 
-- add multiQC info from bismark iteration 3 
-- do another trimming iteration in which I cut <150 bp and then run bismark
+I'll be using trim7 99 bp cut data for this iteration. 
+
+#### Prepare genome 
+
+I already prepped genome in a Bismark iteration above, so I don't need to do it again. Can move on to aligning reads! 
+
+#### Align reads 
+
+Using the data from trim 6 iteration.
+
+In scripts folder: `nano bismark_align4.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="bismark_align4_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bismark_align4_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Bismark/0.23.1-foss-2021b
+module load Bowtie2/2.4.4-GCC-11.2.0
+
+echo "Starting Bismark alignment - 4th iteration" $(date)
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim7/99_bp_cut
+
+for file in "HPB10_S44" "HPB11_S45" "HPB12_S46" "HPB1_S35" "HPB2_S36" "HPB3_S37" "HPB4_S38" "HPB5_S39" "HPB6_S40" "HPB7_S41" "HPB8_S42" "HPB9_S43"
+do 
+bismark --multicore 10 --bam --non_directional --score_min L,0,-0.9 --output_dir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark4 --temp_dir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark/temp --unmapped --ambiguous --genome /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/refs -1 ${file}_L001_R1_001_val_1.fq.gz -2 ${file}_L001_R2_001_val_2.fq.gz 
+done
+
+echo "Bismark alignment complete! - 4th iteration" $(date)
+```
+
+For this iteration, I changed the score min argument from -0.2 to -0.9. Hopefully, this will help with the M-bias that we've seen in the methylation data. Submitted batch job 246395
+
+#### Deduplicate reads
+
+In scripts folder: `nano bismark_deduplicate4.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="bismark_deduplicate4_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bismark_deduplicate4_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Bismark/0.23.1-foss-2021b
+
+echo "Starting Bismark deduplication - 4th iteration" $(date)
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark4
+
+for file in *bismark_bt2_pe.bam 
+do
+deduplicate_bismark --paired --bam $file
+done
+
+echo "Bismark deduplication complete! - 4th iteration" $(date)
+```
+
+Submitted batch job 246397
+
+Sort reads?????? 
+
+#### Extract methylation calls 
+
+Using the deduplicated.bam files 
+
+In scripts folder: `nano bismark_methyl_extract4.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="bismark_methyl_extract4_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bismark_methyl_extract4_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Bismark/0.23.1-foss-2021b
+module load SAMtools/1.16.1-GCC-11.3.0
+
+echo "Starting to extract methylation calls - 4th iteration" $(date)
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark4
+
+for file in *deduplicated.bam
+do 
+bismark_methylation_extractor --paired-end --bedGraph --scaffolds --cytosine_report --genome_folder /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/refs $file
+done
+
+echo "Methylation extraction complete - 4th iteration!" $(date)
+```
+
+Submitted batch job 246404
+
+#### QC / sample reports 
+
+Above in bismark iteration 1, I ran `bismark2report` for each sample, but I don't think I'm going to do that this time, as I didn't really end up using/looking at those files. I can always come back to it if needed. I will run `bismark2summary` and `MultiQC`.
+
+First, run bismark2summary code
+
+```
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark4
+
+module load Bismark/0.23.1-foss-2021b
+
+bismark2summary *bismark_bt2_pe.bam 
+``` 
+
+Now run MultiQC
+
+```
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+multiqc -f --filename multiqc_report . \
+      -m custom_content -m picard -m qualimap -m bismark -m samtools -m preseq -m cutadapt -m fastqc
+```
+
+Secure copy files to local computer
+
+##### MultiQC results 
+
+I'm confused - the trim7 multiQC report says the reads are ~79-95 bp long. But when I run bismark, the M-bias says the bp length is up to 200. This doesn't make any sense to me. 
+
+This [post](https://sequencing.qcfail.com/articles/library-end-repair-reaction-introduces-methylation-biases-in-paired-end-pe-bisulfite-seq-applications/) may provide insight on how to handle M-bias. 
+
+#### M-bias plot issues 
+
+Weird M-bias at the end of Read 2 has been present in all QC plots for each Bismark run. In the `bismark_methylation_extractor` command, there are options to ignore XX bases from Read 1 or Read 2
