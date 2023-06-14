@@ -1605,7 +1605,8 @@ Secure copy files to local computer
 
 ##### MultiQC results 
 
-I'm confused - the trim7 multiQC report says the reads are ~79-95 bp long. But when I run bismark, the M-bias says the bp length is up to 200. This doesn't make any sense to me. 
+
+
 
 This [post](https://sequencing.qcfail.com/articles/library-end-repair-reaction-introduces-methylation-biases-in-paired-end-pe-bisulfite-seq-applications/) may provide insight on how to handle M-bias. 
 
