@@ -998,7 +998,6 @@ module load MultiQC/1.9-intel-2020a-Python-3.8.2
 
 cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
 
-
 for file in /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/data/trim6/*fq.gz
 do 
 fastqc $file --outdir /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/fastqc_results/trim6
@@ -1454,8 +1453,6 @@ multiqc --interactive fastqc_results/trim7/150_bp_cut
 ```
 
 Submitted batch job 246394
-
-ADD QC RESULTS 
 
 Based on the QC info, I'm going to move forward with the analysis of 99 bp cut. The 150 bp cut looks like it totally erased the entirety of R2 for all samples. 
 
