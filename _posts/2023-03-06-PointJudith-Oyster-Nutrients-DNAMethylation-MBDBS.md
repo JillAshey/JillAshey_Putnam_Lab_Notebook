@@ -1605,11 +1605,90 @@ Secure copy files to local computer
 
 ##### MultiQC results 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_alignment4.png)
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_deduplication4.png)
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_strand_alignment4.png)
 
-This [post](https://sequencing.qcfail.com/articles/library-end-repair-reaction-introduces-methylation-biases-in-paired-end-pe-bisulfite-seq-applications/) may provide insight on how to handle M-bias. 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_cytosine_methylation4.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_mbias4_R1.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Oys_Nutr/bismark_mbias4_R2.png)
+
+Still got some weird noise with the M-bias plot of Read 2. This [post](https://sequencing.qcfail.com/articles/library-end-repair-reaction-introduces-methylation-biases-in-paired-end-pe-bisulfite-seq-applications/) may provide insight on how to handle M-bias. 
 
 #### M-bias plot issues 
 
-Weird M-bias at the end of Read 2 has been present in all QC plots for each Bismark run. In the `bismark_methylation_extractor` command, there are options to ignore XX bases from Read 1 or Read 2
+Weird M-bias at the end of Read 2 has been present in all QC plots for each Bismark run. In the `bismark_methylation_extractor` command, there are options to ignore XX bases from the 5' or 3' end of Read 1 or Read 2. Lets try the code using the iteration4/trim7 information. Since we are starting from the extractor command, there is no need to rerun the alignment or deduplication commands. 
+
+### Bismark - iteration 5
+
+I'm going to make a new directory for the 5th iteration of Bismark. This is not really a brand new iteration, as I am using the data generated from iteration 4 (i.e., do not have to rerun the alignment or deduplication commands). 
+
+```
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS
+mkdir bismark5
+```
+
+#### Extract methylation calls 
+
+Using the deduplicated.bam files in iteration 4 folder. I'm going to ignore 80 bp on the 3' end of Read 2. 
+
+In scripts folder: `nano bismark_methyl_extract5.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/scripts              
+#SBATCH --error="bismark_methyl_extract5_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bismark_methyl_extract5_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Bismark/0.23.1-foss-2021b
+module load SAMtools/1.16.1-GCC-11.3.0
+
+echo "Starting to extract methylation calls - 5th iteration" $(date)
+
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark4
+
+for file in *deduplicated.bam
+do 
+bismark_methylation_extractor --paired-end --bedGraph --scaffolds --cytosine_report --output /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark5 --ignore_3prime_r2 80 --genome_folder /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/refs $file
+done
+
+echo "Methylation extraction complete - 5th iteration!" $(date)
+```
+
+Submitted batch job 262374
+
+Copy bam and deduplicated bam files from `bismark4` directory to `bismark5` directory 
+
+```
+cd /data/putnamlab/jillashey/Oys_Nutrient/MBDBS/bismark4
+cp *val_1_bismark_bt2_pe.deduplicated.bam ../bismark5
+cp *val_1_bismark_bt2_pe.bam ../bismark5
+```
+
+#### QC / sample reports 
+
+Run MultiQC
+
+```
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+multiqc -f --filename multiqc_report . \
+      -m custom_content -m picard -m qualimap -m bismark -m samtools -m preseq -m cutadapt -m fastqc
+```
+
+Secure copy files to local computer
+
+##### MultiQC results 
+
+Not giving me all the results... only see MultiQC graphs for cytosine methylation and M-bias. It does look like the M-bias 3' ignore on Read 2 removed 80 bp, but its still pretty wonky towards the end. 
