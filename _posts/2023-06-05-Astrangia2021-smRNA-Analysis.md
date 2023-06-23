@@ -159,3 +159,5 @@ multiqc --interactive fastqc_results
 ```
 
 Submitted batch job 261246
+
+trimming - try cutadapt, trimmomatic or trimgalore 

@@ -87,6 +87,49 @@ AST-2755_R2_001.fastq.gz: OK
 
 ```
 zgrep -c "@NGSNJ" *fastq.gz
+
+AST-1065_R1_001.fastq.gz:42852873
+AST-1065_R2_001.fastq.gz:42852873
+AST-1105_R1_001.fastq.gz:36082209
+
+gzip: AST-1105_R2_001.fastq.gz: unexpected end of file
+AST-1105_R2_001.fastq.gz:409
+AST-1147_R1_001.fastq.gz:41008372
+AST-1147_R2_001.fastq.gz:41008372
+AST-1412_R1_001.fastq.gz:33078120
+AST-1412_R2_001.fastq.gz:33078120
+AST-1560_R1_001.fastq.gz:35909631
+AST-1560_R2_001.fastq.gz:35909631
+AST-1567_R1_001.fastq.gz:36789468
+AST-1567_R2_001.fastq.gz:36789468
+AST-1617_R1_001.fastq.gz:31764172
+AST-1617_R2_001.fastq.gz:31764172
+AST-1722_R1_001.fastq.gz:34941521
+AST-1722_R2_001.fastq.gz:34941521
+AST-2000_R1_001.fastq.gz:30315074
+AST-2000_R2_001.fastq.gz:30315074
+AST-2007_R1_001.fastq.gz:39369837
+AST-2007_R2_001.fastq.gz:39369837
+AST-2302_R1_001.fastq.gz:33326148
+AST-2302_R2_001.fastq.gz:33326148
+AST-2360_R1_001.fastq.gz:32840507
+AST-2360_R2_001.fastq.gz:32840507
+AST-2398_R1_001.fastq.gz:33309047
+AST-2398_R2_001.fastq.gz:33309047
+AST-2404_R1_001.fastq.gz:38349371
+AST-2404_R2_001.fastq.gz:38349371
+AST-2412_R1_001.fastq.gz:35436774
+AST-2412_R2_001.fastq.gz:35436774
+AST-2512_R1_001.fastq.gz:35323599
+AST-2512_R2_001.fastq.gz:35323599
+AST-2523_R1_001.fastq.gz:34086320
+AST-2523_R2_001.fastq.gz:34086320
+AST-2563_R1_001.fastq.gz:35799766
+AST-2563_R2_001.fastq.gz:35799766
+AST-2729_R1_001.fastq.gz:22735638
+AST-2729_R2_001.fastq.gz:22735638
+AST-2755_R1_001.fastq.gz:33057601
+AST-2755_R2_001.fastq.gz:33057601
 ```
 
 ### Raw QC
@@ -120,7 +163,24 @@ multiqc --interactive fastqc_results
 ```
 
 Submitted batch job 265922
-ADD QC PLOTS
+
+QC results: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/astrangia2021_bioinf/AST2021_mRNA_raw_fastqc_sequence_counts_plot.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/astrangia2021_bioinf/AST2021_mRNA_raw_fastqc_per_base_sequence_quality_plot.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/astrangia2021_bioinf/AST2021_mRNA_raw_fastqc_overrepresented_sequencesi_plot.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/astrangia2021_bioinf/AST2021_mRNA_raw_fastqc_per_sequence_gc_content_plot.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/astrangia2021_bioinf/AST2021_mRNA_raw_fastqc_per_sequence_quality_scores_plot.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/astrangia2021_bioinf/AST2021_mRNA_raw_fastqc_sequence_duplication_levels_plot.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/astrangia2021_bioinf/AST2021_mRNA_raw_fastqc_adapter_content_plot.png)
+
+The quality scores all look really good, happy about that. There is quite a bit of adapter content though.
 
 ### Trim data 
 
@@ -180,5 +240,50 @@ echo "Cleaned MultiQC report generated." $(date)
 ```
 
 Submitted batch job 267173
+
+ADD QC PLOTS
+
+### Align trimmed data to reference genome 
+
+Should I use hisat2 or bowtie? Only considering using bowtie because that's used in a lot of ncRNA analyses. Let's do both!
+
+Make new folders in output directory
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/output/
+mkdir hisat2 bowtie
+```
+
+#### HISAT2 alignment
+
+In scripts folder: `hisat2_align.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts              
+#SBATCH --error="hisat2_align_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="hisat2_align_output" #once your job is completed, any final job report comments will be put in this file
+
+# load modules needed
+module load HISAT2/2.2.1-foss-2019b #Alignment to reference genome: HISAT2
+module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
+
+echo "Indexing reference genome" $(date)
+# Index the reference genome for A. poculata 
+hisat2-build -f XXXXX/ADD/PATH/TO/ASTRANGIA/GENOME ./Apoc_ref
+
+echo "Referece genome indexed. Starting alingment" $(date)
+
+# This script exports alignments as bam files, sorts the bam file because Stringtie takes a sorted file for input (--dta), and removes the sam file because it is no longer needed
+
+
+```
 
 
