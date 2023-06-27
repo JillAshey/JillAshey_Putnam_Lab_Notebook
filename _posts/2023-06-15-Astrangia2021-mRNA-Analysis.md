@@ -252,15 +252,51 @@ Make new folders in output directory
 ```
 cd /data/putnamlab/jillashey/Astrangia2021/mRNA/output/
 mkdir hisat2 bowtie
+cd hisat2
+mkdir refs align
+cd ../bowtie 
+mkdir refs align
 ```
 
 #### HISAT2 alignment
 
-In scripts folder: `hisat2_align.sh`
+First, index the reference genome. 
+
+In scripts folder: `nano hisat2_build.sh`
 
 ```
 #!/bin/bash
 #SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts              
+#SBATCH --error="hisat2_build_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="hisat2_build_output" #once your job is completed, any final job report comments will be put in this file
+
+# load modules needed
+module load HISAT2/2.2.1-foss-2019b #Alignment to reference genome: HISAT2
+
+echo "Indexing reference genome" $(date)
+
+# Index the reference genome for A. poculata 
+hisat2-build -f /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta ./Apoc_ref
+
+echo "Referece genome indexed!" $(date)
+```
+
+Submitted batch job 267749. After this is done running, move reference files from scripts folder to hisat2 refs folder: `mv Apoc_ref.* ../output/hisat2/refs/`
+
+Use the indexed reference genome to align sequences 
+
+In scripts folder: `nano hisat2_align.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 500:00:00
 #SBATCH --nodes=1 --ntasks-per-node=15
 #SBATCH --export=NONE
 #SBATCH --mem=100GB
@@ -275,15 +311,20 @@ In scripts folder: `hisat2_align.sh`
 module load HISAT2/2.2.1-foss-2019b #Alignment to reference genome: HISAT2
 module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
 
-echo "Indexing reference genome" $(date)
-# Index the reference genome for A. poculata 
-hisat2-build -f XXXXX/ADD/PATH/TO/ASTRANGIA/GENOME ./Apoc_ref
-
-echo "Referece genome indexed. Starting alingment" $(date)
+echo "Aligning reads to reference genome" $(date)
 
 # This script exports alignments as bam files, sorts the bam file because Stringtie takes a sorted file for input (--dta), and removes the sam file because it is no longer needed
 
+array=($(ls /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/*fastq.gz)) # call the clean sequences - make an array to align
 
+for i in ${array[@]}; do
+    hisat2 -p 8 --rna-strandness RF --dta -q -x ../output/hisat2/refs/Apoc_ref -1 ${i} -2 $(echo ${i}|sed s/_R1/_R2/) -S ${i}.sam
+    samtools sort -@ 8 -o ${i}.bam ${i}.sam
+    	echo "${i} bam-ified!"
+    rm ${i}.sam
+done
+
+echo "Alignment complete!" $(date)
 ```
 
-
+Submitted batch job 267750 - this job was completed, but I think it didn't work properly. 
