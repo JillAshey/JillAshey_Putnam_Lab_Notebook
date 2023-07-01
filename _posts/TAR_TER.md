@@ -1,0 +1,42 @@
+TAR
+
+- make list of expenses and costs 
+	- Example: roundtrip flight to HI: 900
+	- Baggage: xx
+	- Taxi
+	- Per diem
+	- Day use fee at HIMB
+	- Etc 
+- Get CFS from HP 
+- log on to financials ecampus 
+	- employee self service
+	- travel and expenses
+	- create/modify TA
+	- Add new value based on your URI id #
+- This will bring you to a create Travel Authorization page 
+	- At the top: 	
+		- Business purpose: Research
+		- City: Kaneohe, HI
+		- Description
+		- Date from
+		- Date to
+	- Below that: Projected expenses. for each expense, enter the following...
+		- Date 
+		- Expense type: domestic travel airfare 
+		- Description: "Roundtrip airfare from Boston, MA to Honolulu, HI
+		- Payment type: Cash paid by employee (usually!!! Check w/ HP)
+		- Amount: xxx
+			- Doesnt have to be exact, just an estimate 
+		- Billing type: billable (usually!!! Check w/ HP)
+		- Account details (get these details from HP)
+			- Account 
+			- Find 
+			- Department
+			- Project code
+			- Program
+			- PC bus unit 
+			- Activity 
+	- Click the '+' button to add another expense and fill out the infomation. Repeat until all expenses are added 
+	- At the top right, click summary and submit. It will go to a page where you check a box and click submit
+	- Authorization submitted!
+		- Double-check w/ Hollie to make sure she approves it 
