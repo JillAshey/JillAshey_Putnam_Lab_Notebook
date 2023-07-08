@@ -327,4 +327,69 @@ done
 echo "Alignment complete!" $(date)
 ```
 
-Submitted batch job 267750 - this job was completed, but I think it didn't work properly. 
+Submitted batch job 267750 - this job was completed, but I think it didn't work properly. In the hisat2 error file, there was some kind of GCC conflict error. Purged modules from the environment, then ran job again. Submitted batch job 269176 on 6/30/23. Checked the error file 30 seconds after running and got the same errors: 
+
+```
+foss/2018b(23):ERROR:150: Module 'foss/2018b' conflicts with the currently loaded module(s) 'foss/2019b'
+foss/2018b(23):ERROR:102: Tcl command execution failed: conflict foss
+
+GCCcore/7.3.0(23):ERROR:150: Module 'GCCcore/7.3.0' conflicts with the currently loaded module(s) 'GCCcore/8.3.0'
+GCCcore/7.3.0(23):ERROR:102: Tcl command execution failed: conflict GCCcore
+
+GCCcore/7.3.0(23):ERROR:150: Module 'GCCcore/7.3.0' conflicts with the currently loaded module(s) 'GCCcore/8.3.0'
+GCCcore/7.3.0(23):ERROR:102: Tcl command execution failed: conflict GCCcore
+
+GCCcore/7.3.0(23):ERROR:150: Module 'GCCcore/7.3.0' conflicts with the currently loaded module(s) 'GCCcore/8.3.0'
+GCCcore/7.3.0(23):ERROR:102: Tcl command execution failed: conflict GCCcore
+
+GCCcore/7.3.0(23):ERROR:150: Module 'GCCcore/7.3.0' conflicts with the currently loaded module(s) 'GCCcore/8.3.0'
+GCCcore/7.3.0(23):ERROR:102: Tcl command execution failed: conflict GCCcore
+```
+
+Stopping the job now. I don't think it likes the modules that I'm trying to load. Use these modules instead: `HISAT2/2.2.1-gompi-2021b` and `SAMtools/1.16.1-GCC-11.3.0`. Submitted batch job 269177. still getting a conflict error. Adding this line before loading modules: `source /usr/share/Modules/init/sh # load the module function (specific need to my computer)` from Emma's [script](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2022-02-03-KBay-Bleaching-Pairs-RNASeq-Pipeline-Analysis.md). Not sure what it does but maybe it'll help??? Submitted batch job 269178. nope same error. Trying `HISAT2/2.2.1-gompi-2021b` and `SAMtools/1.15.1-GCC-11.2.0` (from Emma's script linked above). Submitted batch job 269179. This worked! 
+
+View mapping percentages for the hisat2 alignment 
+
+```
+module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
+
+for i in *.bam; do
+    echo "${i}" >> mapped_reads_counts_Apoc
+    samtools flagstat ${i} | grep "mapped (" >> mapped_reads_counts_Apoc
+done
+```
+
+#### Bowtie2 alignment
+
+First, index the reference genome. 
+
+In scripts folder: `nano bowtie2_build.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts              
+#SBATCH --error="bowtie2_build_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bowtie2_build_output" #once your job is completed, any final job report comments will be put in this file
+
+# load modules needed
+module load Bowtie2/2.4.4-GCC-11.2.0 
+
+echo "Indexing reference genome" $(date)
+
+# Index the reference genome for A. poculata 
+bowtie2-build /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta Apoc_ref.btindex
+
+echo "Referece genome indexed!" $(date)
+```
+
+Submitted batch job 269279
+
+
+NEED TO ASK HP: WAS THE SEQUENCING DONE RF, FF OR FR?

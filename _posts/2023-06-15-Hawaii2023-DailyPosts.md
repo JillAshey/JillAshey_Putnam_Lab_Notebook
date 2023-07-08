@@ -219,3 +219,135 @@ The following table has the hpf, as well as the start and end times for each sam
 Each time point took me about ~2 hours to sample, so for each sample, its not exactly 4 or 9 hpf. I alternated sampling between high and ambient treatments, so there should be no effect of time on treatment if that makes sense. 
 
 Hooray! Sampling for my project complete! See A. Huffmyer's notebook [posts](https://ahuffmyer.github.io/ASH_Putnam_Lab_Notebook/Hawaii-2023-Coral-Spawning-and-Field-Expedition-Daily-Entry/) and project [github](https://github.com/AHuffmyer/larval_symbiont_TPC) for the other experiments that were completed during this trip. 
+
+## 20230703
+
+### Fungia spawning
+
+Did some Fungia spawning with the Hagedorn lab today. 25 adult Fungia colonies were put in 3L containers at 15:45 today with FSW. The containers were in a water table with flow-through FSW. Colonies were monitored for spawning until 18:00, but no spawning occurred. 
+
+## 20230704
+
+### Fungia spawning & embryo rearing 
+
+Another spawning night attempt with Fungia. Like last night, Fungia colonies were placed in containers in the water table with FSW and monitored for spawning. Only 1 male and 2 females spawned - these gametes were combined in a large bowl for fertilization. After 30 minutes, the sperm water was siphoned through a 40 um mesh sieve and new FSW was added; this was done twice to clean the developing embryos. The embryos were placed in a 3L plastic container and left in the Hagedorn rearing room overnight. The embryos appear to be negatively buoyant and do not have symbionts. When we left them for the night, they were all mostly on the bottom of the container.
+
+## 20230705
+
+### Embryo rearing (from 7/4 spawn)
+
+Embryos were rinsed this morning. First, embryos were scooped up with a small glass pyrex bowl and passed through a 300 um mesh sieve; this was done to collect any larger pieces of debris. The embryos that passed through that sieve were then scooped and put through a 40 um mesh sieve, which collected and concentrated them. The embryos were then put back into their container and the container was refilled with FSW. Hagedorn lab said this only needs to be done once a day. 
+
+### Fungia spawning & embryo rearing 
+
+Big spawn tonight! 9 males and 8 females spawned in the water table around 18:30. The Hagedorn lab collected sperm and eggs for their cryopreservation and experiments, and the rest was left to fertilize for 30 minutes. After fertilization, the embryos were rinsed 2x with FSW (similar methods to 7/3). The embryos were then put in 3L containers and kept overnight in the Hagedorn rearing room. We have 8 3L containers of embryos and density is high!!
+
+### Fungia developmental timeseries sampling 
+
+Because we have so many Fungia larvae, I am going to do a developmental timeseries sampling at ambient. I don't have the brain capacity to do the experiment in the incubators again--also, most of our equipment is now packed up or stored in the attic. I'm going to sample at the following time points: 1, 4, 9, 16, 20, 24, and 36 hpf. Like the Mcap experiment, 6 replicates will be taken for 3 metrics (physiology, molecular and size; 18 tubes per sampling time point). I will be collecting straight from the 3L containers, so there won't be any 50 mL falcon tubes or cell strainers involved. The larvae are pretty concentrated so I feel confident in getting enought for each metric. The only downside is that I won't know approximately how many are in each sample tube. For each tube, I'm collecting 100 uL of concentrated embryos. 
+
+At each time point, I will also measure the temperature and pH in each of the 8 containers of larvae. 
+
+Today, sampling took place at 20:35. I did not record the containers that I collected each sample from. Here is the environmental data: 
+
+| Date     | Time  | BowlID | pH_mV  | pH_nbs | temp_C | sal_psu | Tris_date | Notes |
+| -------- | ----- | ------ | ------ | ------ | ------ | ------- | --------- | ----- |
+| 20230705 | 21:00 | 555    | \-45.5 | 7.95   | 25.99  | 33      | 20230617  |       |
+| 20230705 | 21:00 | 629    | \-45.9 | 7.96   | 26     | 33      | 20230617  |       |
+| 20230705 | 21:00 | 464    | \-38.1 | 7.82   | 25.92  | 33      | 20230617  |       |
+| 20230705 | 21:00 | 879    | \-38.6 | 7.83   | 26.07  | 33      | 20230617  |       |
+| 20230705 | 21:00 | 774    | \-47.4 | 7.99   | 26.13  | 33      | 20230617  |       |
+| 20230705 | 21:00 | 634    | \-35   | 7.77   | 26.06  | 33      | 20230617  |       |
+| 20230705 | 21:00 | 799    | \-40.7 | 7.87   | 26.04  | 33      | 20230617  |       |
+| 20230705 | 21:00 | 682    | \-48.2 | 8      | 25.94  | 33      | 20230617  |
+
+Sampling also took place at 23:37 from containers 682, 799, 464, 879, 774, and 555. Here is the environmental data: 
+
+| Date     | Time  | BowlID | pH_mV  | pH_nbs | temp_C | sal_psu | Tris_date | Notes |
+| -------- | ----- | ------ | ------ | ------ | ------ | ------- | --------- | ----- |
+| 20230705 | 23:28 | 555    | \-51   | 8.05   | 25.38  | 33      | 20230617  |       |
+| 20230705 | 23:28 | 629    | \-52.6 | 8.07   | 25.38  | 33      | 20230617  |       |
+| 20230705 | 23:28 | 464    | \-52.9 | 8.08   | 25.4   | 33      | 20230617  |       |
+| 20230705 | 23:28 | 879    | \-42.1 | 7.89   | 25.45  | 33      | 20230617  |       |
+| 20230705 | 23:28 | 774    | \-50.3 | 8.03   | 25.59  | 33      | 20230617  |       |
+| 20230705 | 23:28 | 634    | \-52.8 | 8.08   | 25.49  | 33      | 20230617  |       |
+| 20230705 | 23:28 | 799    | \-52.9 | 8.08   | 25.45  | 33      | 20230617  |       |
+| 20230705 | 23:28 | 682    | \-48.9 | 8.01   | 25.34  | 33      | 20230617  |
+
+## 20230706
+
+### Fungia developmental timeseries sampling 
+
+Sampling took place at 4:20 from containers 464, 629, 682, 555, 634, and 879. Here is the environmental data: 
+
+| Date     | Time | BowlID | pH_mV  | pH_nbs | temp_C | sal_psu | Tris_date | Notes |
+| -------- | ---- | ------ | ------ | ------ | ------ | ------- | --------- | ----- |
+| 20230706 | 4:14 | 555    | \-48.7 | 8.01   | 24.92  | 33      | 20230617  |       |
+| 20230706 | 4:14 | 629    | \-49.5 | 8.02   | 24.92  | 33      | 20230617  |       |
+| 20230706 | 4:14 | 464    | \-48.2 | 8      | 24.94  | 33      | 20230617  |       |
+| 20230706 | 4:14 | 879    | \-23.8 | 7.58   | 25     | 33      | 20230617  |       |
+| 20230706 | 4:14 | 774    | \-45.7 | 7.95   | 25.14  | 33      | 20230617  |       |
+| 20230706 | 4:14 | 634    | \-50.1 | 8.03   | 25     | 33      | 20230617  |       |
+| 20230706 | 4:14 | 799    | \-48.1 | 8      | 24.95  | 33      | 20230617  |       |
+| 20230706 | 4:14 | 682    | \-45.9 | 7.96   | 24.84  | 33      | 20230617  |
+
+Embryos from the 7/4 and 7/5 spawn were cleaned this morning (as detailed above) around 8:30am. 
+
+Sampling took place at 11:18 from containers 464, 629, 774, 799, 682 and 634. The larvae are starting to become more buoyant, so it is more difficult to get a concentrated sample. For most tubes, I am now collecting 200 uL of moderately concentrated larvae. Here is the environmental data: 
+
+| Date     | Time  | BowlID | pH_mV  | pH_nbs | temp_C | sal_psu | Tris_date | Notes                |
+| -------- | ----- | ------ | ------ | ------ | ------ | ------- | --------- | -------------------- |
+| 20230706 | 11:08 | 555    | \-47.4 | 7.98   | 24.93  | 33      | 20230617  | Water change at 8:30 |
+| 20230706 | 11:08 | 629    | \-43.7 | 7.92   | 24.94  | 33      | 20230617  | Water change at 8:30 |
+| 20230706 | 11:08 | 464    | \-45.6 | 7.95   | 24.98  | 33      | 20230617  | Water change at 8:30 |
+| 20230706 | 11:08 | 879    | \-47   | 7.98   | 25.35  | 33      | 20230617  | Water change at 8:30 |
+| 20230706 | 11:08 | 774    | \-43.5 | 7.92   | 25.18  | 33      | 20230617  | Water change at 8:30 |
+| 20230706 | 11:08 | 634    | \-48.4 | 8      | 24.84  | 33      | 20230617  | Water change at 8:30 |
+| 20230706 | 11:08 | 799    | \-42.8 | 7.9    | 24.91  | 33      | 20230617  | Water change at 8:30 |
+| 20230706 | 11:08 | 682    | \-43.6 | 7.92   | 25.01  | 33      | 20230617  | Water change at 8:30 |
+
+Sampling also took place at 15:27 from containers 682, 879, 464, 555, 774 and 799. Here is the environmental data: 
+
+| Date     | Time  | BowlID | pH_mV  | pH_nbs | temp_C | sal_psu | Tris_date | Notes |
+| -------- | ----- | ------ | ------ | ------ | ------ | ------- | --------- | ----- |
+| 20230706 | 15:18 | 555    | \-46   | 7.96   | 24.68  | 33      | 20230617  |       |
+| 20230706 | 15:18 | 629    | \-43.4 | 7.91   | 24.59  | 33      | 20230617  |       |
+| 20230706 | 15:18 | 464    | \-40.5 | 7.86   | 24.69  | 33      | 20230617  |       |
+| 20230706 | 15:18 | 879    | \-41.9 | 7.89   | 24.94  | 33      | 20230617  |       |
+| 20230706 | 15:18 | 774    | \-39.6 | 7.85   | 24.74  | 33      | 20230617  |       |
+| 20230706 | 15:18 | 634    | \-46.7 | 7.97   | 24.55  | 33      | 20230617  |       |
+| 20230706 | 15:18 | 799    | \-35.1 | 7.77   | 24.69  | 33      | 20230617  |       |
+| 20230706 | 15:18 | 682    | \-40.7 | 7.87   | 24.74  | 33      | 20230617  |
+
+Sampling also took place at 19:38 from containers 464, 629, 555, 799, 682 and 774. Here is the environmental data: 
+
+| Date     | Time  | BowlID | pH_mV  | pH_nbs | temp_C | sal_psu | Tris_date | Notes                                                          |
+| -------- | ----- | ------ | ------ | ------ | ------ | ------- | --------- | -------------------------------------------------------------- |
+| 20230706 | 19:30 | 555    | \-44.1 | 7.93   | 25.19  | 33      | 20230617  |                                                                |
+| 20230706 | 19:30 | 629    | \-40.8 | 7.87   | 25.09  | 33      | 20230617  |                                                                |
+| 20230706 | 19:30 | 464    | \-35.3 | 7.78   | 25.19  | 33      | 20230617  |                                                                |
+| 20230706 | 19:30 | 879    | \-32.5 | 7.73   | 25.36  | 33      | 20230617  |                                                                |
+| 20230706 | 19:30 | 774    | \-34.8 | 7.77   | 25.17  | 33      | 20230617  |                                                                |
+| 20230706 | 19:30 | 634    | \-44.8 | 7.94   | 25.04  | 33      | 20230617  |                                                                |
+| 20230706 | 19:30 | 799    | \-27.5 | 7.64   | 25.15  | 33      | 20230617  | Lower pH relative to other bowls; may be due to higher density |
+| 20230706 | 19:30 | 682    | \-38.2 | 7.82   | 25.28  | 33      | 20230617  |
+
+## 20230707
+
+Last sampling time point! This happened at 7:44 from containers 879, 629, 634, 774, 555, and 464. Here is the environmental data: 
+
+| Date     | Time | BowlID | pH_mV  | pH_nbs | temp_C | sal_psu | Tris_date | Notes                                                          |
+| -------- | ---- | ------ | ------ | ------ | ------ | ------- | --------- | -------------------------------------------------------------- |
+| 20230707 | 7:30 | 555    | \-39.3 | 7.84   | 24.29  | 33      | 20230617  |                                                                |
+| 20230707 | 7:30 | 629    | 35     | 7.77   | 24.3   | 33      | 20230617  |                                                                |
+| 20230707 | 7:30 | 464    | \-27.1 | 7.63   | 24.35  | 33      | 20230617  |                                                                |
+| 20230707 | 7:30 | 879    | \-16.2 | 7.45   | 24.52  | 33      | 20230617  | Lower pH relative to other bowls; may be due to higher density |
+| 20230707 | 7:30 | 774    | \-25.3 | 7.6    | 24.39  | 33      | 20230617  |                                                                |
+| 20230707 | 7:30 | 634    | \-42   | 7.89   | 24.23  | 33      | 20230617  |                                                                |
+| 20230707 | 7:30 | 799    | \-9    | 7.32   | 24.35  | 33      | 20230617  | Lower pH relative to other bowls; may be due to higher density |
+| 20230707 | 7:30 | 682    | \-30   | 7.68   | 24.34  | 33      | 20230617  |
+
+Some of the containers had pretty low pH, this may be happening because certain containers look like they have higher densities than others. 
+
+
+
