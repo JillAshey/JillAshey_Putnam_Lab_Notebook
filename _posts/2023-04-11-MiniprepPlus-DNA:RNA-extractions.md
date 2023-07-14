@@ -1,7 +1,7 @@
 ---
 layout: post
 title: MiniPrep Plus DNA/RNA extractions
-date: '2023-01-16'
+date: '2023-04-11'
 categories:
 tags: [DNA, RNA, Extractions, Protocols]
 projects: GSO Astrangia 
