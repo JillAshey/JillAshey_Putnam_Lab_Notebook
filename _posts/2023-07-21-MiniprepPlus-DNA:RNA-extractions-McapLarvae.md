@@ -77,7 +77,7 @@ The samples run today were R54, R81, and R104. These samples had 50 larvae in th
 
 - Spin columns dry for 2 minutes at 16000 rpm. 
 
--Move yellow DNA spin column into final gDNA 1.5 mL tube. 
+- Move yellow DNA spin column into final gDNA 1.5 mL tube. 
 
 - Add 50 µL of warm Tris to spin column. Let columns sit for 5 minutes at room temperature. Spin for 30 seconds at 16000 rpm. DO THIS TWICE!
 
@@ -129,5 +129,6 @@ The samples run today were R54, R81, and R104. These samples had 50 larvae in th
 Finally got some good RNA concentrations!! Woohoo!
 
 #### Gel 
+
 
 
