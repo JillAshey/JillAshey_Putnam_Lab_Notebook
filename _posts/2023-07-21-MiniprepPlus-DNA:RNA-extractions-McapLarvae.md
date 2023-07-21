@@ -130,5 +130,7 @@ Finally got some good RNA concentrations!! Woohoo!
 
 #### Gel 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/larvae_cd_mcap2023/gel_20230721.JPG)
 
+Gel has 2 bands in RNA side (right side). I can also see 2 bands that look like RNA on the DNA side (left side). Did I accidently contaminate the DNA w/ RNA? Hard to imagine that because I extracted the DNA first and then aliquoted it out before starting RNA extractions. 
 
