@@ -22,8 +22,10 @@ These runs were only done with test samples and were done over 2 days. On 7/12/2
 - Heating block capable of heating to 70ºC
 - Centrifuge and rotor capable of spinning at 15,000 rcf
 - Plastics 
-	- 5 1.5 mL microcentrifuge tubes per sample
+	- 3 1.5 mL microcentrifuge tubes per sample
 	- 2 PCR tubes per sample
+	- 2 Qubit tubes per sample 
+	- 1 5 mL tube per sample 
 	- Several 1000 uL, 200 uL, and 20 uL filtered pipette tips per sample.
 
 ### Protocol 
