@@ -128,13 +128,21 @@ The samples run today were R54, R81, and R104. These samples had 50 larvae in th
 
 Finally got some good RNA concentrations!! Woohoo!
 
-#### Gel 
+#### Gel part 1
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/larvae_cd_mcap2023/gel_20230721.JPG)
 
 Gel has 2 bands in RNA side (right side). I can also see 2 bands that look like RNA on the DNA side (left side). Did I accidently contaminate the DNA w/ RNA? Hard to imagine that because I extracted the DNA first and then aliquoted it out before starting RNA extractions. 
 
+#### Gel part 2 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/larvae_cd_mcap2023/gel_20230724.JPG)
+
+This gel was done on 7/24/23, but it looks similar to the gel above.
+
 #### Tapestation 
+
+Tapestation run on 7/24/23. 
 
 ##### DNA 
 
@@ -178,4 +186,10 @@ R104 RNA results:
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/RNA_TS_R104_20230724.png)
 
-R81 and R104 did not have a RIN score calculated because the concentration was >10 ng/ul. That's okay - just because a RIN couldn't be calculated doesn't mean there isn't RNA in there. The TS gel shows bands at 18S and 28S for all samples, which is good. There are also some bands between  There are peaks in R81 and R104 that are not 18S or 28S
+R81 and R104 did not have a RIN score calculated because the concentration was >10 ng/ul. That's okay - just because a RIN couldn't be calculated doesn't mean there isn't RNA in there. The TS gel shows bands at 18S and 28S for all samples, which is good. There are also some bands between 25-200 nt in the TS gel, which may be due to lots of small RNAs. There are peaks in R81 and R104 that are not 18S or 28S, which may also be due to small RNAs and/or contimination. 
+
+### Notes moving forward 
+
+- Talked to Jacob Green (Puritz lab) while doing TS. He recommended mixing the RNA (either by vortexting, inverting, etc) to get higher RNA concentrations. To get a higher concentration of RNA, he also recommended either eluting in a lower volume (i.e., 50 uL instead of 100 uL DNA/RNA free water) or passing the same volume through the RNA column twice. 
+- We still have decent RNA concentrations. I may add another wash w/ wash buffer before eluting the RNA. 
+
