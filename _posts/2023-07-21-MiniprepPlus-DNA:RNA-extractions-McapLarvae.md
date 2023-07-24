@@ -134,3 +134,7 @@ Finally got some good RNA concentrations!! Woohoo!
 
 Gel has 2 bands in RNA side (right side). I can also see 2 bands that look like RNA on the DNA side (left side). Did I accidently contaminate the DNA w/ RNA? Hard to imagine that because I extracted the DNA first and then aliquoted it out before starting RNA extractions. 
 
+#### Tapestation 
+
+DNA 
+
