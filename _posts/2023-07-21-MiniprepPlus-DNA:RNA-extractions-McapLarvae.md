@@ -136,5 +136,46 @@ Gel has 2 bands in RNA side (right side). I can also see 2 bands that look like 
 
 #### Tapestation 
 
-DNA 
+##### DNA 
 
+- Link to PDF of DNA results [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_Mcap2023_2023-07-24.pdf)
+
+Overview of DNA results: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_overview_20230724.png)
+
+R54 DNA results: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_R54_20230724.png)
+
+R81 DNA results: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_R81_20230724.png)
+
+R104 DNA results: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_R104_20230724.png)
+
+Overall, DNA looks good. One band at the top of the TS gel, which is to be expected. 
+
+##### RNA 
+
+- Link to PDF of RNA results [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_Mcap2023_2023-07-24.pdf)
+
+Overview of RNA results: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/RNA_TS_overview_20230724.png)
+
+R54 RNA results: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/RNA_TS_R54_20230724.png)
+
+R81 RNA results: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/RNA_TS_R81_20230724.png)
+
+R104 RNA results: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/RNA_TS_R104_20230724.png)
+
+R81 and R104 did not have a RIN score calculated because the concentration was >10 ng/ul. That's okay - just because a RIN couldn't be calculated doesn't mean there isn't RNA in there. The TS gel shows bands at 18S and 28S for all samples, which is good. There are also some bands between  There are peaks in R81 and R104 that are not 18S or 28S
