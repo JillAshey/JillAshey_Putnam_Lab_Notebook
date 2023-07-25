@@ -15,7 +15,7 @@ This protocol is based on Maggie’s coral egg/larvae extraction [protocol](http
 
 The samples run today were R5, R8, and R41. These samples had 50 larvae in them and were preserved with 700 uL of DNA/RNA Shield. This photo is post-bead beating: 
 
-ADD PHOTO
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/larvae_cd_mcap2023/samples_20230725.JPG)
 
 ### Materials 
 
@@ -47,4 +47,8 @@ Protocol was followed according to this [post](https://github.com/JillAshey/Jill
 | R8        | 11.3       | 11.1       | 11.2              | 20.4                       | 1.87                 | 3.19                 | 21.4       | 21.2       | 21.3              | 9.8                        | 1.95                 | 0.66                 |
 | R41       | 9.64       | 9.5        | 9.57              | 19.6                       | 1.96                 | 3.33                 | 17.8       | 17.2       | 17.5              | 8.6                        | 1.99                 | 1.04                 |
 
-RNA concentrations look good! The  
+RNA concentrations look good! The 260/230 is still lower than I would like it to be. I could add another wash step or increase the volume of wash buffer (i.e., instead of washing in 400 uL, wash in 700 uL). 
+
+#### Gel 
+
+ 
