@@ -51,4 +51,6 @@ RNA concentrations look good! The 260/230 is still lower than I would like it to
 
 #### Gel 
 
+ ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/larvae_cd_mcap2023/gel_20230725.JPG)
  
+ Gel looks good too! DNA still has those 18S and 28S bands that look like RNA, not sure why that is...
