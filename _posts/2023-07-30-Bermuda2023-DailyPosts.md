@@ -84,12 +84,16 @@ Cup match, no work!
 
 We collected 10 Dlab adult coral colonies (30cm in diameter) from Bailey's Bay Flatt this morning. The colonies are looking really happy in the mesocosms! 
 
-ADD PHOTO
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/dlab1.JPG)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/dlab2.JPG)
 
 ## 20230806
 
 Lots of DLAB prep today!
 Hollie, Flo, Hailey and I did a lot of cleaning and organizing. Hailey and Flo moved the PAST spat to new mesocosms and set up the SMILE system in 4 of the smaller mesocosms. Hollie organized and cleaned the trailer. I prepped the different stations that we will need when the corals actually spawn. I also made 0.22 um filtered seawater today with this fancy vacuum pump (picture below). Very happy that we could find a vacuum pump or else I would have had to pump ~20 L of FSW by hand. 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/bios-fsw.JPG)
 
 Hollie and I were able to get access to a spectrophotometric plate reader and do an initial run on the plate reader to see how long it might take to run the sperm calibration curve. We set it so that it would read from 280-800 nm at 10 nm increments, but it stopped before it was finished for some reason. Instead, we set it so that it would read from 280-800 nm in 20 nm increments. This worked and took ~15 minutes. Hollie may need to run it in smaller "chunks" (i.e., run from 280-400 nm at 20 nm increments, 400-600 in 20 nm increments, etc), depending on how long things are taking. 
 
@@ -105,7 +109,13 @@ Because of this, we decided to tent the corals preemtively in the evening. We te
 
 Below are some fun photos of tenting the Dlab colonies in their Barbie dresses!
 
-ADD PHOTOS of dlab tenting 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/dlab-barbie4.JPG)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/dlab-barbie3.JPG)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/dlab-barbie2.jpg)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/dlab-barbie1.jpg)
 
 I also started taking discrete measurements today for the adult tank and Basins 1-4. I won't start measuring flow rates until we are using the squaricals. The data for today is in the table below: 
 
@@ -300,6 +310,35 @@ This afternoon, I also downloaded all the Hobo logger data from the calibration 
 
 Updated Dlab protocols and lipid assay protocol. 
 
+I went through papers and posts on the Coral Spawning Research group on Facebook today to investigate Dlab spawning times. I compiled the following information: 
+
+| Location            | Year    | Month(s)       | DAFM     | Time of spawning                                                 | In situ v. ex situ | Notes                                                | Source                             |
+| ------------------- | ------- | -------------- | -------- | ---------------------------------------------------------------- | ------------------ | ---------------------------------------------------- | ---------------------------------- |
+| Bermuda             | 1986    | July           | Unknown  | Unknown                                                          | In situ            |                                                      | Wyers et al. 1991                  |
+| Curacao             | 2013    | May-October    | 10 to 13 | 52 to 2 mins before sunset                                       | In situ            | Peak in June, 11-12 days after full moon             | Chamberland et al. 2017            |
+| Colombian Caribbean | 1997-98 | May/June       | Unknown  | Unknown                                                          | NA                 | Based on histological samples, spawning not observed | Alvarado et al. 2004               |
+| Puerto Rico         | 2001-02 | April-May      | 7 to 10  | Spawned after 11pm                                               | In situ            |                                                      | Weil & Vargas 2009                 |
+| Mexican Caribbean   | 2017-18 | July-September | 10 to 11 | Monitored 1 hour before sunset                                   | In situ            |                                                      | Grosso-Becerra et al. 2021         |
+| Upper Florida Keys  | 2022    | April          | 10       | 18:20                                                            | In situ            |                                                      | NOAA 2022 report                   |
+| Bonaire             | 2011    | May-June       | 10 to 11 | 18:15 to 19:01                                                   | In situ            |                                                      | Muller & Vermeij 2011              |
+| Dominican Republic  | 2020    | June           | 11       | 75 to 50 minutes before sunset                                   | Ex situ            |                                                      | Garcia et al. 2022                 |
+| Dominican Republic  | 2019-20 | May-June       | 10 to 11 | Ranged from 1:40 minutes before sunset to 1:15 mins after sunset | Mix                |                                                      | Sellares-Blasco et al. 2021        |
+| Curacao             | 2012    | May            | Unknown  | Just before nightfall                                            | In situ            |                                                      | Quere & Nugues 2015                |
+| Greater Antilles    | 2023    | May-June       | Unknown  | 18:04 to 18:26                                                   | In situ            | Coral spawning research FB page                      | Manuel Alejandro Rodriguez Redondo |
+| Florida             |         | May            | Unknown  | 16:30 to 16:45                                                   | Ex situ            | Coral spawning research FB page                      | Liv Williamson                     |
+| Dominica            | 2023    | July           | Unknown  | 17:31 to 17:45                                                   | Unknown            | Coral spawning research FB page                      | Simon Walsh                        |
+| Florida             | 2023    | May            | 13       | 16:58 to 17:26                                                   | Ex situ            | Coral spawning research FB page                      | Rachel Serafin Morgan              |
+| Florida             | 2023    | May            | 10       | 18:30                                                            | In situ            | Coral spawning research FB page                      | Amanda Bourque                     |
+| Bonaire             | 2020    | June           | 11 to 12 | 18:10 to 18:50                                                   | In situ            | Coral spawning research FB page                      | Francesca Virdis; Reef Renewal     |
+| Dominican Republic  | 2020    | May            | 10 to 11 | 17:57 to 18:25                                                   | In situ            | Coral spawning research FB page                      | Maria Villapando; FUNDEMAR         |
+| Puerto Rico         | 2019    | August         | Unknown  | 17:47 to 18:50                                                   | In situ            | Coral spawning research FB page                      | Alfredo MA                         |
+| Dominica            | 2023    | June           | 11       | 17:30                                                            | In situ            | Coral spawning research FB page                      | Marine Aimar                       |
+| Florida             | 2023    | May            | 13       | 18:54 to 19:40                                                   | Ex situ            | Coral spawning research FB page                      | Midori Mendoza                     |
+| Florida             | 2023    | May            | Unknown  | 18:40 to 18:55                                                   | In situ            | Coral spawning research FB page                      | Liv Williamson                     |
+| Florida             | 2021    | May            | Unknown  | 17:21 to 17:26                                                   | Ex situ            | Coral spawning research FB page                      | Rachel Serafin Morgan              |
+| Florida             | 2023    | June           | 10       | 18:12 to 18:45                                                   | Ex situ            | Coral spawning research FB page                      | Jenny Lee                          |
+
+I still need to look on Youtube to see if there are videos relating to Dlab spawning times. 
 
 
 
