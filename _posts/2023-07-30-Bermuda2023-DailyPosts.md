@@ -312,7 +312,7 @@ Updated Dlab protocols and lipid assay protocol.
 
 I went through papers and posts on the Coral Spawning Research group on Facebook today to investigate Dlab spawning times. I compiled the following information: 
 
-| Location            | Year    | Month(s)       | DAFM     | Time of spawning                                                 | In situ v. ex situ | Notes                                                | Source                             |
+| Location            | Year    | Month(s)       | DAFM*     | Time of spawning                                                 | In situ v. ex situ | Notes                                                | Source                             |
 | ------------------- | ------- | -------------- | -------- | ---------------------------------------------------------------- | ------------------ | ---------------------------------------------------- | ---------------------------------- |
 | Bermuda             | 1986    | July           | Unknown  | Unknown                                                          | In situ            |                                                      | Wyers et al. 1991                  |
 | Curacao             | 2013    | May-October    | 10 to 13 | 52 to 2 mins before sunset                                       | In situ            | Peak in June, 11-12 days after full moon             | Chamberland et al. 2017            |
@@ -325,7 +325,7 @@ I went through papers and posts on the Coral Spawning Research group on Facebook
 | Dominican Republic  | 2019-20 | May-June       | 10 to 11 | Ranged from 1:40 minutes before sunset to 1:15 mins after sunset | Mix                |                                                      | Sellares-Blasco et al. 2021        |
 | Curacao             | 2012    | May            | Unknown  | Just before nightfall                                            | In situ            |                                                      | Quere & Nugues 2015                |
 | Greater Antilles    | 2023    | May-June       | Unknown  | 18:04 to 18:26                                                   | In situ            | Coral spawning research FB page                      | Manuel Alejandro Rodriguez Redondo |
-| Florida             |         | May            | Unknown  | 16:30 to 16:45                                                   | Ex situ            | Coral spawning research FB page                      | Liv Williamson                     |
+| Florida             |  2023       | May            | Unknown  | 16:30 to 16:45                                                   | Ex situ            | Coral spawning research FB page                      | Liv Williamson                     |
 | Dominica            | 2023    | July           | Unknown  | 17:31 to 17:45                                                   | Unknown            | Coral spawning research FB page                      | Simon Walsh                        |
 | Florida             | 2023    | May            | 13       | 16:58 to 17:26                                                   | Ex situ            | Coral spawning research FB page                      | Rachel Serafin Morgan              |
 | Florida             | 2023    | May            | 10       | 18:30                                                            | In situ            | Coral spawning research FB page                      | Amanda Bourque                     |
@@ -337,6 +337,8 @@ I went through papers and posts on the Coral Spawning Research group on Facebook
 | Florida             | 2023    | May            | Unknown  | 18:40 to 18:55                                                   | In situ            | Coral spawning research FB page                      | Liv Williamson                     |
 | Florida             | 2021    | May            | Unknown  | 17:21 to 17:26                                                   | Ex situ            | Coral spawning research FB page                      | Rachel Serafin Morgan              |
 | Florida             | 2023    | June           | 10       | 18:12 to 18:45                                                   | Ex situ            | Coral spawning research FB page                      | Jenny Lee                          |
+
+*DAFM = Days After Full Moon 
 
 I still need to look on Youtube to see if there are videos relating to Dlab spawning times. 
 
