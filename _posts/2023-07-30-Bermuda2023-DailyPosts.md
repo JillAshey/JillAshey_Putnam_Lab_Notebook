@@ -168,8 +168,8 @@ I have finialized the Dlab spawning and experimental protocols for the most part
 6. Stain the sperm with trypan blue
 7. Count the sperm in each tube 6x on a haemocytometer. The counts can be done later on the fixed sample.
 
-Amount of pooled sperm needed: 50 mL
-Amount of pooled eggs needed: 0
+- Amount of pooled sperm needed: 50 mL
+- Amount of pooled eggs needed: 0
 
 #### Sperm Concentration Test - HOLLIE
 
@@ -181,8 +181,8 @@ Following [Oliver & Babcock 1992](https://www.journals.uchicago.edu/doi/epdf/10.
 3. Submerge vials in ambient water for 60 minutes. 
 4. After 60 minutes, remove each vial, pour contents through a 100 um cell strainer, move contents to a 1.5 mL tube and add 100 uL of 10% formalin. Store tubes at 4°C. 
 
-Amount of pooled sperm needed: 0 
-Amount of pooled eggs needed: 35 vials x 20 eggs = 700 eggs total
+- Amount of pooled sperm needed: 0 
+- Amount of pooled eggs needed: 35 vials x 20 eggs = 700 eggs total
 
 #### Eggs per bundle, sperm per bundle & egg size - BRETT 
 
@@ -199,8 +199,8 @@ Amount of pooled eggs needed: 35 vials x 20 eggs = 700 eggs total
 10. Resuspend the eggs in 50 uL of 10% formalin. 
 11. When ready to analyze, move eggs onto a petri dish and image them under a dissecting scope with a size standard for counting and size analysis. Use ImageJ to extract egg diameter and planar area. 
 
-Amount of pooled sperm needed: 0
-Amount of pooled eggs needed: 0
+- Amount of pooled sperm needed: 0
+- Amount of pooled eggs needed: 0
 
 #### Fertilization at ambient and high temperatures with bundle bundle crosses - HAILEY
 
@@ -210,8 +210,8 @@ Amount of pooled eggs needed: 0
 4. After XXXX (60 mins?), remove 10 vials per treatment. Pour contents through a 100 um cell strainer, move contents to a 1.5 mL tube and add 100 uL of 10% formalin. Store tubes at 4°C. 
 5. Repeat step 4 after XXXX (90 mins?) and XXXX (120 mins?). 
 
-Amount of pooled sperm needed: 9 mL x 60 vials = 540 mL
-Amount of pooled eggs needed: 10 eggs x 60 vials = 600 eggs 
+- Amount of pooled sperm needed: 9 mL x 60 vials = 540 mL
+- Amount of pooled eggs needed: 10 eggs x 60 vials = 600 eggs 
 
 Not sure how long we should let fertilization to occur for...the Chamberland paper said they allowed to fertilize for 90 mins, but the youtube video said 30-45 mins. Need to talk to Hollie about changing these numbers. 
 
@@ -222,8 +222,8 @@ Not sure how long we should let fertilization to occur for...the Chamberland pap
 2. Submerge vials in ambient temperature for XXX (60 mins?). Gently rock vials every 5-10 minutes to facilitate the breaking up of bundles. 
 3. After XXXX (60 mins?), remove 10 vials per treatment. Pour contents through a 100 um cell strainer, move contents to a 1.5 mL tube and add 100 uL of 10% formalin. Store tubes at 4°C. 
 
-Amount of pooled sperm needed: 0
-Amount of pooled eggs needed: 0
+- Amount of pooled sperm needed: 0
+- Amount of pooled eggs needed: 0
 
 #### Timing of egg and sperm viability - FLO
 
@@ -235,8 +235,8 @@ Amount of pooled eggs needed: 0
 	- 5 replicate vials per time point 
 3. After XXX (60 mins?), pour the contents of each vial through a 100 um cell strainer, move contents to a 1.5 mL tube and add 200 uL of 10% formalin. Store tubes at 4°C. 
 
-Amount of pooled sperm needed: 9 mL x 50 vials = 450 mL
-Amount of pooled eggs needed: 10 eggs x 50 vials = 500 eggs 
+- Amount of pooled sperm needed: 9 mL x 50 vials = 450 mL
+- Amount of pooled eggs needed: 10 eggs x 50 vials = 500 eggs 
 
 #### Pooled fertilization - ALL 
 1. Once the eggs and sperm have been taken for the experiments above, combine the eggs and sperm into a bowl and/or falcon tubes for fertilization. 
@@ -342,6 +342,26 @@ I went through papers and posts on the Coral Spawning Research group on Facebook
 
 I still need to look on Youtube to see if there are videos relating to Dlab spawning times. 
 
+We tented the corals around 18:45 and watched until 2100. No spawning tonight! When we turned the pump and chiller back on for mesocosm 14, the water stopped running to all tanks. We tried turning the chillers and the pumps back on, but it didn't work. We contacted Kevin about the water issue, but the corals should be fine for the night. The pumps are still recirculating the water in the mesocosms. 
 
+Here are the daily measurements from today: 
+
+| date   | time  | tank    | treatment | tris.date | temp.C | sal.psu | pH.mV  | pH.nbs | par | flow.mL.5s | initials | notes                    |
+| ------ | ----- | ------- | --------- | --------- | ------ | ------- | ------ | ------ | --- | ---------- | -------- | ------------------------ |
+| 8/9/23 | 8:50  | Adult   | Ambient   | 20230711  | 27.5   | 36.34   | \-60.7 | 8.05   | 73  | NA         | JA       | Temperature taken w/ YSI |
+| 8/9/23 | 8:50  | Basin 1 | Ambient   | 20230711  | 27.7   | 36.33   | \-61.9 | 8.08   | 183 | NA         | JA       | Temperature taken w/ YSI |
+| 8/9/23 | 8:50  | Basin 2 | High      | 20230711  | 30.6   | 36.32   | \-61.9 | 8.06   | 111 | NA         | JA       | Temperature taken w/ YSI |
+| 8/9/23 | 8:50  | Basin 3 | Ambient   | 20230711  | 27.5   | 36.34   | \-62   | 8.07   | 94  | NA         | JA       | Temperature taken w/ YSI |
+| 8/9/23 | 8:50  | Basin 4 | High      | 20230711  | 30.3   | 36.34   | \-60.2 | 8.03   | 151 | NA         | JA       | Temperature taken w/ YSI |
+| 8/9/23 | 13:30 | Adult   | Ambient   | 20230711  | 29     | 36.3    | \-62.8 | 8.08   | 464 | NA         | JA       | Temperature taken w/ YSI |
+| 8/9/23 | 13:30 | Basin 1 | Ambient   | 20230711  | 27.9   | 36.33   | \-61.4 | 8.06   | 656 | NA         | JA       | Temperature taken w/ YSI |
+| 8/9/23 | 13:30 | Basin 2 | High      | 20230711  | 31     | 36.34   | \-58.8 | 8.01   | 742 | NA         | JA       | Temperature taken w/ YSI |
+| 8/9/23 | 13:30 | Basin 3 | Ambient   | 20230711  | 27.6   | 36.29   | \-62.2 | 8.08   | 526 | NA         | JA       | Temperature taken w/ YSI |
+| 8/9/23 | 13:30 | Basin 4 | High      | 20230711  | 30.5   | 36.32   | \-62.2 | 8.06   | 328 | NA         | JA       | Temperature taken w/ YSI |
+| 8/9/23 | 18:30 | Adult   | Ambient   | 20230711  | 27.7   | 36.29   | \-63.3 | 8.09   | 30  | NA         | JA       | Temperature taken w/ YSI |
+| 8/9/23 | 18:30 | Basin 1 | Ambient   | 20230711  | 27.8   | 36.31   | \-63.3 | 8.1    | 24  | NA         | JA       | Temperature taken w/ YSI |
+| 8/9/23 | 18:30 | Basin 2 | High      | 20230711  | 30.2   | 36.32   | \-60.3 | 8.04   | 14  | NA         | JA       | Temperature taken w/ YSI |
+| 8/9/23 | 18:30 | Basin 3 | Ambient   | 20230711  | 28     | 36.26   | \-62.5 | 8.08   | 14  | NA         | JA       | Temperature taken w/ YSI |
+| 8/9/23 | 18:30 | Basin 4 | High      | 20230711  | 30.3   | 36.32   | \-61.7 | 8.07   | 11  | NA         | JA       | Temperature taken w/ YSI |
 
 
