@@ -3,7 +3,7 @@ layout: post
 title: Bermuda 2023 daily notebook posts 
 date: '2023-07-30'
 categories: Field work, Dlab
-tags: [Field work, Hawaii, Diploria labyrinthiformis, Dlab]
+tags: [Field work, Bermuda, Diploria labyrinthiformis, Dlab]
 projects: Developmental timeseries - Bermuda 2023; ENCORE 2023
 ---
 
@@ -363,5 +363,57 @@ Here are the daily measurements from today:
 | 8/9/23 | 18:30 | Basin 2 | High      | 20230711  | 30.2   | 36.32   | \-60.3 | 8.04   | 14  | NA         | JA       | Temperature taken w/ YSI |
 | 8/9/23 | 18:30 | Basin 3 | Ambient   | 20230711  | 28     | 36.26   | \-62.5 | 8.08   | 14  | NA         | JA       | Temperature taken w/ YSI |
 | 8/9/23 | 18:30 | Basin 4 | High      | 20230711  | 30.3   | 36.32   | \-61.7 | 8.07   | 11  | NA         | JA       | Temperature taken w/ YSI |
+
+## 20230810
+
+Checked on the corals at 6am, but no signs of spawning. If they had spawned, I'd expect to see eggs in the water and for the water to be cloudy from the sperm. 
+
+The pumps came back on last night around 9:30pm so the corals were not without pumping water for long. Prep work is mostly done for the spawning so there wasn't a ton to do today. Hollie determined that we need to correct for immersion effect (ie putting the Apogee underwater) for the BIOS Apogee (model SQ-500), so I need to correct my PAR readings by multiplying the readings by 1.25. Read more about the correct factor [here](https://www.apogeeinstruments.com/underwater-par-measurements/). 
+
+We tented the corals around 18:45 and watched until 2100. No spawning tonight unfortunately. I haven't seen any Dlab spawning posts on Facebook or Twitter yet, so it doesn't look like any Dlab in the Caribbean has spawned in August yet. 
+
+Here are the daily measurements from today: 
+
+| date   | time  | tank    | treatment | tris.date | temp.C | sal.psu | pH.mV  | pH.nbs | par | par_adj | flow.mL.5s | initials | notes                                                                           |
+| ------ | ----- | ------- | --------- | --------- | ------ | ------- | ------ | ------ | --- | ------- | ---------- | -------- | ------------------------------------------------------------------------------- |
+| 8/7/23 | 10:00 | Adult   | Ambient   | 20230711  | 27.8   | 36.09   | \-58.6 | 8.02   | 120 | 150     | NA         | JA       | Temperature taken w/ YSI; need to apply underwater corrections for light values |
+| 8/7/23 | 10:00 | Basin 2 | High      | 20230711  | 30.3   | 36.08   | \-59.5 | 8.02   | 203 | 253.75  | NA         | JA       | Temperature taken w/ YSI; need to apply underwater corrections for light values |
+| 8/7/23 | 10:00 | Basin 1 | Ambient   | 20230711  | 27.8   | 36.08   | \-60.3 | 8.03   | 230 | 287.5   | NA         | JA       | Temperature taken w/ YSI; need to apply underwater corrections for light values |
+| 8/7/23 | 10:00 | Basin 4 | High      | 20230711  | 30.6   | 36.09   | \-59.6 | 8.02   | 114 | 142.5   | NA         | JA       | Temperature taken w/ YSI; need to apply underwater corrections for light values |
+| 8/7/23 | 10:00 | Basin 3 | Ambient   | 20230711  | 28     | 36.1    | \-60.6 | 8.05   | 131 | 163.75  | NA         | JA       | Temperature taken w/ YSI; need to apply underwater corrections for light values |
+| 8/7/23 | 13:30 | Adult   | Ambient   | 20230711  | NA     | NA      | NA     | NA     | 462 | 577.5   | NA         | JA       | Temperature taken w/ YSI; need to apply underwater corrections for light values |
+| 8/7/23 | 13:30 | Basin 1 | Ambient   | 20230711  | 27.7   | 36.12   | \-59.5 | 8.03   | 698 | 872.5   | NA         | JA       | Temperature taken w/ YSI; need to apply underwater corrections for light values |
+| 8/7/23 | 13:30 | Basin 2 | High      | 20230711  | 30.4   | 36.13   | \-58.4 | 8.03   | 665 | 831.25  | NA         | JA       | Temperature taken w/ YSI; need to apply underwater corrections for light values |
+| 8/7/23 | 13:30 | Basin 3 | Ambient   | 20230711  | 27.5   | 36.11   | \-60.4 | 8.05   | 451 | 563.75  | NA         | JA       | Temperature taken w/ YSI; need to apply underwater corrections for light values |
+| 8/7/23 | 13:30 | Basin 4 | High      | 20230711  | 30.5   | 36.12   | \-61.3 | 8.05   | 368 | 460     | NA         | JA       | Temperature taken w/ YSI; need to apply underwater corrections for light values |
+
+I calculated par adjusted by multiplying the par column by 1.25 in Excel. 
+
+## 20230811
+
+Checked on the corals at 6am, but no signs of spawning. 
+
+In the afternoon, we moved the adults to the smaller tanks and drained the larger tank to clean it, as it was getting pretty dirty and there was some algae build up. The corals were moved back after the tank was refilled. I also increased the temperature in the adult tank to 29°C to be closer to ambient *in situ* temperatures. 
+
+I read out the loggers from the tanks today. There were some issues reading out loggers Dlab-1 and Dlab 2 (logger metadata [here](https://github.com/ENCORE-Project/DLAB-reproduction/blob/main/data/environmental/Logger_Metadata.csv)). The part where the loggers connect to the base station was scratched so the loggers couldn't be read out. I had to take them apart to read them out, but Dlab-1 appears to be completely broken. I need to replace that one.  
+
+Here is the logger data plotted by treatment:
+
+![](https://raw.githubusercontent.com/ENCORE-Project/DLAB-reproduction/main/output/environmental/logger_by_treatment.png?token=GHSAT0AAAAAABJCIK76VTZLF7NLRGAXMJGKZGXPMIA)
+
+The ambient increases at the end because we drained the tank and the loggers were exposed to the air for a period of time. 
+
+Here is the logger data plotted by tank: 
+
+![](https://raw.githubusercontent.com/ENCORE-Project/DLAB-reproduction/main/output/environmental/logger_by_tank.png?token=GHSAT0AAAAAABJCIK76EPRCT6OX3EOJV23IZGXPPIQ)
+
+Basin 2 and 4 are the high treatment tanks. Temperature in Basin 2 is slightly higher than Basin 4 and has more variability. We increased the temperature in Basin 4 by 0.4°F to try to match Basin 4 to Basin 2 a bit better. 
+
+We tented the corals around 18:30 and watched until 2200. No spawning tonight unfortunately. I haven't seen any Dlab spawning posts on Facebook or Twitter yet, so it doesn't look like any Dlab in the Caribbean has spawned in August yet. Similarly to the past few nights, we turned off the incoming water and turned the pumps back on. That way, if the corals do spawn overnight, the eggs/larvae will just be recirculating through the chiller, pump and tank instead of getting flushed out of the outflow pipe. 
+
+## 20230812
+
+Checked on the corals at 6am, but no signs of spawning. 
+
 
 
