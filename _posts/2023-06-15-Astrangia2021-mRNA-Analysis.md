@@ -359,6 +359,14 @@ for i in *.bam; do
 done
 ```
 
+Move BAM files in trimmed folder to hisat align folder
+
+```
+mv *bam ../../output/hisat2/align/
+```
+
+Should the output should be R1 and R2 in one sam file...why is this not the case with the hisat2 samples? if not now, when do they get combined into a single file?
+
 #### Bowtie2 alignment
 
 First, index the reference genome. 
@@ -390,6 +398,167 @@ echo "Referece genome indexed!" $(date)
 ```
 
 Submitted batch job 269279
+
+After this is done running, move reference files to bowtie folder: `mv *.bt2 ../output/bowtie/refs/`
+
+Use the indexed reference genome to align sequences 
+
+In scripts folder: `nano bowtie_align.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts              
+#SBATCH --error="bowtie_align_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bowtie_align_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Bowtie2/2.4.4-GCC-11.2.0 
+
+echo "Aligning reads" $(date)
+
+array=($(ls /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/*fastq.gz)) # call the clean sequences - make an array to align
+
+for i in ${array[@]}; do
+    bowtie2 -1 ${i} -2 $(echo ${i}|sed s/_R1/_R2/) -x /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/refs/Apoc_ref.btindex -b --align-paired-reads
+done
+
+echo "Reads aligned!" $(date)
+```
+
+Submitted batch job 275228. Didn't work. Getting this error: 
+
+```
+0 reads
+0.00% overall alignment rate
+Warning: Same mate file "/data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/trimmed.AST-1065_R2_001.fastq.gz" appears as argument to both -1 and -2
+0 reads
+```
+
+Maybe it didn't like the `--align-paired-reads` argument? Going to remove this and rerun the code. Submitted batch job 275230. Got the same error... Editing the code so that the array is `array=($(ls /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/*_R1_001.fastq.gz))` based on Emma's [code](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2022-02-03-KBay-Bleaching-Pairs-RNASeq-Pipeline-Analysis.md). Submitted batch job 275237. Failed again, still saying 0% alignment rate. In the `-x` argument, changed `Apoc_ref.btindex` to `Apoc_ref`. Submitted batch job 275239. It didn't like that! Changing it back. 
+
+Still getting 0% alignment. The error file says: "Error while reading BAM extra subfields
+(ERR): bowtie2-align exited with value 1". Maybe it's an issue with the path? Changing `-x /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/refs/Apoc_ref.btindex` to `-x ../output/bowtie/refs/Apoc_ref.btindex`. Submitted batch job 275248. Still getting the same error??? 
+
+NEED TO TROUBLESHOOT AS OF 8/22/23
+
+### Assemble and quantify transcripts
+
+#### Hisat2
+
+Going to be using stringtie to assemble and quantify transcripts 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA
+mkdir stringtie
+cd scripts 
+```
+
+In the scripts folder: `nano assemble.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=128GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/output/hisat2/align              
+#SBATCH --error="stringtie-hisat-assemble_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="stringtie-hisat-assemble_error" #once your job is completed, any final job report comments will be put in this file
+
+module load StringTie/2.2.1-GCC-11.2.0
+
+echo "Starting stringtie assembly" $(date)
+
+# Transcript assembly: StringTie
+
+array1=($(ls *.bam)) #Make an array of sequences to assemble
+
+for i in ${array1[@]}; do
+    sample_name=`echo $i| awk -F [_] '{print $1"_"$2"_"$3}'`
+    stringtie -p 8 -e -B -G /data/putnamlab/jillashey/Astrangia_Genome/apoculata_v2.0.gff3 -A ${sample_name}.gene_abund.tab -o ${sample_name}.gtf ${i}
+    echo "StringTie assembly for seq file ${i}" $(date)
+done
+
+echo "Stringtie assembly complete" $(date)
+```
+
+Submitted batch job 275232. Job was pending for about two days, but then ran in about an hour. 
+
+Move GTF and gene abundance files into stringtie folder, as they are currently in the hisat2 align folder
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/output/hisat2/align
+mv *gtf ../../../stringtie/
+mv *gene_abund.tab ../../../stringtie/
+mv *.ctab ../../../stringtie/
+mv stringtie-hisat-assemble_error ../../../scripts/
+```
+
+Make the gene count matrix! This step uses a script called prepDE.py that can be downloaded/copied from the [StringTie github repo](https://github.com/gpertea/stringtie/blob/master/prepDE.py). Copy the script into the scripts folder. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts
+nano prepDE.py # copy script from github into here and save
+```
+
+In the scripts folder: `nano prepDE.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=20
+#SBATCH --export=NONE
+#SBATCH --mem=200GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab              
+#SBATCH --error="prepDE_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="prepDE_output" #once your job is completed, any final job report comments will be put in this file
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/stringtie
+
+echo "Starting assembly and assembly QC" $(date)
+
+# Load packages
+module load Python/2.7.15-foss-2018b #Python
+module load StringTie/2.2.1-GCC-11.2.0
+module load GffCompare/0.12.6-GCC-11.2.0 #Transcript assembly QC: GFFCompare
+
+# Make gtf_list.txt file
+ls *.gtf > gtf_list.txt
+
+stringtie --merge -e -p 8 -G /data/putnamlab/jillashey/Astrangia_Genome/apoculata_v2.0.gff3 -o Apoc_merged.gtf gtf_list.txt #Merge GTFs 
+echo "Stringtie merge complete" $(date)
+
+gffcompare -r /data/putnamlab/jillashey/Astrangia_Genome/apoculata_v2.0.gff3 -G -o merged Cvir_merged.gtf #Compute the accuracy 
+echo "GFFcompare complete, Starting gene count matrix assembly..." $(date)
+
+#Note: the merged part is actually redundant and unnecessary unless we perform the original stringtie step without the -e function and perform
+#re-estimation with -e after stringtie --merge, but will redo the pipeline later and confirm that I get equal results.
+
+#make gtf list text file
+for filename in *bam.gtf; do echo $filename $PWD/$filename; done > listGTF.txt
+
+python /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts/prepDE.py -g Apoc_mRNA_count_matrix.csv -i listGTF.txt #Compile the gene count matrix
+
+echo "Gene count matrix compiled." $(date)
+```
+
+The above code was written by Zoe in this [post](https://github.com/zdellaert/ZD_Putnam_Lab_Notebook/blob/master/_posts/2023-02-27-Point-Judith-RNAseq.md). Submitted batch job 275703
+
+
+
+
+
+
 
 
 NEED TO ASK HP: WAS THE SEQUENCING DONE RF, FF OR FR?
