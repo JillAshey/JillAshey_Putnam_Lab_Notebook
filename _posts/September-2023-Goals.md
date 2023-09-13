@@ -27,6 +27,10 @@ September 2023 goals and daily notebook entries.
 3. Initial cell counts for Astrangia 2021
 	- Count 20 samples and see how variable they are after homogenizing 2x
 
+### Data analysis 
+1. E5 deep dive - lncRNA and miRNA
+2. Astrangia mRNA analysis 
+
 ## Daily log 
 
 ### September 11
@@ -34,3 +38,15 @@ September 2023 goals and daily notebook entries.
 - Extracted RNA for AH samples (extraction post [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2023-09-11-MiniprepPlus-DNA%3ARNA-extractions-McapLarvae.md))
 - Lab writing meeting 
 - HW for writing class 
+
+### September 12 
+
+- Wrote paragraph for Astrangia review paper to link Astrangia biology and ecosystem management 
+- Facilitated DIBP workshop (Fundamentals)
+- Writing class 
+
+### September 13 
+
+- Assisted Hollie w/ packing for HI
+- Redid figures and tables for sediment stress minor revisions 
+- Lipid prep w/ Flo and Lauren 
