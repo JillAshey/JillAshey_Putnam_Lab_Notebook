@@ -50,3 +50,17 @@ September 2023 goals and daily notebook entries.
 - Assisted Hollie w/ packing for HI
 - Redid figures and tables for sediment stress minor revisions 
 - Lipid prep w/ Flo and Lauren 
+
+### September 14 
+-	TERs for Hawaii and Bermuda – back to Colleen Travis 
+-	Catching up on emails (sediment stress, committee)
+-	Writing methods for chapter 3 (developmental acclimatization) in dissertation proposal 
+-	Test of lipid assay on PCR plate – the reagents did not melt the plate, hooray! 
+-	Class 
+
+### September 15
+- Lipid test assay w/ Lauren and Flo. Assay was a success! 
+- Lab meeting 
+
+### Setember 16 
+- Extracted RNA for AH samples 
