@@ -62,5 +62,13 @@ September 2023 goals and daily notebook entries.
 - Lipid test assay w/ Lauren and Flo. Assay was a success! 
 - Lab meeting 
 
-### Setember 16 
-- Extracted RNA for AH samples 
+### September 16 
+- Extracted RNA for AH samples (extraction post [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2023-09-16-MiniprepPlus-DNA%3ARNA-extractions-McapLarvae.md))
+
+### September 18
+- Revised Astrangia lit review manuscript and remade figure 3 
+- Wrote biological hypotheses for my chapters 2 and 3 for dissertation proposal 
+- Writing proposal meeting 
+- Putnam lab writing meeting 
+- Hawaii spawning meeting w/ Ariana and Ford
+- Hawaii 2023 data meeting w/ Ariana, Andrei, and Jen 
