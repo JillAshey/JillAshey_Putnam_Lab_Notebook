@@ -72,3 +72,20 @@ September 2023 goals and daily notebook entries.
 - Putnam lab writing meeting 
 - Hawaii spawning meeting w/ Ariana and Ford
 - Hawaii 2023 data meeting w/ Ariana, Andrei, and Jen 
+
+### September 19
+- Worked on biological hypotheses for proposal 
+- Wrote out methods for chapter 4
+- Meeting w/ Ariana 
+
+### September 20 
+- e5 group paper discussion
+- Attempted to run standard curve for lipid assay, did not work 
+- Resubmitted sediment stress to PeerJ
+- Worked on proposal timeline 
+- Started sample desiccation for lipid assay tomorrow 
+
+### September 21
+- Lipid assay test w/ Lauren. Tested assay w/ a variety of volumes for input material 
+- 
+
