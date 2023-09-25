@@ -95,5 +95,9 @@ September 2023 goals and daily notebook entries.
 - Meeting w/ Amelia about parachute science DIBP workshop 
 - E5 molecular mechanisms meeting 
 - Lab meeting 
-- Tape station on 4 samples that failed 
+- Tape station on 4 samples that failed Qubit 
 - Outline histology manuscript intro 
+
+### September 24
+- Answered emails 
+- Made tapestation notebook post 
