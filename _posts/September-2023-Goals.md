@@ -86,6 +86,14 @@ September 2023 goals and daily notebook entries.
 - Started sample desiccation for lipid assay tomorrow 
 
 ### September 21
-- Lipid assay test w/ Lauren. Tested assay w/ a variety of volumes for input material 
-- 
+- Lipid assay test w/ Lauren. Tested assay w/ a variety of volumes for input material. Didn't work but now we know why. We need to dilute the samples (keeping the same volume) and treat the standards like samples after the lipid extraction 
+- Wrote methods for histology manuscript 
+- Admin stuff for PeerJ submission
 
+### September 22 
+- Carb assay w/ Lauren
+- Meeting w/ Amelia about parachute science DIBP workshop 
+- E5 molecular mechanisms meeting 
+- Lab meeting 
+- Tape station on 4 samples that failed 
+- Outline histology manuscript intro 
