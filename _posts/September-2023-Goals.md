@@ -101,3 +101,8 @@ September 2023 goals and daily notebook entries.
 ### September 24
 - Answered emails 
 - Made tapestation notebook post 
+
+### September 25
+- Ran 6 plates of soluble protein 
+- Wrote prelim code for protein analysis 
+- Lab writing meeting 
