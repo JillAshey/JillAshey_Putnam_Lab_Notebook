@@ -106,3 +106,20 @@ September 2023 goals and daily notebook entries.
 - Ran 6 plates of soluble protein 
 - Wrote prelim code for protein analysis 
 - Lab writing meeting 
+
+### September 26 
+- Ran 2 plates of soluble protein 
+- Meeting w/ Ariana - decided to elute in 65 uL to concentrate RNA 
+- Ran lipid assay 
+
+### September 27 
+- Worked on dissertation proposal and outlined experiment for chapter 4
+- Facilitated DIBP workshop 
+
+### September 28
+- Half day 
+- Worked on biological hypotheses for chapters 2&3
+
+### September 29 
+- Writing meeting w/ Ariana 
+- 
