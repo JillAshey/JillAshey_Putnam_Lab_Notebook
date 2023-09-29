@@ -76,6 +76,19 @@ This is what the samples looked like after dessication:
 
 8. Centrifuge samples at 3000 rpm for 5 minutes. 
 9. Move 100 uL of the standard or bottom layer of the centrifuged sample to a 96-well PCR plate in duplicate. 
+
+This is the plate map: 
+
+| x | 1     | 2     | 3             | 4             | 5            | 6            | 7             | 8             | 9            | 10           |
+| - | ----- | ----- | ------------- | ------------- | ------------ | ------------ | ------------- | ------------- | ------------ | ------------ |
+| A | Std 1 | Std 1 | LZ Holo 10 uL | LZ Holo 10 uL | LZ Sym 10 uL | LZ Sym 10 uL | JA Holo 10 uL | JA Holo 10 uL | JA Sym 10 uL | JA Sym 10 uL |
+| B | Std 2 | Std 2 | LZ Holo 25 uL | LZ Holo 25 uL | LZ Sym 25 uL | LZ Sym 25 uL | JA Holo 25 uL | JA Holo 25 uL | JA Sym 25 uL | JA Sym 25 uL |
+| C | Std 3 | Std 3 | LZ Holo 50 uL | LZ Holo 50 uL | LZ Sym 50 uL | LZ Sym 50 uL | JA Holo 50 uL | JA Holo 50 uL | JA Sym 50 uL | JA Sym 50 uL |
+| D | Std 4 | Std 4 | LZ Host 10 uL | LZ Host 10 uL |              |              | JA Host 10 uL | JA Host 10 uL |              |              |
+| E | Std 5 | Std 5 | LZ Host 25 uL | LZ Host 25 uL |              |              | JA Host 25 uL | JA Host 25 uL |              |              |
+| F | Std 6 | Std 6 | LZ Host 50 uL | LZ Host 50 uL |              |              | JA Host 50 uL | JA Host 50 uL |              |              |
+| G | Std 7 | Std 7 |               |               |              |              |               |               |              |
+
 10. Add 50 uL of methanol to each well. 
 11. Put plate in hot bead bath (70°C) for 15 minutes. 
 	- Bead bath is essentially the same as a water batch except it's aluminum beads instead of water. 
