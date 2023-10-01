@@ -122,4 +122,5 @@ September 2023 goals and daily notebook entries.
 
 ### September 29 
 - Writing meeting w/ Ariana 
-- 
+- Lab meeting 
+- Worked on biological hypotheses for dissertation proposal 
