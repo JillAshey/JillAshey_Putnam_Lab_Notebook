@@ -51,3 +51,6 @@ Protocol was followed according to this [post](https://github.com/JillAshey/Jill
 
 #### Gel 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/larvae_cd_mcap2023/gel_20231005.JPG)
+
+The concentrations are not as high as I expected when diluting in 65 uL. R43 also was too low for RNA on the Qubit side. 
