@@ -445,7 +445,89 @@ Maybe it didn't like the `--align-paired-reads` argument? Going to remove this a
 Still getting 0% alignment. The error file says: "Error while reading BAM extra subfields
 (ERR): bowtie2-align exited with value 1". Maybe it's an issue with the path? Changing `-x /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/refs/Apoc_ref.btindex` to `-x ../output/bowtie/refs/Apoc_ref.btindex`. Submitted batch job 275248. Still getting the same error??? 
 
-NEED TO TROUBLESHOOT AS OF 8/22/23
+It's 20231004. Let's get back to aligning with bowtie2. This is the code I have now:
+
+```
+#!/bin/bash
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts              
+#SBATCH --error="bowtie_align_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bowtie_align_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Bowtie2/2.4.4-GCC-11.2.0 
+
+echo "Aligning reads" $(date)
+
+array=($(ls /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/*_R1_001.fastq.gz)) # call the clean sequences - make an array to align
+
+for i in ${array[@]}; do
+    bowtie2 -1 ${i} -2 $(echo ${i}|sed s/_R1/_R2/) -x ../output/bowtie/refs/Apoc_ref.btindex -b 
+done
+
+echo "Reads aligned!" $(date)
+```
+
+Let's try running it again and seeing what happens. Submitted batch job 283318. Nope same error as above. I may need to add a bam file name. Added `-b ${i}`. Submitted batch job 283321. Didn't work, this is the error that I'm getting: `Warning: Output file '{i}' was specified without -S.  This will not work in future Bowtie 2 versions.  Please use -S instead.` `-S` means to write the output files as sam files, but I don't want them as sam files. I'm going to add the `-S` anyway and see what happens. I can always convert the sam to bam files. Submitted batch job 283322
+
+Now I'm getting this error: 
+
+```
+Extra parameter(s) specified: "/data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/trimmed.AST-1412_R1_001.fastq.gz"
+Note that if <mates> files are specified using -1/-2, a <singles> file cannot
+also be specified.  Please run bowtie separately for mates and singles.
+Error: Encountered internal Bowtie 2 exception (#1)
+Command: /opt/software/Bowtie2/2.4.4-GCC-11.2.0/bin/bowtie2-align-s --wrapper basic-0 -x ../output/bowtie/refs/Apoc_ref.btindex -S /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/trimmed.AST-1412_R1_001.fastq.gz -1 /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/trimmed.AST-1412_R1_001.fastq.gz -2 /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/trimmed.AST-1412_R2_001.fastq.gz -b /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/trimmed.AST-1412_R1_001.fastq.gz 
+(ERR): bowtie2-align exited with value 1
+```
+
+It looks like it thinks I'm trying to run a singles file but its not working...Going back! Changing the syntax of the array a little bit and removing the bam and sam commands
+
+```
+#!/bin/bash
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts              
+#SBATCH --error="bowtie_align_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="bowtie_align_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Bowtie2/2.4.4-GCC-11.2.0 
+
+echo "Aligning reads" $(date)
+
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/
+
+array=($(ls /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/*_R1_001.fastq.gz)) # call the clean sequences - make an array to align
+
+for i in ${array[@]}; do
+    bowtie2 -1 ${i} -2 $(echo ${i}|sed s/_R1/_R2/) -x /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/refs/Apoc_ref.btindex
+done
+
+echo "Reads aligned!" $(date)
+```
+
+Submitted batch job 283326. Now I got this error: 
+
+```
+Error, fewer reads in file specified with -1 than in file specified with -2
+terminate called after throwing an instance of 'int'
+(ERR): bowtie2-align died with signal 6 (ABRT) 
+Unable to read file magic number
+```
+
+Unsure why bowtie is so angry at me. boo. Still need to troubleshoot as of 10/4/23. 
+
+
 
 ### Assemble and quantify transcripts
 
@@ -553,6 +635,7 @@ echo "Gene count matrix compiled." $(date)
 ```
 
 The above code was written by Zoe in this [post](https://github.com/zdellaert/ZD_Putnam_Lab_Notebook/blob/master/_posts/2023-02-27-Point-Judith-RNAseq.md). Submitted batch job 275703
+
 
 
 
