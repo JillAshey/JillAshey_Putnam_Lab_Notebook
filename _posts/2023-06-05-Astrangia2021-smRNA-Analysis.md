@@ -251,3 +251,69 @@ echo "Trimming done!" $(date)
 ```
 
 Submitted batch job 275252. The trimming parameters seem to be too stringent. It is saying that the reads are either too long or too short. Not sure what this means. I'm going to try Sam's [code](https://robertslab.github.io/sams-notebook/2023/06/20/Trimming-and-QC-E5-Coral-sRNA-seq-Data-fro-A.pulchra-P.evermanni-and-P.meandrina-Using-FastQC-flexbar-and-MultiQC-on-Mox.html) where he trimmed some smRNAs using a software called flexbar. Need to ask Kevin Bryan to install flexbar. 
+
+Flexbar installed! 
+
+Let's try [Flexbar trimming code](https://robertslab.github.io/sams-notebook/posts/2023/2023-06-20-Trimming-and-QC---E5-Coral-sRNA-seq-Data-fro-A.pulchra-P.evermanni-and-P.meandrina-Using--FastQC-flexbar-and-MultiQC-on-Mox/) that Sam White wrote for the e5 small RNA analysis
+
+First, I'm only going to try to trim one sample (2 reads) to see if flexbar works. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/raw
+```
+
+First, make the NEB adapters fasta file.
+
+```
+nano NEB-adapters.fasta
+
+>first
+AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+>second
+GATCGTCGGACTGTAGAACTCTGAACGTGTAGATCTCGGTGGTCGCCGTATCATT
+```
+
+In scripts folder: `nano test_flexbar.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --error="flexbar_raw_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="flexbar_raw_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Flexbar/3.5.0-foss-2018b  
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/raw
+
+R1_fastq=/data/putnamlab/jillashey/Astrangia2021/smRNA/data/raw/AST-1065_R1_001.fastq.gz 
+R2_fastq=/data/putnamlab/jillashey/Astrangia2021/smRNA/data/raw/AST-1065_R2_001.fastq.gz 
+
+flexbar \
+-r ${R1_fastq} \
+-p ${R2_fastq}  \
+-a NEB-adapters.fasta \
+-ap ON \
+-qf i1.8 \
+-qt 25 \
+--post-trim-length 35 \
+--target TEST_AST-1065 \
+--zip-output GZ
+```
+
+Submitted batch job 284050. Finished in about 25 mins. 
+
+Now I'm going to run fastqc on the test sample and see how it looks: 
+
+```
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+fastqc TEST_AST-1065_1.fastq.gz TEST_AST-1065_2.fastq.gz
+multiqc --interactive fastqc_results
+```
