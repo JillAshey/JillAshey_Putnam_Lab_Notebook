@@ -315,5 +315,65 @@ module load FastQC/0.11.9-Java-11
 module load MultiQC/1.9-intel-2020a-Python-3.8.2
 
 fastqc TEST_AST-1065_1.fastq.gz TEST_AST-1065_2.fastq.gz
-multiqc --interactive fastqc_results
+multiqc *fastqc*```
+
+ADD PLOTS 
+
+The plots look good! I'm going to move forward w/ flexbar trimming. 
+
+In scripts folder: `nano flexbar.sh`
+
 ```
+#!/bin/bash
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=200GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --error="flexbar_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="flexbar_output" #once your job is completed, any final job report comments will be put in this file
+
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/raw
+
+echo "Trimming reads using flexbar" $(date)
+
+array1=($(ls *R1_001.fastq.gz))
+
+for i in ${array1[@]}; do
+flexbar \
+-r ${i} \
+-p $(echo ${i}|sed s/_R1/_R2/) \
+-a NEB-adapters.fasta \
+-ap ON \
+-qf i1.8 \
+-qt 25 \
+--post-trim-length 35 \
+--target $(echo ${i}|sed s/_R1/_R2/) \
+--zip-output GZ
+done 
+
+mv *trim ../trim
+
+echo "Trimming complete, now running fastqc and multiqc" $(date)
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim
+
+for file in *fastq.gz
+do 
+fastqc $file 
+done
+
+multiqc *fastqc*
+
+echo "QC complete!" $(date)
+```
+
+Submitted batch job 284064
+
+
