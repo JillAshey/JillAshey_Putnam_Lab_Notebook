@@ -1,7 +1,7 @@
 ---
 layout: post
 title: MiniPrep Plus DNA/RNA extractions
-date: '2023-07-21'
+date: '2023-07-25'
 categories:
 tags: [DNA, RNA, Extractions, Protocols]
 projects: Larvae C/D 

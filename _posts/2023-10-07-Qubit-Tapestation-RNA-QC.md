@@ -131,4 +131,3 @@ Here's the chart plotting the TS RNA concetrations on the y-axis and Qubit RNA c
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Ahya2018_RNA_QC.png)
 
 R-squared value is 0.856. 
-
