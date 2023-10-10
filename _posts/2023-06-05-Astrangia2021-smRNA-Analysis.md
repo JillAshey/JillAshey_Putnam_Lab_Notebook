@@ -357,23 +357,96 @@ flexbar \
 --target $(echo ${i}|sed s/_R1/_R2/) \
 --zip-output GZ
 done 
-
-mv *trim ../trim
-
-echo "Trimming complete, now running fastqc and multiqc" $(date)
-
-cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim
-
-for file in *fastq.gz
-do 
-fastqc $file 
-done
-
-multiqc *fastqc*
-
-echo "QC complete!" $(date)
 ```
 
 Submitted batch job 284064
+
+Move trimmed reads to trim folder
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/raw
+mv trim.AST-* ../trim/
+```
+
+### Trim QC
+
+#### Run fastqc to quality check trim reads 
+
+In scripts folder: `nano fastqc_trim.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts              
+#SBATCH --error="fastqc_trim_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="fastqc_trim_output" #once your job is completed, any final job report comments will be put in this file
+
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+for file in /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/*fastq.gz
+do 
+fastqc $file --outdir /data/putnamlab/jillashey/Astrangia2021/smRNA/fastqc/trim
+done
+
+multiqc --interactive fastqc_results/trim
+```
+
+Submitted batch job 284426
+
+#### Count number of reads per file 
+
+
+```
+zgrep -c "@GWNJ" *fastq.gz
+
+trim.AST-1065_R2_001.fastq.gz_1.fastq.gz:17829111
+trim.AST-1065_R2_001.fastq.gz_2.fastq.gz:17829111
+trim.AST-1105_R2_001.fastq.gz_1.fastq.gz:17238126
+trim.AST-1105_R2_001.fastq.gz_2.fastq.gz:17238126
+trim.AST-1147_R2_001.fastq.gz_1.fastq.gz:40415224
+trim.AST-1147_R2_001.fastq.gz_2.fastq.gz:40415224
+trim.AST-1412_R2_001.fastq.gz_1.fastq.gz:16279555
+trim.AST-1412_R2_001.fastq.gz_2.fastq.gz:16279555
+trim.AST-1560_R2_001.fastq.gz_1.fastq.gz:17827024
+trim.AST-1560_R2_001.fastq.gz_2.fastq.gz:17827024
+trim.AST-1567_R2_001.fastq.gz_1.fastq.gz:16611397
+trim.AST-1567_R2_001.fastq.gz_2.fastq.gz:16611397
+trim.AST-1617_R2_001.fastq.gz_1.fastq.gz:16077717
+trim.AST-1617_R2_001.fastq.gz_2.fastq.gz:16077717
+trim.AST-1722_R2_001.fastq.gz_1.fastq.gz:16430221
+trim.AST-1722_R2_001.fastq.gz_2.fastq.gz:16430221
+trim.AST-2000_R2_001.fastq.gz_1.fastq.gz:17428854
+trim.AST-2000_R2_001.fastq.gz_2.fastq.gz:17428854
+trim.AST-2007_R2_001.fastq.gz_1.fastq.gz:16559551
+trim.AST-2007_R2_001.fastq.gz_2.fastq.gz:16559551
+trim.AST-2302_R2_001.fastq.gz_1.fastq.gz:16665370
+trim.AST-2302_R2_001.fastq.gz_2.fastq.gz:16665370
+trim.AST-2360_R2_001.fastq.gz_1.fastq.gz:16648356
+trim.AST-2360_R2_001.fastq.gz_2.fastq.gz:16648356
+trim.AST-2398_R2_001.fastq.gz_1.fastq.gz:16788208
+trim.AST-2398_R2_001.fastq.gz_2.fastq.gz:16788208
+trim.AST-2404_R2_001.fastq.gz_1.fastq.gz:16712903
+trim.AST-2404_R2_001.fastq.gz_2.fastq.gz:16712903
+trim.AST-2412_R2_001.fastq.gz_1.fastq.gz:17488508
+trim.AST-2412_R2_001.fastq.gz_2.fastq.gz:17488508
+trim.AST-2512_R2_001.fastq.gz_1.fastq.gz:16265716
+trim.AST-2512_R2_001.fastq.gz_2.fastq.gz:16265716
+trim.AST-2523_R2_001.fastq.gz_1.fastq.gz:16995265
+trim.AST-2523_R2_001.fastq.gz_2.fastq.gz:16995265
+trim.AST-2563_R2_001.fastq.gz_1.fastq.gz:17023002
+trim.AST-2563_R2_001.fastq.gz_2.fastq.gz:17023002
+trim.AST-2729_R2_001.fastq.gz_1.fastq.gz:17121869
+trim.AST-2729_R2_001.fastq.gz_2.fastq.gz:17121869
+trim.AST-2755_R2_001.fastq.gz_1.fastq.gz:16269823
+trim.AST-2755_R2_001.fastq.gz_2.fastq.gz:16269823
+```
+
 
 
