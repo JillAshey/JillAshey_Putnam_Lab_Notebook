@@ -61,3 +61,7 @@ No one was in the Lane lab today, so I was not able to Nanodrop these samples. I
 | R95       | 11.6       | 11.4       | 11.5              | 22         | 21.8       | 21.9              |
 
 #### Gel 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/larvae_cd_mcap2023/gel_20231024.JPG)
+
+Gel and concentrations all look great! No low concentrations, maybe this is due to me using a brand new kit for this batch?
