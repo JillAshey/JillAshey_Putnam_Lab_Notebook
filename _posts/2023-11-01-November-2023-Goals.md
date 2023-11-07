@@ -1,0 +1,66 @@
+---
+layout: post
+title: November 2023 Goals
+date: '2023-11-01'
+categories: Monthly_Goals
+tags: Goals
+---
+
+November 2023 goals and daily notebook entries. 
+
+## Goals  
+
+STUDY FOR COMPREHENSIVE EXAMS -- THIS IS THE PRIORITY 
+
+### Writing and manuscripts 
+              
+1. Full draft of dissertation proposal
+2. Write full methods and results for Astrangia 2021 experiment 
+3. Intro outline for e5 ncRNA manuscript 
+
+### Sample processing
+
+1. RNA extractions for AH - HI 2023
+2. Physiology processing for developmental time series 2023
+	- Carbs
+3. Initial cell counts for Astrangia 2021
+	- Count 20 samples and see how variable they are after homogenizing 2x
+
+### Data analysis (if time)
+1. E5 deep dive - lncRNA and miRNA
+2. Astrangia mRNA analysis 
+
+## Daily log 
+
+### November 1 
+- Read Coles & Brown 2003 
+- Read Palumbi et al. 2014
+- Met w/ Marta 
+- Met w/ Ben 
+- Made sure Fedex shipment went out 
+
+### November 2 
+- Read Brown et al. 2000, 2002, 2014 
+- Read Gates & Edmunds 1999
+- Read Brown & Cossins 2011
+- Watched videos on cell signaling, protein phosphorylation, miRNA generation and action, NGS, etc 
+- E5 ncRNA meeting 
+- Meeting w/ Steven re comps topics 
+
+### November 3
+- Dentist appt 
+- E5 molec mechanisms meeting 
+- Lab meeting 
+- Read Drury 2019 
+- Read Barott et al. 2021
+
+### November 5
+- Read chapter 5 in the flexible phenotype (chapter on phenotypic plasticity)
+- Made ppt for acclimatization in corals 
+
+### November 6 
+- Lead journal club discussion 
+- Read Goldberg et al. 2007 
+- Read Bird 2007
+- Read Gibney & Nolan 2010
+- Read Eirin-Lopez & Putnam 2019
