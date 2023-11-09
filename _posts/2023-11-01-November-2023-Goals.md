@@ -64,3 +64,24 @@ STUDY FOR COMPREHENSIVE EXAMS -- THIS IS THE PRIORITY
 - Read Bird 2007
 - Read Gibney & Nolan 2010
 - Read Eirin-Lopez & Putnam 2019
+
+### November 7 
+- Read Ospelt 2022
+- Read Murray et al. 2022
+- Read Ding & Yang 2022
+- Received Zymo stuff! 
+- Read Ding et al. 2020
+- Read Deans & Maggert 2015
+- Read Ashe et al. 2021
+- Read about Illumina sequencing (specifically library prep)
+
+### November 8 
+- Read Ho & Burggren 2010 
+- Died from vaccines 
+
+### November 9 
+- Read Kronholm et al. 2017 
+- Read Yao et al. 2019	
+	- This is a good review article about miRNAs and its interactions with other epigenetic mechanisms. It's also a short and sweet paper 
+- Skimmed Dhanoa et al. 2018 & Liu et al. 2021 for info on lncRNA biogenesis and function 
+- Met w/ Shara (prospective student from UM)
