@@ -111,3 +111,15 @@ STUDY FOR COMPREHENSIVE EXAMS -- THIS IS THE PRIORITY
 - Skimmed chapters 1 and 2 in thermal adaptation 
 - Watched videos on photosynthesis and cellular respiration 
 - Met w/ Sam Gurr re comps 
+- Typed up sequencing answer for JP exam 
+
+### November 14
+- Received Zymo switch free kit
+- Helped Zoe w/ r script for wet lab 
+- Set up slack bot reminder for daily measurements in wet lab
+- Organized text from PhD ideas google doc into my comps notes 
+- Read Taylor et al. 2015 
+- Read Li et al. 2015
+- Read important parts of Baumgarten et al. 2017 
+- Read important parts of Moran et al. 2014
+- Skimmed Harrison 2011
