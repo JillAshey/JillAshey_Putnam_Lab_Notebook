@@ -85,3 +85,29 @@ STUDY FOR COMPREHENSIVE EXAMS -- THIS IS THE PRIORITY
 	- This is a good review article about miRNAs and its interactions with other epigenetic mechanisms. It's also a short and sweet paper 
 - Skimmed Dhanoa et al. 2018 & Liu et al. 2021 for info on lncRNA biogenesis and function 
 - Met w/ Shara (prospective student from UM)
+- Reefbites meeting 
+
+### November 10 
+- Lab meeting 
+- Podcast recording 
+- Read Bryne et al. 2019
+
+### November 11
+- Went to Tomagouq museum 
+
+### November 12 
+- Finished reading Bryne et al. 2019 
+- Read Eddy 2002 
+- Read Fu 2014 
+- Read Chao et al. 2022
+- Read Kultz 2005 
+- Worked on sequencing info, primarily cluster generation and sequencing 
+
+### November 13 
+- Worked on sequencing info, primarily data analysis and error rates 
+- Read Mittler et al. 2011
+- Read Zhao et al. 2021
+- Fed corals in BT 1/2 and cleaned BT 1/2 w/ Zoe 
+- Skimmed chapters 1 and 2 in thermal adaptation 
+- Watched videos on photosynthesis and cellular respiration 
+- Met w/ Sam Gurr re comps 
