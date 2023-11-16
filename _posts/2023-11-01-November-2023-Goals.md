@@ -123,3 +123,25 @@ STUDY FOR COMPREHENSIVE EXAMS -- THIS IS THE PRIORITY
 - Read important parts of Baumgarten et al. 2017 
 - Read important parts of Moran et al. 2014
 - Skimmed Harrison 2011
+- Read gametogenesis parts of Harrison & Wallace 1990
+
+### November 15 
+- Read Leung & Sharp 2007 
+- Read Leung & Sharp 2010 
+- Read portions of Mendell & Olson 2012
+- Read Emde & Hornstein 2014 
+- Skimmed ncRNA in cnidaria papers 
+	- Grimson et al. 2008
+	- Krishna et al. 2013 
+	- Liew et al. 2014
+	- Juliano et al. 2013
+	- Lim et al. 2014 
+	- Modepalli & Moran 2017
+	- Modepalli et al. 2018
+	- Urbarova et al. 2018
+	- Fridrich et al. 2023
+	- Teefy et al. 2020
+
+### November 16 
+- Read Di Liegro et al. 2017 
+- 
