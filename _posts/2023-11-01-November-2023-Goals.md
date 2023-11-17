@@ -114,6 +114,7 @@ STUDY FOR COMPREHENSIVE EXAMS -- THIS IS THE PRIORITY
 - Typed up sequencing answer for JP exam 
 
 ### November 14
+- Went to dentist 
 - Received Zymo switch free kit
 - Helped Zoe w/ r script for wet lab 
 - Set up slack bot reminder for daily measurements in wet lab
@@ -144,4 +145,14 @@ STUDY FOR COMPREHENSIVE EXAMS -- THIS IS THE PRIORITY
 
 ### November 16 
 - Read Di Liegro et al. 2017 
-- 
+- Read Alvarez-Garcia & Miska 2005 
+- Read Acharya et al. 2017
+- Read Hofmann 2017
+- Read Duncan et al. 2014 
+- Read Fox et al. 2018
+- Outlined some answers for potential comps questions 
+- Added threshold lines to daily measurement plots for wet lab
+
+### November 17 
+- Went to the dentist 
+- Started to organize terms to know document 
