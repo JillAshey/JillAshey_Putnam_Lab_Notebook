@@ -51,7 +51,7 @@ STUDY FOR COMPREHENSIVE EXAMS -- THIS IS THE PRIORITY
 - Dentist appt 
 - E5 molec mechanisms meeting 
 - Lab meeting 
-- Read Drury 2019 
+- Read Drury 2020
 - Read Barott et al. 2021
 
 ### November 5
@@ -156,3 +156,23 @@ STUDY FOR COMPREHENSIVE EXAMS -- THIS IS THE PRIORITY
 ### November 17 
 - Went to the dentist 
 - Started to organize terms to know document 
+- Molecular mechanisms meeting 
+- Lab meeting 
+
+### November 19 
+- Worked on terms to know doc 
+- Read Shikina et al. 2013 
+- Read Shikina et al. 2012
+- Read Shikina et al. 2018
+- Read Chen et al. 2016
+- Did an extraction for AH samples 
+
+### November 20 
+- Ran a gel for AH samples 
+- Aliquoted out DNA and RNA for Nanodrop 
+	- Can't find RNA tube for R105 in freezer, may need to re-extract 
+- Read Zuo et al. 2021
+- Read Dellaert & Putnam 2023
+- Read Van Etten et al. 2020
+- Read Putnam 2021
+- Read Chille et al. 2021 
