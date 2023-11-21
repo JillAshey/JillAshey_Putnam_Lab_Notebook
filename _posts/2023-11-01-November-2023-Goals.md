@@ -176,3 +176,15 @@ STUDY FOR COMPREHENSIVE EXAMS -- THIS IS THE PRIORITY
 - Read Van Etten et al. 2020
 - Read Putnam 2021
 - Read Chille et al. 2021 
+- Started on beyond gene expression manuscript
+
+### November 21
+- Read Cavalli & Heard 2019
+- Read Hackerott et al. 2023 
+- Read Putnam et al. 2020
+- Read Gajigan & Conaco 2017 
+- Read Zhu et al. 2022
+- Read Huang et al. 2019
+- Did daily tasks for wet lab, cleaned BT 1/2 tank 
+- Read Beaman et al. 2016 
+- Read Tan et al. 2020 
