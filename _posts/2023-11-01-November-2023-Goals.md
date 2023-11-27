@@ -188,3 +188,22 @@ STUDY FOR COMPREHENSIVE EXAMS -- THIS IS THE PRIORITY
 - Did daily tasks for wet lab, cleaned BT 1/2 tank 
 - Read Beaman et al. 2016 
 - Read Tan et al. 2020 
+
+### November 22
+- Read Barshis et al. 2013 
+- Read Torda et al. 2017 
+- Read some of chapter 5 in Thermal Adaptation book 
+
+### November 23 
+- Read Drury et al. 2021
+- Read Hackerott et al. 2021
+
+### November 25
+- Read the rest of the chapter 5 and some of chapter 3 in Thermal adaptation book 
+
+### November 26 
+- Read Adrian-Kalchhauser et al. 2020
+- Read some TEI papers but they were dense and my brain didn't want to focus 
+- Read parts of Bonduriansky et al. 2011
+- Read Fitz-James and Cavalli, 2022
+- Skimmed Dimond & Roberts 2016, 2020
