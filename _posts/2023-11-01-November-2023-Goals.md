@@ -207,3 +207,11 @@ STUDY FOR COMPREHENSIVE EXAMS -- THIS IS THE PRIORITY
 - Read parts of Bonduriansky et al. 2011
 - Read Fitz-James and Cavalli, 2022
 - Skimmed Dimond & Roberts 2016, 2020
+- Read Liew et al. 2018, 2020 
+
+### November 27 
+- Did daily aquarium stuff 
+- Read about signaling cascades and their relation to DNA methylation 
+- Read Norouzitallab et al. 2019
+- Outlined some potential questions 
+- Put key examples for specific topics in a doc 
