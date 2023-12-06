@@ -450,3 +450,10 @@ trim.AST-2755_R2_001.fastq.gz_2.fastq.gz:16269823
 
 
 
+20231130
+
+Locations of cnidarian miRNA data 
+- [Stylophora pistillata](https://trace.ncbi.nlm.nih.gov/Traces/index.html?view=run_browser&acc=SRR1130519&display=metadata)
+- [Hydra](https://mirbase.org/browse/results/?organism=hma)
+- [Nematostella](https://mirbase.org/browse/results/?organism=nve)
+- [Acropora muricata, Montipora capricornis, Montipora foliosa, Pocillopora verrucosa](http://118.89.77.43:7081/miR/browse.php)

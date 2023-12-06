@@ -215,3 +215,20 @@ STUDY FOR COMPREHENSIVE EXAMS -- THIS IS THE PRIORITY
 - Read Norouzitallab et al. 2019
 - Outlined some potential questions 
 - Put key examples for specific topics in a doc 
+
+### November 28 
+- Read Heard & Martienssen 2014 
+- Read parts of Gavery & Roberts 2017
+- Outlined potential questions 
+
+### November 29 
+- Read parts of Praher et al. 2021 
+- Outlining pathways w/ conserved miRNA pathways in cnidarians 
+- Reviewed lots of ncRNA papers 
+- Watched videos on cellular processes
+- Looked through molec cell and epigenetics textbooks and marked relevant pages to reference during comps 
+
+### November 30 
+- Reviewed computational methods for ncRNA analysis, specifically focusing on miRDeep2
+- Mock oral exam w/ Danielle 
+- Outlined potential questions 
