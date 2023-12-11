@@ -34,6 +34,13 @@ REST
 - Outlined questions a little bit 
 - REST 
 
+### December 6 
+- Took Jon's written exam
 
+### December 7 
+- REST 
+
+### December 8 
+- Took Hollie's written exam 
 
 
