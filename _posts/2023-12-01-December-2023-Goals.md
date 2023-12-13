@@ -43,4 +43,13 @@ REST
 ### December 8 
 - Took Hollie's written exam 
 
+### December 11 
+- Emailed committee to remind about oral exam next week 
+- Nanodropped AH samples 
+- Met with Ariana 
+
+### December 12 
+- Aquarium room DMs
+- Wrote some intro paragraphs for E5 paper 
+
 
