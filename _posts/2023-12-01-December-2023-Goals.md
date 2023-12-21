@@ -52,4 +52,33 @@ REST
 - Aquarium room DMs
 - Wrote some intro paragraphs for E5 paper 
 
+### December 13 
+- Wrote some intro paragraphs for E5 paper 
+- Wrote some stuff for beyond gene expression paper 
+- Reviewed notes 
+- Met w/ Ariana and Zoe 
+
+### December 14 
+- Practice oral exam w/ Ariana 
+- Wrote some stuff for beyond gene expression paper 
+- Helped Flo with code 
+
+### December 15
+- Did brief review of comps stuff 
+- e5 ncRNA meeting 
+- Lab meeting 
+
+### December 18 
+- Aquarium daily stuff 
+- Oral comps - passed! 
+
+### December 19 
+REST 
+
+### December 20 
+- Re-extracted AH samples 
+- Aquarium daily stuff 
+
+### December 21 
+- Aquarium daily stuff 
 
