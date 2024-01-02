@@ -70,4 +70,6 @@ QC for these samples was done on 1/2/24.
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/larvae_cd_mcap2023/gel_20240102.JPG)
 
+Several samples had no detectable DNA and there are no bands in the gel for many of the DNA samples. RNA all had good concentrations and bands can be seen, hooray!
+
 
