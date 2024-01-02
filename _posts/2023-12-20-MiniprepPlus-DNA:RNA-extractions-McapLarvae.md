@@ -67,7 +67,7 @@ QC for these samples was done on 1/2/24.
 | R105      | 7.54       | 7.4        | 7.47              | 17.3                       | 1.71                 | 1.55                 | 24.6       | 24.4       | 24.5              | 17.1                       | 2.33                 | 1.26                 |
 
 #### Gel 
-![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/larvae_cd_mcap2023/gel_20240102.JPG)
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/larvae_cd_mcap2023/gel_20240102.JPG)
 
 
