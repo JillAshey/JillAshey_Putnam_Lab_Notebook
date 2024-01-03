@@ -457,3 +457,194 @@ Locations of cnidarian miRNA data
 - [Hydra](https://mirbase.org/browse/results/?organism=hma)
 - [Nematostella](https://mirbase.org/browse/results/?organism=nve)
 - [Acropora muricata, Montipora capricornis, Montipora foliosa, Pocillopora verrucosa](http://118.89.77.43:7081/miR/browse.php)
+
+20240103
+Should I retrim with fastp to keep it consistent with mRNA? Going to try it out and compare results from flexbar. In  trimmed smRNA folder, make new directory to put fastp trimmed reads
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim
+mkdir fastp
+```
+
+In scripts folder: `nano fastp_QC.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.out
+
+# Load modules needed 
+module load fastp/0.19.7-foss-2018b
+module load FastQC/0.11.8-Java-1.8
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+# Make an array of sequences to trim in raw data directory 
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/raw
+array1=($(ls *R1_001.fastq.gz))
+
+echo "Read trimming of adapters started." $(date)
+
+# fastp and fastqc loop 
+for i in ${array1[@]}; do
+    fastp --in1 ${i} \
+        --in2 $(echo ${i}|sed s/_R1/_R2/)\
+        --out1 /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp/trimmed.${i} \
+        --out2 /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp/trimmed.$(echo ${i}|sed s/_R1/_R2/) \
+        --detect_adapter_for_pe \
+        --qualified_quality_phred 30 \
+        --unqualified_percent_limit 10 \
+        #--length_required 100 \
+        --cut_right cut_right_window_size 5 cut_right_mean_quality 20
+	 fastqc /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp/trimmed.${i}
+    fastqc /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp/trimmed.$(echo ${i}|sed s/_R1/_R2/)
+done
+
+echo "Read trimming of adapters complete." $(date)
+
+# Quality Assessment of Trimmed Reads
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp #go to output directory
+
+# Compile MultiQC report from FastQC files 
+multiqc --interactive ./  
+
+echo "Cleaned MultiQC report generated." $(date)
+```
+
+Submitted batch job 291969. Took about 5 hours. The QC plots don't look amazing and the length is still at 100 bp. I'm going to rerun but adding the argument `--length_limit 30` for fastp. This means that reads longer than 30 bp will be discarded. Submitted batch job 291997
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+I'm going to try to run [mirDeep2](https://github.com/rajewsky-lab/mirdeep2) using code from the mirdeep2 github [tutorial](https://github.com/rajewsky-lab/mirdeep2/blob/master/TUTORIAL.md) and Sam White's [code](https://github.com/urol-e5/deep-dive/blob/main/E-Peve/code/11-Peve-sRNAseq-miRdeep2.md#7-run-mirdeep2) from the E5 deep dive project. 
+
+When I asked Kevin Bryan to install mirdeep2 and miranda on the server, he said: 
+
+"Hi Jill, I’m out this week, but you should be able to install both of these into a conda environment. You can use Miniconda3/23.5.2-0 for that.
+
+https://anaconda.org/bioconda/miranda
+https://anaconda.org/bioconda/mirdeep2
+
+Let me know if you run into any issues. You probably want to use --prefix /data/putnamlab/miranda or similar so it can be shared with the group."
+
+I'll first try this and then if that doesn't work, I'll email him again to install. Use one of these commands to install: 
+
+```
+conda install -c bioconda mirdeep2
+conda install -c "bioconda/label/cf201901" mirdeep2
+```
+
+Failed to install properly. When installing in an conda environment, it said I didn't have access to install this software. Emailed Kevin Bryan again to see if he can install them on the HPC. 
+
+
+
+
+
+
+
+
+
+To run mirdeep2, I need the following inputs: 
+- Collapsed reads (concatenated, unique reads)
+- Genome fasta 
+- [miRBase](https://mirbase.org/download/) mature miRNA fasta 
+
+First, I need to concatenate (with `cat` command) and collapse my reads (with `fastx_collapser` from the [fastx toolkit](http://hannonlab.cshl.edu/fastx_toolkit/commandline.html). I'm going to try with just one sample for now. In the `/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp`:
+
+```
+cat trimmed.AST-1065_R1_001.fastq.gz trimmed.AST-1065_R2_001.fastq.gz > cat.trimmed.AST-1065.fastq
+
+module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
+
+# gunzip cat.trimmed.AST-1065.fastq.gz # files must be unzipped for collapsing; unzip if needed
+fastx_collapser -v -i cat.trimmed.AST-1065.fastq -o collapse.cat.trimmed.AST-1065.fastq
+```
+
+There are 3 primary modules for mirdeep2: 
+
+- miRDeep2 module
+	- Input: reference genome, sequencing reads, positions of reads mapped against genome
+	- Test format of input files so that any errors can be identified and corrected for
+	- Potential miRNA precursors (ie pre-miRNAs) are excised from genome using mapped reads as guidelines
+		- Takes the sequence that the mapped read covers and some additional sequence
+	- Map the reads against the excised miRNA potential precursors using Bowtie
+	- RNAfold tool is used to predict if the RNA secondary structures of each excised potential precursors resembles a typical miRNA hairpin structure
+		- Structure must resemble a hairpin and the read must fall within the hairpin as would be expected from Dicer processing
+		- Based on that info^^, the potential precursor is assigned a score that reflects how likely it is to be an actual miRNA
+	- Output: info on every miRNA identified in the data (known or novel?)
+- Mapper module
+	- Input: reference genome, sequencing reads, adapter sequences (from library prep)
+	- Reads are trimmed and adapters removed
+	- Reads are mapped to genome with Bowtie
+	- Output: file with processed reads, file with reads mapped against genome
+- Quantifier module
+	- Input: sequencing reads, known and precursor miRNAs from reference species
+	- Reads and miRNA strands are mapped separately against precursors
+	- Mappings of reads and miRNA strands are intersected —> reads that map to the same position as a given strand add to the read count of that miRNA strand
+	- Output: file with read counts of all known miRNAs in data
+
+Based on what I've read about mirdeep2, the mapper module should be run first and then mirdeep2 and quantifier modules. I may need to edit the file names before I run any mirdeep2 stuff because the documentation says: "The readID must end with _xNumber and is not allowed to contain whitespaces. has to have the format name_uniqueNumber_xnumber"
+
+First, index the genome with bowtie (NOT bowtie2). In the scripts folder: `nano bowtie_build.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.out
+
+module load GCCcore/11.3.0 #I needed to add this to resolve conflicts between loaded GCCcore/9.3.0 and GCCcore/11.3.0
+module load Bowtie/1.3.1-GCC-11.3.0
+
+# Index the reference genome for A. poculata 
+bowtie-build /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta Apoc_ref.btindex
+
+echo "Referece genome indexed!" $(date)
+```
+
+Submitted batch job 291990. Getting some GCC conflict errors so added `module load GCCcore/11.3.0` to the script. Submitted batch job 291991
+
+
+Run the mapper module 
+
+```
+mapper.pl reads.fa -c -j -p Apoc_ref.btindex -s COLLAPSED_READS.fa -t reads_collapsed_vs_genome.arf -v
+```
+
+Run the quantifier module 
+
+```
+quantifier.pl -m MIRBASE.MATURE -r COLLAPSED_READS.fa  
+```
+
+Run the mirdeep2 module 
+
+

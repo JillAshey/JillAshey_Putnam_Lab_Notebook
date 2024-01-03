@@ -243,6 +243,54 @@ Submitted batch job 267173
 
 ADD QC PLOTS
 
+Let's look at the counts from the trimmed data 
+
+```
+zgrep -c "@NGSNJ" *fastq.gz
+trimmed.AST-1065_R1_001.fastq.gz:0
+trimmed.AST-1065_R2_001.fastq.gz:28514704
+trimmed.AST-1105_R1_001.fastq.gz:0
+trimmed.AST-1105_R2_001.fastq.gz:283
+trimmed.AST-1147_R1_001.fastq.gz:0
+trimmed.AST-1147_R2_001.fastq.gz:27401584
+trimmed.AST-1412_R1_001.fastq.gz:0
+trimmed.AST-1412_R2_001.fastq.gz:23324255
+trimmed.AST-1560_R1_001.fastq.gz:0
+trimmed.AST-1560_R2_001.fastq.gz:25261438
+trimmed.AST-1567_R1_001.fastq.gz:0
+trimmed.AST-1567_R2_001.fastq.gz:23711472
+trimmed.AST-1617_R1_001.fastq.gz:0
+trimmed.AST-1617_R2_001.fastq.gz:21247535
+trimmed.AST-1722_R1_001.fastq.gz:0
+trimmed.AST-1722_R2_001.fastq.gz:24754153
+trimmed.AST-2000_R1_001.fastq.gz:0
+trimmed.AST-2000_R2_001.fastq.gz:20483353
+trimmed.AST-2007_R1_001.fastq.gz:0
+trimmed.AST-2007_R2_001.fastq.gz:26160891
+trimmed.AST-2302_R1_001.fastq.gz:0
+trimmed.AST-2302_R2_001.fastq.gz:22054499
+trimmed.AST-2360_R1_001.fastq.gz:0
+trimmed.AST-2360_R2_001.fastq.gz:21377658
+trimmed.AST-2398_R1_001.fastq.gz:0
+trimmed.AST-2398_R2_001.fastq.gz:21796937
+trimmed.AST-2404_R1_001.fastq.gz:0
+trimmed.AST-2404_R2_001.fastq.gz:26894798
+trimmed.AST-2412_R1_001.fastq.gz:0
+trimmed.AST-2412_R2_001.fastq.gz:25372505
+trimmed.AST-2512_R1_001.fastq.gz:0
+trimmed.AST-2512_R2_001.fastq.gz:24221309
+trimmed.AST-2523_R1_001.fastq.gz:0
+trimmed.AST-2523_R2_001.fastq.gz:23751953
+trimmed.AST-2563_R1_001.fastq.gz:0
+trimmed.AST-2563_R2_001.fastq.gz:25242216
+trimmed.AST-2729_R1_001.fastq.gz:0
+trimmed.AST-2729_R2_001.fastq.gz:15551660
+trimmed.AST-2755_R1_001.fastq.gz:0
+trimmed.AST-2755_R2_001.fastq.gz:24720522
+```
+
+Why do the R1 files have 0 reads??
+
 ### Align trimmed data to reference genome 
 
 Should I use hisat2 or bowtie? Only considering using bowtie because that's used in a lot of ncRNA analyses. Let's do both!
@@ -527,6 +575,9 @@ Unable to read file magic number
 
 Unsure why bowtie is so angry at me. boo. Still need to troubleshoot as of 10/4/23. 
 
+20240103
+
+I may have found the source of the problem...when I trim my data, for some reason, the R1 files now have no data in them. Need to go back to trimming step. 
 
 
 ### Assemble and quantify transcripts
@@ -635,6 +686,70 @@ echo "Gene count matrix compiled." $(date)
 ```
 
 The above code was written by Zoe in this [post](https://github.com/zdellaert/ZD_Putnam_Lab_Notebook/blob/master/_posts/2023-02-27-Point-Judith-RNAseq.md). Submitted batch job 275703
+
+
+
+
+
+### 20240103 
+
+I'm going to go in date order and then rewrite and make it pretty. Today, I figured out that the trimming step resulted in the R1 files having 0 reads. Let's try to fix that. When I look at the trimmed R1 files, it says: 
+
+```
+@HD     VN:1.0  SO:unsorted
+@SQ     SN:chromosome_1 LN:21106950
+@SQ     SN:chromosome_2 LN:21532011
+@SQ     SN:chromosome_3 LN:22725890
+@SQ     SN:chromosome_4 LN:27282911
+@SQ     SN:chromosome_5 LN:29602567
+@SQ     SN:chromosome_6 LN:30212294
+@SQ     SN:chromosome_7 LN:30683508
+@SQ     SN:chromosome_8 LN:29863146
+@SQ     SN:chromosome_9 LN:31044737
+@SQ     SN:chromosome_10        LN:33861578
+@SQ     SN:chromosome_11        LN:33534404
+@SQ     SN:chromosome_12        LN:42634786
+@SQ     SN:chromosome_13        LN:42928715
+@SQ     SN:chromosome_14        LN:58409227
+@PG     ID:bowtie2      PN:bowtie2      VN:2.4.4        CL:"/opt/software/Bowtie2/2.4.4-GCC-11.2.0/bin/bowtie2-align-s --wrapper basic-0 -x ../output/bowtie/refs/Apoc_ref.btindex -1 /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/trimmed.AST-1065_R1_001.fastq.gz -2 /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/trimmed.AST-1065_R2_001.fastq.gz -b /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/trimmed.AST-1065_R1_001.fastq.gz"
+```
+
+Did I accidently replace my data with bowtie info? I'm going to check to make sure the raw reads look okay still and then rerun fastp. I'm going to try trimming just one sample first in interactive mode in the trim folder. 
+
+```
+module load fastp/0.19.7-foss-2018b
+
+fastp --in1 ../raw/AST-1065_R1_001.fastq.gz \
+--in2 ../raw/AST-1065_R2_001.fastq.gz \
+--out1 test.AST-1065_R1_001.fastq.gz \
+--out2 test.AST-1065_R2_001.fastq.gz \
+--detect_adapter_for_pe \
+--qualified_quality_phred 30 \
+--unqualified_percent_limit 10 \
+--length_required 100 \
+--cut_right cut_right_window_size 5 cut_right_mean_quality 20
+```
+
+Didn't finish running, but it seems like this is the way to go. Rerun `fastp_QC.sh`. Submitted batch job 291968
+
+Now I'm going to attempt to run bowtie2 again. I already made the bowtie2 genome index above so lets align the data. I need to be careful not to overwrite my trimmed files with bowtie info. First, I'm going to try with just one sample: 
+
+```
+interactive 
+
+module load GCCcore/11.2.0 #I needed to add this to resolve conflicts between loaded GCCcore/9.3.0 and GCCcore/11.3.0
+module load Bowtie2/2.4.4-GCC-11.2.0 
+
+bowtie2 -1 trimmed.AST-1065_R1_001.fastq.gz -2 trimmed.AST-1065_R2_001.fastq.gz -x /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/refs/Apoc_ref.btindex -S test
+```
+
+Batch job 291993
+
+
+
+
+
+
 
 
 
