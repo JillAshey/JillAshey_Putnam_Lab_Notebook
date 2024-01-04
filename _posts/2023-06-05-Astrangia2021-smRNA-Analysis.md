@@ -315,9 +315,8 @@ module load FastQC/0.11.9-Java-11
 module load MultiQC/1.9-intel-2020a-Python-3.8.2
 
 fastqc TEST_AST-1065_1.fastq.gz TEST_AST-1065_2.fastq.gz
-multiqc *fastqc*```
-
-ADD PLOTS 
+multiqc *fastqc*
+```
 
 The plots look good! I'm going to move forward w/ flexbar trimming. 
 
@@ -519,58 +518,213 @@ multiqc --interactive ./
 echo "Cleaned MultiQC report generated." $(date)
 ```
 
-Submitted batch job 291969. Took about 5 hours. The QC plots don't look amazing and the length is still at 100 bp. I'm going to rerun but adding the argument `--length_limit 30` for fastp. This means that reads longer than 30 bp will be discarded. Submitted batch job 291997
+Submitted batch job 291969. Took about 5 hours. The QC plots don't look amazing and the length is still at 100 bp. I'm going to rerun but adding the argument `--length_limit 30` for fastp. This means that reads longer than 30 bp will be discarded. Submitted batch job 291997. Downloaded the QC report and it looks okay. Low amount of reads but high duplication. Let's see how many counts are in each file: 
+
+```
+zgrep -c "@GWNJ" *fastq.gz
+
+trimmed.AST-1065_R1_001.fastq.gz:7834561
+trimmed.AST-1065_R2_001.fastq.gz:7834561
+trimmed.AST-1105_R1_001.fastq.gz:8754651
+trimmed.AST-1105_R2_001.fastq.gz:8754651
+trimmed.AST-1147_R1_001.fastq.gz:22326820
+trimmed.AST-1147_R2_001.fastq.gz:22326820
+trimmed.AST-1412_R1_001.fastq.gz:8158050
+trimmed.AST-1412_R2_001.fastq.gz:8158050
+trimmed.AST-1560_R1_001.fastq.gz:8733402
+trimmed.AST-1560_R2_001.fastq.gz:8733402
+trimmed.AST-1567_R1_001.fastq.gz:9830273
+trimmed.AST-1567_R2_001.fastq.gz:9830273
+trimmed.AST-1617_R1_001.fastq.gz:8146294
+trimmed.AST-1617_R2_001.fastq.gz:8146294
+trimmed.AST-1722_R1_001.fastq.gz:9014021
+trimmed.AST-1722_R2_001.fastq.gz:9014021
+trimmed.AST-2000_R1_001.fastq.gz:10252309
+trimmed.AST-2000_R2_001.fastq.gz:10252309
+trimmed.AST-2007_R1_001.fastq.gz:9622779
+trimmed.AST-2007_R2_001.fastq.gz:9622779
+trimmed.AST-2302_R1_001.fastq.gz:8921101
+trimmed.AST-2302_R2_001.fastq.gz:8921101
+trimmed.AST-2360_R1_001.fastq.gz:8635502
+trimmed.AST-2360_R2_001.fastq.gz:8635502
+trimmed.AST-2398_R1_001.fastq.gz:9565008
+trimmed.AST-2398_R2_001.fastq.gz:9565008
+trimmed.AST-2404_R1_001.fastq.gz:8798584
+trimmed.AST-2404_R2_001.fastq.gz:8798584
+trimmed.AST-2412_R1_001.fastq.gz:7032530
+trimmed.AST-2412_R2_001.fastq.gz:7032530
+trimmed.AST-2512_R1_001.fastq.gz:7463762
+trimmed.AST-2512_R2_001.fastq.gz:7463762
+trimmed.AST-2523_R1_001.fastq.gz:8272150
+trimmed.AST-2523_R2_001.fastq.gz:8272150
+trimmed.AST-2563_R1_001.fastq.gz:8537237
+trimmed.AST-2563_R2_001.fastq.gz:8537237
+trimmed.AST-2729_R1_001.fastq.gz:7929477
+trimmed.AST-2729_R2_001.fastq.gz:7929477
+trimmed.AST-2755_R1_001.fastq.gz:9775688
+trimmed.AST-2755_R2_001.fastq.gz:9775688
+```
+
+Flexbar keeps more reads but it seems like it is combining the two reads into one for each sample (which I don't want to do yet). Let's edit the flexbar code and see if I can fix that. For now, I just commented out the line `--target trim.$(echo ${i}|sed s/_R1/_R2/) \`, which names the files. Also changing max read length to 30. Submitted batch job 292029
+
+20240104
+Flexbar trimming finished last night but it just rewrote the files over one another so only the last sample has the files. Looking at the flexbar [documentation](https://github.com/seqan/flexbar/wiki/Options#output-selection), it seems like `--target` is the prefix for output file names or paths, where as `--output-reads` and `--output-reads2` is used for the output file for reads 1 and 2 instead of the target prefix usage. So I am just dumb and should've specified the output reads argument instead of target. 
 
 
 
 
+Let's look at the flexbar script again: 
 
+```
+#!/bin/bash
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=200GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
 
+module load Flexbar/3.5.0-foss-2018b  
 
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/raw
 
+echo "Trimming reads using flexbar" $(date)
 
+array1=($(ls *R1_001.fastq.gz))
 
+for i in ${array1[@]}; do
+flexbar \
+-r ${i} \
+-p $(echo ${i}|sed s/_R1/_R2/) \
+-a NEB-adapters.fasta \
+-ap ON \
+-qf i1.8 \
+-qt 30 \
+-t /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
+--post-trim-length 30 \
+--output-reads trim.${i} \
+--output-reads2 trim.$(echo ${i}|sed s/_R1/_R2/) \
+--zip-output GZ
+done 
+```
 
+Made those changes for output reads to the script. Also changed script so that `-qt` was 30 (ie phred score of 30) and post trim length was 30 bp. Submitted batch job 292075. Kept failing, for some reason all my files were empty. I'm now re-copying them from the KITT directory (thank god for backups) and then will rerun flexbar. Added trim. prefix to the beginning of the output file names so that the original files don't get overwritten. Submitted batch job 292079. 
 
+Checked back and it is still overwriting the files with the flexbar.log and flexbar fastq files...Also in the slurm error report, it tells me that the post trim length argument was not found. Looking at the code again, I didn't add a `\` after the -t line. Going to add it and rerun. Also going to try to take out the `--` and just do the `-`. Submitted batch job 292092
 
+Job finished but the files are empty. Why does Flexbar hate me? The error file said it couldn't open the files that flexbar created but why did those need to be opened anyway? 
 
+I'm going to go back to the original script that I ran because it seems to have worked, even though it named both files R2. 
 
+In the scripts folder: `nano flexbar_og.sh`
 
+```
+#!/bin/bash
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=200GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load Flexbar/3.5.0-foss-2018b  
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/raw
+
+echo "Trimming reads using flexbar" $(date)
+
+array1=($(ls *R1_001.fastq.gz))
+
+for i in ${array1[@]}; do
+flexbar \
+-r ${i} \
+-p $(echo ${i}|sed s/_R1/_R2/) \
+-a NEB-adapters.fasta \
+-ap ON \
+-qf i1.8 \
+-qt 30 \
+--post-trim-length 30 \
+--target ${i} \
+--zip-output GZ
+done 
+```
+
+Submitted batch job 292095
+
+While that is running, I'm going to figure out how to set up a conda environment using the conda unity [documentation](https://docs.unity.uri.edu/documentation/software/conda/). For whatever reason, Kevin Bryan recommended I use a conda environment. 
+
+I'm going to make it in the putnam lab folder. 
+
+First I need to load miniconda module: `module load Miniconda3/4.9.2`
+
+Now I need to create a conda environment. 
+
+```
+conda create --prefix /data/putnamlab/miranda
+```
+
+If I need to update:
+
+```
+==> WARNING: A newer version of conda exists. <==
+  current version: 4.9.2
+  latest version: 23.11.0
+
+Please update conda by running
+
+    $ conda update -n base -c defaults conda
+```
+
+Now that the conda environment is created, I need to activate it.
+
+```
+conda activate /data/putnamlab/miranda
+```
+
+It told me my shell had not been properly configured. To do that: 
+
+```
+conda init
+
+no change     /opt/software/Miniconda3/4.9.2/condabin/conda
+no change     /opt/software/Miniconda3/4.9.2/bin/conda
+no change     /opt/software/Miniconda3/4.9.2/bin/conda-env
+no change     /opt/software/Miniconda3/4.9.2/bin/activate
+no change     /opt/software/Miniconda3/4.9.2/bin/deactivate
+no change     /opt/software/Miniconda3/4.9.2/etc/profile.d/conda.sh
+no change     /opt/software/Miniconda3/4.9.2/etc/fish/conf.d/conda.fish
+no change     /opt/software/Miniconda3/4.9.2/shell/condabin/Conda.psm1
+no change     /opt/software/Miniconda3/4.9.2/shell/condabin/conda-hook.ps1
+no change     /opt/software/Miniconda3/4.9.2/lib/python3.8/site-packages/xontrib/conda.xsh
+no change     /opt/software/Miniconda3/4.9.2/etc/profile.d/conda.csh
+modified      /home/jillashey/.bashrc
+
+==> For changes to take effect, close and re-open your current shell. <==
+```
+
+I closed the terminal window and logged back in on a new window. Now let's activate!
+
+```
+conda activate /data/putnamlab/miranda
+```
+
+Now the conda environment is activated! My shell thing now looks like this: `(/data/putnamlab/miranda) [jillashey@ssh3 putnamlab]$`. To deactivate, do `conda deactivate`. 
+
+Create a conda environment for mirdeep2 using the same steps above. 
+
+I'm going to first work in the mirdeep2 environment. Activate the environment: `conda activate /data/putnamlab/mirdeep2`
+
+Install mirdeep2 within the conda env: `conda install bioconda::mirdeep2`. This will take a few minutes to install and load the required packages. 
 
 I'm going to try to run [mirDeep2](https://github.com/rajewsky-lab/mirdeep2) using code from the mirdeep2 github [tutorial](https://github.com/rajewsky-lab/mirdeep2/blob/master/TUTORIAL.md) and Sam White's [code](https://github.com/urol-e5/deep-dive/blob/main/E-Peve/code/11-Peve-sRNAseq-miRdeep2.md#7-run-mirdeep2) from the E5 deep dive project. 
 
-When I asked Kevin Bryan to install mirdeep2 and miranda on the server, he said: 
-
-"Hi Jill, I’m out this week, but you should be able to install both of these into a conda environment. You can use Miniconda3/23.5.2-0 for that.
-
-https://anaconda.org/bioconda/miranda
-https://anaconda.org/bioconda/mirdeep2
-
-Let me know if you run into any issues. You probably want to use --prefix /data/putnamlab/miranda or similar so it can be shared with the group."
-
-I'll first try this and then if that doesn't work, I'll email him again to install. Use one of these commands to install: 
-
-```
-conda install -c bioconda mirdeep2
-conda install -c "bioconda/label/cf201901" mirdeep2
-```
-
-Failed to install properly. When installing in an conda environment, it said I didn't have access to install this software. Emailed Kevin Bryan again to see if he can install them on the HPC. 
-
-
-
-
-
-
-
-
-
-To run mirdeep2, I need the following inputs: 
-- Collapsed reads (concatenated, unique reads)
-- Genome fasta 
-- [miRBase](https://mirbase.org/download/) mature miRNA fasta 
-
-First, I need to concatenate (with `cat` command) and collapse my reads (with `fastx_collapser` from the [fastx toolkit](http://hannonlab.cshl.edu/fastx_toolkit/commandline.html). I'm going to try with just one sample for now. In the `/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp`:
+Before running any mirdeep2 modules, I need to upload some databases to the HPC and configure some of my files. Let's first configure my files. There are 2 files (R1 and R2) per sample, so I need to concatenate and collapse the reads. 
 
 ```
 cat trimmed.AST-1065_R1_001.fastq.gz trimmed.AST-1065_R2_001.fastq.gz > cat.trimmed.AST-1065.fastq
@@ -578,8 +732,311 @@ cat trimmed.AST-1065_R1_001.fastq.gz trimmed.AST-1065_R2_001.fastq.gz > cat.trim
 module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
 
 # gunzip cat.trimmed.AST-1065.fastq.gz # files must be unzipped for collapsing; unzip if needed
+
 fastx_collapser -v -i cat.trimmed.AST-1065.fastq -o collapse.cat.trimmed.AST-1065.fastq
+
+head collapse.cat.trimmed.AST-1065.fastq 
+>1-116635
+TGGTCTATGGTGTAACTGGCAACACGTCTGT
+>2-115039
+ACAGACGTGTTGCCAGTTACACCATAGACCA
+>3-104350
+TGGTCTATGGTGTAACTGGCAACACGTCTGTT
+>4-103158
+AACAGACGTGTTGCCAGTTACACCATAGACCA
+>5-71882
+TGAAAATCTTTTCTCTGAAGTGGAA
 ```
+
+As per the mirdeep2 documentation, The readID must end with _xNumber and is not allowed to contain whitespaces. So it has to have the format name_uniqueNumber_xnumber. 
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.trimmed.AST-1065.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> collapse.cat.trimmed.AST-1065.fastq 
+
+>seq_1_x116635
+TGGTCTATGGTGTAACTGGCAACACGTCTGT
+>seq_2_x115039
+ACAGACGTGTTGCCAGTTACACCATAGACCA
+>seq_3_x104350
+TGGTCTATGGTGTAACTGGCAACACGTCTGTT
+>seq_4_x103158
+AACAGACGTGTTGCCAGTTACACCATAGACCA
+>seq_5_x71882
+TGAAAATCTTTTCTCTGAAGTGGAA
+```
+
+Next I need to reformat the genome fasta description lines. miRDeep2 can’t process genome FastAs with spaces in the description lines. I don't think the Apoc genome has any spaces but I'm going to double check. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia_Genome/
+
+grep "^>" apoculata.assembly.scaffolds_chromosome_level.fasta 
+>chromosome_1
+>chromosome_2
+>chromosome_3
+>chromosome_4
+>chromosome_5
+>chromosome_6
+>chromosome_7
+>chromosome_8
+>chromosome_9
+>chromosome_10
+>chromosome_11
+>chromosome_12
+>chromosome_13
+>chromosome_14
+```
+
+Nice, there are no spaces so I don't need to reformat. If I did, I would sub the spaces with underscores. 
+
+Index the genome with bowtie (NOT bowtie2). In the scripts folder: `nano bowtie_build.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.out
+
+module load GCCcore/11.3.0 #I needed to add this to resolve conflicts between loaded GCCcore/9.3.0 and GCCcore/11.3.0
+module load Bowtie/1.3.1-GCC-11.3.0
+
+# Index the reference genome for A. poculata 
+bowtie-build /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta Apoc_ref.btindex
+
+echo "Referece genome indexed!" $(date)
+```
+
+The indexed genome lives in the scripts folder for now. 
+
+Load the miRbase mature miRNA fasta database onto the server. I downloaded it onto my computer (its not very large) and will now copy it to the server. I downloaded it on 1/3/24. It will live in the refs folder in the smRNA directory. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA
+mkdir refs 
+cd refs 
+ls refs 
+20240103_mature.fa
+
+head 20240103_mature.fa 
+>cel-let-7-5p MIMAT0000001 Caenorhabditis elegans let-7-5p
+UGAGGUAGUAGGUUGUAUAGUU
+>cel-let-7-3p MIMAT0015091 Caenorhabditis elegans let-7-3p
+CUAUGCAAUUUUCUACCUUACC
+>cel-lin-4-5p MIMAT0000002 Caenorhabditis elegans lin-4-5p
+UCCCUGAGACCUCAAGUGUGA
+>cel-lin-4-3p MIMAT0015092 Caenorhabditis elegans lin-4-3p
+ACACCUGGGCUCUCCGGGUACC
+>cel-miR-1-5p MIMAT0020301 Caenorhabditis elegans miR-1-5p
+CAUACUUCCUUACAUGCCCAUA 
+```
+
+Check how many mature miRNA sequences there are in the file
+
+```
+zgrep -c ">" 20240103_mature.fa 
+48885
+```
+
+I'm going to reformat the fasta header names here so there are no spaces 
+
+```
+sed '/^>/ s/ /_/g' 20240103_mature.fa \
+| sed '/^>/ s/,//g' \
+> 20240103_mature.fa
+
+head 20240103_mature.fa 
+>cel-let-7-5p_MIMAT0000001_Caenorhabditis_elegans_let-7-5p
+UGAGGUAGUAGGUUGUAUAGUU
+>cel-let-7-3p_MIMAT0015091_Caenorhabditis_elegans_let-7-3p
+CUAUGCAAUUUUCUACCUUACC
+>cel-lin-4-5p_MIMAT0000002_Caenorhabditis_elegans_lin-4-5p
+UCCCUGAGACCUCAAGUGUGA
+>cel-lin-4-3p_MIMAT0015092_Caenorhabditis_elegans_lin-4-3p
+ACACCUGGGCUCUCCGGGUACC
+>cel-miR-1-5p_MIMAT0020301_Caenorhabditis_elegans_miR-1-5p
+CAUACUUCCUUACAUGCCCAUA
+```
+
+Do I need to change the U to T in `20240103_mature.fa`? Let's try mapping first and seeing. 
+
+```
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp/collapse.cat.trimmed.AST-1065.fastq -e -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s reads_collapsed.fa -t reads_collapsed_vs_genome.arf -v  
+```
+
+Didn't take very long! Only a few seconds. It output this: 
+
+```
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_10292
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 4289826	379347	3910479	8.843	91.157
+seq: 4289826	379347	3910479	8.843	91.157
+```
+
+Not a very high mapping rate but I wonder if that's normal. I may need to change the U to T in the miRbase file. It also produced a `bowtie.log` file:
+
+```
+less bowtie.log 
+
+# reads processed: 1768
+# reads with at least one reported alignment: 215 (12.16%)
+# reads that failed to align: 1496 (84.62%)
+# reads with alignments suppressed due to -m: 57 (3.22%)
+Reported 613 alignments to 1 output stream(s)
+```
+
+The `reads_collapsed_vs_genome.arf` provides info about the sequences that did align: 
+
+```
+head reads_collapsed_vs_genome.arf 
+seq_19_x21706	32	1	32	aacttttgacggtggatctcttggctcacgca	chromosome_2	32	42321	42352	aacttttgacggtggatctcttggctcacgca	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_19_x21706	32	1	32	aacttttgacggtggatctcttggctcacgca	chromosome_2	32	53070	53101	aacttttgacggtggatctcttggctcacgca	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_19_x21706	32	1	32	aacttttgacggtggatctcttggctcacgca	chromosome_2	32	20734	20765	aacttttgacggtggatctcttggctcacgca	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_19_x21706	32	1	32	aacttttgacggtggatctcttggctcacgca	chromosome_2	32	31478	31509	aacttttgacggtggatctcttggctcacgca	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_20_x21513	32	1	32	tgcgtgagccaagagatccaccgtcaaaagtt	chromosome_2	32	31478	31509	tgcgtgagccaagagatccaccgtcaaaagtt	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_20_x21513	32	1	32	tgcgtgagccaagagatccaccgtcaaaagtt	chromosome_2	32	20734	20765	tgcgtgagccaagagatccaccgtcaaaagtt	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_20_x21513	32	1	32	tgcgtgagccaagagatccaccgtcaaaagtt	chromosome_2	32	42321	42352	tgcgtgagccaagagatccaccgtcaaaagtt	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_20_x21513	32	1	32	tgcgtgagccaagagatccaccgtcaaaagtt	chromosome_2	32	53070	53101	tgcgtgagccaagagatccaccgtcaaaagtt	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_33_x17087	43	1	43	ttgctacgatcttctgagattaagcctttgttctaagatttgt	chromosome_2	43	879093	879135	ttgctacgatcttctgagattaagcctttgttctaagatttgt	+mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_33_x17087	43	1	43	ttgctacgatcttctgagattaagcctttgttctaagatttgt	chromosome_2	43	38360	38402	ttgctacgatcttctgagattaagcctttgttctaagatttgt	-mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+```
+
+Not sure what all of this info means, but I will look into it. I also need to look into why/how the reads get collapsed because the collapse set left me with only 1796 sequences (compared to the 26561348 sequences I had in the cat file) and I want to make sure that's normal. 
+
+Now lets run mirdeep2!!!!!!!!
+
+```
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp/collapse.cat.trimmed.AST-1065.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/20240103_mature.fa none none -t N.vectensis -P -v -g -1 2>report.log
+```
+
+I need to specify none 2x because I do not have the files for known miRNAs or known precursor miRNAs in this species. I got an error:
+
+```
+#Starting miRDeep2
+/data/putnamlab/mirdeep2/bin/miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp/collapse.cat.trimmed.AST-1065.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/20240103_mature.fa none none -t N.vectensis -P -v -g -1
+
+miRDeep2 started at 16:15:57
+
+
+mkdir mirdeep_runs/run_04_01_2024_t_16_15_57
+
+#testing input files
+started: 16:16:06
+sanity_check_mature_ref.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/20240103_mature.fa
+
+
+ended: 16:16:06
+total:0h:0m:0s
+
+sanity_check_reads_ready_file.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp/collapse.cat.trimmed.AST-1065.fastq
+
+started: 16:16:06
+ESC[1;31mError: ESC[0mproblem with /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp/collapse.cat.trimmed.AST-1065.fastq
+Error in line 860: Either the sequence
+
+GATGGAATTGTAGCAT
+
+
+contains less than 17 characters or contains characters others than [acgtunACGTUN]
+
+Please make sure that your file only comprises sequences that have at least 17 characters
+
+containing letters [acgtunACGTUN]
+```
+
+My collapsed read file has some sequences that are <17 bp which mirdeep2 doesn't like. I need to remove sequences with <17 nts (or do it during the trimming step). Used chatgpt for the code below :)  
+
+```
+#!/bin/bash
+
+# Define the input and output files
+input_file="collapse.cat.trimmed.AST-1065.fastq"
+output_file="17_collapse.cat.trimmed.AST-1065.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+```
+
+Rerun mirdeep2 with the new file
+
+```
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp/17_collapse.cat.trimmed.AST-1065.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/20240103_mature.fa none none -t N.vectensis -P -v -g -1 2>report.log
+```
+
+Took about 2 mins and there were no alignments. I'm going to change the U to T in the `20240103_mature.fa` file, then rerun the mapping and mirdeep2 steps. 
+
+```
+#!/bin/bash
+
+# Define the input and output files
+input_file="20240103_mature.fa"  # Replace with your actual input file name
+output_file="20240103_mature_T.fa"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the file
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        print $0 >> "'$output_file'"  # Print the identifier as is
+    } else {
+        gsub(/U/, "T", $0)  # Replace U with T in sequences
+        print $0 >> "'$output_file'"
+    }
+}' "$input_file"
+
+```
+
+I guess I don't need to redo the mapping step because the mapping did not use the 20240103_mature.fa file. Therefore, I will proceed to the mirdeep2 step.
+
+```
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp/17_collapse.cat.trimmed.AST-1065.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/20240103_mature_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+```
+
+Still no alignment :'( I need to talk to Sam and ask him the following: 
+
+- How many reads were left after he concatnated and collapsed his fastq files? 
+- What was his alignment after the mapping step? 
+
+Also what if I didn't collapse the reads? What if I just removed the heading, + sign, and quality scores and formatted it like mirdeep2 wants it? 
+
+I just briefly reran the collapse step and now there are hundreds of thousands of sequences...may need to rerun mapping idk 
+
+
+
+
+
+
+
+
+### mirdeep2 background 
 
 There are 3 primary modules for mirdeep2: 
 
@@ -631,6 +1088,61 @@ echo "Referece genome indexed!" $(date)
 ```
 
 Submitted batch job 291990. Getting some GCC conflict errors so added `module load GCCcore/11.3.0` to the script. Submitted batch job 291991
+
+Concatenate (with `cat` command) and collapse reads (with `fastx_collapser` from the [fastx toolkit](http://hannonlab.cshl.edu/fastx_toolkit/commandline.html).
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.out
+
+module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
+
+echo "Concatenate and collapse smRNA reads" $(date)
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp
+
+samples=$(ls trimmed.*_R1_001.fastq.gz | sed 's/trimmed.\(.*\)_R1_001.fastq.gz/\1/')
+
+for sample in $samples
+do
+    # Concatenate paired-end reads
+    cat "trimmed.${sample}_R1_001.fastq.gz" "trimmed.${sample}_R2_001.fastq.gz" > "cat.trimmed.${sample}.fastq"
+	 echo "Reads are concatenated into one file per sample" $(date)
+
+
+    # Collapse concatenated reads
+    fastx_collapser -v -i "cat.trimmed.${sample}.fastq" -o "collapse.cat.trimmed.${sample}.fastq"
+    echo "Reads are collapsed" $(date)
+    
+done
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 Run the mapper module 

@@ -743,8 +743,108 @@ module load Bowtie2/2.4.4-GCC-11.2.0
 bowtie2 -1 trimmed.AST-1065_R1_001.fastq.gz -2 trimmed.AST-1065_R2_001.fastq.gz -x /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/refs/Apoc_ref.btindex -S test
 ```
 
-Batch job 291993
+Batch job 291993. This appears to have been successful. Let's try to convert the test sam file into a bam file. 
 
+```
+module load SAMtools/1.9-foss-2018b
+samtools sort -@ 8 -o test.bam test.sam
+```
+
+Gives me this error: `Illegal instruction (core dumped)`. 
+
+### 20240104
+
+Trimming finished last night and plots look good. Now I'm going to run bowtie2 to align all samples. Here's the bowtie2 code for all of the samples. In scripts: `nano bowtie2_align.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.out
+
+module load Bowtie2/2.4.4-GCC-11.2.0 
+
+echo "Aligning reads" $(date)
+
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/
+
+array=($(ls *R1_001.fastq.gz)) # call the clean sequences - make an array to align
+
+for i in ${array[@]}; do
+    bowtie2 -1 ${i} -2 $(echo ${i}|sed s/_R1/_R2/) -x /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/refs/Apoc_ref.btindex -S -b --align-paired-reads
+done
+
+echo "Reads aligned!" $(date)
+```
+
+Submitted batch job 292070. failed immediately. Error was: `Warning: Output file '/data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/test.AST-1065_R1_001.fastq.gz.bam' was specified without -S.  This will not work in future Bowtie 2 versions.  Please use -S instead.`. Going to add `-S` even though I want a bam file. Submitted batch job 292080. Now this error: 
+
+```
+Extra parameter(s) specified: "/data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/test.AST-1065_R1_001.fastq.gz.bam"
+Note that if <mates> files are specified using -1/-2, a <singles> file cannot
+also be specified.  Please run bowtie separately for mates and singles.
+Error: Encountered internal Bowtie 2 exception (#1)
+```
+
+I think it's angry that I specified a single output file for bam so I'm going to remove the file name. Submitted batch job 292081
+
+Now it says this: 
+
+```
+Error: 0 mate files/sequences were specified with -1, but 1
+mate files/sequences were specified with -2.  The same number of mate files/
+sequences must be specified with -1 and -2.
+Error: Encountered internal Bowtie 2 exception (#1)
+Command: /opt/software/Bowtie2/2.4.4-GCC-11.2.0/bin/bowtie2-align-s --wrapper basic-0 -x /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/refs/Apoc_ref.btindex -S -1 -2 /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/test.AST-1065_R2_001.fastq.gz -b --align-paired-reads /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/test.AST-1065_R1_001.fastq.gz 
+(ERR): bowtie2-align exited with value 1
+```
+
+but there is a file in the -1 position? Maybe the array doesn't like having the full path name in the array itself? Going to remove that and rerun. Submitted batch job 292082. Same error as above... This is what it thinks my command is: `Command: /opt/software/Bowtie2/2.4.4-GCC-11.2.0/bin/bowtie2-align-s --wrapper basic-0 -x /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/refs/Apoc_ref.btindex -S -1 -2 trimmed.AST-1065_R2_001.fastq.gz -b --align-paired-reads trimmed.AST-1065_R1_001.fastq.gz`. For some reason, it is moving the R1 to the end of the script. I'm going to space out using `\` linebreaks the script to see if that fixes it
+
+```
+#!/bin/bash
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load Bowtie2/2.4.4-GCC-11.2.0 
+
+echo "Aligning reads" $(date)
+
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/
+
+array=($(ls *R1_001.fastq.gz)) # call the clean sequences - make an array to align
+
+for i in ${array[@]}; do
+    bowtie2 -x /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/refs/Apoc_ref.btindex \
+	 -1 ${i} \
+    -2 $(echo ${i}|sed s/_R1/_R2/) \
+    -S \
+    -b \
+    --align-paired-reads
+done
+
+echo "Reads aligned!" $(date)
+```
+
+
+Submitted batch job 292083. SAME ERROR. Going to comment everything except for the -x, -1, and -2 out. Submitted batch job 292084. Appears to be running but the output seems like its going into the slurm output file...Canceled the job. I'm going to add the -b back in a specify a file name (`-b align.${i}`). This should output bam files with the specific file names. Submitted batch job 292085. Still seems to be outputting to the slurm output file...I'm going to stop bowtie and comment out the b and include the -S back in. Submitted batch job 292098
+
+The aligned files are getting put in sam files but labeled as .gz. Will need to convert to sam files, then to bam files once alignment is finished. 
 
 
 
