@@ -56,5 +56,6 @@ The samples run today were M10, M11, M14, M24, M26, M28, M49, M50, M51, M59, M62
 
 #### Gel 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/gel_20240105.JPG)
 
-Not much DNA in the samples, but a lot of RNA. 
+Not much DNA in the samples, but a lot of RNA. The RNA bands look very blurry and some samples don't have distinct bands. I may nanodrop and/or tapestation these samples to check out the quality of RNA. 
