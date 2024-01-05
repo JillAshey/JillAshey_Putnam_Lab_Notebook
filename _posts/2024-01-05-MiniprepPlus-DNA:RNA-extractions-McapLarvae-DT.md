@@ -13,9 +13,9 @@ This protocol is based on Maggie’s coral egg/larvae extraction [protocol](http
 
 ### Samples 
 
-The samples run today were test samples M1, M2, and M3. These samples had 200 uL of concentrated fertilized eggs in them and were preserved in ~600 uL of DNA/RNA Shield. This photo is post-bead beating: 
+The samples run today were M10, M11, M14, M24, M26, M28, M49, M50, M51, M59, M62 and M63. These samples had between 700-1400 larvae per tube. M10, M11, and M14 were preserved in 1 mL of DNA/RNA Shield; M24, M26, M28, M49, M50, M51, M59, M62 and M63 were preserved in 700 uL of DNA/RNA Shield. This photo is post-bead beating: 
 
-![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/samples_20231027.JPG)
+XXXXXXXX'
 
 ### Materials 
 
@@ -31,7 +31,7 @@ The samples run today were test samples M1, M2, and M3. These samples had 200 uL
 
 ### Protocol
 
-- I added 400 uL of DNA/RNA shield to the samples after thawing them so that the volume in the tubes was 1 mL of shield. I aliquoted out 500 uL for extractions and saved the remaining fraction in case we need to re-extract. 
+- I added 300 uL of DNA/RNA shield to the samples that had <1mL of shield in them after thawing them so that the volume in the tubes was 1 mL of shield. I aliquoted out 500 uL for extractions and saved the remaining fraction in case we need to re-extract. 
 - In the RNA extraction, I added another wash step with 400 uL of wash buffer after the DNase incubation (i.e., after the incubation, I did 400 uL of prep buffer, 700 uL of wash buffer, 400 uL of wash buffer, and another 400 uL of wash buffer).
 - I eluted in 80 uL of either Tris (DNA) or DNA/RNA free water (RNA) instead of 100 uL. 
 
@@ -41,12 +41,20 @@ The samples run today were test samples M1, M2, and M3. These samples had 200 uL
 
 | Tube ID | Qubit DNA1 | Qubit DNA2 | Qubit DNA Average | Qubit RNA1 | Qubit RNA2 | Qubit RNA Average |
 | ------- | ---------- | ---------- | ----------------- | ---------- | ---------- | ----------------- |
-| M1      | NA         | NA         | NA                | 196        | 195        | 195.5             |
-| M2      | 2.84       | 2.82       | 2.83              | 278        | 276        | 277               |
-| M3      | NA         | NA         | NA                | 290        | 292        | 291               |
+| M10     | NA         | NA         | NA                | 101        | 101        | 101               |
+| M11     | NA         | NA         | NA                | 123        | 124        | 123.5             |
+| M14     | NA         | NA         | NA                | 252        | 252        | 252               |
+| M24     | 2.4        | 2.44       | 2.42              | 162        | 162        | 162               |
+| M26     | NA         | NA         | NA                | 230        | 230        | 230               |
+| M28     | NA         | NA         | NA                | 42.2       | 42.8       | 42.5              |
+| M49     | 8.22       | 8.44       | 8.33              | 86.8       | 86.4       | 86.6              |
+| M50     | 9.88       | 10.1       | 9.99              | 72.4       | 71.8       | 72.1              |
+| M51     | 8.96       | 9.2        | 9.08              | 55.4       | 55.8       | 55.6              |
+| M59     | 13.2       | 13.5       | 13.35             | 108        | 109        | 108.5             |
+| M62     | 12.3       | 12.6       | 12.45             | 98.6       | 98.6       | 98.6              |
+| M63     | 8.3        | 8.5        | 8.4               | 89         | 89.4       | 89.2              |
 
 #### Gel 
 
-![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20231027.JPG)
 
 Not much DNA in the samples, but a lot of RNA. 

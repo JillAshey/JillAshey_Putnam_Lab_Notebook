@@ -1029,7 +1029,11 @@ Also what if I didn't collapse the reads? What if I just removed the heading, + 
 
 I just briefly reran the collapse step and now there are hundreds of thousands of sequences...may need to rerun mapping idk 
 
+### 20240105
 
+Flexbar finished running overnight, took about 9 hours. Now I need to QC it. First going to move it from the raw data folder to the trim data folder. 
+
+In `/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim`, I moved the old flexbar trimmed seqs to the foler `flexbar_old`. I moved the newly trimmed seqs from the raw data folder into `/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar`. 
 
 
 
