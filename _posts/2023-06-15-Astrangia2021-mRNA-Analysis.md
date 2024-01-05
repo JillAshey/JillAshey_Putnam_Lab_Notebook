@@ -844,8 +844,35 @@ echo "Reads aligned!" $(date)
 
 Submitted batch job 292083. SAME ERROR. Going to comment everything except for the -x, -1, and -2 out. Submitted batch job 292084. Appears to be running but the output seems like its going into the slurm output file...Canceled the job. I'm going to add the -b back in a specify a file name (`-b align.${i}`). This should output bam files with the specific file names. Submitted batch job 292085. Still seems to be outputting to the slurm output file...I'm going to stop bowtie and comment out the b and include the -S back in. Submitted batch job 292098
 
-The aligned files are getting put in sam files but labeled as .gz. Will need to convert to sam files, then to bam files once alignment is finished. 
+The aligned files are getting put in sam files but labeled as .gz. Will need to convert to sam files, then to bam files once alignment is finished. The output files are also labeled R1 but contain info for both R1 and R2 of that sample. 
 
+### 20240105
+
+Convert .gz files to proper .sam file name and convert to bam file. Test on one sample first in a test script. In the scripts folder: `nano test_sam_to_bam.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
+
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim
+
+#mv align.trimmed.AST-1065_R1_001.fastq.gz align.trimmed.AST-1065.sam
+
+samtools sort -o align.trimmed.AST-1065.bam align.trimmed.AST-1065.sam
+```
+
+Submitted batch job 292161. Worked! 
 
 
 

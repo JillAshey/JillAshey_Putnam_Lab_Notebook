@@ -15,7 +15,7 @@ This protocol is based on Maggie’s coral egg/larvae extraction [protocol](http
 
 The samples run today were M10, M11, M14, M24, M26, M28, M49, M50, M51, M59, M62 and M63. These samples had between 700-1400 larvae per tube. M10, M11, and M14 were preserved in 1 mL of DNA/RNA Shield; M24, M26, M28, M49, M50, M51, M59, M62 and M63 were preserved in 700 uL of DNA/RNA Shield. This photo is post-bead beating: 
 
-XXXXXXXX'
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/samples_20240105.JPG)
 
 ### Materials 
 

@@ -1035,9 +1035,119 @@ Flexbar finished running overnight, took about 9 hours. Now I need to QC it. Fir
 
 In `/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim`, I moved the old flexbar trimmed seqs to the foler `flexbar_old`. I moved the newly trimmed seqs from the raw data folder into `/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar`. 
 
+Now let's run fastqc on the newly trimmed samples using the `fastqc_trim.sh` from above, but changing the directories 
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.out
+
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+echo "QC for trimmed reads using flexbar with max length of 30 bp" $(date)
+
+for file in /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/*fastq.gz
+do 
+fastqc $file --outdir /data/putnamlab/jillashey/Astrangia2021/smRNA/fastqc/trim/flexbar
+done
+
+echo "QC complete, run multiqc" $(date)
+
+multiqc --interactive fastqc_results/trim/flexbar
+```
+
+Submitted batch job 292159
+
+If the data looks good, I will do another test run of mirdeep2. It finished in ~30 mins but it did not complete the multiQC. When I went into the folder to run the multiqc step, it appears to only have run it on the R2 files. I'm going to move the R1 and R2 fastqc info into separate folders and run the QC on them separately. There is probably a better way to do this idk. 
+
+```
+mkdir R1 R2
+mv *_1_fastqc* R1
+mv *_2_fastqc* R2
+```
+
+Now go into each folder and run multiqc separately. 
 
 
 
+
+
+
+
+
+
+
+I did most of the genome and database prep yesterday so I don't need to redo that. I will run mirdeep2 on a test sample first. Concenate and collapse R1 and R2 from the same sample. 
+
+```
+cat AST-1065_R1_001.fastq.gz_1.fastq.gz AST-1065_R1_001.fastq.gz_2.fastq.gz > cat.trimmed.AST-1065.fastq
+```
+
+When I tried to cat the zipped reads, the resulting output file was a binary file. When I unzipped the reads, the cat worked fine so I may need to unzip all the reads before doing the cat and collapse steps. 
+
+
+```
+gunzip AST-1065_R1_001.fastq.gz_1.fastq.gz
+gunzip AST-1065_R1_001.fastq.gz_2.fastq.gz
+
+cat AST-1065_R1_001.fastq.gz_1.fastq AST-1065_R1_001.fastq.gz_2.fastq > test.fastq
+
+module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
+
+fastx_collapser -v -i test.fastq -o collapse.cat.trim_1065.fastq
+```
+
+The collapsing takes a while so I may have to run it in a script. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+As per the mirdeep2 documentation, The readID must end with _xNumber and is not allowed to contain whitespaces. So it has to have the format name_uniqueNumber_xnumber. 
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.trimmed.AST-1065.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> collapse.cat.trimmed.AST-1065.fastq 
+
+>seq_1_x116635
+TGGTCTATGGTGTAACTGGCAACACGTCTGT
+>seq_2_x115039
+ACAGACGTGTTGCCAGTTACACCATAGACCA
+>seq_3_x104350
+TGGTCTATGGTGTAACTGGCAACACGTCTGTT
+>seq_4_x103158
+AACAGACGTGTTGCCAGTTACACCATAGACCA
+>seq_5_x71882
+TGAAAATCTTTTCTCTGAAGTGGAA
+```
 
 
 ### mirdeep2 background 
