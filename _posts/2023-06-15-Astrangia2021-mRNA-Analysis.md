@@ -872,7 +872,61 @@ cd /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim
 samtools sort -o align.trimmed.AST-1065.bam align.trimmed.AST-1065.sam
 ```
 
-Submitted batch job 292161. Worked! 
+Submitted batch job 292161. Worked! Now I need to make do it for all the samples 
+
+### 20240107 
+
+First, I'm going to move the aligned reads to the bowtie output alignment folder: `mv /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/align* /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/align`
+
+In the scripts folder: `nano sam_to_bam.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
+
+echo "Converting sam to bam" $(date)
+
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/align
+
+array=($(ls *R1_001.fastq.gz)) # call the clean sequences - make an array to align
+
+for i in ${array[@]}; do
+		mv ${i} ${i}.sam
+		samtools sort -o ${i}.bam ${i}.sam
+		rm ${i}.sam
+done
+
+echo "Files converted to bam, sam files removed" $(date)
+```
+
+Submitted batch job 292223. Job has been pending for a while...cancelled the job. Adding `-@ 8` to the script to indicate to use 8 threads while running. Submitted batch job 292231
+
+### 20240107 
+
+Cancelled job 292231, as it was still pending. Editing the sbatch info for the script so that the time is 24 hrs, n tasks per node is 1 and mem is 100 GB. Submitted batch job 292244. Got an error saying it didn't recognize the `-@` argument. Removing that and resubmitting. Submitted batch job 292245. Now getting the error: `ls: cannot access *R1_001.fastq.gz: No such file or directory`. The aligned files are gone from the bowtie align folder...fml. Somehow, they must have gotten deleted from the sam to bam script? That's super annoying. 
+
+I guess I need to rerun bowtie. Submitted batch job 292246
+
+
+
+
+
+
+
+
+
+
 
 
 

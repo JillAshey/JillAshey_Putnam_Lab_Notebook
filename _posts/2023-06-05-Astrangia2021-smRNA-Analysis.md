@@ -1075,39 +1075,254 @@ mv *_1_fastqc* R1
 mv *_2_fastqc* R2
 ```
 
-Now go into each folder and run multiqc separately. 
+Now go into each folder and run multiqc separately. QC looks good for both reads. 
 
+Next I need to cat, collapse and prep reads for mirdeep2. 
 
+### 20240107
 
-
-
-
-
-
-
-
-I did most of the genome and database prep yesterday so I don't need to redo that. I will run mirdeep2 on a test sample first. Concenate and collapse R1 and R2 from the same sample. 
+I'm going to write a script that will cat and collapse the reads. I'll do it on a test sample first. In the scripts folder: `nano test_cat_collapse.sh`. 
 
 ```
-cat AST-1065_R1_001.fastq.gz_1.fastq.gz AST-1065_R1_001.fastq.gz_2.fastq.gz > cat.trimmed.AST-1065.fastq
-```
-
-When I tried to cat the zipped reads, the resulting output file was a binary file. When I unzipped the reads, the cat worked fine so I may need to unzip all the reads before doing the cat and collapse steps. 
-
-
-```
-gunzip AST-1065_R1_001.fastq.gz_1.fastq.gz
-gunzip AST-1065_R1_001.fastq.gz_2.fastq.gz
-
-cat AST-1065_R1_001.fastq.gz_1.fastq AST-1065_R1_001.fastq.gz_2.fastq > test.fastq
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
 
 module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
 
-fastx_collapser -v -i test.fastq -o collapse.cat.trim_1065.fastq
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
+
+echo "Concatenating R1 and R2 for test sample" $(date)
+
+cat AST-1065_R1_001.fastq.gz_1.fastq AST-1065_R1_001.fastq.gz_2.fastq > cat.AST-1065.fastq
+
+echo "Collapsing redundant sequences with fastx collapse" $(date)
+
+fastx_collapser -v -i cat.AST-1065.fastq -o collapse.cat.AST-1065.fastq
+
+echo "Prep sequence IDs for mirdeep2 analysis" $(date)
+
+sed '/^>/ s/-/_x/g' collapse.cat.AST-1065.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> collapse.cat.AST-1065.fastq
+
+echo "Done!" $(date)
 ```
 
-The collapsing takes a while so I may have to run it in a script. 
+Submitted batch job 292222. I did the genome and database prep already so I don't need to redo that. Took about 20 mins, but the collapsed file is empty...going to have the output file for the `sed` portion be `sed.collapse.cat.AST-1065.fastq` to see if the `sed` portion is what is happening to the files. Submitted batch job 292224. That iteration worked! 
 
+Check how many sequences are in the collapsed file. 
+
+```
+zgrep -c ">" sed.collapse.cat.AST-1065.fastq 
+11979585
+
+head sed.collapse.cat.AST-1065.fastq 
+>seq_1_x357414
+TGGTCTATGGTGTAACTGGCAACACGTCTG
+>seq_2_x138955
+ACAGACGTGTTGCCAGTTACACCATAGACC
+>seq_3_x125294
+AACAGACGTGTTGCCAGTTACACCATAGAC
+>seq_4_x98253
+TGAAAATCTTTTCTCTGAAGTGGAA
+>seq_5_x87633
+TTCCACTTCAGAGAAAAGATTTTCA
+```
+
+Nice, almost 12 million sequences were retained. I was looking at the fastx collapse documentation and it said that the first number in the sequence id corresponded to a sequence and the second number corresponded to how many times that sequence appeared prior to the file being collapsed. So for example, `>seq_1_x357414` was the most represented sequence, as indicated by the 1, and it appeared 357414 times in the pre-collapsed file. 
+
+Need to make sure that all of my sequences are >17 bp, as mirdeep2 does not run if sequences are present with <16 bp. 
+
+My collapsed read file has some sequences that are <17 bp which mirdeep2 doesn't like. I need to remove sequences with <17 nts (or do it during the trimming step). Used chatgpt for the code below :)  
+
+```
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-1065.fastq"
+output_file="17_sed.collapse.cat.AST-1065.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-1065.fastq 
+11979585
+```
+
+Retained all of the sequences. NOW lets attempt an mirdeep2 run. 
+
+```
+conda activate /data/putnamlab/mirdeep2
+```
+
+Map reads to genome first
+
+```
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1065.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s 20240107_reads_collapsed.fa -t 20240107_reads_collapsed_vs_genome.arf -v  
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_56091
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 35658222	3275049	32383173	9.185	90.815
+seq: 35658222	3275049	32383173	9.185	90.815
+```
+
+Still got a pretty high % of unmapped reads...lets look at some of the files produced. 
+
+```
+head 20240107_reads_collapsed.fa 
+>seq_1_x357414
+TGGTCTATGGTGTAACTGGCAACACGTCTG
+>seq_2_x138955
+ACAGACGTGTTGCCAGTTACACCATAGACC
+>seq_3_x125294
+AACAGACGTGTTGCCAGTTACACCATAGAC
+>seq_4_x98253
+TGAAAATCTTTTCTCTGAAGTGGAA
+>seq_5_x87633
+TTCCACTTCAGAGAAAAGATTTTCA
+
+zgrep -c ">" 20240107_reads_collapsed.fa 
+11979585
+
+
+head 20240107_reads_collapsed_vs_genome.arf 
+seq_7_x81424	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_7_x81424	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_7_x81424	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_7_x81424	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_17_x38316	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	27510	27539	acaaatcttagaacaaaggcttaatctcag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_17_x38316	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	49105	49134	acaaatcttagaacaaaggcttaatctcag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_17_x38316	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	38360	38389	acaaatcttagaacaaaggcttaatctcag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_17_x38316	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	879106	879135	acaaatcttagaacaaaggcttaatctcag	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_25_x32759	30	1	30	ttgctacgatcttctgagattaagcctttg	chromosome_2	30	879093	879122	ttgctacgatcttctgagattaagcctttg	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_25_x32759	30	1	30	ttgctacgatcttctgagattaagcctttg	chromosome_2	30	38373	38402	ttgctacgatcttctgagattaagcctttg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+wc -l 20240107_reads_collapsed_vs_genome.arf 
+1091161 20240107_reads_collapsed_vs_genome.arf
+```
+
+I'm not sure what the 20240107_reads_collapsed_vs_genome.arf file means. Let's see how many unique sequences are in that file 
+
+```
+cut -f1 20240107_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+523747
+```
+
+So ~500,000 unique sequences were mapped to the genome? That is how I am interpreting this. Let's try to run mirdeep2. 
+
+```
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1065.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/20240107_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/20240103_mature_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+```
+
+I'm going to let it run for ~10 mins then cut it off, as it probably takes a while (Sam White said his script took several days). I'm not sure if I can activate a conda env in a job script, emailed Kevin Bryan to ask. 
+
+Cut the script off, this is as far as it got: 
+
+```
+#####################################
+#                                   #
+# miRDeep2.0.1.3                   #
+#                                   #
+# last change: 08/11/2019           #
+#                                   #
+#####################################
+
+miRDeep2 started at 17:59:09
+
+
+#Starting miRDeep2
+#testing input files
+#parsing genome mappings
+#excising precursors
+#preparing signature
+#folding precursors
+```
+
+Yay, things are happening! Hopefully I can run this by the e5 meeting on Friday. 
+
+### 20240107
+
+Kevin Bryan confirmed that I can run a conda environment in a job script, I just need to add `-i` to the `#!/bin/bash` because of the way conda changes environments. Going to try this now on the test smRNA sample. In the scripts folder: `nano test_mirdeep2.sh`. 
+
+```
+#!/bin/bash -i
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on test sample" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1065.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/20240107_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/20240103_mature_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for test sample" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 292242. Job has been pending for a few mins and says its waiting for resources. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+good resource for miranda 
+- https://bioinformaticsworkbook.org/dataAnalysis/SmallRNA/Miranda_miRNA_Target_Prediction.html#gsc.tab=0 
+
+Other potential miRNA target prediction programs: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7839038/#:~:text=TargetScan%20primarily%20predicts%20potential%20miRNA,to%20include%20only%20conserved%20sites. 
 
 
 
