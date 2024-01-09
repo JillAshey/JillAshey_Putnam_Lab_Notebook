@@ -1298,22 +1298,216 @@ conda deactivate
 
 Submitted batch job 292242. Job has been pending for a few mins and says its waiting for resources. 
 
+### 20230109
 
+After pending for about a day, mirdeep2 finally finished running on the test sample. It took about 3.5 hours to run. It created these folders/files in the scripts folder: 
 
+```
+drwxr-xr-x. 3 jillashey 4.0K Jan  9 07:49 mirdeep_runs
+drwxr-xr-x. 2 jillashey 4.0K Jan  9 07:52 dir_prepare_signature1704804676
+-rw-r--r--. 1 jillashey  377 Jan  9 11:23 error_09_01_2024_t_07_49_09.log
+-rw-r--r--. 1 jillashey  63K Jan  9 11:24 result_09_01_2024_t_07_49_09.csv
+-rw-r--r--. 1 jillashey 704K Jan  9 11:24 result_09_01_2024_t_07_49_09.html
+drwxr-xr-x. 2 jillashey 4.0K Jan  9 11:28 pdfs_09_01_2024_t_07_49_09
+-rw-r--r--. 1 jillashey  28K Jan  9 11:28 result_09_01_2024_t_07_49_09.bed
+drwxr-xr-x. 2 jillashey 4.0K Jan  9 11:28 mirna_results_09_01_2024_t_07_49_09
+-rw-r--r--. 1 jillashey  20K Jan  9 11:28 report.log
+```
 
+Let's look at them each. 
 
+```
+cd mirdeep_runs
+cd run_09_01_2024_t_07_49_09 # folder 
+ls
+identified_precursors.fa  output.mrd  rfam_vs_precursor.bwt  run_09_01_2024_t_07_49_09_parameters  survey.csv
+```
 
+The identified precursors fasta file includes the precursor sequences (ie the part of the sequence that forms the pre-miRNA)
 
+```
+head identified_precursors.fa 
+>chromosome_10_48090
+ugauggagauggagaacgagaguggacuggacaguuuggcacugaagguucccuuuauaagcaguguuuuucuuucgacuacc
+>M:chromosome_10_48090
+TGTTTTTCTTTCGACTACC
+>L:chromosome_10_48090
+AGTGGACTGGACAGTTTGGCACTGAAGGTTCCCTTTATAAGCAG
+>S:chromosome_10_48090
+TGATGGAGATGGAGAACGAG
+>chromosome_14_108653
+cgcgcgcuauaguuacaguagcuauagcgcgcacuauaauuauagcagcuauagcgcacgcuauaguuagaaacuguagcgcgaguu
 
+zgrep -c ">" identified_precursors.fa 
+18695
+```
 
+Almost 19000 precursor sequences. 
 
+In the output.mrd file, it has info on the different miRNAs identified I believe 
 
+```
+>chromosome_7_30929
+score total                        2.4
+score for star read(s)            -1.3
+score for read counts    0
+score for mfe                      2.1
+score for randfold                 1.6
+total read count                 13651
+mature read count                13499
+loop read count          0
+star read count                    152
+exp                                                                           fffffffffffffffffffMMMMMMMMMMMMMMMMMMMMlllllllllllllllSSSSSSSSSSSSSSSSSSSSffffffffffffffffffffffffff
+ffffffffffff
+obs                                                                           fffffffffffffffffffMMMMMMMMMMMMMMMMMMMMlllllllllllllSSSSSSSSSSSSSSSSSSSSSfffffffffffffffffffffffffff
+ffffffffffff
+pri_seq                                                                       cgcacugcaguugacgugaacccguagauccgaacuugugggauuuuucuccacaaguucggcuccaugguccacgugugcugugcucacaaacguugcu
+acagcgugguca
+pri_struct                                                                    .((((.(((....(((((...((((.((.((((((((((((((....)).)))))))))))).)).))))..))))).))).))))......((((((..
+.)))))).....  #MM
+seq_7183221_x1                                                                .................Uaacccguagauccgaacuugug............................................................
+............  1
+seq_2180915_x2                                                                ..................aacccguagauccgaacu................................................................
+............  0
+seq_9719163_x1                                                                ..................aacccguagauccgaUcuu...............................................................
+............  1
+seq_2267835_x2                                                                ..................Cacccguagauccgaacuu...............................................................
+............  1
+ola-miR-100_MIMAT0022614_Oryzias_latipes_miR-100                              ..................aacccguagauccgaacuu...............................................................
+............  0
+seq_126867_x21                                                                ..................aacccguagauccgaacuug..............................................................
+............  0
+seq_254962_x11                                                                ..................Cacccguagauccgaacuug..............................................................
+............  1
+sbo-miR-100_MIMAT0049501_Saimiri_boliviensis_miR-100                          ..................aacccguagauccgaacuugu.............................................................
+............  0
+dma-miR-100_MIMAT0049252_Daubentonia_madagascariensis_miR-100                 ..................aacccguagauccgaacuugu.............................................................
+............  0
+seq_199802_x14                                                                ..................aacccguagauccgaacuugC.............................................................
+............  1
+pmi-miR-100-5p_MIMAT0032156_Patiria_miniata_miR-100-5p                        ..................aacccguagauccgaacuugu.............................................................
+............  0
+seq_2153292_x2                                                                ..................aacccguagauccgaGcuugu.............................................................
+............  1
+seq_7747127_x1    
 
+zgrep -c ">" output.mrd 
+5231
+```
 
+The rfam vs precursor file includes information about where on the chromosomes the rRNAs and tRNAs are? 
 
+```
+head rfam_vs_precursor.bwt 
+M:chromosome_13_66113	+	AM086652.1/1-576_RF00177;SSU_rRNA_5;	468	TGTTTCGGGATTGCAATG	IIIIIIIIIIIIIIIIII	3	
+M:chromosome_13_66113	+	AF508778.1/21-597_RF00177;SSU_rRNA_5;	469	TGTTTCGGGATTGCAATG	IIIIIIIIIIIIIIIIII	3	
+M:chromosome_13_66113	+	AJ310485.1/21-596_RF00177;SSU_rRNA_5;	468	TGTTTCGGGATTGCAATG	IIIIIIIIIIIIIIIIII	3	
+M:chromosome_13_66113	+	DQ057346.1/21-597_RF00177;SSU_rRNA_5;	469	TGTTTCGGGATTGCAATG	IIIIIIIIIIIIIIIIII	3	
+S:chromosome_13_66113	+	AACY021626480.1/155-83_RF00005;tRNA;	26	TTTGTTTCGTAAGCAAA	IIIIIIIIIIIIIIIII	2	7:T>C
+S:chromosome_13_66113	+	AACY023301721.1/825-896_RF00005;tRNA;	25	TTTGTTTCGTAAGCAAA	IIIIIIIIIIIIIIIII	2	12:A>G
+S:chromosome_13_66113	+	AACY022901721.1/116-188_RF00005;tRNA;	26	TTTGTTTCGTAAGCAAA	IIIIIIIIIIIIIIIII	2	12:A>G
+M:chromosome_14_72583	+	CP000030.1/153914-153986_RF00005;tRNA;	3	CGGTTAGCTCAGTTGGTAGA	IIIIIIIIIIIIIIIIIIII	13	
+M:chromosome_14_72583	+	AACY020037993.1/1235-1163_RF00005;tRNA;	3	CGGTTAGCTCAGTTGGTAGA	IIIIIIIIIIIIIIIIIIII	13	
+M:chromosome_14_72583	+	AACY020166163.1/13-85_RF00005;tRNA;	3	CGGTTAGCTCAGTTGGTAGA	IIIIIIIIIIIIIIIIIIII	13
 
+wc -l rfam_vs_precursor.bwt 
+2241 rfam_vs_precursor.bwt
+```
 
+The run parameters file has the code specifics 
 
+```
+Start: 09_01_2024_t_07_49_09
+Script  /data/putnamlab/mirdeep2/bin/miRDeep2.pl
+args /data/putnamlab/mirdeep2/bin/miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1065.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/20240107_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/20240103_mature_T.fa none none -t N.vectensis -P -v -g -1
+
+dir_with_tmp_files      dir_miRDeep2_09_01_2024_t_07_49_09
+dir     /glfs/brick01/gv0/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+file_reads      /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1065.fastq
+file_genome     /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta
+file_reads_vs_genome    /data/putnamlab/jillashey/Astrangia2021/smRNA/20240107_reads_collapsed_vs_genome.arf
+file_mature_ref_this_species    /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/20240103_mature_T.fa
+file_mature_ref_other_species   none
+option{t} =     N.vectensis
+option{v} =     used
+miRDeep runtime: 
+
+started: 7:49:09
+ended: 11:28:44
+total:3h:39m:35s
+```
+
+The survey file inclues info about the mirdeep2 scores. This is the same info that is at the top of the hmtl and csv files. 
+
+```
+miRDeep2 score  novel miRNAs reported by miRDeep2       novel miRNAs, estimated false positives novel miRNAs, estimated true positives  known miRNAs in species known miRNAs in data    known miRNAs detected by miRDeep2       estimated signal-to-noise       excision gearing
+10      49      3 +/- 2 46 +/- 2 (93 +/- 3%)    48885   83      1 (1%)  15.6    1
+9       51      3 +/- 2 48 +/- 2 (93 +/- 3%)    48885   83      1 (1%)  15.1    1
+8       56      4 +/- 2 52 +/- 2 (93 +/- 3%)    48885   83      1 (1%)  15.4    1
+7       64      4 +/- 2 60 +/- 2 (94 +/- 3%)    48885   83      1 (1%)  16.3    1
+6       68      4 +/- 2 64 +/- 2 (94 +/- 3%)    48885   83      1 (1%)  16      1
+5       70      5 +/- 2 65 +/- 2 (93 +/- 3%)    48885   83      1 (1%)  15      1
+4       72      5 +/- 2 67 +/- 2 (93 +/- 3%)    48885   83      1 (1%)  14      1
+3       101     6 +/- 2 95 +/- 2 (94 +/- 2%)    48885   83      1 (1%)  16.2    1
+2       183     9 +/- 3 174 +/- 3 (95 +/- 2%)   48885   83      72 (87%)        20.2    1
+1       260     22 +/- 4        238 +/- 4 (91 +/- 2%)   48885   83      72 (87%)        11.6    1
+0       315     53 +/- 6        262 +/- 6 (83 +/- 2%)   48885   83      72 (87%)        5.9     1
+-1      365     97 +/- 8        268 +/- 8 (73 +/- 2%)   48885   83      72 (87%)        3.8     1
+-2      462     150 +/- 10      312 +/- 10 (67 +/- 2%)  48885   83      72 (87%)        3.1     1
+-3      707     228 +/- 14      479 +/- 14 (68 +/- 2%)  48885   83      72 (87%)        3.1     1
+-4      1003    402 +/- 18      601 +/- 18 (60 +/- 2%)  48885   83      73 (88%)        2.5     1
+-5      1167    750 +/- 23      417 +/- 23 (36 +/- 2%)  48885   83      73 (88%)        1.6     1
+-6      1309    1227 +/- 35     82 +/- 35 (6 +/- 3%)    48885   83      73 (88%)        1.1     1
+-7      1405    1733 +/- 42     0 +/- 0 (0 +/- 0%)      48885   83      73 (88%)        0.8     1
+-8      1653    2208 +/- 45     0 +/- 0 (0 +/- 0%)      48885   83      73 (88%)        0.7     1
+-9      2013    2615 +/- 49     0 +/- 0 (0 +/- 0%)      48885   83      73 (88%)        0.8     1
+-10     2423    2951 +/- 53     0 +/- 0 (0 +/- 0%)      48885   83      73 (88%)        0.8     1
+```
+
+Going into the `dir_prepare_signature1704804676` from the scripts folder
+
+```
+cd dir_prepare_signature1704804676
+
+ls
+mature_vs_precursors.arf  precursors.ebwt.2.ebwt  precursors.ebwt.rev.1.ebwt  reads_vs_precursors.arf  signature_unsorted.arf.tmp
+mature_vs_precursors.bwt  precursors.ebwt.3.ebwt  precursors.ebwt.rev.2.ebwt  reads_vs_precursors.bwt  signature_unsorted.arf.tmp2
+precursors.ebwt.1.ebwt    precursors.ebwt.4.ebwt  precursors.fa               signature_unsorted.arf
+```
+
+Looked at the mature vs. precursors file
+
+```
+head mature_vs_precursors.arf 
+hsa-miR-100-5p_MIMAT0000098_Homo_sapiens_miR-100-5p	22	1	22	aacccgtagatccgaacttgtg	chromosome_7_30929	22	19	40	aacccgtagatccgaacttgtg	+mmmmmmmmmmmmmmmmmmmmmm
+hsa-miR-100-5p_MIMAT0000098_Homo_sapiens_miR-100-5p	22	1	22	aacccgtagatccgaacttgtg	chromosome_7_30930	22	69	90	aacccgtagatccgaacttgtg	+mmmmmmmmmmmmmmmmmmmmmm
+mmu-miR-100-5p_MIMAT0000655_Mus_musculus_miR-100-5p	22	1	22	aacccgtagatccgaacttgtg	chromosome_7_30930	22	69	90	aacccgtagatccgaacttgtg	+mmmmmmmmmmmmmmmmmmmmmm
+mmu-miR-100-5p_MIMAT0000655_Mus_musculus_miR-100-5p	22	1	22	aacccgtagatccgaacttgtg	chromosome_7_30929	22	19	40	aacccgtagatccgaacttgtg	+mmmmmmmmmmmmmmmmmmmmmm
+rno-miR-100-5p_MIMAT0000822_Rattus_norvegicus_miR-100-5p	22	1	22	aacccgtagatccgaacttgtg	chromosome_7_30930	22	69	90	aacccgtagatccgaacttgtg	+	0	mmmmmmmmmmmmmmmmmmmmmm
+rno-miR-100-5p_MIMAT0000822_Rattus_norvegicus_miR-100-5p	22	1	22	aacccgtagatccgaacttgtg	chromosome_7_30929	22	19	40	aacccgtagatccgaacttgtg	+	0	mmmmmmmmmmmmmmmmmmmmmm
+gga-miR-100-5p_MIMAT0001178_Gallus_gallus_miR-100-5p	22	1	22	aacccgtagatccgaacttgtg	chromosome_7_30930	22	69	90	aacccgtagatccgaacttgtg	+mmmmmmmmmmmmmmmmmmmmmm
+gga-miR-100-5p_MIMAT0001178_Gallus_gallus_miR-100-5p	22	1	22	aacccgtagatccgaacttgtg	chromosome_7_30929	22	19	40	aacccgtagatccgaacttgtg	+mmmmmmmmmmmmmmmmmmmmmm
+aga-miR-100_MIMAT0001498_Anopheles_gambiae_miR-100	22	1	22	aacccgtagatccgaacttgtg	chromosome_7_30930	22	69	90	aacccgtagatccgaacttgtg	+mmmmmmmmmmmmmmmmmmmmmm
+aga-miR-100_MIMAT0001498_Anopheles_gambiae_miR-100	22	1	22	aacccgtagatccgaacttgtg	chromosome_7_30929	22	19	40	aacccgtagatccgaacttgtg	+mmmmmmmmmmmmmmmmmmmmmm
+
+wc -l mature_vs_precursors.arf 
+191 mature_vs_precursors.arf
+```
+
+I'm not sure what this means...Need to look into this more. Is it providing info about the mirbase sequences in comparison to my own? It looks like most of them are related to miR-100, which makes sense as this is the only miRNA that is in bilaterians and cnidarians. 
+
+Back in the scripts directory, look at the error file:
+
+```
+RNAfold: invalid option -- n
+total number of rounds controls=100
+1^M2^M3^M4^M5^M6^M7^M8^M9^M10^M11^M12^M13^M14^M15^M16^M17^M18^M19^M20^M21^M22^M23^M24^M25^M26^M27^M28^M29^M30^M31^M32^M33^M34^M35^M36^M37^M38^M39^M40^M41^M42^M43^M44^M45^M46^M47^M48^M49^M50^M51^M52^M53^M54^M55^M56^M57^M58^M59^M60^M61^M62^M63^M64^M65^M66^M67^M68^M69^M70^M71^M72^M73^M74^M75^M76^M77^M78^M79^M80^M81^M82^M83^M84^M85^M86^M87^M88^M89^M90^M91
+^M92^M93^M94^M95^M96^M97^M98^M99^M100^Mcontrols performed
+```
+
+Not sure what this means either...some issue with the RNAfold option? But I got a randfold pvalue. 
+
+The pdf folder includes a pdf file for each miRNA (?) identified and provides info 
 
 
 
