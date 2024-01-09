@@ -1507,7 +1507,108 @@ total number of rounds controls=100
 
 Not sure what this means either...some issue with the RNAfold option? But I got a randfold pvalue. 
 
-The pdf folder includes a pdf file for each miRNA (?) identified and provides info 
+The pdf folder includes a pdf file for each miRNA (?) identified and provides info about the scores and gives a nice graph about where the mature and star sequences are
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/astrangia2021_bioinf/smRNA/AST-1065_chromosome_11_50332.png)
+
+In my first run of mirdeep2, 318 unique pdfs were produced. In the mirna_results_09_01_2024_t_07_49_09 results folder, there are .bed and .fa files. The bed files contain this info: 
+
+```
+less known_mature_09_01_2024_t_07_49_09_score-50_to_na.bed 
+
+browser position chromosome_6:21902755-21902777
+browser hide all
+track name="notTrackname.known_miRNAs" description="known miRNAs detected by miRDeep2 for notTrackname" visibility=2
+itemRgb="On";
+chromosome_6    21902755        21902777        chromosome_6_22810      19.4    +       21902755        21902777        255,0,0
+chromosome_7    21599230        21599250        chromosome_7_30929      2.4     -       21599230        21599250        0,0,255
+chromosome_11   24411396        24411418        chromosome_11_54894     -3.5    -       24411396        24411418        0,0,255
+```
+
+and the fa files contain this info: 
+
+```
+less known_mature_09_01_2024_t_07_49_09_score-50_to_na.fa
+
+>chromosome_6_22810
+AAGAACACCCAAAATAGCTGAA
+>chromosome_7_30929
+ACCCGTAGATCCGAACTTGT
+>chromosome_11_54894
+GCGGGTGTGTGTGTGTGTGTGT
+```
+
+So I suppose its giving information about the known mature sequences and their location on the Astrangia genome. The other files in this folder contain bed and fa files for the known precursors, star and mature sequences, as well as the novel precursors, star and mature sequences. 
+
+In the main scripts folder, there is also a file `result_09_01_2024_t_07_49_09` in .bed, .csv and .html format. It has the same info in all of them, but it is summarizing the parameters used, the survey info, the novel miRNAs and the known miRNAs. In the survey info, it says that 83 known miRNAs were identified in my data but only 3 are listed at the bottom? 
+
+Anything that is listed as mirdeep2 results from Jan 9 are associated with AST-1065. 
+
+I wonder if these results would change if I trimmed to 25 bp. I also wonder what would happen if I removed Nvectensis as my related species. Sam white put S.purpurtus as the related species, but Nvectensis is more closely related. I'm going to remove the related species and rerun mirdeep2. Submitted batch job 292316. Started running immediately, nice. 
+
+I'm also going to rerun flexbar with trimming of 25 bp. In the trim data folder, make a folder for flexbar 25 bp
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim
+mkdir flexbar_25bp
+```
+
+In the scripts folder: `nano flexbar_25bp.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=200GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load Flexbar/3.5.0-foss-2018b  
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/raw
+
+echo "Trimming reads to 25 bp using flexbar" $(date)
+
+array1=($(ls *R1_001.fastq.gz))
+
+for i in ${array1[@]}; do
+flexbar \
+-r ${i} \
+-p $(echo ${i}|sed s/_R1/_R2/) \
+-a NEB-adapters.fasta \
+-ap ON \
+-qf i1.8 \
+-qt 30 \
+-t /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar_25bp \
+-k 30 \
+-R trim.${i} \
+-P trim.$(echo ${i}|sed s/_R1/_R2/) \
+-z GZ
+done
+
+echo "Trimming complete" $(date)
+```
+
+Submitted batch job 292317. Immediately got an error saying: `ERROR: Could not open file trim.AST-2360_R1_001.fastq.gz.gz`. I commented out the `-z` command. Submitted batch job 292318
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
