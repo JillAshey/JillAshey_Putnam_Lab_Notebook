@@ -1584,7 +1584,7 @@ flexbar \
 -qf i1.8 \
 -qt 30 \
 -t /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar_25bp \
--k 30 \
+-k 25 \
 -R trim.${i} \
 -P trim.$(echo ${i}|sed s/_R1/_R2/) \
 -z GZ
@@ -1593,8 +1593,216 @@ done
 echo "Trimming complete" $(date)
 ```
 
-Submitted batch job 292317. Immediately got an error saying: `ERROR: Could not open file trim.AST-2360_R1_001.fastq.gz.gz`. I commented out the `-z` command. Submitted batch job 292318
+Submitted batch job 292317. Immediately got an error saying: `ERROR: Could not open file trim.AST-2360_R1_001.fastq.gz.gz`. I commented out the `-z` command. Submitted batch job 292344
 
+### 20230110
+
+Hooray! Flexbar 25 bp and mirdeep2 test finished running. Let's look at the mirdeep2 results. As a reminder, I reran the mirdeep2 code but removed the specification of Nematostella as a related species. When removing this specification, I got marginally more (1-2 more) novel miRNAs predicted, but got the same number of known miRNAs identified. The mirdeep2 documentation states "it will in practice always improve miRDeep2 performance if miRNAs from some related species is input, even if it is not closely related." So it is likely best to keep Nematostella as a related species in the code. 
+
+My next step is to run mirdeep2 on the newly trimmed (25 bp) reads. Again, I'm going to run it on a test sample. First, move the newly trimmed reads from the raw data folder to the flexbar 25 bp folder. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/raw
+mv trim* ../trim/flexbar_25bp/
+```
+
+Next run fastqc. In the fastqc folder, make a folder for the new flexbar 25bp QC data. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/fastqc/trim
+mkdir flexbar_25bp
+cd flexbar_25bp
+mkdir R1 R2
+```
+
+In the scripts folder, edit the `fastqc_trim.sh` script: 
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+echo "QC for trimmed reads using flexbar with max length of 25 bp" $(date)
+
+for file in /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar_25bp/*fastq.gz
+do
+fastqc $file --outdir /data/putnamlab/jillashey/Astrangia2021/smRNA/fastqc/trim/flexbar_25bp
+done
+
+echo "FastQC complete" $(date)
+
+#multiqc --interactive fastqc_results/trim/flexbar
+```
+
+Submitted batch job 292342
+
+Once this has finished running, navigate to the flexbar 25bp fastqc folder and move the reads into R1 and R2 folders. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/fastqc/trim/flexbar_25bp
+mv *_R1* R1
+mv *_R2* R2
+```
+
+Go into each folder and run MultiQC on each. I have to do this because for some reason, multiQC was just running QC stats on the R2 reads when the R1 and R2 reads were in the same folder. 
+
+
+
+
+
+
+
+
+
+
+
+I think it would be a good idea to make a custom database that includes primarily cnidarian miRNAs, as there are not many in mirbase itself. [Baumgarten et al. (2017)](https://onlinelibrary.wiley.com/doi/10.1111/mec.14452) did something similar (under 2.3 miRNA annotation in their paper). 
+
+- "miRNAs were then annotated using the miRDeep2 package with default settings (Friedlander et al., 2012). To identify putatively conserved miRNAs based on previous de novo annotations of other cnidarian genomes, we created a reference library of mature miRNA sequences from N. vectensis (Grimson et al., 2008; Moran et al., 2014), Hydra magnipapillata (Krishna et al., 2013) and Stylophora pistillata (Liew et al., 2014)." 
+
+Therefore, I am going to make a custom database of the cnidarian miRNAs that I am aware of. 
+
+- Stylophora pistillata - Table S11 from [Liew et al. 2014](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0091101)
+- Aiptasia - Table S4 from [Baumgarten et al. 2017](https://onlinelibrary.wiley.com/doi/10.1111/mec.14452)
+- Acropora digitifera - Table S5 from [Gajigan & Conaco 2017](https://onlinelibrary.wiley.com/doi/10.1111/mec.14130)
+- the sea anemones Edwardsiella carnea, Scolanthus callimorphus, Metridium senile and Anemonia viridis, and the stony coral Acropora millepora - Tables S1 and S2 from [Praher et al. 2021](https://royalsocietypublishing.org/doi/full/10.1098/rspb.2020.3169#d1e1330)
+- Hydra - Table S1 (SuppFile2) from [Krishna et al. 2012](https://academic.oup.com/nar/article/41/1/599/1146895#20334407)
+- Nematostella - Table S1 from [Moran et al. 2014](https://genome.cshlp.org/content/24/4/651/suppl/DC1)
+- Anemonia viridis - Table S2 from [Urbarova et al. 2018](https://academic.oup.com/gbe/article/10/2/410/4827693?login=true#supplementary-data)
+- Nematostella + Hydra are also both on miRBase  
+
+In google sheets, I gathered all the cnidarian miRNA sequences that I could find and made it into a csv file. This is the format: 
+
+```
+miRNA	Mature_miRNA_sequence	Species	Citation	Notes
+spi-mir-temp-1	acccguagauccgaacuugugg	Stylophora pistillata	Liew et al. 2014	Matches miR-100 family.
+spi-mir-temp-2	uaucgaauccgucaaaaagaga	Stylophora pistillata	Liew et al. 2014	NA
+spi-mir-temp-3	ucagggauuguggugaguuaguu	Stylophora pistillata	Liew et al. 2014	NA
+spi-mir-temp-4	aaagaaguacaagugguaggg	Stylophora pistillata	Liew et al. 2014	Exact match of nve-miR-2023.
+spi-mir-temp-5	gagguccggaugguuga	Stylophora pistillata	Liew et al. 2014	NA
+```
+
+I downloaded the csv to my computer and manipulated it so that the first, third, fourth and fifth columns are the headers on one line and denoted with a ">". Then the sequence, in the second column, was put under the header. 
+
+```
+awk -F',' 'NR>1 {print ">"$1" "$2" "$3" "$4"\n"$5}' cnidarian_miRNAs.csv > cnidarian_miRNAs.fasta
+```
+
+Now go back to the miRbase fasta file and subset so that I make a file with Hydra and Nematostella sequences only 
+
+```
+awk '/>.*hma|>.*nve/ {print; getline; print}' 20240103_mature_T.fa > subset.fasta
+```
+
+I then copied the subset fasta info into the cnidarian_miRNAs.fasta. A complete cnidarian miRNA fasta! Reformat the fasta header names so there are no spaces. 
+
+```
+sed '/^>/ s/ /_/g' cnidarian_miRNAs.fasta \
+| sed '/^>/ s/,//g' \
+> cnidarian_miRNAs.fasta
+```
+
+Reformat sequences so that everything is uppercase
+
+```
+awk '/^>/ {print; getline; print toupper($0); next} {print}' cnidarian_miRNAs.fasta > cnidarian_miRNAs.fasta
+```
+
+I then copied the file to andromeda to `/data/putnamlab/jillashey/Astrangia2021/smRNA/refs`. Change the U to T in the fasta file
+
+```
+#!/bin/bash
+
+# Define the input and output files
+input_file="cnidarian_miRNA.fa"  # Replace with your actual input file name
+output_file="cnidarian_miRNA_T.fa"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the file
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        print $0 >> "'$output_file'"  # Print the identifier as is
+    } else {
+        gsub(/U/, "T", $0)  # Replace U with T in sequences
+        print $0 >> "'$output_file'"
+    }
+}' "$input_file"
+```
+
+Now I am going to run mirdeep2 with the cnidarian miRNA file! I'm going to modify the `nano test_mirdeep2.sh` so that the fasta file is the `cnidarian_miRNA_T.fa` file. Submitted batch job 292356. Didnt work. Removed the `-t` argument. Submitted batch job 292358...still not running. Getting this error: 
+
+```
+bash: cannot set terminal process group (-1): Function not implemented
+bash: no job control in this shell
+```
+
+Need to troubleshoot this. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+I'm going to modify the code from `test_cat_collapse.sh` in the scripts folder. 
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar_25bp
+
+echo "Concatenating R1 and R2 for test sample" $(date)
+
+cat trim.AST-1065_R1_001.fastq trim.AST-1065_R1_001.fastq > cat.25bp.AST-1065.fastq
+
+echo "Collapsing redundant sequences with fastx collapse" $(date)
+
+fastx_collapser -v -i cat.25bp.AST-1065.fastq -o collapse.cat.25bp.AST-1065.fastq
+
+echo "Prep sequence IDs for mirdeep2 analysis" $(date)
+
+sed '/^>/ s/-/_x/g' collapse.cat.25bp.AST-1065.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.25bp.AST-1065.fastq
+
+echo "Done!" $(date)
+```
 
 
 
@@ -1640,24 +1848,6 @@ Other potential miRNA target prediction programs: https://www.ncbi.nlm.nih.gov/p
 
 
 
-As per the mirdeep2 documentation, The readID must end with _xNumber and is not allowed to contain whitespaces. So it has to have the format name_uniqueNumber_xnumber. 
-
-```
-sed '/^>/ s/-/_x/g' collapse.cat.trimmed.AST-1065.fastq \
-| sed '/^>/ s/>/>seq_/' \
-> collapse.cat.trimmed.AST-1065.fastq 
-
->seq_1_x116635
-TGGTCTATGGTGTAACTGGCAACACGTCTGT
->seq_2_x115039
-ACAGACGTGTTGCCAGTTACACCATAGACCA
->seq_3_x104350
-TGGTCTATGGTGTAACTGGCAACACGTCTGTT
->seq_4_x103158
-AACAGACGTGTTGCCAGTTACACCATAGACCA
->seq_5_x71882
-TGAAAATCTTTTCTCTGAAGTGGAA
-```
 
 
 ### mirdeep2 background 
@@ -1726,7 +1916,7 @@ Concatenate (with `cat` command) and collapse reads (with `fastx_collapser` from
 #SBATCH --account=putnamlab
 #SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
 #SBATCH -o slurm-%j.out
-#SBATCH -e slurm-%j.out
+#SBATCH -e slurm-%j.error
 
 module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
 
