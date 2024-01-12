@@ -1645,7 +1645,10 @@ echo "FastQC complete" $(date)
 #multiqc --interactive fastqc_results/trim/flexbar
 ```
 
-Submitted batch job 292342
+
+### 20240112
+
+Had to rerun the trimming bc I accidently left the 30 as the max length. Now im running the QC. Submitted batch job 292416
 
 Once this has finished running, navigate to the flexbar 25bp fastqc folder and move the reads into R1 and R2 folders. 
 
@@ -1656,16 +1659,6 @@ mv *_R2* R2
 ```
 
 Go into each folder and run MultiQC on each. I have to do this because for some reason, multiQC was just running QC stats on the R2 reads when the R1 and R2 reads were in the same folder. 
-
-
-
-
-
-
-
-
-
-
 
 I think it would be a good idea to make a custom database that includes primarily cnidarian miRNAs, as there are not many in mirbase itself. [Baumgarten et al. (2017)](https://onlinelibrary.wiley.com/doi/10.1111/mec.14452) did something similar (under 2.3 miRNA annotation in their paper). 
 
@@ -1751,11 +1744,111 @@ bash: no job control in this shell
 
 Need to troubleshoot this. 
 
+When I look at the `report.log` file, it says: 
+
+```
+miRDeep2 started at 12:39:17
 
 
+mkdir mirdeep_runs/run_12_01_2024_t_12_39_17
+
+#testing input files
+started: 12:39:23
+sanity_check_mature_ref.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/cnidarian_miRNA_T.fa
+
+ESC[1;31mError: ESC[0mproblem with /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/cnidarian_miRNA_T.fa
+Error in line 64: The sequence
+
+ SPIS
 
 
+contains characters others than [acgtunACGTUN]
 
+Please check your file for the following issues:
+
+I.  Sequences are allowed only to comprise characters [ACGTNacgtn].
+II. Identifiers are not allowed to have withespaces.
+```
+
+I looked at the `cnidarian_miRNA_T.fa` file and found that for a few sequences, it has Spis instead of the actual sequence: 
+
+```
+>spi-mir-temp-42 Stylophora pistillata Liew et al. 2014 NA
+ugugcaagaauuugagucgcugg
+>apa-mir-100 Exaiptasia pallida Baumgarten et al. 2017 "miR-100; Nve
+ Spis
+>apa-mir-2022a Exaiptasia pallida Baumgarten et al. 2017 "miR-2022; Nve
+ Spis
+>apa-mir-2023 Exaiptasia pallida Baumgarten et al. 2017 "miR-2023; Nve
+ Spis
+>apa-mir-2025 Exaiptasia pallida Baumgarten et al. 2017 "miR-2025; Nve
+ Adi"
+>apa-mir-2026 Exaiptasia pallida Baumgarten et al. 2017 miR-2026; Nve
+aauuucaaauauccacugauug
+>apa-mir-2030 Exaiptasia pallida Baumgarten et al. 2017 "miR-2030; Nve
+ Spis
+>apa-mir-2036 Exaiptasia pallida Baumgarten et al. 2017 "miR-2036; Nve
+ Spis
+>apa-mir-2037 Exaiptasia pallida Baumgarten et al. 2017 "miR-2037; Nve
+ Spis"
+>apa-mir-2050 Exaiptasia pallida Baumgarten et al. 2017 "miR-2050; Nve
+ Spis
+```
+
+I'm thinking maybe it doesn't like the commas? Going back to csv and adding semi-colans instead of commas. 
+
+I downloaded the csv to my computer and manipulated it so that the first, third, fourth and fifth columns are the headers on one line and denoted with a ">". Then the sequence, in the second column, was put under the header. 
+
+```
+awk -F',' 'NR>1 {print ">"$1" "$2" "$3" "$4"\n"$5}' cnidarian_miRNAs.csv > cnidarian_miRNAs.fasta
+```
+
+That seems to have fixed the problem. Reformat the fasta header names so there are no spaces. 
+
+```
+sed '/^>/ s/ /_/g' cnidarian_miRNAs.fasta \
+| sed '/^>/ s/,//g' \
+> cnidarian_miRNAs.fasta
+```
+
+Reformat sequences so that everything is uppercase
+
+```
+awk '/^>/ {print; getline; print toupper($0); next} {print}' cnidarian_miRNAs.fasta > cnidarian_miRNAs.fasta
+```
+
+I then copied the file to andromeda to `/data/putnamlab/jillashey/Astrangia2021/smRNA/refs`. Change the U to T in the fasta file
+
+```
+#!/bin/bash
+
+# Define the input and output files
+input_file="cnidarian_miRNAs.fa"  # Replace with your actual input file name
+output_file="cnidarian_miRNAs_T.fa"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the file
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        print $0 >> "'$output_file'"  # Print the identifier as is
+    } else {
+        gsub(/U/, "T", $0)  # Replace U with T in sequences
+        print $0 >> "'$output_file'"
+    }
+}' "$input_file"
+```
+
+Now concatenate the cnidarian miRNAs with the mature miRNA fasta from miRBase. 
+
+```
+cat 20240103_mature_T.fa cnidarian_miRNAs_T.fa > mature_mirbase_cnidarian_T.fa
+```
+
+Now edit the `test_mirdeep2.sh` so that `mature_mirbase_cnidarian_T.fa` is the input fasta file. Submitted batch job 292458. Failed. The report log file is telling me that I need to put none none before the `-t` flag. Changed that and resubmitted job. Submitted batch job 292459. Hooray appears to be running!
+
+Sam White talked to Azenta (who did the sequencing for my project) and they recommended using Trimmomatic for trimming the small RNA reads. They also recommended tossing out read 2 and only using read 1 for analysis. I concatenate and collapse the reads anyway, so that shouldn't matter too much. Sam will get back to me about trimming info/code from Azenta soon. 
 
 
 
