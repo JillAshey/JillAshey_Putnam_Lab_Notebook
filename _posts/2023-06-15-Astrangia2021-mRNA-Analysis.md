@@ -1037,11 +1037,54 @@ done
 echo "Calculation complete" $(date)
 ```
 
-Submitted batch job 292513
+Submitted batch job 292513. Took about 20 mins, mapping %s definitely lower with bowtie2 than with hisat2. 
 
+```
+align.test.AST-1065.bam
+21403407 + 0 mapped (37.53% : N/A)
+align.trimmed.AST-1065_R1_001.fastq.gz.bam
+21403407 + 0 mapped (37.53% : N/A)
+align.trimmed.AST-1105_R1_001.fastq.gz.bam
+184 + 0 mapped (32.51% : N/A)
+align.trimmed.AST-1147_R1_001.fastq.gz.bam
+29489221 + 0 mapped (53.81% : N/A)
+align.trimmed.AST-1412_R1_001.fastq.gz.bam
+16202316 + 0 mapped (34.73% : N/A)
+align.trimmed.AST-1560_R1_001.fastq.gz.bam
+3312164 + 0 mapped (6.56% : N/A)
+align.trimmed.AST-1567_R1_001.fastq.gz.bam
+11081976 + 0 mapped (23.37% : N/A)
+align.trimmed.AST-1617_R1_001.fastq.gz.bam
+20896972 + 0 mapped (49.18% : N/A)
+align.trimmed.AST-1722_R1_001.fastq.gz.bam
+24918472 + 0 mapped (50.33% : N/A)
+align.trimmed.AST-2000_R1_001.fastq.gz.bam
+14086921 + 0 mapped (34.39% : N/A)
+align.trimmed.AST-2007_R1_001.fastq.gz.bam
+22480611 + 0 mapped (42.97% : N/A)
+align.trimmed.AST-2302_R1_001.fastq.gz.bam
+22989178 + 0 mapped (52.12% : N/A)
+align.trimmed.AST-2360_R1_001.fastq.gz.bam
+14679046 + 0 mapped (34.33% : N/A)
+align.trimmed.AST-2398_R1_001.fastq.gz.bam
+22409210 + 0 mapped (51.40% : N/A)
+align.trimmed.AST-2404_R1_001.fastq.gz.bam
+21960526 + 0 mapped (40.83% : N/A)
+align.trimmed.AST-2412_R1_001.fastq.gz.bam
+19389724 + 0 mapped (38.21% : N/A)
+align.trimmed.AST-2512_R1_001.fastq.gz.bam
+4958601 + 0 mapped (10.24% : N/A)
+align.trimmed.AST-2523_R1_001.fastq.gz.bam
+17472526 + 0 mapped (36.78% : N/A)
+align.trimmed.AST-2563_R1_001.fastq.gz.bam
+19339538 + 0 mapped (38.31% : N/A)
+align.trimmed.AST-2729_R1_001.fastq.gz.bam
+4728959 + 0 mapped (15.20% : N/A)
+align.trimmed.AST-2755_R1_001.fastq.gz.bam
+20252460 + 0 mapped (40.96% : N/A)
+```
 
-
-### 20240115
+As stated above, I am more inclined to go with bowtie2 but will discuss with Hollie. 
 
 Assemble using stringtie. In scripts, `nano assemble.sh`
 
@@ -1073,12 +1116,192 @@ done
 echo "Assembly for each sample complete " $(date)
 ```
 
+Submitted batch job 292514. Took about 30 mins
 
+Move the stringtie related files to the stringtie folder. 
 
+```
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/align
+mv *gtf ../../../stringtie/bowtie/
+mv *tab ../../../stringtie/bowtie/
+```
 
+Now I will merge the gtf files together with stringtie, assess the assembly with gffcompare, and make a gene count matrix with the `prepDE.py` script, which is in the scripts folder. In the scripts folder, `nano prepDE.sh`:
 
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=128GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
 
+module load StringTie/2.2.1-GCC-11.2.0
+module load Python/3.9.6-GCCcore-11.2.0
+module load GffCompare/0.12.6-GCC-11.2.0
+####MAYBE LOAD GCC IF ERRORS
 
+echo "Merging assembled files" $(date)
+
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/stringtie/bowtie
+
+#make gtf_list.txt file
+ls *.gtf > gtf_list.txt
+
+stringtie --merge -e -p 8 -G /data/putnamlab/jillashey/Astrangia_Genome/apoculata_v2.0.gff3 -o Apoc_merged.gtf gtf_list.txt #Merge GTFs 
+echo "Stringtie merge complete, starting gffcompare" $(date)
+
+gffcompare -r /data/putnamlab/jillashey/Astrangia_Genome/apoculata_v2.0.gff3 -G -o merged Apoc_merged.gtf #Compute the accuracy 
+echo "GFFcompare complete, Starting gene count matrix assembly" $(date)
+
+#make gtf list text file
+for filename in *bam.gtf; do echo $filename $PWD/$filename; done > listGTF.txt
+
+python /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts/prepDE.py -g Apoc_gene_count_matrix.csv -i listGTF.txt #Compile the gene count matrix
+
+echo "Gene count matrix compiled." $(date)
+```
+
+Submitted batch job 292515. Failed, some GCC error. Changed Python module. Submitted batch job 292516. Failed agian. Gave this error: 
+
+```
+Error: no transcripts were found in input file Apoc_merged.gtf
+  48184 reference transcripts loaded.
+  0 query transfrags loaded.
+  File "/data/putnamlab/jillashey/Astrangia2021/mRNA/scripts/prepDE.py", line 34
+    print "Error: line should have a sample ID and a file path:\n%s" % (line.strip())
+          ^
+SyntaxError: invalid syntax
+```
+
+Need to troubleshoot this. 
+
+### 20240115
+
+Remove sam files to save space 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/align
+rm *sam
+```
+
+The `prepDE.sh` script didn't work, so I may just try running the components separately. Make a list of all gtf files and merge together with stringtie. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/stringtie/bowtie
+
+module load StringTie/2.2.1-GCC-11.2.0
+
+ls *.gtf > gtf_list.txt
+
+stringtie --merge -e -p 8 -G /data/putnamlab/jillashey/Astrangia_Genome/apoculata_v2.0.gff3 -o Apoc_merged.gtf gtf_list.txt #Merge GTFs 
+```
+
+Saying `Illegal instruction (core dumped)`. Why? Do I need a different version of stringtie? Let's try this version: `StringTie/2.1.4-GCC-9.3.0`. Success! Let's look at what the merged file looks like: 
+
+```
+head Apoc_merged.gtf 
+# stringtie --merge -e -p 8 -G /data/putnamlab/jillashey/Astrangia_Genome/apoculata_v2.0.gff3 -o Apoc_merged.gtf gtf_list.txt
+# StringTie version 2.1.4
+chromosome_1	StringTie	transcript	20664	21393	1000	-	.	gene_id "MSTRG.1"; transcript_id "evm.model.chromosome_1.1"; ref_gene_id "evm.TU.chromosome_1.1"; cov "0.00413735"; 
+chromosome_1	StringTie	exon	20664	21106	1000	-	.	gene_id "MSTRG.1"; transcript_id "evm.model.chromosome_1.1"; exon_number "1"; ref_gene_id "evm.TU.chromosome_1.1"; 
+chromosome_1	StringTie	exon	21189	21393	1000	-	.	gene_id "MSTRG.1"; transcript_id "evm.model.chromosome_1.1"; exon_number "2"; ref_gene_id "evm.TU.chromosome_1.1"; 
+chromosome_1	StringTie	transcript	34636	40489	1000	+	.	gene_id "MSTRG.2"; transcript_id "evm.model.chromosome_1.2"; ref_gene_id "evm.TU.chromosome_1.2"; cov "0.280786"; 
+chromosome_1	StringTie	exon	34636	34734	1000	+	.	gene_id "MSTRG.2"; transcript_id "evm.model.chromosome_1.2"; exon_number "1"; ref_gene_id "evm.TU.chromosome_1.2"; 
+chromosome_1	StringTie	exon	34890	35046	1000	+	.	gene_id "MSTRG.2"; transcript_id "evm.model.chromosome_1.2"; exon_number "2"; ref_gene_id "evm.TU.chromosome_1.2"; 
+chromosome_1	StringTie	exon	37554	37710	1000	+	.	gene_id "MSTRG.2"; transcript_id "evm.model.chromosome_1.2"; exon_number "3"; ref_gene_id "evm.TU.chromosome_1.2"; 
+chromosome_1	StringTie	exon	39812	39877	1000	+	.	gene_id "MSTRG.2"; transcript_id "evm.model.chromosome_1.2"; exon_number "4"; ref_gene_id "evm.TU.chromosome_1.2"; 
+```
+
+The gene ids were named MSTRG from stringtie but the transcript ids still have the chromosome info. Assess the accuracy of the merged assembly with gffcompare. 
+
+```
+module purge
+module load GffCompare/0.12.6-GCC-11.2.0
+
+gffcompare -r /data/putnamlab/jillashey/Astrangia_Genome/apoculata_v2.0.gff3 -G -o merged Apoc_merged.gtf #Compute the accuracy 
+echo "GFFcompare complete, Starting gene count matrix assembly" $(date)
+```
+
+Similar to above, saying `Illegal instruction (core dumped)`. Trying a different version of gffcompare: `GffCompare/0.12.1-GCCcore-8.3.0`. Worked! 
+
+```
+# gffcompare v0.12.1 | Command line was:
+#gffcompare -r /data/putnamlab/jillashey/Astrangia_Genome/apoculata_v2.0.gff3 -G -o merged Apoc_merged.gtf
+#
+
+#= Summary for dataset: Apoc_merged.gtf 
+#     Query mRNAs :   48184 in   47159 loci  (28499 multi-exon transcripts)
+#            (854 multi-transcript loci, ~1.0 transcripts per locus)
+# Reference mRNAs :   48184 in   47159 loci  (28499 multi-exon)
+# Super-loci w/ reference transcripts:    47159
+#-----------------| Sensitivity | Precision  |
+        Base level:   100.0     |   100.0    |
+        Exon level:   100.0     |   100.0    |
+      Intron level:   100.0     |   100.0    |
+Intron chain level:   100.0     |   100.0    |
+  Transcript level:   100.0     |   100.0    |
+       Locus level:   100.0     |   100.0    |
+
+     Matching intron chains:   28499
+       Matching transcripts:   48184
+              Matching loci:   47159
+
+          Missed exons:       0/228071  (  0.0%)
+           Novel exons:       0/228064  (  0.0%)
+        Missed introns:       0/180537  (  0.0%)
+         Novel introns:       0/180537  (  0.0%)
+           Missed loci:       0/47159   (  0.0%)
+            Novel loci:       0/47159   (  0.0%)
+
+ Total union super-loci across all input datasets: 47159 
+48184 out of 48184 consensus transcripts written in merged.annotated.gtf (0 discarded as redundant)
+```
+
+The stats look good. The merged files are providing info on where the transcripts/exons are in the genome I believe. Make gft list text file for gene count matrix creation
+
+```
+for filename in *bam.gtf; do echo $filename $PWD/$filename; done > listGTF.txt
+```
+
+Load Python and compile the gene count matrix.
+
+```
+module purge
+module load Python/3.8.2-GCCcore-9.3.0
+python prepDE.py -g Apoc_gene_count_matrix.csv -i listGTF.txt #Compile the gene count matrix
+```
+
+Got this error: 
+
+```
+  File "/data/putnamlab/jillashey/Astrangia2021/mRNA/scripts/prepDE.py", line 34
+    print "Error: line should have a sample ID and a file path:\n%s" % (line.strip())
+          ^
+SyntaxError: invalid syntax
+```
+
+Confused because the file does have the sample id and file path...Maybe move the `prepDE.py` script into this folder? 
+
+```
+mv /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts/prepDE.py .
+```
+
+Nope still getting the same error. Might have to use python 2 version, as that is what the script is written in. 
+
+```
+module purge
+module load Python/2.7.18-GCCcore-9.3.0
+
+python prepDE.py -g Apoc_gene_count_matrix.csv -i listGTF.txt
+```
+
+Success!!!! Copy the gene count matrix onto my computer and rename so that the file has bowtie included in the name (to distinguish it from the hisat2 gene count matrix). 
 
 
 For lncRNA 
