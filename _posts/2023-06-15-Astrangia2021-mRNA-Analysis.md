@@ -918,6 +918,160 @@ Cancelled job 292231, as it was still pending. Editing the sbatch info for the s
 
 I guess I need to rerun bowtie. Submitted batch job 292246
 
+### 20240114 
+
+Going to run a test sam to bam so that I can confirm that the files are not being deleted. 
+
+In the scripts folder, modify the `test_sam_to_bam.sh` script: 
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
+
+echo "Converting sam to bam for test sample" $(date)
+
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim
+
+mv align.test.AST-1065_R1_001.fastq.gz align.test.AST-1065.sam
+
+samtools sort -o align.test.AST-1065.bam align.test.AST-1065.sam
+
+echo "Sam to bam conversion complete for test sample" $(date)
+```
+
+Submitted batch job 292494. Took ~45 mins. Check % reads aligned
+
+```
+interactive 
+module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
+samtools flagstat align.test.AST-1065.bam
+
+57029408 + 0 in total (QC-passed reads + QC-failed reads)
+0 + 0 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+21403407 + 0 mapped (37.53% : N/A)
+57029408 + 0 paired in sequencing
+28514704 + 0 read1
+28514704 + 0 read2
+15442422 + 0 properly paired (27.08% : N/A)
+17601996 + 0 with itself and mate mapped
+3801411 + 0 singletons (6.67% : N/A)
+135006 + 0 with mate mapped to a different chr
+64974 + 0 with mate mapped to a different chr (mapQ>=5)
+```
+
+37.53% mapped using bowtie2, whereas alignment with hisat2 for this sample was 47.17%. Even though the alignment with hisat2 was higher, I am more inclined to go with the bowtie2 alignment, as I want to be consistent in mapping algorithms for the mRNA and smRNA analysis. Other papers that have examined miRNAs in corals have also used bowtie for the mRNA analysis (i.e., Gajigan & Conaco 2017; Baumgarten et al. 2013, etc). 
+
+Now let's do the sam to bam for all the samples. First, I'm going to move the aligned reads to the bowtie output alignment folder: `mv /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/align* /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/align`
+
+In the scripts folder: `nano sam_to_bam.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
+
+echo "Converting sam to bam" $(date)
+
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/align
+
+array=($(ls *R1_001.fastq.gz)) # call the clean sequences - make an array to align
+
+for i in ${array[@]}; do
+		mv ${i} ${i}.sam
+		samtools sort -o ${i}.bam ${i}.sam
+		#rm ${i}.sam
+done
+
+echo "Files converted to bam" $(date)
+```
+
+Submitted batch job 292496. Took about 9.5 hours. Calculate % mapped from the bam files. In scripts, `nano map_percent.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
+
+echo "Calculating the percentage of reads aligned" $(date)
+
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/align
+
+for i in *.bam; do
+    echo "${i}" >> mapped_reads_counts_Apoc
+    samtools flagstat ${i} | grep "mapped (" >> mapped_reads_counts_Apoc
+done
+
+echo "Calculation complete" $(date)
+```
+
+Submitted batch job 292513
+
+
+
+### 20240115
+
+Assemble using stringtie. In scripts, `nano assemble.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=128GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load StringTie/2.2.1-GCC-11.2.0
+
+echo "Assembling transcripts using stringtie" $(date)
+
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/align
+
+array1=($(ls *.bam)) #Make an array of sequences to assemble
+
+for i in ${array1[@]}; do
+    stringtie -p 8 -e -B -G /data/putnamlab/jillashey/Astrangia_Genome/apoculata_v2.0.gff3 -A ${i}.gene_abund.tab -o ${i}.gtf ${i}
+done
+
+echo "Assembly for each sample complete " $(date)
+```
 
 
 
@@ -926,6 +1080,11 @@ I guess I need to rerun bowtie. Submitted batch job 292246
 
 
 
+
+For lncRNA 
+
+- CPC: https://github.com/biocoder/CPC2/blob/master/bin/CPC2.py 
+- lncRNA discovery overview: https://github.com/urol-e5/deep-dive/blob/main/D-Apul/code/05.32-lncRNA-discovery-overview.Rmd 
 
 
 
