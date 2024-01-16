@@ -51,7 +51,6 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 - Thaw components with yellow caps on ice 
 	- cDNA Synthesis Reagent 1
 	- cDNA Synthesis Reagent 2
-
 - Thaw RNA samples on ice 
 - Adjust each RNA sample volume to <8 uL at 10-250 ng. 
 	- DO I HALVE THIS INPUT?
@@ -63,11 +62,40 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 #### Section 2: RiboFree Universisal Depletion 
 
-
-
-
-
 - Turn on thermocycler and make sure programs are set / cycler is preheated
+- Thaw components with red caps on ice 
+	- Depletion Reagent 1 
+	- Depletion Reagent 2
+	- Depletion Reagent 3
+	- Depletion Reagent 4
+- Add 5 uL of Depletion Reagent 1 to the sample tube. 
+- Pipette to mix and centrifuge briefly 
+- Place the tube in thermocycler and run Steps 1-3 (Pre-Depletion Incubation)
+- Once thermocycler reaches the Step 3 hold, **do not remove** samples from thermocycler
+- While the samples are still in the thermocycler, add 5 uL of Depletion Reagent 2 to the sample
+- Pipette to mix 
+- Close the thermocycler lid and continue to Step 4 (Depletion Reaction) 
+- Once thermocycler reaches the Step 5 hold, **do not remove** samples from thermocycler
+- While the samples are still in the thermocycler, add 5 uL of Depletion Reagent 3 to the sample. 
+- Pipette to mix 
+- Close the thermocycler lid and continue to Steps 6-7 (Stop Depletion) 
+- Add 1 uL of Depletion Reagent 4 to the sample. 
+- Remove the samples from the thermocycler and gently flick to mix. 
+- Centrifuge briefly 
+- Immediately return samples to thermocycler 
+- Close the thermocycler lid and continue to Steps 8-10 (Depletion Cleanup) 
+- Remove samples from thermocycler and centrifuge briefly
+- At room temperature, add 13 uL of 95% ethanol to the sample. 
+- Pipette to mix
+
+
+
+
+
+
+
+
+
 - Thaw RNA samples on ice 
 - Thaw components with orange caps and red caps on ice
 	- Orange caps (adapter ligation):

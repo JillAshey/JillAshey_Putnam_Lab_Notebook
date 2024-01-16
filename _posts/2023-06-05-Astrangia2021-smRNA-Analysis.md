@@ -1850,52 +1850,159 @@ Now edit the `test_mirdeep2.sh` so that `mature_mirbase_cnidarian_T.fa` is the i
 
 Sam White talked to Azenta (who did the sequencing for my project) and they recommended using Trimmomatic for trimming the small RNA reads. They also recommended tossing out read 2 and only using read 1 for analysis. I concatenate and collapse the reads anyway, so that shouldn't matter too much. Sam will get back to me about trimming info/code from Azenta soon. 
 
+### 20240116
 
+While I wait for Sam to get back to me about the trimming info, I'm going to run a mirdeep2 test on another sample (AST-2000). Unzip the files first. 
 
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
+gunzip AST-2000_R1_001.fastq.*
+```
 
+Next, go to scripts folder and modify `test_cat_collapse.sh` so that the sample is AST-2000. Submitted batch job 292595. Took about 20 mins. 
 
+```
+head sed.collapse.cat.AST-2000.fastq
+>seq_1_x719979
+GCACTGGTGGTTCAGTGGTAGAATTCTC
+>seq_2_x647300
+GAGAATTCTACCACTGAACCACCAGTGC
+>seq_3_x228711
+GCACTGTGGTTCAGTGGTAGAATTCTC
+>seq_4_x206224
+GAGAATTCTACCACTGAACCACAGTGC
+>seq_5_x161452
+GCACTGGTGGTTCAGTGGTAGAATTCT
 
+zgrep -c ">" sed.collapse.cat.AST-2000.fastq
+10773578
+```
 
-
-
-
-
-
-I'm going to modify the code from `test_cat_collapse.sh` in the scripts folder. 
+Remove any sequences that are <17 nts. 
 
 ```
 #!/bin/bash
-#SBATCH -t 24:00:00
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-2000.fastq"
+output_file="17_sed.collapse.cat.AST-2000.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-2000.fastq 
+10773578
+```
+
+Looks like no sequences were removed. Now let's attempt the mirdeep2 run with AST-2000. Map reads to genome first.
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2000.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s 20240116_reads_collapsed.fa -t 20240116_reads_collapsed_vs_genome.arf -v  
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_5771
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 34857708	5888651	28969057	16.893	83.107
+seq: 34857708	5888651	28969057	16.893	83.107
+```
+
+Higher mapping % than AST-1065. Let's look at the files produced. 
+
+```
+head 20240116_reads_collapsed.fa
+>seq_1_x719979
+GCACTGGTGGTTCAGTGGTAGAATTCTC
+>seq_2_x647300
+GAGAATTCTACCACTGAACCACCAGTGC
+>seq_3_x228711
+GCACTGTGGTTCAGTGGTAGAATTCTC
+>seq_4_x206224
+GAGAATTCTACCACTGAACCACAGTGC
+>seq_5_x161452
+GCACTGGTGGTTCAGTGGTAGAATTCT
+
+zgrep -c ">" 20240116_reads_collapsed.fa 
+10773578
+
+head 20240116_reads_collapsed_vs_genome.arf 
+seq_7_x119692	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_7_x119692	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_7_x119692	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_7_x119692	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_15_x41699	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	31478	31507	tgcgtgagccaagagatccaccgtcaaaag	+	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_15_x41699	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	20734	20763	tgcgtgagccaagagatccaccgtcaaaag	+	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_15_x41699	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	42321	42350	tgcgtgagccaagagatccaccgtcaaaag	+	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_15_x41699	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	53070	53099	tgcgtgagccaagagatccaccgtcaaaag	+	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_27_x28319	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	20610	20639	tccgacactcagacagacatgctcctggga	+	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_27_x28319	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	42197	42226	tccgacactcagacagacatgctcctggga	+	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 20240116_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+1016532
+```
+
+Edit the `test_mirdeep2.sh` script to contain info for AST-2000
+
+```
+#!/bin/bash -i
+#SBATCH -t 120:00:00
 #SBATCH --nodes=1 --ntasks-per-node=1
 #SBATCH --export=NONE
-#SBATCH --mem=100GB
+#SBATCH --mem=500GB
 #SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
 #SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
 #SBATCH --account=putnamlab
-#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts              
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/lncRNA/scripts              
 #SBATCH -o slurm-%j.out
 #SBATCH -e slurm-%j.error
 
-module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
 
-cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar_25bp
+echo "Starting mirdeep2 on test sample AST-2000" $(date)
 
-echo "Concatenating R1 and R2 for test sample" $(date)
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2000.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/20240116_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
 
-cat trim.AST-1065_R1_001.fastq trim.AST-1065_R1_001.fastq > cat.25bp.AST-1065.fastq
+echo "mirdeep2 concluded for test sample AST-2000" $(date)
 
-echo "Collapsing redundant sequences with fastx collapse" $(date)
-
-fastx_collapser -v -i cat.25bp.AST-1065.fastq -o collapse.cat.25bp.AST-1065.fastq
-
-echo "Prep sequence IDs for mirdeep2 analysis" $(date)
-
-sed '/^>/ s/-/_x/g' collapse.cat.25bp.AST-1065.fastq \
-| sed '/^>/ s/>/>seq_/' \
-> sed.collapse.cat.25bp.AST-1065.fastq
-
-echo "Done!" $(date)
+conda deactivate
 ```
+
+Submitted batch job 292597
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
