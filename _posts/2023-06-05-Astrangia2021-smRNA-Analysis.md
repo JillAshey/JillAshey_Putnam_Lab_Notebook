@@ -1986,14 +1986,151 @@ echo "mirdeep2 concluded for test sample AST-2000" $(date)
 conda deactivate
 ```
 
-Submitted batch job 292597
+Submitted batch job 292597. This took about 7 hours to run. 
 
+I then compared the AST-1065 and AST-2000 samples in R to see if there were any overlapping sequences (code [here](https://github.com/JillAshey/Astrangia_repo/blob/main/scripts/compare_miRNAs.R)). I found 21 unique overlapping sequences between the two samples! Exciting. 
 
+### 20240119
 
+Hollie recommended that I compare the 25 bp vs 30 bp to see what the outcome was (ie did one trim length yield more miRNAs than the other). First, I need to prep the AST-2000 25bp sample for mirdeep2. 
 
+Unzip the files. 
 
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar_25bp
+gunzip trim.AST-2000*
+```
 
+Next, go to scripts folder and modify `test_cat_collapse.sh` so that the sample is AST-2000 from the flexbar 25 bp folder. Submitted batch job 293019. Took about 15 mins
 
+```
+head sed.collapse.cat.AST-2000_25bp.fastq 
+>seq_1_x1075819
+GCACTGGTGGTTCAGTGGTAGAATT
+>seq_2_x673045
+GAGAATTCTACCACTGAACCACCAG
+>seq_3_x339694
+GCACTGTGGTTCAGTGGTAGAATTC
+>seq_4_x212925
+GAGAATTCTACCACTGAACCACAGT
+>seq_5_x150098
+AGAATTCTACCACTGAACCACCAGT
+
+zgrep -c ">" sed.collapse.cat.AST-2000_25bp.fastq 
+9235930
+```
+
+Remove any seqs that are <17 nts. 
+
+```
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-2000_25bp.fastq"
+output_file="17_sed.collapse.cat.AST-2000_25bp.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-2000_25bp.fastq 
+9235930
+```
+
+No reads removed. Now map the reads to the genome using mirdeep2
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar_25bp/17_sed.collapse.cat.AST-2000_25bp.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s 20240119_reads_collapsed.fa -t 20240119_reads_collapsed_vs_genome.arf -v  
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_51907
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 34857708	6018696	28839012	17.266	82.734
+seq: 34857708	6018696	28839012	17.266	82.734
+```
+
+Slightly higher mapping than the 30bp AST-2000. Let's look at the files 
+
+```
+head 20240119_reads_collapsed.fa
+>seq_1_x1075819
+GCACTGGTGGTTCAGTGGTAGAATT
+>seq_2_x673045
+GAGAATTCTACCACTGAACCACCAG
+>seq_3_x339694
+GCACTGTGGTTCAGTGGTAGAATTC
+>seq_4_x212925
+GAGAATTCTACCACTGAACCACAGT
+>seq_5_x150098
+AGAATTCTACCACTGAACCACCAGT
+
+zgrep -c ">" 20240119_reads_collapsed.fa
+9235930
+
+head 20240119_reads_collapsed_vs_genome.arf
+seq_6_x145559	25	1	25	aacttttgacggtggatctcttggc	chromosome_2	25	20741	20765	aacttttgacggtggatctcttggc	mmmmmmmmmmmmmmmmmmmmmmmmm
+seq_6_x145559	25	1	25	aacttttgacggtggatctcttggc	chromosome_2	25	31485	31509	aacttttgacggtggatctcttggc	mmmmmmmmmmmmmmmmmmmmmmmmm
+seq_6_x145559	25	1	25	aacttttgacggtggatctcttggc	chromosome_2	25	42328	42352	aacttttgacggtggatctcttggc	mmmmmmmmmmmmmmmmmmmmmmmmm
+seq_6_x145559	25	1	25	aacttttgacggtggatctcttggc	chromosome_2	25	53077	53101	aacttttgacggtggatctcttggc	mmmmmmmmmmmmmmmmmmmmmmmmm
+seq_18_x42856	25	1	25	tgcgtgagccaagagatccaccgtc	chromosome_2	25	42321	42345	tgcgtgagccaagagatccaccgtc	mmmmmmmmmmmmmmmmmmmmmmmmm
+seq_18_x42856	25	1	25	tgcgtgagccaagagatccaccgtc	chromosome_2	25	53070	53094	tgcgtgagccaagagatccaccgtc	mmmmmmmmmmmmmmmmmmmmmmmmm
+seq_18_x42856	25	1	25	tgcgtgagccaagagatccaccgtc	chromosome_2	25	31478	31502	tgcgtgagccaagagatccaccgtc	mmmmmmmmmmmmmmmmmmmmmmmmm
+seq_18_x42856	25	1	25	tgcgtgagccaagagatccaccgtc	chromosome_2	25	20734	20758	tgcgtgagccaagagatccaccgtc	mmmmmmmmmmmmmmmmmmmmmmmmm
+seq_27_x32954	25	1	25	tccgacactcagacagacatgctcc	chromosome_2	25	42197	42221	tccgacactcagacagacatgctcc	mmmmmmmmmmmmmmmmmmmmmmmmm
+seq_27_x32954	25	1	25	tccgacactcagacagacatgctcc	chromosome_2	25	52946	52970	tccgacactcagacagacatgctcc	mmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 20240119_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+792395
+```
+
+Less reads collapsed vs genome for the 25 bp than the 30 bp AST-2000 sample. 
+
+Edit the `test_mirdeep2.sh` script to contain info for AST-2000 25bp
+
+```
+#!/bin/bash -i
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on test sample AST-2000 trimmed to 25bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar_25bp/17_sed.collapse.cat.AST-2000_25bp.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/20240119_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for test sample AST-2000 trimmed to 25bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293022
 
 
 
