@@ -2136,8 +2136,17 @@ Submitted batch job 293022
 
 Took about 16 hours to run. Now doing to download the csv and compare the AST-2000 25 vs 30 bp results. 
 
+AST-2000 25 bp
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/astrangia2021_bioinf/smRNA/AST-2000_test_25bp.png)
 
+AST-2000 30 bp
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/astrangia2021_bioinf/smRNA/AST-2000_test_30bp.png)
 
+The 25bp trimming had more miRNAs identified but more false positives. There were 111 unique sews when comparing 25bp v 30bp AST-2000. I think I am going to move forward with the 30bp trimming. 
+
+Yay!!!!! Okay well now I can do the rest of the mirdeep2 runs for all the samples. Idk how I feel about putting all the samples in a loop because I don't want them to overwrite one another. I might do a separate script for each sample...If I do that, I'll need to make separate scripts for the collapsing and for the mirdeep2 itself. 
+
+In `/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar`, gunzip all files. 
 
 
 
