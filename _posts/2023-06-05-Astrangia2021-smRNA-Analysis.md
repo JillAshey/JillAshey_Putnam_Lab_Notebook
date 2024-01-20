@@ -2132,6 +2132,9 @@ conda deactivate
 
 Submitted batch job 293022
 
+### 20230120
+
+Took about 16 hours to run. Now doing to download the csv and compare the AST-2000 25 vs 30 bp results. 
 
 
 
