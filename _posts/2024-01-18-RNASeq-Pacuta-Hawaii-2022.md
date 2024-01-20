@@ -62,7 +62,7 @@ N_R2_001.fastq.gz:28609255
 
 QC the raw data 
 
-In scripts folder: nano fastqc_raw.sh
+In scripts folder: `nano fastqc_raw.sh`
 
 ```
 #!/bin/bash
@@ -92,7 +92,7 @@ multiqc *
 
 Submitted batch job 293007
 
-Check to make sure multiqc ran and look at the multiQC output. The phred scores look really good, as does the duplication rate. There is some substantial adapter content so I will trim. 
+Check to make sure multiqc ran and look at the multiQC output. The phred scores look really good, as does the duplication rate. There is some substantial adapter content so I will trim. Raw QC report can be found [here](https://github.com/fscucchia/Hawaii2022_pH_Temp_Mcap_Pacu/tree/main/output/QC). 
 
 Trim reads w/ fastp. In scripts folder: `nano fastp_qc.sh`
 
@@ -144,10 +144,113 @@ multiqc *
 echo "MultiQC complete" $(date)
 ```
 
-Submitted batch job 293017
+Submitted batch job 293017. Took a couple of hours, but looks like the fastqc step didn't work...Run fastqc as its own script. In scripts folder: `nano fastqc_trim.sh`
 
-Once trimming is done, look at the multiqc plots to make sure adapter content is gone and sample quality is high. Count the number of reads each trimmed file has: 
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Pacuta_HI_2022/scripts            
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+for file in /data/putnamlab/jillashey/Pacuta_HI_2022/data/trim/*fastq.gz
+do 
+fastqc $file --outdir /data/putnamlab/jillashey/Pacuta_HI_2022/output/fastqc/trim
+done
+
+cd /data/putnamlab/jillashey/Pacuta_HI_2022/output/fastqc/trim
+
+multiqc *
+```
+
+Submitted batch job 293029
+
+
+Count the number of reads each trimmed file has: 
 
 ```
 zgrep -c "@LH00" *.gz
+
+trim.A_R1_001.fastq.gz:22328993
+trim.A_R2_001.fastq.gz:22328993
+trim.B_R1_001.fastq.gz:24904172
+trim.B_R2_001.fastq.gz:24904172
+trim.C_R1_001.fastq.gz:25854719
+trim.C_R2_001.fastq.gz:25854719
+trim.D_R1_001.fastq.gz:24265173
+trim.D_R2_001.fastq.gz:24265173
+trim.E_R1_001.fastq.gz:26184558
+trim.E_R2_001.fastq.gz:26184558
+trim.F_R1_001.fastq.gz:23339918
+trim.F_R2_001.fastq.gz:23339918
+trim.G_R1_001.fastq.gz:25448242
+trim.G_R2_001.fastq.gz:25448242
+trim.H_R1_001.fastq.gz:23634641
+trim.H_R2_001.fastq.gz:23634641
+trim.L_R1_001.fastq.gz:23596961
+trim.L_R2_001.fastq.gz:23596961
+trim.M_R1_001.fastq.gz:23003891
+trim.M_R2_001.fastq.gz:23003891
+trim.N_R1_001.fastq.gz:22825941
+trim.N_R2_001.fastq.gz:22825941
 ```
+
+Once trimming is done, look at the multiqc plots to make sure adapter content is gone and sample quality is high. QC looks good! Trimmed QC report can be found [here](https://github.com/fscucchia/Hawaii2022_pH_Temp_Mcap_Pacu/tree/main/output/QC).
+
+Align reads to Pacuta genome using hisat2. Download version 2 of the pocillopora genome [here](http://cyanophora.rutgers.edu/Pocillopora_acuta/) to Andromeda and unzip the assembly fasta file. In the scripts folder: `nano align.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Pacuta_HI_2022/scripts            
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+# load modules needed
+module load HISAT2/2.2.1-foss-2019b #Alignment to reference genome: HISAT2
+module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
+
+echo "Building genome reference" $(date)
+
+# index the reference genome for Pacuta output index to working directory
+hisat2-build -f /data/putnamlab/jillashey/genome/Pacuta/V2/Pocillopora_acuta_HIv2.assembly.fasta Pacuta_ref
+echo "Referece genome indexed. Starting alingment" $(date)
+
+# This script exports alignments as bam files
+# sorts the bam file because Stringtie takes a sorted file for input (--dta)
+# removes the sam file because it is no longer needed
+
+array=($(ls /data/putnamlab/jillashey/Pacuta_HI_2022/data/trim/*fastq.gz)) # call the clean sequences - make an array to align
+
+for i in ${array[@]}; do
+        sample_name=`echo $i| awk -F [.] '{print $2}'`
+        hisat2 -p 8 --rna-strandness RF --dta -x Pacuta_ref -1 ${i} -2 $(echo ${i}|sed s/_R1/_R2/) -S ${sample_name}.sam
+        samtools sort -@ 8 -o ${sample_name}.bam ${sample_name}.sam
+                echo "${i} bam-ified!"
+        rm ${sample_name}.sam
+done
+
+echo "Alignment complete!" $(date)
+```
+
+Submitted batch job 293038
+
+
+
+
+
