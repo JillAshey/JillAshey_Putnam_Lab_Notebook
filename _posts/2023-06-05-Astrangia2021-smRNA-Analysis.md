@@ -2144,11 +2144,44 @@ AST-2000 30 bp
 
 The 25bp trimming had more miRNAs identified but more false positives. There were 111 unique sews when comparing 25bp v 30bp AST-2000. I think I am going to move forward with the 30bp trimming. 
 
-Yay!!!!! Okay well now I can do the rest of the mirdeep2 runs for all the samples. Idk how I feel about putting all the samples in a loop because I don't want them to overwrite one another. I might do a separate script for each sample...If I do that, I'll need to make separate scripts for the collapsing and for the mirdeep2 itself. 
+Yay!!!!! Okay well now I can do the rest of the mirdeep2 runs for all the samples. Idk how I feel about putting all the samples in a loop because I don't want them to overwrite one another. I might do a separate script for each sample...If I do that, I'll need to make separate scripts for the mirdeep2 itself. 
 
-In `/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar`, gunzip all files. 
+In `/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar`, gunzip all fastq files. 
 
+I can write a single script to concatenate (with `cat` command) and collapse reads (with `fastx_collapser` from the [fastx toolkit](http://hannonlab.cshl.edu/fastx_toolkit/commandline.html). In scripts folder: `nano cat_collapse.sh`. 
 
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
+
+echo "Concatenate and collapse smRNA reads" $(date)
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
+
+samples=$(ls *_R1_001.fastq.gz_1.fastq | sed 's/\(.*\)_R1_001.fastq.gz_1.fastq/\1/')
+
+for sample in $samples
+do
+    # Concatenate paired-end reads
+    cat "${sample}_R1_001.fastq.gz_1.fastq" "${sample}_R1_001.fastq.gz_2.fastq" > "cat.${sample}.fastq"
+    echo "${sample} reads are concatenated into one file per sample" $(date)
+
+    # Collapse concatenated reads
+    fastx_collapser -v -i "cat.${sample}.fastq" -o "collapse.cat.${sample}.fastq"
+    echo "${sample} reads collapsed" $(date)
+done
+```
 
 
 
@@ -2271,7 +2304,7 @@ module load FASTX-Toolkit/0.0.14-GCC-9.3.0
 
 echo "Concatenate and collapse smRNA reads" $(date)
 
-cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/fastp
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
 
 samples=$(ls trimmed.*_R1_001.fastq.gz | sed 's/trimmed.\(.*\)_R1_001.fastq.gz/\1/')
 

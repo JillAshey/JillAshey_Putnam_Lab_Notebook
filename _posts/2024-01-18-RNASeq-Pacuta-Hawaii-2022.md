@@ -248,8 +248,92 @@ done
 echo "Alignment complete!" $(date)
 ```
 
-Submitted batch job 293038
+Submitted batch job 293038. Took about 7 hours. Bam files are in the scripts folder, move them to hisat2 output folder. 
 
+```
+cd /data/putnamlab/jillashey/Pacuta_HI_2022/scripts
+mv *bam ../output/hisat2/
+cd ../output/hisat2/
+```
+
+
+
+View mapping percentages 
+
+```
+module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
+
+for i in *.bam; do
+    echo "${i}" >> mapped_reads_counts_Pacuta
+    samtools flagstat ${i} | grep "mapped (" >> mapped_reads_counts_Pacuta
+done
+
+42773589 + 0 mapped (83.14% : N/A)
+D_R2_001.bam
+42679238 + 0 mapped (83.07% : N/A)
+E_R1_001.bam
+45317858 + 0 mapped (81.71% : N/A)
+E_R2_001.bam
+45247270 + 0 mapped (81.64% : N/A)
+F_R1_001.bam
+39470870 + 0 mapped (79.99% : N/A)
+F_R2_001.bam
+39408754 + 0 mapped (79.91% : N/A)
+G_R1_001.bam
+41604092 + 0 mapped (77.69% : N/A)
+G_R2_001.bam
+41533656 + 0 mapped (77.62% : N/A)
+H_R1_001.bam
+38316350 + 0 mapped (77.30% : N/A)
+H_R2_001.bam
+38212084 + 0 mapped (77.21% : N/A)
+L_R1_001.bam
+41921009 + 0 mapped (83.53% : N/A)
+L_R2_001.bam
+41948865 + 0 mapped (83.50% : N/A)
+M_R1_001.bam
+38624730 + 0 mapped (79.63% : N/A)
+M_R2_001.bam
+38570811 + 0 mapped (79.57% : N/A)
+N_R1_001.bam
+27333684 + 0 mapped (57.24% : N/A)
+N_R2_001.bam
+27314674 + 0 mapped (57.21% : N/A)
+```
+
+Pretty high mapping percentages (>75%) for all samples! Sample N had the lowest % at 57%, but that's still relatively high compared to other coral genome alignments that I've done. 
+
+Now assemble and quantify the gene counts using stringtie. In the scripts folder: `nano assemble.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=128GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Pacuta_HI_2022/scripts             
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load StringTie/2.2.1-GCC-11.2.0
+
+echo "Assembling transcripts using stringtie" $(date)
+
+cd /data/putnamlab/jillashey/Pacuta_HI_2022/output/hisat2
+
+array1=($(ls *.bam)) #Make an array of sequences to assemble
+
+for i in ${array1[@]}; do
+    stringtie -p 8 -e -B -G /data/putnamlab/jillashey/genome/Pacuta/V2/Pocillopora_acuta_HIv2.genes.gff3 -A ${i}.gene_abund.tab -o ${i}.gtf ${i}
+done
+
+echo "Assembly for each sample complete " $(date)
+```
+
+Submitted batch job 293063. Why are the files not combining? Are they supposed to combine in the stringtie step or the hisat2 step? Took about 40 mins and there is no info in the gene abundance tab file, but there is some info in the gtf file. Also the files are still separated by R1 and R2 even though they should be combined at this point. I'm going to rerun the alignment step because I think that is where things went wrong. Going to double check my alignment script. Ah I think it's because I used this array: `array=($(ls /data/putnamlab/jillashey/Pacuta_HI_2022/data/trim/*fastq.gz))` instead of `array=($(ls /data/putnamlab/jillashey/Pacuta_HI_2022/data/trim/*_R1_001.fastq.gz`. Ie I didn't specify R1 for the array. I'm also commenting out the hisat2 build line in the script because the genome has already been indexed. Submitted batch job 293076. Now the output should have the reads combined in one file. 
 
 
 
