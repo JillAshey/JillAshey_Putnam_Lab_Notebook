@@ -333,8 +333,129 @@ done
 echo "Assembly for each sample complete " $(date)
 ```
 
-Submitted batch job 293063. Why are the files not combining? Are they supposed to combine in the stringtie step or the hisat2 step? Took about 40 mins and there is no info in the gene abundance tab file, but there is some info in the gtf file. Also the files are still separated by R1 and R2 even though they should be combined at this point. I'm going to rerun the alignment step because I think that is where things went wrong. Going to double check my alignment script. Ah I think it's because I used this array: `array=($(ls /data/putnamlab/jillashey/Pacuta_HI_2022/data/trim/*fastq.gz))` instead of `array=($(ls /data/putnamlab/jillashey/Pacuta_HI_2022/data/trim/*_R1_001.fastq.gz`. Ie I didn't specify R1 for the array. I'm also commenting out the hisat2 build line in the script because the genome has already been indexed. Submitted batch job 293076. Now the output should have the reads combined in one file. 
+Submitted batch job 293063. Why are the files not combining? Are they supposed to combine in the stringtie step or the hisat2 step? Took about 40 mins and there is no info in the gene abundance tab file, but there is some info in the gtf file. Also the files are still separated by R1 and R2 even though they should be combined at this point. I'm going to rerun the alignment step because I think that is where things went wrong. Going to double check my alignment script. Ah I think it's because I used this array: `array=($(ls /data/putnamlab/jillashey/Pacuta_HI_2022/data/trim/*fastq.gz))` instead of `array=($(ls /data/putnamlab/jillashey/Pacuta_HI_2022/data/trim/*_R1_001.fastq.gz`. Ie I didn't specify R1 for the array. I'm also commenting out the hisat2 build line in the script because the genome has already been indexed. Submitted batch job 293076. Now the output should have the reads combined in one file. Run the `assemble.sh` script. Submitted batch job 293087
 
+While assembly is running, look at mapping percentages. 
 
+```
+module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
 
+for i in *.bam; do
+     echo "${i}" >> mapped_reads_counts_Pacuta
+     samtools flagstat ${i} | grep "mapped (" >> mapped_reads_counts_Pacuta
+ done
+ 
+A_R1_001.bam
+38453816 + 0 mapped (81.09% : N/A)
+B_R1_001.bam
+43150815 + 0 mapped (82.01% : N/A)
+C_R1_001.bam
+45052096 + 0 mapped (82.07% : N/A)
+D_R1_001.bam
+42773589 + 0 mapped (83.14% : N/A)
+E_R1_001.bam
+45317858 + 0 mapped (81.71% : N/A)
+F_R1_001.bam
+39470870 + 0 mapped (79.99% : N/A)
+G_R1_001.bam
+41604092 + 0 mapped (77.69% : N/A)
+H_R1_001.bam
+38316350 + 0 mapped (77.30% : N/A)
+L_R1_001.bam
+41921009 + 0 mapped (83.53% : N/A)
+M_R1_001.bam
+38624730 + 0 mapped (79.63% : N/A)
+N_R1_001.bam
+27333684 + 0 mapped (57.24% : N/A)
+```
+
+Once assembly is done, move the gtf and tab files to the stringtie output folder 
+
+```
+cd /data/putnamlab/jillashey/Pacuta_HI_2022/output/hisat2
+mv *gtf ../stringtie/
+mv *tab ../stringtie/
+cd ../stringtie 
+```
+
+Make a list of the gtfs
+
+```
+ls *.gtf > gtf_list.txt
+```
+
+Merge the gtfs into one with stringtie 
+
+```
+module purge
+module load StringTie/2.1.4-GCC-9.3.0
+
+stringtie --merge -e -p 8 -G /data/putnamlab/jillashey/genome/Pacuta/V2/Pocillopora_acuta_HIv2.genes.gff3 -o Pacuta_merged.gtf gtf_list.txt #Merge GTFs 
+```
+
+Assess the accuracy of the merged assembly with gffcompare
+
+```
+module purge
+module load GffCompare/0.12.1-GCCcore-8.3.0
+
+gffcompare -r /data/putnamlab/jillashey/genome/Pacuta/V2/Pocillopora_acuta_HIv2.genes.gff3 -G -o merged Pacuta_merged.gtf #Compute the accuracy 
+
+  33730 reference transcripts loaded.
+  33730 query transfrags loaded.
+```
+
+Check out the merged file. 
+
+```
+less merged.stats
+
+# gffcompare v0.12.1 | Command line was:
+#gffcompare -r /data/putnamlab/jillashey/genome/Pacuta/V2/Pocillopora_acuta_HIv2.genes.gff3 -G -o merged Pacuta_merged.gtf
+#
+
+#= Summary for dataset: Pacuta_merged.gtf 
+#     Query mRNAs :   33730 in   33611 loci  (25853 multi-exon transcripts)
+#            (85 multi-transcript loci, ~1.0 transcripts per locus)
+# Reference mRNAs :   33730 in   33611 loci  (25853 multi-exon)
+# Super-loci w/ reference transcripts:    33611
+#-----------------| Sensitivity | Precision  |
+        Base level:   100.0     |   100.0    |
+        Exon level:   100.0     |   100.0    |
+      Intron level:   100.0     |   100.0    |
+Intron chain level:   100.0     |   100.0    |
+  Transcript level:   100.0     |   100.0    |
+       Locus level:   100.0     |   100.0    |
+
+     Matching intron chains:   25853
+       Matching transcripts:   33717
+              Matching loci:   33604
+
+          Missed exons:       0/222629  (  0.0%)
+           Novel exons:       0/222622  (  0.0%)
+        Missed introns:       0/188898  (  0.0%)
+         Novel introns:       0/188898  (  0.0%)
+           Missed loci:       0/33611   (  0.0%)
+            Novel loci:       0/33611   (  0.0%)
+
+ Total union super-loci across all input datasets: 33611 
+33730 out of 33730 consensus transcripts written in merged.annotated.gtf (0 discarded as redundant)
+```
+
+Make gtf list text file for gene count matrix creation 
+
+```
+for filename in *bam.gtf; do echo $filename $PWD/$filename; done > listGTF.txt
+```
+
+Download the prepDE.py script from [here](https://github.com/gpertea/stringtie/blob/master/prepDE.py) and put it in the stringtie output folder. Load python and compile the gene count matrix
+
+```
+module purge
+module load Python/2.7.18-GCCcore-9.3.0
+
+python prepDE.py -g Pacuta_gene_count_matrix.csv -i listGTF.txt
+```
+
+The gene count matrix has many STRG gene ids in it, but the transcript count matrix appears to have the gene id names from the gff. Going to download both and check them out. 
 
