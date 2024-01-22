@@ -2132,7 +2132,7 @@ conda deactivate
 
 Submitted batch job 293022
 
-### 20230120
+### 20240121
 
 Took about 16 hours to run. Now doing to download the csv and compare the AST-2000 25 vs 30 bp results. 
 
@@ -2185,20 +2185,1096 @@ done
 
 Submitted batch job 293086
 
+### 20240122
 
+All files are now concatenated and collapsed. I need to now prep the sequence IDs for mirdeep2 with `sed`. I should've put this in the script. I'm also going to remove any reads <17nts. 
 
+AST-1065
 
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-1065.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-1065.fastq
 
+#!/bin/bash
 
+# Define the input and output files
+input_file="sed.collapse.cat.AST-1065.fastq"
+output_file="17_sed.collapse.cat.AST-1065.fastq"
 
+# Initialize the output file
+> "$output_file"
 
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
 
+zgrep -c ">" 17_sed.collapse.cat.AST-1065.fastq 
+11979585
+```
 
+Not doing AST-1105 bc of poor QC and mapping 
 
+AST-1147
 
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-1147.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-1147.fastq
 
+#!/bin/bash
 
+# Define the input and output files
+input_file="sed.collapse.cat.AST-1147.fastq"
+output_file="17_sed.collapse.cat.AST-1147.fastq"
 
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-1147.fastq 
+18025765
+```
+
+AST-1412
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-1412.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-1412.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-1412.fastq"
+output_file="17_sed.collapse.cat.AST-1412.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-1412.fastq 
+11251691
+```
+
+AST-1560
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-1560.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-1560.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-1560.fastq"
+output_file="17_sed.collapse.cat.AST-1560.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-1560.fastq 
+11702120
+```
+
+AST-1567
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-1567.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-1567.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-1567.fastq"
+output_file="17_sed.collapse.cat.AST-1567.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-1567.fastq 
+9871465
+```
+
+AST-1617
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-1617.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-1617.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-1617.fastq"
+output_file="17_sed.collapse.cat.AST-1617.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-1617.fastq 
+8081542
+```
+
+AST-1722
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-1722.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-1722.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-1722.fastq"
+output_file="17_sed.collapse.cat.AST-1722.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-1722.fastq 
+7574236
+```
+
+AST-2000
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-2000.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-2000.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-2000.fastq"
+output_file="17_sed.collapse.cat.AST-2000.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-2000.fastq 
+10773578
+```
+
+AST-2007
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-2007.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-2007.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-2007.fastq"
+output_file="17_sed.collapse.cat.AST-2007.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-2007.fastq 
+8653745
+```
+
+AST-2302
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-2302.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-2302.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-2302.fastq"
+output_file="17_sed.collapse.cat.AST-2302.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-2302.fastq 
+11391780
+```
+
+AST-2360
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-2360.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-2360.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-2360.fastq"
+output_file="17_sed.collapse.cat.AST-2360.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-2360.fastq 
+9737775
+```
+
+AST-2398
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-2398.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-2398.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-2398.fastq"
+output_file="17_sed.collapse.cat.AST-2398.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-2398.fastq
+9507430
+```
+
+AST-2404
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-2404.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-2404.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-2404.fastq"
+output_file="17_sed.collapse.cat.AST-2404.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-2404.fastq
+11599063
+```
+
+AST-2412
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-2412.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-2412.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-2412.fastq"
+output_file="17_sed.collapse.cat.AST-2412.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-2412.fastq
+10485205
+```
+
+AST-2512
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-2512.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-2512.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-2512.fastq"
+output_file="17_sed.collapse.cat.AST-2512.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-2512.fastq
+9710109
+```
+
+AST-2523
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-2523.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-2523.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-2523.fastq"
+output_file="17_sed.collapse.cat.AST-2523.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-2523.fastq
+11748402
+```
+
+AST-2563
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-2563.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-2563.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-2563.fastq"
+output_file="17_sed.collapse.cat.AST-2563.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-2563.fastq
+11689234
+```
+
+AST-2729
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-2729.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-2729.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-2729.fastq"
+output_file="17_sed.collapse.cat.AST-2729.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-2729.fastq
+10703305
+```
+
+AST-2755
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.AST-2755.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.AST-2755.fastq
+
+#!/bin/bash
+
+# Define the input and output files
+input_file="sed.collapse.cat.AST-2755.fastq"
+output_file="17_sed.collapse.cat.AST-2755.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.AST-2755.fastq
+10834414
+```
+
+Okay everything is prepped! I'm going to remove the extra files made (ie cat, collapse, sed iterations of the file). Going back to the main folder, I'm going to make a `mirdeep2` folder that I will run all of my mirdeep2 code in so that the output is all in one place. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA
+mkdir mirdeep2
+cd mirdeep2
+mkdir AST-1065 AST-1147 AST-1412 AST-1560 AST-1567 AST-1617 AST-1722 AST-2000 AST-2007 AST-2302 AST-2360 AST-2398 AST-2404 AST-2412 AST-2512 AST-2523 AST-2563 AST-2729 AST-2755
+```
+
+Now let's run mirdeep2 on all of the samples! I am paranoid that if I run the script in a loop for all the samples, something is going to overwrite. Therefore, I am going to run each sample individually. 
+
+#### AST-1065
+
+```
+cd AST-1065
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1065.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-1065_reads_collapsed.fa -t AST-1065_reads_collapsed_vs_genome.arf -v  
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_51087
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 35658222	3275049	32383173	9.185	90.815
+seq: 35658222	3275049	32383173	9.185	90.815
+```
+
+Look at the mapping results
+
+```
+head AST-1065_reads_collapsed.fa 
+>seq_1_x357414
+TGGTCTATGGTGTAACTGGCAACACGTCTG
+>seq_2_x138955
+ACAGACGTGTTGCCAGTTACACCATAGACC
+>seq_3_x125294
+AACAGACGTGTTGCCAGTTACACCATAGAC
+>seq_4_x98253
+TGAAAATCTTTTCTCTGAAGTGGAA
+>seq_5_x87633
+TTCCACTTCAGAGAAAAGATTTTCA
+
+zgrep -c ">" AST-1065_reads_collapsed.fa 
+11979585
+
+head AST-1065_reads_collapsed_vs_genome.arf 
+seq_7_x81424	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_7_x81424	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_7_x81424	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_7_x81424	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_17_x38316	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	27510	27539	acaaatcttagaacaaaggcttaatctcag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_17_x38316	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	49105	49134	acaaatcttagaacaaaggcttaatctcag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_17_x38316	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	38360	38389	acaaatcttagaacaaaggcttaatctcag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_17_x38316	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	879106	879135	acaaatcttagaacaaaggcttaatctcag	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_25_x32759	30	1	30	ttgctacgatcttctgagattaagcctttg	chromosome_2	30	879093	879122	ttgctacgatcttctgagattaagcctttg	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_25_x32759	30	1	30	ttgctacgatcttctgagattaagcctttg	chromosome_2	30	38373	38402	ttgctacgatcttctgagattaagcctttg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-1065_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+523747
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-1065_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1065              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-1065 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1065.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1065/AST-1065_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-1065 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293148
+
+#### AST-1147
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1147
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1147.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-1147_reads_collapsed.fa -t AST-1147_reads_collapsed_vs_genome.arf -v  
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_53573
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 80830448	23638038	57192410	29.244	70.756
+seq: 80830448	23638038	57192410	29.244	70.756
+```
+
+Look at the mapping results
+
+```
+head AST-1147_reads_collapsed.fa 
+>seq_1_x3434945
+GCACTGGTGGTTCAGTGGTAGAATTCTCGC
+>seq_2_x1817679
+GGCGAGAATTCTACCACTGAACCACCAGTG
+>seq_3_x926642
+AGCGAGAATTCTACCACTGAACCACCAGTG
+>seq_4_x602263
+GCACTGTGGTTCAGTGGTAGAATTCTCGCC
+>seq_5_x475440
+GGCGAGAATTCTACCACTGAACCACAGTGC
+
+zgrep -c ">" AST-1147_reads_collapsed.fa 
+18025765
+
+head AST-1147_reads_collapsed_vs_genome.arf 
+seq_6_x427578	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_6_x427578	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_6_x427578	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_6_x427578	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_14_x202590	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	31478	31507	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_14_x202590	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	20734	20763	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_14_x202590	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	42321	42350	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_14_x202590	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	53070	53099	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_17_x127492	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	879106	879135	acaaatcttagaacaaaggcttaatctcag	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_17_x127492	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	38360	38389	acaaatcttagaacaaaggcttaatctcag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-1147_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+3227088
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-1147_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1147            
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-1147 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1147.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1147/AST-1147_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-1147 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293149
+
+#### AST-1412
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1412
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1412.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-1412_reads_collapsed.fa -t AST-1412_reads_collapsed_vs_genome.arf -v  
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_56487
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 32559110	3100518	29458592	9.523	90.477
+seq: 32559110	3100518	29458592	9.523	90.477
+```
+
+Look at the mapping results
+
+```
+head AST-1412_reads_collapsed.fa 
+>seq_1_x137015
+GGAAGAGCACACGTCTGAACTCCAGTCACT
+>seq_2_x100202
+AACTTTTGACGGTGGATCTCTTGGCTCACG
+>seq_3_x94707
+TCGGACTGTAGAACTCTGAACGTGTAGATC
+>seq_4_x78147
+GCACTGGTGGTTCAGTGGTAGAATTCTCGC
+>seq_5_x73890
+TACTGGATAACTAAGGGAAAGTTTGGCTAA
+
+zgrep -c ">" AST-1412_reads_collapsed.fa 
+11251691
+
+head AST-1412_reads_collapsed_vs_genome.arf 
+seq_2_x100202	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_2_x100202	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_2_x100202	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_2_x100202	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_19_x39468	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	20734	20763	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_19_x39468	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	42321	42350	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_19_x39468	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	53070	53099	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_19_x39468	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	31478	31507	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_20_x31213	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	52946	52975	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_20_x31213	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	31354	31383	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-1412_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+599077
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-1412_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1412           
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-1412 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1412.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1412/AST-1412_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-1412 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293150
+
+#### AST-1560
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1560
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1560.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-1560_reads_collapsed.fa -t AST-1560_reads_collapsed_vs_genome.arf -v  
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_58565
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 35654048	767007	34887041	2.151	97.849
+seq: 35654048	767007	34887041	2.151	97.849
+```
+
+Look at the mapping results
+
+```
+head AST-1560_reads_collapsed.fa 
+>seq_1_x404539
+GACTTTGTAGCATAGGTAAGGTTAGTGCAT
+>seq_2_x272137
+TCAGATGCACTAACCTTACCTATGCTACAA
+>seq_3_x78722
+GGAAGAGCACACGTCTGAACTCCAGTCACG
+>seq_4_x58838
+TCGGACTGTAGAACTCTGAACGTGTAGATC
+>seq_5_x46651
+GCACTGATGGTTCAGTGGTAGAATTCTCGC
+
+zgrep -c ">" AST-1560_reads_collapsed.fa 
+11702120
+
+head AST-1560_reads_collapsed_vs_genome.arf 
+seq_22_x19193	30	1	30	caggtctgtgatgcccttagatgtccgggg	chromosome_2	30	32082	32111	caggtctgtgatgcccttagatgtacaggg	-	2	mmmmmmmmmmmmmmmmmmmmmmmmMmMmmm
+seq_22_x19193	30	1	30	caggtctgtgatgcccttagatgtccgggg	chromosome_2	30	42925	42954	caggtctgtgatgcccttagatgtacaggg	-	2	mmmmmmmmmmmmmmmmmmmmmmmmMmMmmm
+seq_22_x19193	30	1	30	caggtctgtgatgcccttagatgtccgggg	chromosome_2	30	21338	21367	caggtctgtgatgcccttagatgtacaggg	-	2	mmmmmmmmmmmmmmmmmmmmmmmmMmMmmm
+seq_43_x14818	30	1	30	acaggtctgtgatgcccttagatgtccggg	chromosome_2	30	32083	32112	acaggtctgtgatgcccttagatgtacagg	-	2	mmmmmmmmmmmmmmmmmmmmmmmmmMmMmm
+seq_43_x14818	30	1	30	acaggtctgtgatgcccttagatgtccggg	chromosome_2	30	42926	42955	acaggtctgtgatgcccttagatgtacagg	-	2	mmmmmmmmmmmmmmmmmmmmmmmmmMmMmm
+seq_43_x14818	30	1	30	acaggtctgtgatgcccttagatgtccggg	chromosome_2	30	21339	21368	acaggtctgtgatgcccttagatgtacagg	-	2	mmmmmmmmmmmmmmmmmmmmmmmmmMmMmm
+seq_72_x11510	30	1	30	aggtctgtgatgcccttagatgtccggggc	chromosome_2	30	32081	32110	aggtctgtgatgcccttagatgtacagggc	-	2	mmmmmmmmmmmmmmmmmmmmmmmMmMmmmm
+seq_72_x11510	30	1	30	aggtctgtgatgcccttagatgtccggggc	chromosome_2	30	42924	42953	aggtctgtgatgcccttagatgtacagggc	-	2	mmmmmmmmmmmmmmmmmmmmmmmMmMmmmm
+seq_72_x11510	30	1	30	aggtctgtgatgcccttagatgtccggggc	chromosome_2	30	21337	21366	aggtctgtgatgcccttagatgtacagggc	-	2	mmmmmmmmmmmmmmmmmmmmmmmMmMmmmm
+seq_87_x10194	30	1	30	agccaggaatcctaaccgctagaccatctg	chromosome_12	30	41900395	41900424	agccaggaatcctaaccgctagaccatttg	-	1	mmmmmmmmmmmmmmmmmmmmmmmmmmmMmm
+
+cut -f1 AST-1560_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+123911
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-1560_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1560          
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-1560 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1560.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1560/AST-1560_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-1560 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293152
+
+#### AST-1567
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1567
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1567.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-1567_reads_collapsed.fa -t AST-1567_reads_collapsed_vs_genome.arf -v  
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_12237
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 33222794	3149689	30073105	9.481	90.519
+seq: 33222794	3149689	30073105	9.481	90.519
+```
+
+Look at the mapping results
+
+```
+head AST-1567_reads_collapsed.fa 
+>seq_1_x330204
+GCACTGGTGGTTCAGTGGTAGAATTCTCGC
+>seq_2_x226911
+GCACTGATGGTTCAGTGGTAGAATTCTCGC
+>seq_3_x157338
+GGCGAGAATTCTACCACTGAACCACCAGTG
+>seq_4_x98181
+AGCGAGAATTCTACCACTGAACCACCAGTG
+>seq_5_x77909
+GGAAGAGCACACGTCTGAACTCCAGTCACA
+
+zgrep -c ">" AST-1567_reads_collapsed.fa 
+9871465
+
+head AST-1567_reads_collapsed_vs_genome.arf 
+seq_9_x59542	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_9_x59542	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_9_x59542	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_9_x59542	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_24_x25786	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	20734	20763	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_24_x25786	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	42321	42350	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_24_x25786	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	53070	53099	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_24_x25786	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	31478	31507	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_37_x16700	29	1	29	aatggataaccctcaaccgtccggacctc	chromosome_14	29	6295369	6295397	aatggataaccctcaaccgtccggacctc	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_54_x12863	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	31354	31383	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-1567_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+569922
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-1567_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1567        
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-1567 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1567.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1567/AST-1567_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-1567 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293153
+
+I'm going to call it quits for today. 3 samples are running through mirdeep2 now, and 2 samples are pending on the server. 
 
 
 
@@ -2210,151 +3286,3 @@ good resource for miranda
 - https://bioinformaticsworkbook.org/dataAnalysis/SmallRNA/Miranda_miRNA_Target_Prediction.html#gsc.tab=0 
 
 Other potential miRNA target prediction programs: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7839038/#:~:text=TargetScan%20primarily%20predicts%20potential%20miRNA,to%20include%20only%20conserved%20sites. 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### mirdeep2 background 
-
-There are 3 primary modules for mirdeep2: 
-
-- miRDeep2 module
-	- Input: reference genome, sequencing reads, positions of reads mapped against genome
-	- Test format of input files so that any errors can be identified and corrected for
-	- Potential miRNA precursors (ie pre-miRNAs) are excised from genome using mapped reads as guidelines
-		- Takes the sequence that the mapped read covers and some additional sequence
-	- Map the reads against the excised miRNA potential precursors using Bowtie
-	- RNAfold tool is used to predict if the RNA secondary structures of each excised potential precursors resembles a typical miRNA hairpin structure
-		- Structure must resemble a hairpin and the read must fall within the hairpin as would be expected from Dicer processing
-		- Based on that info^^, the potential precursor is assigned a score that reflects how likely it is to be an actual miRNA
-	- Output: info on every miRNA identified in the data (known or novel?)
-- Mapper module
-	- Input: reference genome, sequencing reads, adapter sequences (from library prep)
-	- Reads are trimmed and adapters removed
-	- Reads are mapped to genome with Bowtie
-	- Output: file with processed reads, file with reads mapped against genome
-- Quantifier module
-	- Input: sequencing reads, known and precursor miRNAs from reference species
-	- Reads and miRNA strands are mapped separately against precursors
-	- Mappings of reads and miRNA strands are intersected —> reads that map to the same position as a given strand add to the read count of that miRNA strand
-	- Output: file with read counts of all known miRNAs in data
-
-Based on what I've read about mirdeep2, the mapper module should be run first and then mirdeep2 and quantifier modules. I may need to edit the file names before I run any mirdeep2 stuff because the documentation says: "The readID must end with _xNumber and is not allowed to contain whitespaces. has to have the format name_uniqueNumber_xnumber"
-
-First, index the genome with bowtie (NOT bowtie2). In the scripts folder: `nano bowtie_build.sh`
-
-```
-#!/bin/bash
-#SBATCH -t 120:00:00
-#SBATCH --nodes=1 --ntasks-per-node=15
-#SBATCH --export=NONE
-#SBATCH --mem=100GB
-#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
-#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
-#SBATCH --account=putnamlab
-#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts              
-#SBATCH -o slurm-%j.out
-#SBATCH -e slurm-%j.out
-
-module load GCCcore/11.3.0 #I needed to add this to resolve conflicts between loaded GCCcore/9.3.0 and GCCcore/11.3.0
-module load Bowtie/1.3.1-GCC-11.3.0
-
-# Index the reference genome for A. poculata 
-bowtie-build /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta Apoc_ref.btindex
-
-echo "Referece genome indexed!" $(date)
-```
-
-Submitted batch job 291990. Getting some GCC conflict errors so added `module load GCCcore/11.3.0` to the script. Submitted batch job 291991
-
-Concatenate (with `cat` command) and collapse reads (with `fastx_collapser` from the [fastx toolkit](http://hannonlab.cshl.edu/fastx_toolkit/commandline.html).
-
-```
-#!/bin/bash
-#SBATCH -t 100:00:00
-#SBATCH --nodes=1 --ntasks-per-node=1
-#SBATCH --export=NONE
-#SBATCH --mem=100GB
-#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
-#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
-#SBATCH --account=putnamlab
-#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
-#SBATCH -o slurm-%j.out
-#SBATCH -e slurm-%j.error
-
-module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
-
-echo "Concatenate and collapse smRNA reads" $(date)
-
-cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
-
-samples=$(ls trimmed.*_R1_001.fastq.gz | sed 's/trimmed.\(.*\)_R1_001.fastq.gz/\1/')
-
-for sample in $samples
-do
-    # Concatenate paired-end reads
-    cat "trimmed.${sample}_R1_001.fastq.gz" "trimmed.${sample}_R2_001.fastq.gz" > "cat.trimmed.${sample}.fastq"
-	 echo "Reads are concatenated into one file per sample" $(date)
-
-
-    # Collapse concatenated reads
-    fastx_collapser -v -i "cat.trimmed.${sample}.fastq" -o "collapse.cat.trimmed.${sample}.fastq"
-    echo "Reads are collapsed" $(date)
-    
-done
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Run the mapper module 
-
-```
-mapper.pl reads.fa -c -j -p Apoc_ref.btindex -s COLLAPSED_READS.fa -t reads_collapsed_vs_genome.arf -v
-```
-
-Run the quantifier module 
-
-```
-quantifier.pl -m MIRBASE.MATURE -r COLLAPSED_READS.fa  
-```
-
-Run the mirdeep2 module 
-
-
