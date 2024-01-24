@@ -3908,6 +3908,434 @@ How do I find the MFE? Is it calculated by mirdeep2 or by the quantifier module?
 
 I looked at Gajigan & Conaco 2017 mirdeep2 pdf outputs from their supplementary materials and they got similar MFE values in their pdfs. However, in Table S5, they have MFE info that is <-25 kcal/mol. How did they calculate the MFE that mirdeep2 gave them to the MFE that was displayed in their table??
 
+### 20240124
+
+All of the mirdeep2 jobs finished last night/early this morning. Now time to start some more. 
+
+
+#### AST-2404
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2404
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2404.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-2404_reads_collapsed.fa -t AST-2404_reads_collapsed_vs_genome.arf -v 
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_58495
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 33425806	5062194	28363612	15.145	84.855
+seq: 33425806	5062194	28363612	15.145	84.855
+```
+
+Look at the mapping results
+
+```
+head AST-2404_reads_collapsed.fa 
+>seq_1_x144129
+GGAAGAGCACACGTCTGAACTCCAGTCACC
+>seq_2_x132047
+GCACTGGTGGTTCAGTGGTAGAATTCTCGC
+>seq_3_x124405
+AACTTTTGACGGTGGATCTCTTGGCTCACG
+>seq_4_x97061
+TCGGACTGTAGAACTCTGAACGTGTAGATC
+>seq_5_x94760
+GCACTGATGGTTCAGTGGTAGAATTCTCGC
+
+zgrep -c ">" AST-2404_reads_collapsed.fa 
+11599063
+
+head AST-2404_reads_collapsed_vs_genome.arf 
+seq_3_x124405	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_3_x124405	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_3_x124405	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_3_x124405	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_9_x51804	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	53070	53099	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_9_x51804	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	31478	31507	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_9_x51804	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	20734	20763	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_9_x51804	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	42321	42350	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_11_x39689	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	52946	52975	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_11_x39689	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	31354	31383	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-2404_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+881575
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-2404_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2404    
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-2404 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2404.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2404/AST-2404_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-2404 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293308
+
+
+#### AST-2412
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2412
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2412.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-2412_reads_collapsed.fa -t AST-2412_reads_collapsed_vs_genome.arf -v 
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_59645
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 34977016	2244564	32732452	6.417	93.583
+seq: 34977016	2244564	32732452	6.417	93.583
+```
+
+Look at the mapping results
+
+```
+head AST-2412_reads_collapsed.fa 
+>seq_1_x1651314
+GACTTTGTAGCATAGGTAAGGTTAGTGCAT
+>seq_2_x1124747
+TCAGATGCACTAACCTTACCTATGCTACAA
+>seq_3_x189997
+CAGATGCACTAACCTTACCTATGCTACAAA
+>seq_4_x98647
+AACTTTTGACGGTGGATCTCTTGGCTCACG
+>seq_5_x84357
+ATCAGATGCACTAACCTTACCTATGCTACA
+
+zgrep -c ">" AST-2412_reads_collapsed.fa 
+10485205
+
+head AST-2412_reads_collapsed_vs_genome.arf 
+seq_4_x98647	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_4_x98647	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_4_x98647	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_4_x98647	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_12_x44893	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	42321	42350	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_12_x44893	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	53070	53099	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_12_x44893	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	31478	31507	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_12_x44893	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	20734	20763	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_33_x19915	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	42197	42226	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_33_x19915	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	52946	52975	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-2412_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+415100
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-2412_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2412    
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-2412 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2412.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2412/AST-2412_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-2412 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293309
+
+#### AST-2512
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2512
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2512.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-2512_reads_collapsed.fa -t AST-2512_reads_collapsed_vs_genome.arf -v 
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_60774
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 32531432	1232618	31298814	3.789	96.211
+seq: 32531432	1232618	31298814	3.789	96.211
+```
+
+Look at the mapping results
+
+```
+head AST-2512_reads_collapsed.fa 
+>seq_1_x1229410
+AAATACAAATCGTTCAGGTATTAGGAGTGA
+>seq_2_x900725
+AGCTCACTCCTAATACCTGAACGATTTGTA
+>seq_3_x539793
+AGATGGAATTGTAGCATG
+>seq_4_x488884
+CATGCTACAATTCCATCT
+>seq_5_x298053
+ACTGGATAACTAAGGGAAAGTTTGGCTAAT
+
+zgrep -c ">" AST-2512_reads_collapsed.fa 
+9710109
+
+head AST-2512_reads_collapsed_vs_genome.arf 
+seq_20_x37501	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_20_x37501	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_20_x37501	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_20_x37501	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_51_x16071	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	42321	42350	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_51_x16071	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	53070	53099	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_51_x16071	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	31478	31507	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_51_x16071	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	20734	20763	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_76_x10820	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	42197	42226	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_76_x10820	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	52946	52975	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-2512_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+237458
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-2512_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2512    
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-2512 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2512.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2512/AST-2512_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-2512 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293310
+
+#### AST-2523
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2523
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2523.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-2523_reads_collapsed.fa -t AST-2523_reads_collapsed_vs_genome.arf -v 
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_61964
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 33990530	4117469	29873061	12.114	87.886
+seq: 33990530	4117469	29873061	12.114	87.886
+```
+
+Look at the mapping results
+
+```
+head AST-2523_reads_collapsed.fa 
+
+
+zgrep -c ">" AST-2523_reads_collapsed.fa 
+
+
+head AST-2523_reads_collapsed_vs_genome.arf 
+
+
+cut -f1 AST-2523_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-2523_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2523    
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-2523 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2523.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2523/AST-2523_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-2523 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293319
+
+
+
+
+I want to try running the quantifier module. on the mirdeep2 [github](https://github.com/rajewsky-lab/mirdeep2/blob/master/README.md), it says that the input should be: 
+
+- A FASTA file with precursor sequences,
+- A FASTA file with mature miRNA sequences,
+- A FASTA file with deep sequencing reads, and
+- Optionally a FASTA file with star sequences and the 3 letter code of the species of interest.
+
+I need to create fasta files with the known and novel mature and precursor sequences. Going to test this on AST-1065 first. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1065/mirna_results_22_01_2024_t_17_11_47
+
+cat known_mature_22_01_2024_t_17_11_47_score-50_to_na.fa novel_mature_22_01_2024_t_17_11_47_score-50_to_na.fa > AST-1065-known_novel_mature.fa
+
+cat known_pres_22_01_2024_t_17_11_47_score-50_to_na.fa novel_pres_22_01_2024_t_17_11_47_score-50_to_na.fa > AST-1065-known_novel_pres.fa
+```
+
+Now I have files with the known and novel mature and precursor sequences. I hope I am correct in my interpretation of the mature and precursors seqs coming from the  Time to run quantifier! 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1065
+conda activate /data/putnamlab/mirdeep2
+
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1065/mirna_results_22_01_2024_t_17_11_47/AST-1065-known_novel_pres.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1065/mirna_results_22_01_2024_t_17_11_47/AST-1065-known_novel_mature.fa -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1065.fastq
+
+getting samples and corresponding read numbers
+Converting input files
+building bowtie index
+mapping mature sequences against index
+mapping read sequences against index
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 35658222	69287	35588935	0.194	99.806
+seq: 35658222	69287	35588935	0.194	99.806
+analyzing data
+
+326 mature mappings to precursors
+
+Expressed miRNAs are written to expression_analyses/expression_analyses_1706128068/miRNA_expressed.csv
+    not expressed miRNAs are written to expression_analyses/expression_analyses_1706128068/miRNA_not_expressed.csv
+
+Creating miRBase.mrd file
+
+Mapped READS readin - DONE 
+```
+
+Very low mapping...but 326 mature mapping to precursors is good because I had 326 mature miRNA seqs to begin with. Looking at the output, there are different read counts produced from the mirdeep2.pl module and the quantifier.pl module. I'm still not sure if I'm supposed to use the mirbase mature and precursor seqs or the ones produced from the mirdeep output...Let's try running the quantifier module again using the mirbase info instead. I'm using the cnidarian mature miRNA fasta that I created a while ago. I downloaded the `hairpins.fa` file from [mirbase](https://mirbase.org/download/) to use as the fasta for the precursor sequences. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1065
+conda activate /data/putnamlab/mirdeep2
+
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/hairpin.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1065.fastq
+
+getting samples and corresponding read numbers
+
+Converting input files
+building bowtie index
+mapping mature sequences against index
+mapping read sequences against index
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 35658222	168104	35490118	0.471	99.529
+seq: 35658222	168104	35490118	0.471	99.529
+analyzing data
+
+53298 mature mappings to precursors
+
+Expressed miRNAs are written to expression_analyses/expression_analyses_1706129674/miRNA_expressed.csv
+    not expressed miRNAs are written to expression_analyses/expression_analyses_1706129674/miRNA_not_expressed.csv
+
+Creating miRBase.mrd file
+
+Mapped READS readin - DONE 
+```
+
+Instead of creating pdfs, I am getting this: `Negative repeat count does nothing at /data/putnamlab/mirdeep2/bin/quantifier.pl line 1312, <IN> line 122912.` Not sure what it means but it makes me think that I should use the former script for quantifying. Okay yes I should use the other script. The expressed miRNA counts was just the IDs from mirbase, so that doesn't help me very much
+
+Also tried to figure out how to calculate MFE based on the supplemental files from Gajigan & Conaco 2017 paper. In the supplement, they inlcuded their PDF output with the MFE scores (which are similar to mine) and their supplemental table with MFE scores in kcal/mol-1, which were all -18 or lower. I plotted them against one another (x axis was MFE in kcal/mol-1, y axis was MFE from pdf) and got the slope of that line (y = -0.0437*x + 0.73, R-squared = 0.604). Then I rearranged the equation to solve for y (x = (0.73-y)/0.0437). I used the MFE pdf value as the y and attempted to re-calculate the MFE in kcal/mol. The equation did not exactly capture MFE, as the output was not the same as the MFE values reported. [Here](https://docs.google.com/spreadsheets/d/1EaJ9NwLY3WMnngrZIsozktOIDWuyTqc_/edit#gid=1960040170) is the google sheet where I did those calculations. HOW TO CALCULATE MFE??????? This [paper](https://www.researchgate.net/publication/264179557_MiRPI_Portable_Software_to_Identify_Conserved_miRNAs_Targets_and_to_Calculate_Precursor_Statistics) and this [paper](https://www.sciencedirect.com/science/article/pii/S0378111909002170) may help. Will look into it tomorrow.  
 
 
 
@@ -3917,7 +4345,9 @@ I looked at Gajigan & Conaco 2017 mirdeep2 pdf outputs from their supplementary 
 
 Understanding mirdeep2 output -- I understand the mirdeep2 output but I do not understand the known miRNA output info. On the summary table that is outputted with the csv/html, it says XXXX # of known miRNAs were detected. However, In the `/data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1560/dir_prepare_signature1705975309` folder, there is a file (`mature_vs_precursors.arf`) that has info about known sequences which I am confused by. It looks like these are known miRNAs that were identified in the Astrangia genome, as they are given genomic coordinates. I may need to go through these files and make sure I am not missing anything. For instance, when I look up `chromosome_7_11677` (genomic coordinates for known miRNA ola-miR-100) in that file, it provides me with 80 other matches that have the same genomic coordinates and are the same as miR-100. I may need to go through these files for each sample to make sure that I am not missing any known info. 
 
-
+General mirdeep2 questions
+- How do I find the MFE? Is it calculated by mirdeep2 or by the quantifier module? I think it is linked to the randfold step. Need to look into this. 
+- I looked at Gajigan & Conaco 2017 mirdeep2 pdf outputs from their supplementary materials and they got similar MFE values in their pdfs. However, in Table S5, they have MFE info that is <-25 kcal/mol. How did they calculate the MFE that mirdeep2 gave them to the MFE that was displayed in their table??
 
 
 
