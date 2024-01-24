@@ -3276,11 +3276,653 @@ Submitted batch job 293153
 
 I'm going to call it quits for today. 3 samples are running through mirdeep2 now, and 2 samples are pending on the server. 
 
+### 20240123
+
+Last night/early this morning, AST-1054, AST-1412, AST-1560, and AST-1567 all finished running mirdeep2. I downloaded the html and csv ouput files to my computer. I'm going to continue 
+
+#### AST-1617
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1617
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1617.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-1617_reads_collapsed.fa -t AST-1617_reads_collapsed_vs_genome.arf -v 
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_11212
+ Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 32155434	7494814	24660620	23.308	76.692
+seq: 32155434	7494814	24660620	23.308	76.692 
+```
+
+Look at the mapping results
+
+```
+head AST-1617_reads_collapsed.fa 
+>seq_1_x1583958
+TAAGACTATGATTATATGCAGCTTCTTGCA
+>seq_2_x1378737
+ATTGGTTTCGAGATGCAAGAAGCTGCATAT
+>seq_3_x447663
+GCACTGGTGGTTCAGTGGTAGAATTCTCGC
+>seq_4_x368633
+GCACTGGTGGTTCAGTGGTAGAATTCTC
+>seq_5_x329309
+GAGAATTCTACCACTGAACCACCAGTGC
+
+zgrep -c ">" AST-1617_reads_collapsed.fa 
+8081542
+
+head AST-1617_reads_collapsed_vs_genome.arf 
+seq_7_x232409	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_7_x232409	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_7_x232409	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_7_x232409	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_16_x108899	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	42321	42350	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_16_x108899	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	53070	53099	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_16_x108899	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	31478	31507	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_16_x108899	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	20734	20763	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_30_x33370	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	31354	31383	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_30_x33370	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	20610	20639	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-1617_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+1368740
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-1617_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1617    
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-1617 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1617.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1617/AST-1617_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-1617 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293162
+
+#### AST-1722
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1722
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1722.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-1722_reads_collapsed.fa -t AST-1722_reads_collapsed_vs_genome.arf -v 
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_13688
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 32860442	11326758	21533684	34.469	65.531
+seq: 32860442	11326758	21533684	34.469	65.531
+```
+
+Look at the mapping results
+
+```
+head AST-1722_reads_collapsed.fa 
+>seq_1_x1663348
+GCACTGGTGGTTCAGTGGTAGAATTCTCGC
+>seq_2_x942322
+GGCGAGAATTCTACCACTGAACCACCAGTG
+>seq_3_x422823
+AGCGAGAATTCTACCACTGAACCACCAGTG
+>seq_4_x345835
+GCACTGGTGGTTCAGTGGTAGAATTCTC
+>seq_5_x329076
+GCACTGTGGTTCAGTGGTAGAATTCTCGCC
+
+zgrep -c ">" AST-1722_reads_collapsed.fa 
+7574236
+
+head AST-1722_reads_collapsed_vs_genome.arf 
+seq_6_x311272	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_6_x311272	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_6_x311272	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_6_x311272	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_9_x140612	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	42321	42350	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_9_x140612	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	53070	53099	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_9_x140612	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	31478	31507	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_9_x140612	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	20734	20763	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_12_x123585	30	1	30	cgagctgttcttcctcgcaaagactgtgtg	chromosome_2	30	32824	32853	cgagctgttcttcctcgcaaagactgtgtg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_12_x123585	30	1	30	cgagctgttcttcctcgcaaagactgtgtg	chromosome_2	30	43667	43696	cgagctgttcttcctcgcaaagactgtgtg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-1722_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+1688293
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-1722_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1722    
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-1722 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-1722.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1722/AST-1722_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-1722 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293188
+
+#### AST-2000
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2000
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2000.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-2000_reads_collapsed.fa -t AST-2000_reads_collapsed_vs_genome.arf -v 
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_15165
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 34857708	5888651	28969057	16.893	83.107
+seq: 34857708	5888651	28969057	16.893	83.107
+```
+
+Look at the mapping results
+
+```
+head AST-2000_reads_collapsed.fa 
+>seq_1_x719979
+GCACTGGTGGTTCAGTGGTAGAATTCTC
+>seq_2_x647300
+GAGAATTCTACCACTGAACCACCAGTGC
+>seq_3_x228711
+GCACTGTGGTTCAGTGGTAGAATTCTC
+>seq_4_x206224
+GAGAATTCTACCACTGAACCACAGTGC
+>seq_5_x161452
+GCACTGGTGGTTCAGTGGTAGAATTCT
+
+zgrep -c ">" AST-2000_reads_collapsed.fa 
+10773578
+
+head AST-2000_reads_collapsed_vs_genome.arf 
+seq_7_x119692	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_7_x119692	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_7_x119692	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_7_x119692	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_15_x41699	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	31478	31507	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_15_x41699	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	20734	20763	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_15_x41699	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	42321	42350	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_15_x41699	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	53070	53099	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_27_x28319	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	20610	20639	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_27_x28319	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	42197	42226	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-2000_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+1016532
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-2000_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2000    
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-2000 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2000.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2000/AST-2000_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-2000 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293203
+
+#### AST-2007
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2007
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2007.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-2007_reads_collapsed.fa -t AST-2007_reads_collapsed_vs_genome.arf -v 
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_18266
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 33119102	7261428	25857674	21.925	78.075
+seq: 33119102	7261428	25857674	21.925	78.075
+```
+
+Look at the mapping results
+
+```
+head AST-2007_reads_collapsed.fa 
+>seq_1_x745390
+TGAAAATCTTTTCTCTGAAGTGGAA
+>seq_2_x666548
+TTCCACTTCAGAGAAAAGATTTTCA
+>seq_3_x176638
+GCACTGGTGGTTCAGTGGTAGAATTCTC
+>seq_4_x162570
+GCACTGGTGGTTCAGTGGTAGAATTCTCGC
+>seq_5_x157967
+GAGAATTCTACCACTGAACCACCAGTGC
+
+zgrep -c ">" AST-2007_reads_collapsed.fa 
+8653745
+
+head AST-2007_reads_collapsed_vs_genome.arf 
+seq_9_x90166	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_9_x90166	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_9_x90166	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_9_x90166	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_11_x64281	30	1	30	agcacacacagtctttgcgaggaagaacag	chromosome_2	30	22076	22105	agcacacacagtctttgcgaggaagaacag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_11_x64281	30	1	30	agcacacacagtctttgcgaggaagaacag	chromosome_2	30	43663	43692	agcacacacagtctttgcgaggaagaacag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_11_x64281	30	1	30	agcacacacagtctttgcgaggaagaacag	chromosome_2	30	32820	32849	agcacacacagtctttgcgaggaagaacag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_12_x52870	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	879106	879135	acaaatcttagaacaaaggcttaatctcag	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_12_x52870	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	38360	38389	acaaatcttagaacaaaggcttaatctcag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_12_x52870	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	27510	27539	acaaatcttagaacaaaggcttaatctcag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-2007_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+949862
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-2007_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2007    
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-2007 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2007.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2007/AST-2007_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-2007 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293252
+
+#### AST-2302
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2302
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2302.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-2302_reads_collapsed.fa -t AST-2302_reads_collapsed_vs_genome.arf -v 
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_35942
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 33330740	5544909	27785831	16.636	83.364
+seq: 33330740	5544909	27785831	16.636	83.364
+```
+
+Look at the mapping results
+
+```
+head AST-2302_reads_collapsed.fa 
+>seq_1_x184430
+GCACTGGTGGTTCAGTGGTAGAATTCTCGC
+>seq_2_x151792
+TGAAAATCTTTTCTCTGAAGTGGAA
+>seq_3_x131568
+TTCCACTTCAGAGAAAAGATTTTCA
+>seq_4_x102320
+GGCGAGAATTCTACCACTGAACCACCAGTG
+>seq_5_x88502
+GCACTGGTGGTTCAGTGGTAGAATTCTC
+
+zgrep -c ">" AST-2302_reads_collapsed.fa 
+11391780
+
+head AST-2302_reads_collapsed_vs_genome.arf 
+seq_8_x67603	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_8_x67603	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_8_x67603	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_8_x67603	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_21_x35069	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	52946	52975	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_21_x35069	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	31354	31383	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_21_x35069	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	20610	20639	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_21_x35069	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	42197	42226	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_30_x23771	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	38360	38389	acaaatcttagaacaaaggcttaatctcag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_30_x23771	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	27510	27539	acaaatcttagaacaaaggcttaatctcag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-2302_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+1149823
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-2302_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2302    
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-2302 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2302.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2302/AST-2302_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-2302 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293254
+
+#### AST-2360
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2360
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2360.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-2360_reads_collapsed.fa -t AST-2360_reads_collapsed_vs_genome.arf -v 
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_39928
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 33296712	4751266	28545446	14.269	85.731
+seq: 33296712	4751266	28545446	14.269	85.731
+```
+
+Look at the mapping results
+
+```
+head AST-2360_reads_collapsed.fa 
+>seq_1_x265109
+TAAGACTATGATTATATGCAGCTTCTTGCA
+>seq_2_x223703
+ATTGGTTTCGAGATGCAAGAAGCTGCATAT
+>seq_3_x134102
+GCACTGGTGGTTCAGTGGTAGAATTCTCGC
+>seq_4_x86252
+AACTTTTGACGGTGGATCTCTTGGCTCACG
+>seq_5_x66786
+GGCGAGAATTCTACCACTGAACCACCAGTG
+
+zgrep -c ">" AST-2360_reads_collapsed.fa 
+9737775
+
+head AST-2360_reads_collapsed_vs_genome.arf 
+seq_4_x86252	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_4_x86252	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_4_x86252	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_4_x86252	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_22_x22715	30	1	30	aagagcgccatttgcgttcaaagattcgat	chromosome_2	30	52982	53011	aagagcgccatttgcgttcaaagattcgat	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_22_x22715	30	1	30	aagagcgccatttgcgttcaaagattcgat	chromosome_2	30	31390	31419	aagagcgccatttgcgttcaaagattcgat	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_22_x22715	30	1	30	aagagcgccatttgcgttcaaagattcgat	chromosome_2	30	20646	20675	aagagcgccatttgcgttcaaagattcgat	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_22_x22715	30	1	30	aagagcgccatttgcgttcaaagattcgat	chromosome_2	30	42233	42262	aagagcgccatttgcgttcaaagattcgat	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_24_x22365	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	53070	53099	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_24_x22365	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	31478	31507	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-2360_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+464780
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-2360_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2360    
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-2360 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2360.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2360/AST-2360_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-2360 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293255
+
+#### AST-2398
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2398
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2398.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-2398_reads_collapsed.fa -t AST-2398_reads_collapsed_vs_genome.arf -v 
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_48437
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 33576416	7946641	25629775	23.667	76.333
+seq: 33576416	7946641	25629775	23.667	76.333
+```
+
+Look at the mapping results
+
+```
+head AST-2398_reads_collapsed.fa 
+>seq_1_x881553
+GCACTGGTGGTTCAGTGGTAGAATTCTCGC
+>seq_2_x433411
+GGCGAGAATTCTACCACTGAACCACCAGTG
+>seq_3_x266696
+AGCGAGAATTCTACCACTGAACCACCAGTG
+>seq_4_x218909
+GCACTGGTGGTTCAGTGGTAGAATTCTC
+>seq_5_x195072
+GAGAATTCTACCACTGAACCACCAGTGC
+
+zgrep -c ">" AST-2398_reads_collapsed.fa 
+9507430
+
+head AST-2398_reads_collapsed_vs_genome.arf 
+seq_8_x145611	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_8_x145611	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_8_x145611	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_8_x145611	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_17_x64706	29	1	29	aatggataaccctcaaccgtccggacctc	chromosome_14	29	6295369	6295397	aatggataaccctcaaccgtccggacctc	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_18_x61937	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	31478	31507	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_18_x61937	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	20734	20763	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_18_x61937	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	42321	42350	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_18_x61937	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	53070	53099	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_21_x38252	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	27510	27539	acaaatcttagaacaaaggcttaatctcag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-2398_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-2398_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2398    
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-2398 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2398.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2398/AST-2398_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-2398 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293257
+
+need to run quantifier module for samples: https://github.com/rajewsky-lab/mirdeep2/tree/master 
+
+How do I find the MFE? Is it calculated by mirdeep2 or by the quantifier module? I think it is linked to the randfold step. Need to look into this. 
+
+I looked at Gajigan & Conaco 2017 mirdeep2 pdf outputs from their supplementary materials and they got similar MFE values in their pdfs. However, in Table S5, they have MFE info that is <-25 kcal/mol. How did they calculate the MFE that mirdeep2 gave them to the MFE that was displayed in their table??
 
 
 
 
 
+
+
+
+Understanding mirdeep2 output -- I understand the mirdeep2 output but I do not understand the known miRNA output info. On the summary table that is outputted with the csv/html, it says XXXX # of known miRNAs were detected. However, In the `/data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1560/dir_prepare_signature1705975309` folder, there is a file (`mature_vs_precursors.arf`) that has info about known sequences which I am confused by. It looks like these are known miRNAs that were identified in the Astrangia genome, as they are given genomic coordinates. I may need to go through these files and make sure I am not missing anything. For instance, when I look up `chromosome_7_11677` (genomic coordinates for known miRNA ola-miR-100) in that file, it provides me with 80 other matches that have the same genomic coordinates and are the same as miR-100. I may need to go through these files for each sample to make sure that I am not missing any known info. 
+
+
+
+
+
+Interpretation of mirdeep2 output
+- https://ccbr.github.io/pipeliner-docs/miRNA-seq/miRSeq-Output-Files/
 
 good resource for miranda 
 - https://bioinformaticsworkbook.org/dataAnalysis/SmallRNA/Miranda_miRNA_Target_Prediction.html#gsc.tab=0 
