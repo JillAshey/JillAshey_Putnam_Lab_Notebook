@@ -4337,7 +4337,276 @@ Instead of creating pdfs, I am getting this: `Negative repeat count does nothing
 
 Also tried to figure out how to calculate MFE based on the supplemental files from Gajigan & Conaco 2017 paper. In the supplement, they inlcuded their PDF output with the MFE scores (which are similar to mine) and their supplemental table with MFE scores in kcal/mol-1, which were all -18 or lower. I plotted them against one another (x axis was MFE in kcal/mol-1, y axis was MFE from pdf) and got the slope of that line (y = -0.0437*x + 0.73, R-squared = 0.604). Then I rearranged the equation to solve for y (x = (0.73-y)/0.0437). I used the MFE pdf value as the y and attempted to re-calculate the MFE in kcal/mol. The equation did not exactly capture MFE, as the output was not the same as the MFE values reported. [Here](https://docs.google.com/spreadsheets/d/1EaJ9NwLY3WMnngrZIsozktOIDWuyTqc_/edit#gid=1960040170) is the google sheet where I did those calculations. HOW TO CALCULATE MFE??????? This [paper](https://www.researchgate.net/publication/264179557_MiRPI_Portable_Software_to_Identify_Conserved_miRNAs_Targets_and_to_Calculate_Precursor_Statistics) and this [paper](https://www.sciencedirect.com/science/article/pii/S0378111909002170) may help. Will look into it tomorrow.  
 
+### 20240129
 
+RE my notes above, I did not look at them but it is still on my list of things to do. First, I'm going to prioritize finishing running mirdeep2 for all samples. 
+
+#### AST-2563
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2563
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2563.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-2563_reads_collapsed.fa -t AST-2563_reads_collapsed_vs_genome.arf -v 
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_53481
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 34046004	3503553	30542451	10.291	89.709
+seq: 34046004	3503553	30542451	10.291	89.709
+```
+
+Look at the mapping results
+
+```
+head AST-2563_reads_collapsed.fa 
+>seq_1_x117943
+ATGCGTAGTGGAATACTCTGGAAAGTGT
+>seq_2_x105383
+ACACTTTCCAGAGTATTCCACTACGCAT
+>seq_3_x69250
+AACTTTTGACGGTGGATCTCTTGGCTCACG
+>seq_4_x59605
+GGAAGAGCACACGTCTGAACTCCAGTCACA
+>seq_5_x56451
+AGAAATGTGTGTAGCTGAGCAGTACTAATT
+
+zgrep -c ">" AST-2563_reads_collapsed.fa 
+11689234
+
+head AST-2563_reads_collapsed_vs_genome.arf 
+seq_3_x69250	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_3_x69250	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_3_x69250	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_3_x69250	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_16_x27176	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	42197	42226	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_16_x27176	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	52946	52975	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_16_x27176	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	31354	31383	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_16_x27176	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	20610	20639	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_26_x22828	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	31478	31507	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_26_x22828	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	20734	20763	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-2563_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+671528
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-2563_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2563    
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-2563 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2563.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2563/AST-2563_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-2563 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293787
+
+#### AST-2729
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2729
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2729.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-2729_reads_collapsed.fa -t AST-2729_reads_collapsed_vs_genome.arf -v 
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_54539
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 34243738	1423780	32819958	4.158	95.842
+seq: 34243738	1423780	32819958	4.158	95.842
+```
+
+Look at the mapping results
+
+```
+head AST-2729_reads_collapsed.fa 
+>seq_1_x228146
+GCACTGATGGTTCAGTGGTAGAATTCTCGC
+>seq_2_x188816
+GGAAGAGCACACGTCTGAACTCCAGTCACC
+>seq_3_x137884
+TCGGACTGTAGAACTCTGAACGTGTAGATC
+>seq_4_x104317
+AACTCTAAGCGGTGGATCACTCGGCTCGTG
+>seq_5_x86774
+ACACACGAGCCGAGTGATCCACCGCTTAGA
+
+zgrep -c ">" AST-2729_reads_collapsed.fa 
+10703305
+
+head AST-2729_reads_collapsed_vs_genome.arf 
+seq_36_x27457	30	1	30	tggctccccggcggggaatcgaaccccggt	chromosome_14	30	42692589	42692618	tggctccccggcggggaatcgaaccccggt	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_59_x18783	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_59_x18783	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_59_x18783	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_59_x18783	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_94_x13183	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	52946	52975	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_94_x13183	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	31354	31383	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_94_x13183	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	20610	20639	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_94_x13183	30	1	30	tccgacactcagacagacatgctcctggga	chromosome_2	30	42197	42226	tccgacactcagacagacatgctcctggga	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_201_x7329	30	1	30	tggctccccggcggggaaatgaaccccggt	chromosome_14	30	42692589	42692618	tggctccccggcggggaaaggaaccccggt	-	2	mmmmmmmmmmmmmmmmmmMMmmmmmmmmmm
+
+cut -f1 AST-2729_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+299482
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-2729_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2729    
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-2729 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2729.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2729/AST-2729_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-2729 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293788
+
+#### AST-2755
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2755
+```
+
+Run mapping step 
+
+```
+conda activate /data/putnamlab/mirdeep2
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2755.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s AST-2755_reads_collapsed.fa -t AST-2755_reads_collapsed_vs_genome.arf -v 
+
+discarding short reads
+mapping reads to genome index
+trimming unmapped nts in the 3' ends
+Log file for this run is in mapper_logs and called mapper.log_55943
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 32539646	3255098	29284548	10.003	89.997
+seq: 32539646	3255098	29284548	10.003	89.997
+```
+
+Look at the mapping results
+
+```
+head AST-2755_reads_collapsed.fa 
+>seq_1_x282696
+GCACTGGTGGTTCAGTGGTAGAATTCTCGC
+>seq_2_x165033
+GGCGAGAATTCTACCACTGAACCACCAGTG
+>seq_3_x76982
+AGCGAGAATTCTACCACTGAACCACCAGTG
+>seq_4_x73794
+TGAAAATCTTTTCTCTGAAGTGGAA
+>seq_5_x66624
+TTCCACTTCAGAGAAAAGATTTTCA
+
+zgrep -c ">" AST-2755_reads_collapsed.fa 
+10834414
+
+head AST-2755_reads_collapsed_vs_genome.arf 
+seq_12_x49088	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	42323	42352	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_12_x49088	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	53072	53101	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_12_x49088	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	20736	20765	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_12_x49088	30	1	30	aacttttgacggtggatctcttggctcacg	chromosome_2	30	31480	31509	aacttttgacggtggatctcttggctcacg	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_35_x24220	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	879106	879135	acaaatcttagaacaaaggcttaatctcag	-	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_35_x24220	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	38360	38389	acaaatcttagaacaaaggcttaatctcag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_35_x24220	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	27510	27539	acaaatcttagaacaaaggcttaatctcag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_35_x24220	30	1	30	acaaatcttagaacaaaggcttaatctcag	chromosome_2	30	49105	49134	acaaatcttagaacaaaggcttaatctcag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_40_x21090	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	31478	31507	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+seq_40_x21090	30	1	30	tgcgtgagccaagagatccaccgtcaaaag	chromosome_2	30	20734	20763	tgcgtgagccaagagatccaccgtcaaaag	+	0	mmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+cut -f1 AST-2755_reads_collapsed_vs_genome.arf | sort | uniq | wc -l 
+588859
+
+conda deactivate
+```
+
+Run mirdeep2. `nano AST-2755_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2755    
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 on sample AST-2755 trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.AST-2755.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-2755/AST-2755_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for sample AST-2755 trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 293789. All of the mirdeep2 samples finished running today, yay!!!
 
 
 
