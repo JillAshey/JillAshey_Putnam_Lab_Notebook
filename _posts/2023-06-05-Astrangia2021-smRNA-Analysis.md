@@ -4608,7 +4608,161 @@ conda deactivate
 
 Submitted batch job 293789. All of the mirdeep2 samples finished running today, yay!!!
 
+### 20240130
 
+I am now looking at all of the output data in an R script and I am thinking that I should concatenate all of the reads together, regardless of timepoint or treatment. Since its so many files, I'm going to write a script to concatenate and collapse
+
+In the scripts folder: `nano cat_collapse_all.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
+
+echo "Concatenate and collapse smRNA reads from ALL samples" $(date)
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
+
+# Concatenate reads
+cat AST*.fastq > cat.all.fastq
+
+echo "Reads concatenated, start collapse" $(date)
+
+# Collapse concatenated reads
+fastx_collapser -v -i cat.all.fastq -o collapse.cat.all.fastq
+
+echo "Reads collapsed, start header adjustments for mirdeep2" $(date)
+
+sed '/^>/ s/-/_x/g' collapse.cat.all.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.all.fastq
+
+echo "Headers adjusted, start removing sequences <17 nts" $(date)
+
+# Define the input and output files
+input_file="sed.collapse.cat.all.fastq"
+output_file="17_sed.collapse.cat.all.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.all.fastq
+
+echo "Sequences removed, ready for mirdeep2" $(date)
+```
+
+Submitted batch job 293863. Ran into this error: `fastx_collapser: Error: invalid quality score data on line 234199948 (quality_tok = "AAFFFJAJJJJJJJJJJJJJJJJJJJJ@GWNJ-0957:1001:GW2306054826th:4:1101:1560:1801 1:N:0:GTAGAGAT"`. Maybe the concatenate step didn't work so well? I'm not sure why it would have failed but maybe the samples 'catted' together so that the first line of one sample ended up with the last line of another sample. 
+
+Trying to look at the line where things errored out:
+
+```
+sed -n '234199948,+20p' cat.all.fastq
+
+AAFFFJAJJJJJJJJJJJJJJJJJJJJ
+@GWNJ-0957:1001:GW2306054826th:4:1101:1560:1801 1:N:0:GTAGAGAT
+CACCCCTCTTCCAATAACTTTACCTCTTA
++
+AAAFA<F<FFJFJFA-FFJF-<FFJJJF7
+@GWNJ-0957:1001:GW2306054826th:4:1101:1621:1801 1:N:0:GTAGAGAT
+GCACTGGTGGTTCAGTGGTAGAATTCTCGC
++
+AAAFFJJJJJA--FJ7AAJFAJ-FF<F-7J
+@GWNJ-0957:1001:GW2306054826th:4:1101:2067:1801 1:N:0:GTAGAGAT
+TTTTGAAATCTAGAAGCTATGAAACT
++
+AAAFFJJJJJJJFFJ<FFFF<JJJJJ
+@GWNJ-0957:1001:GW2306054826th:4:1101:2087:1801 1:N:0:GTAGAGAT
+TGATCTTGTAGGTTCCATCTTAT
++
+AA<AA<FFJ7F7<7AAAJFJFJF
+@GWNJ-0957:1001:GW2306054826th:4:1101:2189:1801 1:N:0:GTAGAGAT
+GCCTTTGTGCTATGATCTGTTGAGGTTCTG
++
+AA<AFJJJFJJJ7AFFJJJFFJJFJJJ-F-
+@GWNJ-0957:1001:GW2306054826th:4:1101:3224:1801 1:N:0:GTAGAGAT
+```
+
+I appear to be correct in that one line was catted to the end of another line. How to prevent this???? Idk if this is even the only instance where this happened in the cat file. 
+
+```
+sed 's/@/\n@/g' concatenated_data.txt > formatted_data.txt
+```
+
+NEED TO TRY this^^^
+
+
+
+
+
+
+
+
+
+
+
+
+Once this is done running, I will perform the mapping and mirdeep2 step. Because the input fasta file will likely be so big, I'm going to include the mapper.pl with the mirdeep2.pl script. First, make a new folder in the mirdeep2 folder for all samples.
+
+```
+/data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2
+mkdir all 
+```
+
+Run mirdeep2. `nano mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts  
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mapping" $(date)
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.all.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/all_reads_collapsed.fa -t /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/all_reads_collapsed_vs_genome.arf -v 
+
+echo "Mapping complete, Starting mirdeep2 on all samples trimmed to 30bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.all.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/all_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+
+echo "mirdeep2 concluded for all samples trimmed to 30bp" $(date)
+
+conda deactivate
+```
+
+STILL NEED TO RUN CODE ABOVE^^
 
 
 
