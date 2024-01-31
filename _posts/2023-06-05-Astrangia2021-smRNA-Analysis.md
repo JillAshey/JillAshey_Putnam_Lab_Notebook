@@ -4715,8 +4715,378 @@ Submitted batch job 293874. Now I'm getting this error: `fastx_collapser: input 
 
 ### 20240130
 
-Now I'm getting this error: `grep: input file ‘check.cat.all.fastq’ is also the output. fastx_collapser: Premature End-Of-File (filename ='check.cat.all.fastq')`. I'm going to rename the grep output so that it is `grep.check.cat.all.fastq` and change the input file name to `grep.check.cat.all.fastq` for fastx. Submitted batch job 293889
+Now I'm getting this error: `grep: input file ‘check.cat.all.fastq’ is also the output. fastx_collapser: Premature End-Of-File (filename ='check.cat.all.fastq')`. I'm going to rename the grep output so that it is `grep.check.cat.all.fastq` and change the input file name to `grep.check.cat.all.fastq` for fastx. Submitted batch job 293889. Ran for 3 hours and then failed. This is the error: `fastx_collapser: Error: invalid quality score data on line 234199948 (quality_tok = "AAFFFJAJJJJJJJJJJJJJJJJJJJJ"`. AGGGGGGGHHHHHHGGHHHH. I don't know what to do...Okay Chat gpt wrote an awk script for me. In the scripts folder, I did `nano filter_length.awk` and put the following code in: 
 
+```
+awk '{
+    # Read the header line
+    header = $0
+    # Read the sequence line
+    getline
+    sequence = $0
+    # Read the "+" line
+    getline
+    # Read the quality score line
+    quality = $0
+
+    # Check if sequence length matches quality score length
+    if (length(sequence) == length(quality)) {
+        # Print the record
+        print header
+        print sequence
+        print "+"
+        print quality
+    }
+}' input.fastq > output.fastq
+```
+
+This code SHOULD remove any sequence whose length differs from the length of its quality score lines. I added this line: `awk -f /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/filter_length.awk grep.check.cat.all.fastq > awk.grep.check.cat.all.fastq` below the grep line. Now `cat_collapse_all.sh` looks like this: 
+
+```
+Last login: Wed Jan 31 12:15:20 on ttys000
+jillashey@214 ~ % ssh jillashey@ssh3.hac.uri.edu
+Enter passphrase for key '/Users/jillashey/.ssh/id_rsa': 
+Last login: Wed Jan 31 12:15:30 2024 from 214.50.20.172.s.wireless.uri.edu
+NOTE: Please see https://its.uri.edu/research-computing/using-andromeda/ for information on using the system.
+NOTE: Please do NOT store data in your /home directory
+NOTE: Please do NOT leave yourself logged in when not actively using the system
+NOTE: Jobs pending? See https://its.uri.edu/research-computing/using-unity/ for information about the new shared cluster
+Space used in /data/putnamlab: 83% (8.9T remaining)
+(base) [jillashey@ssh3 ~]$ cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/
+(base) [jillashey@ssh3 trim]$ rm -r fastp/
+(base) [jillashey@ssh3 trim]$ pwd
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim
+(base) [jillashey@ssh3 trim]$ cd ../../
+(base) [jillashey@ssh3 smRNA]$ cd scripts/
+(base) [jillashey@ssh3 scripts]$ ls- othr
+-bash: ls-: command not found
+(base) [jillashey@ssh3 scripts]$ ls -othr
+total 480M
+-rw-r--r--.  1 jillashey  879 Jun  6  2023 fastqc_raw.sh
+-rw-r--r--.  1 jillashey 1.9K Jun  6  2023 fastqc_raw_output
+-rw-r--r--.  1 jillashey  39K Jun  6  2023 fastqc_raw_error
+-rw-r--r--.  1 jillashey 1.6K Aug 22 16:48 cudadapt.sh
+-rw-r--r--.  1 jillashey    0 Aug 22 16:48 cutadapt_error
+-rw-r--r--.  1 jillashey 153K Aug 22 19:26 cutadapt_output
+-rw-r--r--.  1 jillashey    0 Oct  6 10:48 flexbar_raw_output
+-rw-r--r--.  1 jillashey  932 Oct  6 13:46 test_flexbar.sh
+-rw-r--r--.  1 jillashey    0 Oct  6 13:46 flexbar_raw_error
+-rw-r--r--.  1 jillashey 6.3K Oct  7 00:42 flexbar_error
+-rw-r--r--.  1 jillashey  176 Oct  7 00:42 flexbar_output
+-rw-r--r--.  1 jillashey 2.5K Oct  9 20:02 fastqc_trim_output
+-rw-r--r--.  1 jillashey  52K Oct  9 20:03 fastqc_trim_error
+-rw-r--r--.  1 jillashey 1.9K Jan  3 11:34 slurm-291990.out
+-rw-r--r--.  1 jillashey  790 Jan  3 11:38 bowtie_build.sh
+-rw-r--r--.  1 jillashey 109M Jan  3 11:39 Apoc_ref.btindex.4.ebwt
+-rw-r--r--.  1 jillashey  134 Jan  3 11:39 Apoc_ref.btindex.3.ebwt
+-rw-r--r--.  1 jillashey  55M Jan  3 11:43 Apoc_ref.btindex.2.ebwt
+-rw-r--r--.  1 jillashey 129M Jan  3 11:43 Apoc_ref.btindex.1.ebwt
+-rw-r--r--.  1 jillashey  55M Jan  3 11:48 Apoc_ref.btindex.rev.2.ebwt
+-rw-r--r--.  1 jillashey 129M Jan  3 11:48 Apoc_ref.btindex.rev.1.ebwt
+-rw-r--r--.  1 jillashey  13K Jan  3 11:48 slurm-291991.out
+-rw-r--r--.  1 jillashey  85K Jan  3 12:53 slurm-291969.out
+-rw-r--r--.  1 jillashey 1.8K Jan  3 13:14 fastp_QC.sh
+-rw-r--r--.  1 jillashey  86K Jan  3 16:00 slurm-291997.out
+-rw-r--r--.  1 jillashey 6.1K Jan  3 16:44 slurm-292028.out
+-rw-r--r--.  1 jillashey 8.9K Jan  4 01:05 slurm-292029.out
+-rw-r--r--.  1 jillashey 1.2K Jan  4 10:49 slurm-292071.out
+-rw-r--r--.  1 jillashey   57 Jan  4 10:50 slurm-292072.out
+-rw-r--r--.  1 jillashey   57 Jan  4 10:52 slurm-292073.out
+-rw-r--r--.  1 jillashey   59 Jan  4 10:52 slurm-292073.error
+-rw-r--r--.  1 jillashey   57 Jan  4 10:52 slurm-292074.out
+-rw-r--r--.  1 jillashey   59 Jan  4 10:52 slurm-292074.error
+-rw-r--r--.  1 jillashey   57 Jan  4 10:52 slurm-292075.out
+-rw-r--r--.  1 jillashey  660 Jan  4 10:52 slurm-292075.error
+-rw-r--r--.  1 jillashey   57 Jan  4 10:52 slurm-292076.out
+-rw-r--r--.  1 jillashey  660 Jan  4 10:52 slurm-292076.error
+-rw-r--r--.  1 jillashey   57 Jan  4 10:53 slurm-292077.out
+-rw-r--r--.  1 jillashey  660 Jan  4 10:53 slurm-292077.error
+-rw-r--r--.  1 jillashey   57 Jan  4 11:32 slurm-292078.out
+-rw-r--r--.  1 jillashey   79 Jan  4 11:34 slurm-292078.error
+-rw-r--r--.  1 jillashey   57 Jan  4 11:34 slurm-292079.out
+-rw-r--r--.  1 jillashey  257 Jan  4 12:28 slurm-292079.error
+-rw-r--r--.  1 jillashey  797 Jan  4 12:33 flexbar.sh
+-rw-r--r--.  1 jillashey   57 Jan  4 12:33 slurm-292092.out
+-rw-r--r--.  1 jillashey 1.3K Jan  4 12:33 slurm-292092.error
+-rw-r--r--.  1 jillashey  717 Jan  4 13:23 flexbar_og.sh
+-rw-r--r--.  1 jillashey    0 Jan  4 13:23 slurm-292095.error
+-rw-r--r--.  1 jillashey   57 Jan  4 13:24 slurm-292095.out
+-rw-r--r--.  1 jillashey 2.5K Jan  5 14:53 slurm-292159.out
+-rw-r--r--.  1 jillashey  48K Jan  5 14:53 slurm-292159.error
+-rw-r--r--.  1 jillashey    0 Jan  7 16:36 slurm-292222.error
+-rw-r--r--.  1 jillashey  362 Jan  7 16:59 slurm-292222.out
+-rw-r--r--.  1 jillashey    0 Jan  7 17:05 slurm-292224.error
+-rw-r--r--.  1 jillashey  362 Jan  7 17:29 slurm-292224.out
+-rw-r--r--.  1 jillashey  106 Jan  9 07:49 slurm-292243.error
+drwxr-xr-x.  2 jillashey 4.0K Jan  9 07:52 dir_prepare_signature1704804676
+-rw-r--r--.  1 jillashey  377 Jan  9 11:23 error_09_01_2024_t_07_49_09.log
+-rw-r--r--.  1 jillashey  63K Jan  9 11:24 result_09_01_2024_t_07_49_09.csv
+-rw-r--r--.  1 jillashey 704K Jan  9 11:24 result_09_01_2024_t_07_49_09.html
+drwxr-xr-x.  2 jillashey 4.0K Jan  9 11:28 pdfs_09_01_2024_t_07_49_09
+-rw-r--r--.  1 jillashey  28K Jan  9 11:28 result_09_01_2024_t_07_49_09.bed
+drwxr-xr-x.  2 jillashey 4.0K Jan  9 11:28 mirna_results_09_01_2024_t_07_49_09
+-rw-r--r--.  1 jillashey  762 Jan  9 11:28 slurm-292243.out
+-rw-r--r--.  1 jillashey  106 Jan  9 14:56 slurm-292316.error
+drwxr-xr-x.  2 jillashey 4.0K Jan  9 15:01 dir_prepare_signature1704830366
+-rw-r--r--.  1 jillashey 1.3K Jan  9 15:03 slurm-292317.error
+-rw-r--r--.  1 jillashey  112 Jan  9 15:03 slurm-292317.out
+-rw-r--r--.  1 jillashey    0 Jan  9 15:13 slurm-292318.error
+-rw-r--r--.  1 jillashey  377 Jan  9 18:33 error_09_01_2024_t_14_56_36.log
+-rw-r--r--.  1 jillashey  64K Jan  9 18:34 result_09_01_2024_t_14_56_36.csv
+-rw-r--r--.  1 jillashey 713K Jan  9 18:34 result_09_01_2024_t_14_56_36.html
+drwxr-xr-x.  2 jillashey 4.0K Jan  9 18:38 pdfs_09_01_2024_t_14_56_36
+-rw-r--r--.  1 jillashey  28K Jan  9 18:38 result_09_01_2024_t_14_56_36.bed
+drwxr-xr-x.  2 jillashey 4.0K Jan  9 18:38 mirna_results_09_01_2024_t_14_56_36
+-rw-r--r--.  1 jillashey  764 Jan  9 18:38 slurm-292316.out
+-rw-r--r--.  1 jillashey  112 Jan  9 23:55 slurm-292318.out
+-rw-r--r--.  1 jillashey  846 Jan 10 09:45 fastqc_trim.sh
+-rw-r--r--.  1 jillashey  43K Jan 10 10:22 slurm-292342.error
+-rw-r--r--.  1 jillashey 2.2K Jan 10 10:22 slurm-292342.out
+-rw-r--r--.  1 jillashey  846 Jan 10 10:30 flexbar_25bp.sh
+-rw-r--r--.  1 jillashey    0 Jan 10 10:30 slurm-292344.error
+-rw-r--r--.  1 jillashey  106 Jan 10 16:06 slurm-292356.error
+-rw-r--r--.  1 jillashey  464 Jan 10 16:07 slurm-292356.out
+-rw-r--r--.  1 jillashey  106 Jan 10 16:09 slurm-292357.error
+-rw-r--r--.  1 jillashey  464 Jan 10 16:09 slurm-292357.out
+-rw-r--r--.  1 jillashey  106 Jan 10 16:14 slurm-292358.error
+-rw-r--r--.  1 jillashey  465 Jan 10 16:14 slurm-292358.out
+-rw-r--r--.  1 jillashey  114 Jan 10 19:24 slurm-292344.out
+-rw-r--r--.  1 jillashey  43K Jan 12 12:30 slurm-292416.error
+-rw-r--r--.  1 jillashey 2.2K Jan 12 12:30 slurm-292416.out
+-rw-r--r--.  1 jillashey  106 Jan 12 12:37 slurm-292419.error
+-rw-r--r--.  1 jillashey  465 Jan 12 12:38 slurm-292419.out
+-rw-r--r--.  1 jillashey  106 Jan 12 12:39 slurm-292420.error
+-rw-r--r--.  1 jillashey  465 Jan 12 12:39 slurm-292420.out
+-rw-r--r--.  1 jillashey  106 Jan 12 13:11 slurm-292458.error
+-rw-r--r--.  1 jillashey  444 Jan 12 13:11 slurm-292458.out
+-rw-r--r--.  1 jillashey  106 Jan 12 13:17 slurm-292459.error
+drwxr-xr-x.  2 jillashey 4.0K Jan 12 13:20 dir_prepare_signature1705083561
+-rw-r--r--.  1 jillashey  377 Jan 12 16:54 error_12_01_2024_t_13_17_27.log
+-rw-r--r--.  1 jillashey  64K Jan 12 16:55 result_12_01_2024_t_13_17_27.csv
+-rw-r--r--.  1 jillashey 718K Jan 12 16:55 result_12_01_2024_t_13_17_27.html
+drwxr-xr-x.  2 jillashey 4.0K Jan 12 16:59 pdfs_12_01_2024_t_13_17_27
+-rw-r--r--.  1 jillashey  28K Jan 12 16:59 result_12_01_2024_t_13_17_27.bed
+drwxr-xr-x.  2 jillashey 4.0K Jan 12 16:59 mirna_results_12_01_2024_t_13_17_27
+-rw-r--r--.  1 jillashey  766 Jan 12 16:59 slurm-292459.out
+-rw-r--r--.  1 jillashey    0 Jan 16 08:00 slurm-292595.error
+-rw-r--r--.  1 jillashey  366 Jan 16 08:19 slurm-292595.out
+-rw-r--r--.  1 jillashey   79 Jan 16 08:36 slurm-292596.out
+-rw-r--r--.  1 jillashey  106 Jan 16 08:36 slurm-292597.error
+drwxr-xr-x.  2 jillashey 4.0K Jan 16 08:41 dir_prepare_signature1705412338
+-rw-r--r--.  1 jillashey  377 Jan 16 15:27 error_16_01_2024_t_08_36_42.log
+-rw-r--r--.  1 jillashey 103K Jan 16 15:29 result_16_01_2024_t_08_36_42.csv
+-rw-r--r--.  1 jillashey 1.2M Jan 16 15:29 result_16_01_2024_t_08_36_42.html
+drwxr-xr-x.  2 jillashey 4.0K Jan 16 15:36 pdfs_16_01_2024_t_08_36_42
+-rw-r--r--.  1 jillashey  46K Jan 16 15:36 result_16_01_2024_t_08_36_42.bed
+drwxr-xr-x.  2 jillashey 4.0K Jan 16 15:36 mirna_results_16_01_2024_t_08_36_42
+-rw-r--r--.  1 jillashey  782 Jan 16 15:36 slurm-292597.out
+-rw-r--r--.  1 jillashey 1.1K Jan 19 20:57 test_cat_collapse.sh
+-rw-r--r--.  1 jillashey    0 Jan 19 20:57 slurm-293019.error
+-rw-r--r--.  1 jillashey  365 Jan 19 21:12 slurm-293019.out
+-rw-r--r--.  1 jillashey 1.1K Jan 19 21:27 test_mirdeep2.sh
+-rw-r--r--.  1 jillashey  106 Jan 19 21:27 slurm-293022.error
+drwxr-xr-x. 12 jillashey 4.0K Jan 19 21:27 mirdeep_runs
+drwxr-xr-x.  2 jillashey 4.0K Jan 19 21:34 dir_prepare_signature1705717824
+-rw-r--r--.  1 jillashey  377 Jan 20 13:50 error_19_01_2024_t_21_27_36.log
+-rw-r--r--.  1 jillashey 163K Jan 20 13:58 result_19_01_2024_t_21_27_36.csv
+-rw-r--r--.  1 jillashey 1.8M Jan 20 13:58 result_19_01_2024_t_21_27_36.html
+drwxr-xr-x.  2 jillashey 4.0K Jan 20 14:09 pdfs_19_01_2024_t_21_27_36
+-rw-r--r--.  1 jillashey  70K Jan 20 14:09 result_19_01_2024_t_21_27_36.bed
+drwxr-xr-x.  2 jillashey 4.0K Jan 20 14:09 mirna_results_19_01_2024_t_21_27_36
+-rw-r--r--.  1 jillashey  45K Jan 20 14:09 report.log
+-rw-r--r--.  1 jillashey  816 Jan 20 14:09 slurm-293022.out
+-rw-r--r--.  1 jillashey 1.1K Jan 21 19:30 cat_collapse.sh
+-rw-r--r--.  1 jillashey  113 Jan 21 19:50 slurm-293086.error
+-rw-r--r--.  1 jillashey 4.9K Jan 22 01:03 slurm-293086.out
+-rw-r--r--.  1 jillashey  176 Jan 30 15:43 slurm-293863.error
+-rw-r--r--.  1 jillashey  380 Jan 30 15:43 slurm-293863.out
+-rw-r--r--.  1 jillashey 1.5K Jan 30 15:43 mirdeep2.sh
+-rw-r--r--.  1 jillashey  121 Jan 30 20:59 slurm-293874.error
+-rw-r--r--.  1 jillashey  380 Jan 30 20:59 slurm-293874.out
+-rw-r--r--.  1 jillashey   83 Jan 30 21:20 slurm-293875.out
+-rw-r--r--.  1 jillashey   79 Jan 30 21:22 slurm-293875.error
+-rw-r--r--.  1 jillashey  135 Jan 30 22:18 slurm-293876.error
+-rw-r--r--.  1 jillashey  501 Jan 30 22:18 slurm-293876.out
+-rw-r--r--.  1 jillashey 1.9K Jan 31 08:29 cat_collapse_all.sh
+-rw-r--r--.  1 jillashey  114 Jan 31 11:59 slurm-293889.error
+-rw-r--r--.  1 jillashey  501 Jan 31 11:59 slurm-293889.out
+(base) [jillashey@ssh3 scripts]$ less cat_collapse.sh 
+(base) [jillashey@ssh3 scripts]$ nano filter_length.awk
+(base) [jillashey@ssh3 scripts]$ nano cat_collapse_all.sh 
+(base) [jillashey@ssh3 scripts]$ nano cat_collapse_all.sh 
+(base) [jillashey@ssh3 scripts]$ sbatch cat_collapse_all.sh 
+Submitted batch job 293959
+(base) [jillashey@ssh3 scripts]$ squeue
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON) 
+            293891   general job-mp-h   zhangl PD       0:00      2 (AssocGrpCpuLimit) 
+            293932   general   hisat2 amalia.m PD       0:00      1 (Resources) 
+            293857   general IQMcGowe alexandr  R 1-00:21:43      3 n[085,095-096] 
+            293836   general   7_step biancani  R 1-05:13:27      1 n075 
+            290119    weilab SAF_exam helingch  R 58-12:32:12      1 n079 
+            290116    weilab SAF_exam helingch  R 58-12:46:30      1 n078 
+            290114    weilab SAF_exam helingch  R 58-12:55:33      1 n077 
+            290079    weilab SAF_exam helingch  R 58-20:50:38      1 n076 
+            293796   general     sinv     xwei  R 2-00:29:06      1 n068 
+            293600       gpu job-trim   zhangl  R 2-23:37:54      1 n108 
+            293873       gpu job-tw-a   zhangl  R   11:04:14      1 n106 
+            293958   general  four.sh pravin_k  R       0:23      2 n[071-072] 
+            293959   general cat_coll jillashe  R       0:23      1 n063 
+            293922   general trim2.sh  ffields  R    1:18:19      1 n065 
+            293896   general    SHELL inarvaez  R    3:05:26      1 n097 
+            293890   general job-mp-h   zhangl  R    6:00:54      2 n[066-067] 
+            293868       gpu job-hbd3   zhangl  R   19:58:01      1 n105 
+            293845   general job-mp-h   zhangl  R 1-00:00:20      2 n[080-081] 
+            293833       gpu job-tw-f   zhangl  R 1-03:49:26      1 n107 
+(base) [jillashey@ssh3 scripts]$ scancel general
+scancel: error: Invalid job id general
+(base) [jillashey@ssh3 scripts]$ pwd
+/data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+(base) [jillashey@ssh3 scripts]$ nano cat_collapse_all.sh 
+(base) [jillashey@ssh3 scripts]$ sbatch cat_collapse_all.sh 
+Submitted batch job 293960
+(base) [jillashey@ssh3 scripts]$ squeue
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON) 
+            293891   general job-mp-h   zhangl PD       0:00      2 (AssocGrpCpuLimit) 
+            293932   general   hisat2 amalia.m PD       0:00      1 (Resources) 
+            293966   general run_simp alexandr  R       0:18      1 n063 
+            293857   general IQMcGowe alexandr  R 1-00:27:08      3 n[085,095-096] 
+            293836   general   7_step biancani  R 1-05:18:52      1 n075 
+            290119    weilab SAF_exam helingch  R 58-12:37:37      1 n079 
+            290116    weilab SAF_exam helingch  R 58-12:51:55      1 n078 
+            290114    weilab SAF_exam helingch  R 58-13:00:58      1 n077 
+            290079    weilab SAF_exam helingch  R 58-20:56:03      1 n076 
+            293796   general     sinv     xwei  R 2-00:34:31      1 n068 
+            293600       gpu job-trim   zhangl  R 2-23:43:19      1 n108 
+            293873       gpu job-tw-a   zhangl  R   11:09:39      1 n106 
+            293963   general   six.sh pravin_k  R       1:48      2 n[071-072] 
+            293960   general cat_coll jillashe  R       4:48      1 n064 
+            293959   general cat_coll jillashe  R       5:48      1 n063 
+            293922   general trim2.sh  ffields  R    1:23:44      1 n065 
+            293896   general    SHELL inarvaez  R    3:10:51      1 n097 
+            293890   general job-mp-h   zhangl  R    6:06:19      2 n[066-067] 
+            293868       gpu job-hbd3   zhangl  R   20:03:26      1 n105 
+            293845   general job-mp-h   zhangl  R 1-00:05:45      2 n[080-081] 
+            293833       gpu job-tw-f   zhangl  R 1-03:54:51      1 n107 
+(base) [jillashey@ssh3 scripts]$ scancel 293960
+(base) [jillashey@ssh3 scripts]$ scancel 293959
+(base) [jillashey@ssh3 scripts]$ nano cat_collapse_all.sh 
+(base) [jillashey@ssh3 scripts]$ squeue
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON) 
+            293891   general job-mp-h   zhangl PD       0:00      2 (AssocGrpCpuLimit) 
+            293932   general   hisat2 amalia.m PD       0:00      1 (Resources) 
+            293968   general three.sh pravin_k PD       0:00      2 (Priority) 
+            293966   general run_simp alexandr  R       3:00      1 n063 
+            293857   general IQMcGowe alexandr  R 1-00:29:50      3 n[085,095-096] 
+            293836   general   7_step biancani  R 1-05:21:34      1 n075 
+            290119    weilab SAF_exam helingch  R 58-12:40:19      1 n079 
+            290116    weilab SAF_exam helingch  R 58-12:54:37      1 n078 
+            290114    weilab SAF_exam helingch  R 58-13:03:40      1 n077 
+            290079    weilab SAF_exam helingch  R 58-20:58:45      1 n076 
+            293796   general     sinv     xwei  R 2-00:37:13      1 n068 
+            293600       gpu job-trim   zhangl  R 2-23:46:01      1 n108 
+            293873       gpu job-tw-a   zhangl  R   11:12:21      1 n106 
+            293922   general trim2.sh  ffields  R    1:26:26      1 n065 
+            293896   general    SHELL inarvaez  R    3:13:33      1 n097 
+            293890   general job-mp-h   zhangl  R    6:09:01      2 n[066-067] 
+            293868       gpu job-hbd3   zhangl  R   20:06:08      1 n105 
+            293845   general job-mp-h   zhangl  R 1-00:08:27      2 n[080-081] 
+            293833       gpu job-tw-f   zhangl  R 1-03:57:33      1 n107 
+(base) [jillashey@ssh3 scripts]$ sbatch cat_collapse_all.sh 
+Submitted batch job 293969
+(base) [jillashey@ssh3 scripts]$ squeue
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON) 
+            293891   general job-mp-h   zhangl PD       0:00      2 (AssocGrpCpuLimit) 
+            293932   general   hisat2 amalia.m PD       0:00      1 (Resources) 
+            293969   general cat_coll jillashe PD       0:00      1 (Priority) 
+            293966   general run_simp alexandr  R       3:23      1 n063 
+            293857   general IQMcGowe alexandr  R 1-00:30:13      3 n[085,095-096] 
+            293836   general   7_step biancani  R 1-05:21:57      1 n075 
+            290119    weilab SAF_exam helingch  R 58-12:40:42      1 n079 
+            290116    weilab SAF_exam helingch  R 58-12:55:00      1 n078 
+            290114    weilab SAF_exam helingch  R 58-13:04:03      1 n077 
+            290079    weilab SAF_exam helingch  R 58-20:59:08      1 n076 
+            293796   general     sinv     xwei  R 2-00:37:36      1 n068 
+            293600       gpu job-trim   zhangl  R 2-23:46:24      1 n108 
+            293873       gpu job-tw-a   zhangl  R   11:12:44      1 n106 
+            293922   general trim2.sh  ffields  R    1:26:49      1 n065 
+            293896   general    SHELL inarvaez  R    3:13:56      1 n097 
+            293890   general job-mp-h   zhangl  R    6:09:24      2 n[066-067] 
+            293868       gpu job-hbd3   zhangl  R   20:06:31      1 n105 
+            293845   general job-mp-h   zhangl  R 1-00:08:50      2 n[080-081] 
+            293833       gpu job-tw-f   zhangl  R 1-03:57:56      1 n107 
+(base) [jillashey@ssh3 scripts]$ less cat_collapse_all.sh 
+
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
+
+echo "Concatenate and collapse smRNA reads from ALL samples" $(date)
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
+
+# Concatenate reads
+#cat AST*.fastq > cat.all.fastq
+
+# Make sure there are no issues with cat - ensure that every @ symbol is a new line 
+
+echo "Make sure all lines start with @ symbol" $(date)
+sed 's/@/\n@/g' cat.all.fastq > check.cat.all.fastq
+
+echo "Remove any blank lines" $(date)
+grep -v '^[[:space:]]*$' check.cat.all.fastq > grep.check.cat.all.fastq
+
+echo "Remove any sequences where the length of the sequence and length of quality score differ" $(date)
+awk -f /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/filter_length.awk grep.check.cat.all.fastq > awk.grep.check.cat.all.fastq
+
+echo "Reads concatenated, start collapse" $(date)
+
+# Collapse concatenated reads
+fastx_collapser -v -i awk.grep.check.cat.all.fastq -o collapse.cat.all.fastq
+
+echo "Reads collapsed, start header adjustments for mirdeep2" $(date)
+
+sed '/^>/ s/-/_x/g' collapse.cat.all.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.all.fastq
+
+echo "Headers adjusted, start removing sequences <17 nts" $(date)
+
+# Define the input and output files
+input_file="sed.collapse.cat.all.fastq"
+output_file="17_sed.collapse.cat.all.fastq"
+
+# Initialize the output file
+> "$output_file"
+
+# Use awk to process the sequences
+awk '{
+    if (substr($0, 1, 1) == ">") {
+        header = $0
+        getline
+        sequence = $0
+        if (length(sequence) >= 17) {
+            print header >> "'$output_file'"
+            print sequence >> "'$output_file'"
+        }
+    }
+}' "$input_file"
+
+zgrep -c ">" 17_sed.collapse.cat.all.fastq
+
+echo "Sequences removed, ready for mirdeep2" $(date)
+```
+
+Submitted batch job 293969
 
 
 
