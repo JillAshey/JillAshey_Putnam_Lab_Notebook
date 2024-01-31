@@ -4705,13 +4705,18 @@ AA<AFJJJFJJJ7AFFJJJFFJJFJJJ-F-
 @GWNJ-0957:1001:GW2306054826th:4:1101:3224:1801 1:N:0:GTAGAGAT
 ```
 
-I appear to be correct in that one line was catted to the end of another line. How to prevent this???? Idk if this is even the only instance where this happened in the cat file. 
+I appear to be correct in that one line was catted to the end of another line. How to prevent this???? Idk if this is even the only instance where this happened in the cat file. I added the line below to the `cat_collapse_all.sh` script after the reads are concatenated and before the collapsing. 
 
 ```
-sed 's/@/\n@/g' concatenated_data.txt > formatted_data.txt
+sed 's/@/\n@/g' cat.all.fastq > check.cat.all.fastq       
 ```
 
-NEED TO TRY this^^^
+Submitted batch job 293874. Now I'm getting this error: `fastx_collapser: input file (check.cat.all.fastq) has unknown file format (not FASTA or FASTQ), first character = (10)`. I'm adding this line in after the sed line: `grep -v '^[[:space:]]*$' check.cat.all.fastq > check.cat.all.fastq`. This should remove any blank lines in the data. Submitted batch job 293876
+
+### 20240130
+
+Now I'm getting this error: `grep: input file ‘check.cat.all.fastq’ is also the output. fastx_collapser: Premature End-Of-File (filename ='check.cat.all.fastq')`. I'm going to rename the grep output so that it is `grep.check.cat.all.fastq` and change the input file name to `grep.check.cat.all.fastq` for fastx. Submitted batch job 293889
+
 
 
 
