@@ -5088,6 +5088,19 @@ echo "Sequences removed, ready for mirdeep2" $(date)
 
 Submitted batch job 293969
 
+### 20240201
+
+NOW I got this error: 
+
+```
+awk: /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/filter_length.awk:1: awk '{
+awk: /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/filter_length.awk:1:     ^ invalid char ''' in expression
+awk: /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/filter_length.awk:1: awk '{
+awk: /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/filter_length.awk:1:     ^ syntax error
+fastx_collapser: Premature End-Of-File (filename ='awk.grep.check.cat.all.fastq')
+```
+
+I might just manually 
 
 
 

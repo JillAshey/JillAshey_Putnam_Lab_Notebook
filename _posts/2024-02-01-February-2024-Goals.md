@@ -1,0 +1,47 @@
+---
+layout: post
+title: February 2024 Goals
+date: '2024-02-01'
+categories: Monthly_Goals
+tags: Goals
+---
+
+February 2024 goals and daily notebook entries. 
+
+## Goals  
+
+### Writing and manuscripts 
+              
+1. Full draft of dissertation proposal
+2. Write full methods and physiological results for Astrangia 2021 experiment 
+3. Resubmit Astrangia review manuscript 
+4. ICRS app - due Feb 15
+5. Finish methods for Pacuta HI 2022 paper 
+6. Finish intro and methods for e5 ncRNA paper 
+
+### Sample processing
+
+1. Complete Mcap dev timeseries extractions 
+2. Library prep for miRNAs (8 samples)
+3. Library prep with ribofree (8 samples) 
+4. Library prep for WGBS (27 samples)
+5. Carbs for DT samples 
+
+### Data analysis
+1. Finish stats for Astrangia 2021 phys data 
+2. Work on Astrangia 2021 DEG and functional enrichment analysis 
+3. Map and quantify Astrangia 2021 miRNAs 
+4. Run miranda 
+5. Begin genome assembly for Apul -- hicanu 
+
+## Daily log 
+
+### February 1
+
+- Aquarium daily stuff
+- Cleaned BT 1/2 and corals 
+- Lab organization 
+- Took photos of slides and stage micrometer for Chloe 
+- Started looking at Pico methyl-seq protocol
+	- Maggie [protocol](https://meschedl.github.io/MESPutnam_Open_Lab_Notebook/WGBS-PMS-protocol/) and [videos](https://www.youtube.com/playlist?list=PLI8mZMNHcIVq9DFCOPksLhcch8UbJj4Pq)
+- 
