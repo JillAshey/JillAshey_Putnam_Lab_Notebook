@@ -44,4 +44,20 @@ February 2024 goals and daily notebook entries.
 - Took photos of slides and stage micrometer for Chloe 
 - Started looking at Pico methyl-seq protocol
 	- Maggie [protocol](https://meschedl.github.io/MESPutnam_Open_Lab_Notebook/WGBS-PMS-protocol/) and [videos](https://www.youtube.com/playlist?list=PLI8mZMNHcIVq9DFCOPksLhcch8UbJj4Pq)
-- 
+- Worked on ICRS app + budget 
+- Made ICRS figure 
+
+### February 2
+
+- Trying other `cat` iterations for smRNA data 
+- Editing e5 ncRNA intro and methods 
+- Meeting w/ Yaamini and Zoe 
+- e5 ncRNA meeting 
+- Some work on ICRS methods + intro, figure edits
+- Yaamini seminar 
+
+### February 4 
+- Watched videos on Zymo Ribofree library prep and Pico Seq library prep 
+- Modifying collapsed file for mirdeep2 
+- Started running mapping and mirdeep2 for all R1 concatenated/collapsed reads 
+- Edits for astrangia review manuscript 

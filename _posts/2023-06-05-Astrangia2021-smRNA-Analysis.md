@@ -4743,279 +4743,6 @@ awk '{
 This code SHOULD remove any sequence whose length differs from the length of its quality score lines. I added this line: `awk -f /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/filter_length.awk grep.check.cat.all.fastq > awk.grep.check.cat.all.fastq` below the grep line. Now `cat_collapse_all.sh` looks like this: 
 
 ```
-Last login: Wed Jan 31 12:15:20 on ttys000
-jillashey@214 ~ % ssh jillashey@ssh3.hac.uri.edu
-Enter passphrase for key '/Users/jillashey/.ssh/id_rsa': 
-Last login: Wed Jan 31 12:15:30 2024 from 214.50.20.172.s.wireless.uri.edu
-NOTE: Please see https://its.uri.edu/research-computing/using-andromeda/ for information on using the system.
-NOTE: Please do NOT store data in your /home directory
-NOTE: Please do NOT leave yourself logged in when not actively using the system
-NOTE: Jobs pending? See https://its.uri.edu/research-computing/using-unity/ for information about the new shared cluster
-Space used in /data/putnamlab: 83% (8.9T remaining)
-(base) [jillashey@ssh3 ~]$ cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/
-(base) [jillashey@ssh3 trim]$ rm -r fastp/
-(base) [jillashey@ssh3 trim]$ pwd
-/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim
-(base) [jillashey@ssh3 trim]$ cd ../../
-(base) [jillashey@ssh3 smRNA]$ cd scripts/
-(base) [jillashey@ssh3 scripts]$ ls- othr
--bash: ls-: command not found
-(base) [jillashey@ssh3 scripts]$ ls -othr
-total 480M
--rw-r--r--.  1 jillashey  879 Jun  6  2023 fastqc_raw.sh
--rw-r--r--.  1 jillashey 1.9K Jun  6  2023 fastqc_raw_output
--rw-r--r--.  1 jillashey  39K Jun  6  2023 fastqc_raw_error
--rw-r--r--.  1 jillashey 1.6K Aug 22 16:48 cudadapt.sh
--rw-r--r--.  1 jillashey    0 Aug 22 16:48 cutadapt_error
--rw-r--r--.  1 jillashey 153K Aug 22 19:26 cutadapt_output
--rw-r--r--.  1 jillashey    0 Oct  6 10:48 flexbar_raw_output
--rw-r--r--.  1 jillashey  932 Oct  6 13:46 test_flexbar.sh
--rw-r--r--.  1 jillashey    0 Oct  6 13:46 flexbar_raw_error
--rw-r--r--.  1 jillashey 6.3K Oct  7 00:42 flexbar_error
--rw-r--r--.  1 jillashey  176 Oct  7 00:42 flexbar_output
--rw-r--r--.  1 jillashey 2.5K Oct  9 20:02 fastqc_trim_output
--rw-r--r--.  1 jillashey  52K Oct  9 20:03 fastqc_trim_error
--rw-r--r--.  1 jillashey 1.9K Jan  3 11:34 slurm-291990.out
--rw-r--r--.  1 jillashey  790 Jan  3 11:38 bowtie_build.sh
--rw-r--r--.  1 jillashey 109M Jan  3 11:39 Apoc_ref.btindex.4.ebwt
--rw-r--r--.  1 jillashey  134 Jan  3 11:39 Apoc_ref.btindex.3.ebwt
--rw-r--r--.  1 jillashey  55M Jan  3 11:43 Apoc_ref.btindex.2.ebwt
--rw-r--r--.  1 jillashey 129M Jan  3 11:43 Apoc_ref.btindex.1.ebwt
--rw-r--r--.  1 jillashey  55M Jan  3 11:48 Apoc_ref.btindex.rev.2.ebwt
--rw-r--r--.  1 jillashey 129M Jan  3 11:48 Apoc_ref.btindex.rev.1.ebwt
--rw-r--r--.  1 jillashey  13K Jan  3 11:48 slurm-291991.out
--rw-r--r--.  1 jillashey  85K Jan  3 12:53 slurm-291969.out
--rw-r--r--.  1 jillashey 1.8K Jan  3 13:14 fastp_QC.sh
--rw-r--r--.  1 jillashey  86K Jan  3 16:00 slurm-291997.out
--rw-r--r--.  1 jillashey 6.1K Jan  3 16:44 slurm-292028.out
--rw-r--r--.  1 jillashey 8.9K Jan  4 01:05 slurm-292029.out
--rw-r--r--.  1 jillashey 1.2K Jan  4 10:49 slurm-292071.out
--rw-r--r--.  1 jillashey   57 Jan  4 10:50 slurm-292072.out
--rw-r--r--.  1 jillashey   57 Jan  4 10:52 slurm-292073.out
--rw-r--r--.  1 jillashey   59 Jan  4 10:52 slurm-292073.error
--rw-r--r--.  1 jillashey   57 Jan  4 10:52 slurm-292074.out
--rw-r--r--.  1 jillashey   59 Jan  4 10:52 slurm-292074.error
--rw-r--r--.  1 jillashey   57 Jan  4 10:52 slurm-292075.out
--rw-r--r--.  1 jillashey  660 Jan  4 10:52 slurm-292075.error
--rw-r--r--.  1 jillashey   57 Jan  4 10:52 slurm-292076.out
--rw-r--r--.  1 jillashey  660 Jan  4 10:52 slurm-292076.error
--rw-r--r--.  1 jillashey   57 Jan  4 10:53 slurm-292077.out
--rw-r--r--.  1 jillashey  660 Jan  4 10:53 slurm-292077.error
--rw-r--r--.  1 jillashey   57 Jan  4 11:32 slurm-292078.out
--rw-r--r--.  1 jillashey   79 Jan  4 11:34 slurm-292078.error
--rw-r--r--.  1 jillashey   57 Jan  4 11:34 slurm-292079.out
--rw-r--r--.  1 jillashey  257 Jan  4 12:28 slurm-292079.error
--rw-r--r--.  1 jillashey  797 Jan  4 12:33 flexbar.sh
--rw-r--r--.  1 jillashey   57 Jan  4 12:33 slurm-292092.out
--rw-r--r--.  1 jillashey 1.3K Jan  4 12:33 slurm-292092.error
--rw-r--r--.  1 jillashey  717 Jan  4 13:23 flexbar_og.sh
--rw-r--r--.  1 jillashey    0 Jan  4 13:23 slurm-292095.error
--rw-r--r--.  1 jillashey   57 Jan  4 13:24 slurm-292095.out
--rw-r--r--.  1 jillashey 2.5K Jan  5 14:53 slurm-292159.out
--rw-r--r--.  1 jillashey  48K Jan  5 14:53 slurm-292159.error
--rw-r--r--.  1 jillashey    0 Jan  7 16:36 slurm-292222.error
--rw-r--r--.  1 jillashey  362 Jan  7 16:59 slurm-292222.out
--rw-r--r--.  1 jillashey    0 Jan  7 17:05 slurm-292224.error
--rw-r--r--.  1 jillashey  362 Jan  7 17:29 slurm-292224.out
--rw-r--r--.  1 jillashey  106 Jan  9 07:49 slurm-292243.error
-drwxr-xr-x.  2 jillashey 4.0K Jan  9 07:52 dir_prepare_signature1704804676
--rw-r--r--.  1 jillashey  377 Jan  9 11:23 error_09_01_2024_t_07_49_09.log
--rw-r--r--.  1 jillashey  63K Jan  9 11:24 result_09_01_2024_t_07_49_09.csv
--rw-r--r--.  1 jillashey 704K Jan  9 11:24 result_09_01_2024_t_07_49_09.html
-drwxr-xr-x.  2 jillashey 4.0K Jan  9 11:28 pdfs_09_01_2024_t_07_49_09
--rw-r--r--.  1 jillashey  28K Jan  9 11:28 result_09_01_2024_t_07_49_09.bed
-drwxr-xr-x.  2 jillashey 4.0K Jan  9 11:28 mirna_results_09_01_2024_t_07_49_09
--rw-r--r--.  1 jillashey  762 Jan  9 11:28 slurm-292243.out
--rw-r--r--.  1 jillashey  106 Jan  9 14:56 slurm-292316.error
-drwxr-xr-x.  2 jillashey 4.0K Jan  9 15:01 dir_prepare_signature1704830366
--rw-r--r--.  1 jillashey 1.3K Jan  9 15:03 slurm-292317.error
--rw-r--r--.  1 jillashey  112 Jan  9 15:03 slurm-292317.out
--rw-r--r--.  1 jillashey    0 Jan  9 15:13 slurm-292318.error
--rw-r--r--.  1 jillashey  377 Jan  9 18:33 error_09_01_2024_t_14_56_36.log
--rw-r--r--.  1 jillashey  64K Jan  9 18:34 result_09_01_2024_t_14_56_36.csv
--rw-r--r--.  1 jillashey 713K Jan  9 18:34 result_09_01_2024_t_14_56_36.html
-drwxr-xr-x.  2 jillashey 4.0K Jan  9 18:38 pdfs_09_01_2024_t_14_56_36
--rw-r--r--.  1 jillashey  28K Jan  9 18:38 result_09_01_2024_t_14_56_36.bed
-drwxr-xr-x.  2 jillashey 4.0K Jan  9 18:38 mirna_results_09_01_2024_t_14_56_36
--rw-r--r--.  1 jillashey  764 Jan  9 18:38 slurm-292316.out
--rw-r--r--.  1 jillashey  112 Jan  9 23:55 slurm-292318.out
--rw-r--r--.  1 jillashey  846 Jan 10 09:45 fastqc_trim.sh
--rw-r--r--.  1 jillashey  43K Jan 10 10:22 slurm-292342.error
--rw-r--r--.  1 jillashey 2.2K Jan 10 10:22 slurm-292342.out
--rw-r--r--.  1 jillashey  846 Jan 10 10:30 flexbar_25bp.sh
--rw-r--r--.  1 jillashey    0 Jan 10 10:30 slurm-292344.error
--rw-r--r--.  1 jillashey  106 Jan 10 16:06 slurm-292356.error
--rw-r--r--.  1 jillashey  464 Jan 10 16:07 slurm-292356.out
--rw-r--r--.  1 jillashey  106 Jan 10 16:09 slurm-292357.error
--rw-r--r--.  1 jillashey  464 Jan 10 16:09 slurm-292357.out
--rw-r--r--.  1 jillashey  106 Jan 10 16:14 slurm-292358.error
--rw-r--r--.  1 jillashey  465 Jan 10 16:14 slurm-292358.out
--rw-r--r--.  1 jillashey  114 Jan 10 19:24 slurm-292344.out
--rw-r--r--.  1 jillashey  43K Jan 12 12:30 slurm-292416.error
--rw-r--r--.  1 jillashey 2.2K Jan 12 12:30 slurm-292416.out
--rw-r--r--.  1 jillashey  106 Jan 12 12:37 slurm-292419.error
--rw-r--r--.  1 jillashey  465 Jan 12 12:38 slurm-292419.out
--rw-r--r--.  1 jillashey  106 Jan 12 12:39 slurm-292420.error
--rw-r--r--.  1 jillashey  465 Jan 12 12:39 slurm-292420.out
--rw-r--r--.  1 jillashey  106 Jan 12 13:11 slurm-292458.error
--rw-r--r--.  1 jillashey  444 Jan 12 13:11 slurm-292458.out
--rw-r--r--.  1 jillashey  106 Jan 12 13:17 slurm-292459.error
-drwxr-xr-x.  2 jillashey 4.0K Jan 12 13:20 dir_prepare_signature1705083561
--rw-r--r--.  1 jillashey  377 Jan 12 16:54 error_12_01_2024_t_13_17_27.log
--rw-r--r--.  1 jillashey  64K Jan 12 16:55 result_12_01_2024_t_13_17_27.csv
--rw-r--r--.  1 jillashey 718K Jan 12 16:55 result_12_01_2024_t_13_17_27.html
-drwxr-xr-x.  2 jillashey 4.0K Jan 12 16:59 pdfs_12_01_2024_t_13_17_27
--rw-r--r--.  1 jillashey  28K Jan 12 16:59 result_12_01_2024_t_13_17_27.bed
-drwxr-xr-x.  2 jillashey 4.0K Jan 12 16:59 mirna_results_12_01_2024_t_13_17_27
--rw-r--r--.  1 jillashey  766 Jan 12 16:59 slurm-292459.out
--rw-r--r--.  1 jillashey    0 Jan 16 08:00 slurm-292595.error
--rw-r--r--.  1 jillashey  366 Jan 16 08:19 slurm-292595.out
--rw-r--r--.  1 jillashey   79 Jan 16 08:36 slurm-292596.out
--rw-r--r--.  1 jillashey  106 Jan 16 08:36 slurm-292597.error
-drwxr-xr-x.  2 jillashey 4.0K Jan 16 08:41 dir_prepare_signature1705412338
--rw-r--r--.  1 jillashey  377 Jan 16 15:27 error_16_01_2024_t_08_36_42.log
--rw-r--r--.  1 jillashey 103K Jan 16 15:29 result_16_01_2024_t_08_36_42.csv
--rw-r--r--.  1 jillashey 1.2M Jan 16 15:29 result_16_01_2024_t_08_36_42.html
-drwxr-xr-x.  2 jillashey 4.0K Jan 16 15:36 pdfs_16_01_2024_t_08_36_42
--rw-r--r--.  1 jillashey  46K Jan 16 15:36 result_16_01_2024_t_08_36_42.bed
-drwxr-xr-x.  2 jillashey 4.0K Jan 16 15:36 mirna_results_16_01_2024_t_08_36_42
--rw-r--r--.  1 jillashey  782 Jan 16 15:36 slurm-292597.out
--rw-r--r--.  1 jillashey 1.1K Jan 19 20:57 test_cat_collapse.sh
--rw-r--r--.  1 jillashey    0 Jan 19 20:57 slurm-293019.error
--rw-r--r--.  1 jillashey  365 Jan 19 21:12 slurm-293019.out
--rw-r--r--.  1 jillashey 1.1K Jan 19 21:27 test_mirdeep2.sh
--rw-r--r--.  1 jillashey  106 Jan 19 21:27 slurm-293022.error
-drwxr-xr-x. 12 jillashey 4.0K Jan 19 21:27 mirdeep_runs
-drwxr-xr-x.  2 jillashey 4.0K Jan 19 21:34 dir_prepare_signature1705717824
--rw-r--r--.  1 jillashey  377 Jan 20 13:50 error_19_01_2024_t_21_27_36.log
--rw-r--r--.  1 jillashey 163K Jan 20 13:58 result_19_01_2024_t_21_27_36.csv
--rw-r--r--.  1 jillashey 1.8M Jan 20 13:58 result_19_01_2024_t_21_27_36.html
-drwxr-xr-x.  2 jillashey 4.0K Jan 20 14:09 pdfs_19_01_2024_t_21_27_36
--rw-r--r--.  1 jillashey  70K Jan 20 14:09 result_19_01_2024_t_21_27_36.bed
-drwxr-xr-x.  2 jillashey 4.0K Jan 20 14:09 mirna_results_19_01_2024_t_21_27_36
--rw-r--r--.  1 jillashey  45K Jan 20 14:09 report.log
--rw-r--r--.  1 jillashey  816 Jan 20 14:09 slurm-293022.out
--rw-r--r--.  1 jillashey 1.1K Jan 21 19:30 cat_collapse.sh
--rw-r--r--.  1 jillashey  113 Jan 21 19:50 slurm-293086.error
--rw-r--r--.  1 jillashey 4.9K Jan 22 01:03 slurm-293086.out
--rw-r--r--.  1 jillashey  176 Jan 30 15:43 slurm-293863.error
--rw-r--r--.  1 jillashey  380 Jan 30 15:43 slurm-293863.out
--rw-r--r--.  1 jillashey 1.5K Jan 30 15:43 mirdeep2.sh
--rw-r--r--.  1 jillashey  121 Jan 30 20:59 slurm-293874.error
--rw-r--r--.  1 jillashey  380 Jan 30 20:59 slurm-293874.out
--rw-r--r--.  1 jillashey   83 Jan 30 21:20 slurm-293875.out
--rw-r--r--.  1 jillashey   79 Jan 30 21:22 slurm-293875.error
--rw-r--r--.  1 jillashey  135 Jan 30 22:18 slurm-293876.error
--rw-r--r--.  1 jillashey  501 Jan 30 22:18 slurm-293876.out
--rw-r--r--.  1 jillashey 1.9K Jan 31 08:29 cat_collapse_all.sh
--rw-r--r--.  1 jillashey  114 Jan 31 11:59 slurm-293889.error
--rw-r--r--.  1 jillashey  501 Jan 31 11:59 slurm-293889.out
-(base) [jillashey@ssh3 scripts]$ less cat_collapse.sh 
-(base) [jillashey@ssh3 scripts]$ nano filter_length.awk
-(base) [jillashey@ssh3 scripts]$ nano cat_collapse_all.sh 
-(base) [jillashey@ssh3 scripts]$ nano cat_collapse_all.sh 
-(base) [jillashey@ssh3 scripts]$ sbatch cat_collapse_all.sh 
-Submitted batch job 293959
-(base) [jillashey@ssh3 scripts]$ squeue
-             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON) 
-            293891   general job-mp-h   zhangl PD       0:00      2 (AssocGrpCpuLimit) 
-            293932   general   hisat2 amalia.m PD       0:00      1 (Resources) 
-            293857   general IQMcGowe alexandr  R 1-00:21:43      3 n[085,095-096] 
-            293836   general   7_step biancani  R 1-05:13:27      1 n075 
-            290119    weilab SAF_exam helingch  R 58-12:32:12      1 n079 
-            290116    weilab SAF_exam helingch  R 58-12:46:30      1 n078 
-            290114    weilab SAF_exam helingch  R 58-12:55:33      1 n077 
-            290079    weilab SAF_exam helingch  R 58-20:50:38      1 n076 
-            293796   general     sinv     xwei  R 2-00:29:06      1 n068 
-            293600       gpu job-trim   zhangl  R 2-23:37:54      1 n108 
-            293873       gpu job-tw-a   zhangl  R   11:04:14      1 n106 
-            293958   general  four.sh pravin_k  R       0:23      2 n[071-072] 
-            293959   general cat_coll jillashe  R       0:23      1 n063 
-            293922   general trim2.sh  ffields  R    1:18:19      1 n065 
-            293896   general    SHELL inarvaez  R    3:05:26      1 n097 
-            293890   general job-mp-h   zhangl  R    6:00:54      2 n[066-067] 
-            293868       gpu job-hbd3   zhangl  R   19:58:01      1 n105 
-            293845   general job-mp-h   zhangl  R 1-00:00:20      2 n[080-081] 
-            293833       gpu job-tw-f   zhangl  R 1-03:49:26      1 n107 
-(base) [jillashey@ssh3 scripts]$ scancel general
-scancel: error: Invalid job id general
-(base) [jillashey@ssh3 scripts]$ pwd
-/data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
-(base) [jillashey@ssh3 scripts]$ nano cat_collapse_all.sh 
-(base) [jillashey@ssh3 scripts]$ sbatch cat_collapse_all.sh 
-Submitted batch job 293960
-(base) [jillashey@ssh3 scripts]$ squeue
-             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON) 
-            293891   general job-mp-h   zhangl PD       0:00      2 (AssocGrpCpuLimit) 
-            293932   general   hisat2 amalia.m PD       0:00      1 (Resources) 
-            293966   general run_simp alexandr  R       0:18      1 n063 
-            293857   general IQMcGowe alexandr  R 1-00:27:08      3 n[085,095-096] 
-            293836   general   7_step biancani  R 1-05:18:52      1 n075 
-            290119    weilab SAF_exam helingch  R 58-12:37:37      1 n079 
-            290116    weilab SAF_exam helingch  R 58-12:51:55      1 n078 
-            290114    weilab SAF_exam helingch  R 58-13:00:58      1 n077 
-            290079    weilab SAF_exam helingch  R 58-20:56:03      1 n076 
-            293796   general     sinv     xwei  R 2-00:34:31      1 n068 
-            293600       gpu job-trim   zhangl  R 2-23:43:19      1 n108 
-            293873       gpu job-tw-a   zhangl  R   11:09:39      1 n106 
-            293963   general   six.sh pravin_k  R       1:48      2 n[071-072] 
-            293960   general cat_coll jillashe  R       4:48      1 n064 
-            293959   general cat_coll jillashe  R       5:48      1 n063 
-            293922   general trim2.sh  ffields  R    1:23:44      1 n065 
-            293896   general    SHELL inarvaez  R    3:10:51      1 n097 
-            293890   general job-mp-h   zhangl  R    6:06:19      2 n[066-067] 
-            293868       gpu job-hbd3   zhangl  R   20:03:26      1 n105 
-            293845   general job-mp-h   zhangl  R 1-00:05:45      2 n[080-081] 
-            293833       gpu job-tw-f   zhangl  R 1-03:54:51      1 n107 
-(base) [jillashey@ssh3 scripts]$ scancel 293960
-(base) [jillashey@ssh3 scripts]$ scancel 293959
-(base) [jillashey@ssh3 scripts]$ nano cat_collapse_all.sh 
-(base) [jillashey@ssh3 scripts]$ squeue
-             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON) 
-            293891   general job-mp-h   zhangl PD       0:00      2 (AssocGrpCpuLimit) 
-            293932   general   hisat2 amalia.m PD       0:00      1 (Resources) 
-            293968   general three.sh pravin_k PD       0:00      2 (Priority) 
-            293966   general run_simp alexandr  R       3:00      1 n063 
-            293857   general IQMcGowe alexandr  R 1-00:29:50      3 n[085,095-096] 
-            293836   general   7_step biancani  R 1-05:21:34      1 n075 
-            290119    weilab SAF_exam helingch  R 58-12:40:19      1 n079 
-            290116    weilab SAF_exam helingch  R 58-12:54:37      1 n078 
-            290114    weilab SAF_exam helingch  R 58-13:03:40      1 n077 
-            290079    weilab SAF_exam helingch  R 58-20:58:45      1 n076 
-            293796   general     sinv     xwei  R 2-00:37:13      1 n068 
-            293600       gpu job-trim   zhangl  R 2-23:46:01      1 n108 
-            293873       gpu job-tw-a   zhangl  R   11:12:21      1 n106 
-            293922   general trim2.sh  ffields  R    1:26:26      1 n065 
-            293896   general    SHELL inarvaez  R    3:13:33      1 n097 
-            293890   general job-mp-h   zhangl  R    6:09:01      2 n[066-067] 
-            293868       gpu job-hbd3   zhangl  R   20:06:08      1 n105 
-            293845   general job-mp-h   zhangl  R 1-00:08:27      2 n[080-081] 
-            293833       gpu job-tw-f   zhangl  R 1-03:57:33      1 n107 
-(base) [jillashey@ssh3 scripts]$ sbatch cat_collapse_all.sh 
-Submitted batch job 293969
-(base) [jillashey@ssh3 scripts]$ squeue
-             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON) 
-            293891   general job-mp-h   zhangl PD       0:00      2 (AssocGrpCpuLimit) 
-            293932   general   hisat2 amalia.m PD       0:00      1 (Resources) 
-            293969   general cat_coll jillashe PD       0:00      1 (Priority) 
-            293966   general run_simp alexandr  R       3:23      1 n063 
-            293857   general IQMcGowe alexandr  R 1-00:30:13      3 n[085,095-096] 
-            293836   general   7_step biancani  R 1-05:21:57      1 n075 
-            290119    weilab SAF_exam helingch  R 58-12:40:42      1 n079 
-            290116    weilab SAF_exam helingch  R 58-12:55:00      1 n078 
-            290114    weilab SAF_exam helingch  R 58-13:04:03      1 n077 
-            290079    weilab SAF_exam helingch  R 58-20:59:08      1 n076 
-            293796   general     sinv     xwei  R 2-00:37:36      1 n068 
-            293600       gpu job-trim   zhangl  R 2-23:46:24      1 n108 
-            293873       gpu job-tw-a   zhangl  R   11:12:44      1 n106 
-            293922   general trim2.sh  ffields  R    1:26:49      1 n065 
-            293896   general    SHELL inarvaez  R    3:13:56      1 n097 
-            293890   general job-mp-h   zhangl  R    6:09:24      2 n[066-067] 
-            293868       gpu job-hbd3   zhangl  R   20:06:31      1 n105 
-            293845   general job-mp-h   zhangl  R 1-00:08:50      2 n[080-081] 
-            293833       gpu job-tw-f   zhangl  R 1-03:57:56      1 n107 
-(base) [jillashey@ssh3 scripts]$ less cat_collapse_all.sh 
-
 #!/bin/bash
 #SBATCH -t 100:00:00
 #SBATCH --nodes=1 --ntasks-per-node=1
@@ -5100,31 +4827,272 @@ awk: /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/filter_length.awk:1: 
 fastx_collapser: Premature End-Of-File (filename ='awk.grep.check.cat.all.fastq')
 ```
 
-I might just manually 
+I might just manually do it. I also rezipped all of the files in my flexbar trimmed data folder. 
 
+### 20240202
 
-
-
-
-
-
-
-
-
-
-Once this is done running, I will perform the mapping and mirdeep2 step. Because the input fasta file will likely be so big, I'm going to include the mapper.pl with the mirdeep2.pl script. First, make a new folder in the mirdeep2 folder for all samples.
+I am going to follow the concatenate step in Sam's [code](https://github.com/urol-e5/deep-dive/blob/main/E-Peve/code/10-Peve-sRNAseq-BLASTn.Rmd). Here's his code. He does a lot of echoing and what not. 
 
 ```
-/data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2
+# Load bash variables into memory
+source .bashvars
+
+# Check for existence of concatenated FastA before running
+if [ ! -f "${output_dir_top}/${concatenated_trimmed_reads_fastq}" ]; then
+  cat ${trimmed_fastqs_dir}/*.fastq.gz \
+  > "${output_dir_top}/${concatenated_trimmed_reads_fastq}"
+fi
+
+ls -lh "${output_dir_top}/${concatenated_trimmed_reads_fastq}"
+```
+
+Let's try to modify it for my info. First, I'm just going to concatenate. In the scripts folder: `nano cat_all.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
+
+echo "Concatenate smRNA reads from ALL samples" $(date)
+
+# Check for existence of concatenated FastA before running
+if [ ! -f "cat.all.fastq" ]; then
+  cat AST*.fastq.gz \
+  > cat.all.fastq
+fi
+
+echo "Reads concatenated" $(date)
+```
+
+Submitted batch job 294079. Ran in about 2 mins but produced a binary file which is weird...Going to edit the code so that it is just `cat AST*.fastq.gz`. Submitted batch job 294080. Took about 2 mins. Once again, produced a binary file. Maybe because I am concatenating .gz files? Let me try to run fastx_collapse and see if it works. In the scripts folder: `nano collapse_all.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
+
+echo "Collapse concatenated reads" $(date)
+
+fastx_collapser -v -i cat.all.fastq -o collapse.cat.all.fastq
+
+echo "Reads collapsed" $(date)
+```
+
+Submitted batch job 294081. Failed immediately and got this error: `fastx_collapser: input file (cat.all.fastq) has unknown file format (not FASTA or FASTQ), first character = ^_ (31)`. Okay I might go back to basics...so the cat step worked when I was just catting R1 and R2 together. Maybe lets try to do that with two samples and then cat those samples together and see if they collapse. 
+
+```
+interactive 
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
+
+gunzip AST-1065_R1_001.fastq*
+gunzip AST-1105_R1_001.fastq*
+
+cat AST-1065_R1_001.fastq.gz_1.fastq AST-1065_R1_001.fastq.gz_2.fastq > AST-1065.fastq
+cat AST-1105_R1_001.fastq.gz_1.fastq AST-1105_R1_001.fastq.gz_2.fastq > AST-1105.fastq
+
+cat AST-1065.fastq AST-1105.fastq > test.fastq
+
+module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
+fastx_collapser -v -i AST-1065.fastq -o collapse.AST-1065.fastq
+Input: 35658222 sequences (representing 35658222 reads)
+Output: 11979585 sequences (representing 35658222 reads)
+```
+
+Okay so fastx is happy with the R1 and R2 concatenated output. Now lets try on the `test.fastq file`.
+
+```
+fastx_collapser -v -i test.fastq -o collapse.test.fastq
+```
+
+Got this error: `fastx_collapser: Error: invalid quality score data on line 234199948 (quality_tok = "AAFFFJAJJJJJJJJJJJJJJJJJJJJ"`. Let's look at the line where the error is occurring. Going to set it 10 lines up so that I can see whats going on 
+
+```
+sed -n '234199948, 234199948p' test.fastq
+AAFFFJAJJJJJJJJJJJJJJJJJJJJ
+```
+
+Does it hate the J ascii character???  
+
+I am now realizing that AST-1105 was one of the samples that looked weird and that I excluded from analysis. Let me choose a different sample to test with AST-1065
+
+```
+gunzip AST-2404_R1_001.fastq.gz*
+
+cat AST-2404_R1_001.fastq.gz_1.fastq AST-2404_R1_001.fastq.gz_2.fastq > AST-2404.fastq
+```
+
+Let's look at how many lines are in each file 
+
+```
+wc -l AST-1065.fastq
+142632888 AST-1065.fastq
+
+wc -l AST-2404.fastq 
+133703224 AST-2404.fastq
+```
+
+Since I am catting these two files, 142632888 lines + 133703224 lines = 276336112 lines -- this is how many lines should be in the fastq file once I cat them together. 
+
+```
+cat AST-1065.fastq AST-2404.fastq > test.fastq
+
+wc -l test.fastq 
+276336112 test.fastq
+```
+
+Expected number of lines. Let's try to collapse
+
+```
+fastx_collapser -v -i test.fastq -o collapse.test.fastq
+
+Input: 69084028 sequences (representing 69084028 reads)
+Output: 22118660 sequences (representing 69084028 reads)
+```
+
+Took a while but worked!!! Maybe it is the problem sample AST-1105 that is messing everything up...going to move it to its own folder in the flexbar folder and rerun the script. 
+
+```
+mkdir AST-1105
+mv *1105* AST-1105
+cd ../../../scripts/
+sbatch cat_all.sh
+```
+
+Submitted batch job 294086. Took 2 mins but still a binary file...Do I have to just do it manually??? Maybe instead I will cat all of the R1 and R2 reads together and then cat those files together. 
+
+We had the e5 molecular meeting and Sam White said that Azenta recommended that we toss read 2 and don't use it at all. So I may try to just cat the R1...I'm going to edit the `cat_all.sh` script. Now here's what it says: 
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
+
+echo "Unzip R1 files" $(date)
+gunzip AST*_1.fastq.gz
+
+echo "Unzipping complete, concatenate smRNA reads from ALL samples - R1 only" $(date)
+
+cat AST*_1.fastq > cat.all.fastq
+
+echo "R1 concatenated" $(date)
+```
+
+Submitted batch job 294088. Took about 5 mins. Looks good!! Finally successful cat (so far). Now running the `collapse_all.sh` script. Submitted batch job 294089
+
+### 20240204
+
+Success!!!!!!! Reads have been concatenated!!!!! At least the R1 reads. Here's the output message:
+
+```
+Collapse concatenated reads Fri Feb 2 14:31:47 EST 2024
+Input: 343437674 sequences (representing 343437674 reads)
+Output: 62419423 sequences (representing 343437674 reads)
+Reads collapsed Fri Feb 2 16:28:11 EST 2024
+```
+
+Go to the file in `/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar` and check it out
+
+```
+head collapse.cat.all.fastq
+>1-8268409
+GCACTGGTGGTTCAGTGGTAGAATTCTCGC
+>2-2708289
+GCACTGGTGGTTCAGTGGTAGAATTCTC
+>3-2338875
+GACTTTGTAGCATAGGTAAGGTTAGTGCAT
+>4-2210232
+AACTTTTGACGGTGGATCTCTTGGCTCACG
+>5-1864084
+TAAGACTATGATTATATGCAGCTTCTTGCA
+
+tail collapse.cat.all.fastq 
+>62419419-1
+ATTTGACGAAGGCTCCAAAGGAAGTCATGG
+>62419420-1
+TTGCCCGTATTACTGCCGT
+>62419421-1
+TACCTGCCCTATTTGCCTTATACTAG
+>62419422-1
+CTGGAAATCTGCTGGACTTACGTTT
+>62419423-1
+CGACAGTGGGCTGAAGCTG
+
+zgrep -c ">" collapse.cat.all.fastq 
+62419423
+```
+
+Prep the sequence headers for mirdeep2 analysis 
+
+```
+sed '/^>/ s/-/_x/g' collapse.cat.all.fastq \
+| sed '/^>/ s/>/>seq_/' \
+> sed.collapse.cat.all.fastq
+
+head sed.collapse.cat.all.fastq 
+>seq_1_x8268409
+GCACTGGTGGTTCAGTGGTAGAATTCTCGC
+>seq_2_x2708289
+GCACTGGTGGTTCAGTGGTAGAATTCTC
+>seq_3_x2338875
+GACTTTGTAGCATAGGTAAGGTTAGTGCAT
+>seq_4_x2210232
+AACTTTTGACGGTGGATCTCTTGGCTCACG
+>seq_5_x1864084
+TAAGACTATGATTATATGCAGCTTCTTGCA
+
+zgrep -c ">" sed.collapse.cat.all.fastq 
+62419423
+```
+
+Now I can run mirdeep2 (mapping and prediction steps). Because the input fasta file will likely be so big, I'm going to include the mapper.pl with the mirdeep2.pl script. First, make a new folder in the mirdeep2 folder for all samples.
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2
 mkdir all 
 ```
 
-Run mirdeep2. `nano mirdeep2.sh`
+Run mirdeep2. In the scripts folder: `nano mirdeep2.sh`
 
 ```
 #!/bin/bash -i
-#SBATCH -t 72:00:00
-#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
 #SBATCH --export=NONE
 #SBATCH --mem=250GB
 #SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
@@ -5139,18 +5107,20 @@ conda activate /data/putnamlab/mirdeep2
 
 echo "Starting mapping" $(date)
 
-mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.all.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/all_reads_collapsed.fa -t /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/all_reads_collapsed_vs_genome.arf -v 
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/sed.collapse.cat.all.fastq -c -p /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts/Apoc_ref.btindex -s /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/all_reads_collapsed.fa -t /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/all_reads_collapsed_vs_genome.arf -v 
 
-echo "Mapping complete, Starting mirdeep2 on all samples trimmed to 30bp" $(date)
+echo "Mapping complete, Starting mirdeep2" $(date)
 
-miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/17_sed.collapse.cat.all.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/all_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/sed.collapse.cat.all.fastq /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/all_reads_collapsed_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -t N.vectensis -P -v -g -1 2>report.log
 
-echo "mirdeep2 concluded for all samples trimmed to 30bp" $(date)
+echo "mirdeep2" $(date)
 
 conda deactivate
 ```
 
-STILL NEED TO RUN CODE ABOVE^^
+Submitted batch job 294127
+
+
 
 
 
@@ -5159,6 +5129,7 @@ Understanding mirdeep2 output -- I understand the mirdeep2 output but I do not u
 General mirdeep2 questions
 - How do I find the MFE? Is it calculated by mirdeep2 or by the quantifier module? I think it is linked to the randfold step. Need to look into this. 
 - I looked at Gajigan & Conaco 2017 mirdeep2 pdf outputs from their supplementary materials and they got similar MFE values in their pdfs. However, in Table S5, they have MFE info that is <-25 kcal/mol. How did they calculate the MFE that mirdeep2 gave them to the MFE that was displayed in their table??
+- After I identify the putative miRNAs, I should blast against tRNA and rRNA dbs
 
 
 
