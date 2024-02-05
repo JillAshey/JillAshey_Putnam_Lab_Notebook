@@ -58,6 +58,6 @@ February 2024 goals and daily notebook entries.
 
 ### February 4 
 - Watched videos on Zymo Ribofree library prep and Pico Seq library prep 
-- Modifying collapsed file for mirdeep2 
+- Modified collapsed file for mirdeep2 
 - Started running mapping and mirdeep2 for all R1 concatenated/collapsed reads 
 - Edits for astrangia review manuscript 
