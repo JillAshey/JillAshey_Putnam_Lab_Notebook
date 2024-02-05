@@ -57,7 +57,20 @@ February 2024 goals and daily notebook entries.
 - Yaamini seminar 
 
 ### February 4 
+
 - Watched videos on Zymo Ribofree library prep and Pico Seq library prep 
 - Modified collapsed file for mirdeep2 
 - Started running mapping and mirdeep2 for all R1 concatenated/collapsed reads 
 - Edits for astrangia review manuscript 
+
+### February 5 
+
+- ICRS application edits 
+- Filled out establishment of committee form and sent to committee to sign - completed by all parties 
+- Tip inventory w/ Zoe 
+- Freezer inventory w/ Zoe 
+- Tip and tube estimates for Feb 
+- Minor edits on Pacuta methods 
+- Steven confirmed re ICRS rec letter  
+- Astrangia review manuscript edits
+- Started remaking fig 3 in Astrangia review manuscript 
