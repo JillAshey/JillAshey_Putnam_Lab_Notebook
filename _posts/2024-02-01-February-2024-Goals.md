@@ -74,3 +74,6 @@ February 2024 goals and daily notebook entries.
 - Steven confirmed re ICRS rec letter  
 - Astrangia review manuscript edits
 - Started remaking fig 3 in Astrangia review manuscript 
+
+### February 6
+

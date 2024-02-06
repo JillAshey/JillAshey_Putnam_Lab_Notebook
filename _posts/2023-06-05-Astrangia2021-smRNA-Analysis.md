@@ -5120,6 +5120,10 @@ conda deactivate
 
 Submitted batch job 294127
 
+### 20240206 
+
+Success! mirdeep2 finished running, took about 1.5 days. I'm going to download the results to my computer. 
+
 
 
 
