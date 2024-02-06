@@ -77,3 +77,8 @@ February 2024 goals and daily notebook entries.
 
 ### February 6
 
+- Looking at mirdeep2 output
+- Lab meeting 
+- Meeting w/ Hollie and Ross re genome assembly 
+- Got packages 
+- Editing figures for Astrangia review manuscript 

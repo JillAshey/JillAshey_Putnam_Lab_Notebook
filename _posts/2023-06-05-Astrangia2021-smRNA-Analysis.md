@@ -5122,7 +5122,29 @@ Submitted batch job 294127
 
 ### 20240206 
 
-Success! mirdeep2 finished running, took about 1.5 days. I'm going to download the results to my computer. 
+Success! mirdeep2 finished running, took about 1.5 days. I'm going to download the results to my computer. Since the output is in the scripts folder, I'm going to move all of the output to the all folder. Here's a summary of the output: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/astrangia2021_bioinf/smRNA/mirdeep2_all_results.png)
+
+I think my next steps will be filtering in R. I'm going to filter the csv so that I retain potential miRNAs that have an mirdeep2 score > 10, no rfam info, at least 10 reads in mature and star read count, and significant randfold pvalue (this has been done in most of the other cnidarian miRNA papers). When I did this filtering in this [script](https://github.com/JillAshey/Astrangia_repo/blob/main/scripts/miRNA_compare.Rmd), I ended up with 278 novel miRNAs. 
+
+Next, I did something tomorrow.
+
+Additionally, I will need to write a script that looks at: "“requirement of a 2-nucleotide overhang on the 3' end of the precursor miRNA, 5' consistency of the mature miRNA strand (at least 90% of the reads have to be starting from the same position), and at least 16 nucleotide complementarity between mature and star strand” (Praher et al., 2021). I may do this manually by looking at the PDFs...
+
+I also need to figure out how MFE is calculated? 
+
+After I do that, I will probably blast the predicted seqs against a tRNA and rRNA database to remove any unwanted RNAs. [RNAcentral](https://rnacentral.org/expert-databases) gives a good overview of the different ncRNA databases that could be used. Here are some options:
+
+- rRNA
+	- [Silva](https://www.arb-silva.de/download/arb-files/)
+- tRNA
+	- [tRNAscan-SE](http://trna.ucsc.edu/tRNAscan-SE/)
+
+I should also blast it against the NCBI database. 
+
+
+
 
 
 
