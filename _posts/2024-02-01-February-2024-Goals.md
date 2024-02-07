@@ -82,3 +82,5 @@ February 2024 goals and daily notebook entries.
 - Meeting w/ Hollie and Ross re genome assembly 
 - Got packages 
 - Editing figures for Astrangia review manuscript 
+- Read about Canu / canu code
+- Started running bam2fastq for long reads 

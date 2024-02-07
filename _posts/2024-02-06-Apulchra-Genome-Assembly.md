@@ -19,7 +19,7 @@ Met w/ Ross and Hollie today re Apulchra genome assembly. PacBio long reads were
 
 We decided to move forward with [Canu](https://canu.readthedocs.io/en/latest/index.html) to assembly the genome. Canu is specialized to assemble PacBio sequences, operating in three phases: correction, trimming and assembly. According to the Canu website, "The correction phase will improve the accuracy of bases in reads. The trimming phase will trim reads to the portion that appears to be high-quality sequence, removing suspicious regions such as remaining SMRTbell adapter. The assembly phase will order the reads into contigs, generate consensus sequences and create graphs of alternate paths." 
 
-The PacBio files that will be used for assembly are located here on Andromeda: `/data/putnamlab/KITT/hputnam/20240129_Apulchra_Genome_LongRead`. The files in the folder that we need are: 
+The PacBio files that will be used for assembly are located here on Andromeda: `/data/putnamlab/KITT/hputnam/20240129_Apulchra_Genome_LongRead`. The files in the folder that we will use are: 
 
 ```
 m84100_240128_024355_s2.hifi_reads.bc1029.bam
@@ -36,4 +36,54 @@ The PacBio sequencing for the Apul genome were done with HiFi sequencing that ar
 
 Since Hifi sequencing was used, a specific HiCanu flag (`-pacbio-hifi`) must be used. Additionally, in the Canu [tutorial](https://canu.readthedocs.io/en/latest/quick-start.html#), it says that if this flag is used, the program is assuming that the reads are trimmed and corrected already. However, our reads are not. I'm going to try to run the first pass at Canu with the `-raw` flag. 
 
+Before Canu, I will run `bam2fastq`. This is a part of the PacBio BAM toolkit package `pbtk`. I need to create the conda environment and install the package. Load miniconda module: `module load Miniconda3/4.9.2`. Create a conda environment. 
 
+```
+conda create --prefix /data/putnamlab/conda/pbtk
+```
+
+Install the package. Once the package is installed on the server, anyone in the Putnam lab group can use it. 
+
+```
+conda activate /data/putnamlab/conda/pbtk
+conda install -c bioconda pbtk
+```
+
+In my own directory, make a new directory for genome assembly
+
+```
+cd /data/putnamlab/jillashey
+mkdir Apul_Genome
+cd Apul_Genome
+mkdir assembly structural functional
+cd assembly
+mkdir scripts data output
+```
+
+Run code to make the PacBio bam file to a fastq file. In the scripts folder: `nano bam2fastq.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+conda activate /data/putnamlab/conda/pbtk
+
+echo "Convert PacBio bam file to fastq file" $(date)
+
+bam2fastq -o /data/putnamlab/jillashey/Apul_Genome/assembly/data/m84100_240128_024355_s2.hifi_reads.bc1029.fastq /data/putnamlab/KITT/hputnam/20240129_Apulchra_Genome_LongRead/m84100_240128_024355_s2.hifi_reads.bc1029.bam
+
+echo "Bam to fastq complete!" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 294235
