@@ -93,3 +93,7 @@ February 2024 goals and daily notebook entries.
 - Aquarium work
 - Labeled tubes for extraction tomorrow 
 - Edits to ICRS proposal 
+
+### February 8
+
+- 
