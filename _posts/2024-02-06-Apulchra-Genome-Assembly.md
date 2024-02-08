@@ -106,7 +106,38 @@ zgrep -c "@m84100" m84100_240128_024355_s2.hifi_reads.bc1029.fastq.fastq.gz
 5898386
 ```
 
-More than 5 million, so many not contigs? I guess it represents the number of HiFi reads generated. 
+More than 5 million, so many not contigs? I guess it represents the number of HiFi reads generated. Now time to run Canu! Canu is already installed on the server, which is nice. 
 
-Run Canu
+In the scripts folder: `nano canu.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load canu/2.2-GCCcore-11.2.0 
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Unzip paco-bio fastq file" $(date)
+
+gunzip m84100_240128_024355_s2.hifi_reads.bc1029.fastq.fastq.gz
+
+echo "Unzip complete, starting assembly" $(date)
+
+canu -p apul -d /data/putnamlab/jillashey/Apul_Genome/assembly/data genomeSize=475m -raw -pacbio-hifi m84100_240128_024355_s2.hifi_reads.bc1029.fastq.fastq
+
+echo "Canu assembly complete" $(date)
+```
+
+I'm not sure if the `raw` and `-pacbio-hifi` will be compatible, as the Canu tutorial says that the `-pacbio-hifi` assumes that the input is trimmed and corrected (still not sure what this means). Submitted batch job 294325
+
 

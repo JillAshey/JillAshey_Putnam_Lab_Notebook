@@ -15,7 +15,7 @@ This protocol is based on Maggie’s coral egg/larvae extraction [protocol](http
 
 The samples run today were M4, M12, M15, M25, M38, M40, M47, M48, M61, M64, M76, and M83. These samples had between 300-1600 eggs/larvae per tube. Sample were preserved in 500 ul - 1 ml of DNA/RNA Shield. This photo is post-bead beating: 
 
-XXXXX
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/samples_20240208.JPG)
 
 After bead beating, some of the tubes (M4, M47, M64, and M76) still looked like they had intact eggs/larvae so these samples were bead beat for another minute. Still some intact-looking larvae but the liquid looked pretty pigmented so I moved forward with the extraction as is. 
 
@@ -44,7 +44,20 @@ Protocol was followed according to this [post](https://github.com/JillAshey/Jill
 
 #### Qubit results 
 
-
+| Tube ID | Qubit DNA1 | Qubit DNA2 | Qubit DNA Average | Qubit RNA1 | Qubit RNA2 | Qubit RNA Average |
+| ------- | ---------- | ---------- | ----------------- | ---------- | ---------- | ----------------- |
+| M12     | NA         | NA         | NA                | 127        | 128        | 127.5             |
+| M15     | NA         | NA         | NA                | 151        | 151        | 151               |
+| M25     | NA         | NA         | NA                | 82.6       | 82.8       | 82.7              |
+| M38     | 3.04       | 3.12       | 3.08              | 194        | 195        | 194.5             |
+| M4      | NA         | NA         | NA                | 42.4       | 42.2       | 42.3              |
+| M40     | 5.3        | 5.32       | 5.31              | 100        | 101        | 100.5             |
+| M47     | 8.52       | 8.44       | 8.48              | 100        | 99.4       | 99.7              |
+| M48     | 7.82       | 7.82       | 7.82              | 106        | 106        | 106               |
+| M61     | 13.5       | 13.4       | 13.45             | 91.8       | 91.6       | 91.7              |
+| M64     | 4.38       | 4.4        | 4.39              | 71.8       | 71.8       | 71.8              |
+| M76     | 4.68       | 4.64       | 4.66              | 71         | 71.2       | 71.1              |
+| M83     | 17.1       | 17.3       | 17.2              | 48.4       | 48.4       | 48.4              |
 
 #### Gel 
 
