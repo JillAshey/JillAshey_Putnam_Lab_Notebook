@@ -84,3 +84,12 @@ February 2024 goals and daily notebook entries.
 - Editing figures for Astrangia review manuscript 
 - Read about Canu / canu code
 - Started running bam2fastq for long reads 
+
+### February 7
+
+- Lab github issue for freezer clean out 
+- Edited Astrangia review manuscript forever
+- Writing meeting 
+- Aquarium work
+- Labeled tubes for extraction tomorrow 
+- Edits to ICRS proposal 
