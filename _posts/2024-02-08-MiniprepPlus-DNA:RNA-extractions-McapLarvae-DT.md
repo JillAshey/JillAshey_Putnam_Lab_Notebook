@@ -1,7 +1,7 @@
 ---
 layout: post
 title: MiniPrep Plus DNA/RNA extractions
-date: '2023-10-27'
+date: '2024-02-08'
 categories:
 tags: [DNA, RNA, Extractions, Protocols]
 projects: Mcap developmental time series 
@@ -61,3 +61,8 @@ Protocol was followed according to this [post](https://github.com/JillAshey/Jill
 
 #### Gel 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/gel_20240208.JPG)
+
+Gel is really all over the place. Some of the samples look good, some not so good. There also seems to be some residual DNA at the top of some samples.
+
+I discussed with Zoe and she recommended to not add beads when vortexting the sample when it thaws. Additionally, she recommended that I use less input volume, as I may be overwhelming the column with RNA, which prevents the DNase from digesting all of the RNA. 

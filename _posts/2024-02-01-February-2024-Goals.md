@@ -96,4 +96,17 @@ February 2024 goals and daily notebook entries.
 
 ### February 8
 
-- 
+- Extractions w/ 12 DT samples 
+- Zoe RNA discussion 
+- Started running Canu 
+
+### February 9
+
+- Freezer inventory w/ Zoe 
+- Edits for Astrangia review manuscript 
+- e5 molecular mechanisms meeting 
+- Labeled tubes for extraction tomorrow 
+
+### February 10
+
+- Extractions w/ 7 DT samples - changed protocol so there was no beads during beating step and used 300uL as input instead of 500uL
