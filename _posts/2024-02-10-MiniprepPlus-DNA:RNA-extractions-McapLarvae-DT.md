@@ -57,3 +57,6 @@ Protocol was followed according to this [post](https://github.com/JillAshey/Jill
 
 #### Gel 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/gel_20240210.JPG)
+
+This gel looks so much better!!! The 4hpf sample still doesn't look great, but I knew these samples might not be viable because I added water to shield when doing the sampling. Much happier with these extractions, so this is the method that I will be using moving forward with these samples for the developmental timeseries project. 
