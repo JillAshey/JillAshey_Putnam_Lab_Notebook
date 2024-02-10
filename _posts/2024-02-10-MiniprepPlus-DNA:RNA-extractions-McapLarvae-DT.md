@@ -17,9 +17,9 @@ This protocol is based on Maggie’s coral egg/larvae extraction [protocol](http
 
 The samples run today were M13, M23, M35, M52, M60, M72, and M85. These samples had between 300-1600 eggs/larvae per tube. Sample were preserved in 500 ul of DNA/RNA Shield. This photo is post-beating: 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/samples_20240210.JPG)
 
 I was originally going to extract M5 as well, but I spilled all of it on the ground post-beating. Good thing I collected n=6 samples per timepoint!
-
 
 ### Materials 
 
@@ -45,7 +45,15 @@ Protocol was followed according to this [post](https://github.com/JillAshey/Jill
 
 #### Qubit results 
 
-
+| Tube ID | Qubit DNA1 | Qubit DNA2 | Qubit DNA Average | Qubit RNA1 | Qubit RNA2 | Qubit RNA Average |
+| ------- | ---------- | ---------- | ----------------- | ---------- | ---------- | ----------------- |
+| M13     | NA         | NA         | NA                | 58.6       | 58.4       | 58.5              |
+| M23     | NA         | NA         | NA                | 16.4       | 14.4       | 15.4              |
+| M35     | NA         | NA         | NA                | 29         | 29         | 29                |
+| M52     | NA         | NA         | NA                | 19.2       | 18.8       | 19                |
+| M60     | 3.54       | 3.58       | 3.56              | 36.8       | 36.2       | 36.5              |
+| M72     | 4.58       | 4.66       | 4.62              | 24.2       | 24         | 24.1              |
+| M85     | 5.74       | 5.84       | 5.79              | 30.4       | 30.2       | 30.3              |
 
 #### Gel 
 
