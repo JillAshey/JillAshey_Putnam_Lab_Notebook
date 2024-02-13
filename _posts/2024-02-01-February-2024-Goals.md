@@ -32,7 +32,7 @@ February 2024 goals and daily notebook entries.
 2. Work on Astrangia 2021 DEG and functional enrichment analysis 
 3. Map and quantify Astrangia 2021 miRNAs 
 4. Run miranda 
-5. Begin genome assembly for Apul -- hicanu 
+5. Begin genome assembly for Apul 
 
 ## Daily log 
 
@@ -119,3 +119,13 @@ February 2024 goals and daily notebook entries.
 - Met w/ Chloe 
 - Looked into Canu output 
 - Started running hifiasm for assembly 
+
+### February 13 
+
+- Read about half of Helgoe et al. 2024 bleaching paper 
+- Wrote about some potential post-doc ideas 
+- Edits to Pacuta manuscript 
+- Edits to ICRS proposal 
+- Made ICRS CV
+- Wrote some of ICRS cover letter 
+- Starting running busco on canu assembly 

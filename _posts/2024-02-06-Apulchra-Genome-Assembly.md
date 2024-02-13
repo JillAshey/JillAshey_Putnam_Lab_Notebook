@@ -483,10 +483,112 @@ conda deactivate
 
 Submitted batch job 300534
 
+### 20240213
 
+Even though the reads were not trimmed or corrected with Canu, I am going to run [Busco](https://busco.ezlab.org/) on the output. This will provide information about how well the genome was assembled and its completeness based on evolutionarily informed expectations of gene content from near-universal single-copy orthologs. Danielle and Kevin have both run BUSCO before and used similar scripts but I think I'll adapt mine a little to fit my needs and personal preferences for code. 
 
+From the [Busco user manual](https://busco.ezlab.org/busco_userguide.html#running-busco), the mandatory parameters are `-i`, which defines the input fasta file and `-m`, which sets the assessment mode (in our case, genome). Some recommended parameters incude `l` (specify busco lineage dataset; in our case, metazoans), `c` (specify number of cores to use), and `-o` (assigns specific label to output). 
 
+In `/data/putnamlab/shared/busco/scripts`, the script `busco_init.sh` has information about the modules to load and in what order. Both Danielle and Kevin sourced this file specifically in their code, but I will probably just copy and paste the modules. In the same folder, they also used `busco-config.ini` as input for the `--config` flag in busco, which provides a config file as an alternative to command line parameters. I am not going to use this config file (yet), as Danielle and Kevin were assembling transcriptomes and I'm not sure what the specifics of the file are (or what they should be for genomes). In `/data/putnamlab/shared/busco/downloads/lineages/metazoa_odb10`, there is information about the metazoan database. 
 
+In `/data/putnamlab/jillashey/Apul_Genome/assembly/scripts`, `nano busco_canu.sh`
 
+```
+#!/bin/bash 
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
 
+module load BUSCO/5.2.2-foss-2020b
+module load BLAST+/2.11.0-gompi-2020b
+module load AUGUSTUS/3.4.0-foss-2020b
+module load SEPP/4.4.0-foss-2020b
+module load prodigal/2.6.3-GCCcore-10.2.0
+module load HMMER/3.3.2-gompi-2020b
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Begin busco on canu-assembled fasta" $(date)
+
+busco -i apul.contigs.fasta -m genome -l /data/putnamlab/shared/busco/downloads/lineages/metazoa_odb10 -c 15 -o apul.busco.canu
+
+echo "busco complete for canu-assembled fasta" $(date)
+```
+
+Submitted batch job 301588. This failed and gave me some errors. This one seemed to have been the fatal one: `Message: BatchFatalError(AttributeError("'NoneType' object has no attribute 'remove_tmp_files'"))`. Danielle ran into a similar error in her busco [code](https://github.com/daniellembecker/DanielleBecker_Lab_Notebook/blob/master/_posts/2023-08-31-Acropora-pulchra-denovo-transcriptome.md) so I am going to try to set the `--config` file as `"$EBROOTBUSCO/config/config.ini"`. 
+
+In the script, `nano busco_canu.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load BUSCO/5.2.2-foss-2020b
+#module load BLAST+/2.11.0-gompi-2020b
+#module load AUGUSTUS/3.4.0-foss-2020b
+#module load SEPP/4.4.0-foss-2020b
+#module load prodigal/2.6.3-GCCcore-10.2.0
+#module load HMMER/3.3.2-gompi-2020b
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Begin busco on canu-assembled fasta" $(date)
+
+source "/data/putnamlab/shared/busco/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 15 --long -i apul.contigs.fasta -m genome -l /data/putnamlab/shared/busco/downloads/lineages/metazoa_odb10 -o apul.busco.canu
+
+echo "busco complete for canu-assembled fasta" $(date)
+```
+
+Submitted batch job 301594. Failed, same error as before. Going to try copying Kevin and Danielle code directly, even though its a little messy and confusing with paths. 
+
+In the script, `nano busco_canu.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Begin busco on canu-assembled fasta" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/Apul_Genome/assembly/data/apul.contigs.fasta" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${Apul_Genome/assembly/data}"
+busco --config "$EBROOTBUSCO/config/config.ini"  -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apul.busco.canu -m genome
+
+echo "busco complete for canu-assembled fasta" $(date)
+```
+
+Submitted batch job 301599. This appears to have worked!
 
