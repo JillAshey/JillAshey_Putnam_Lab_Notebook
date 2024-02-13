@@ -110,3 +110,12 @@ February 2024 goals and daily notebook entries.
 ### February 10
 
 - Extractions w/ 7 DT samples - changed protocol so there was no beads during beating step and used 300uL as input instead of 500uL
+
+### February 12
+
+- Edits to ICRS proposal, mostly done
+- Made new ICRS figure 
+- Facilitated Fundamentals of Diversity DIBP workshop
+- Met w/ Chloe 
+- Looked into Canu output 
+- Started running hifiasm for assembly 
