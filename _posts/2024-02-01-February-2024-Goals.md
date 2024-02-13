@@ -129,3 +129,4 @@ February 2024 goals and daily notebook entries.
 - Made ICRS CV
 - Wrote some of ICRS cover letter 
 - Starting running busco on canu assembly 
+- Looked at busco results 

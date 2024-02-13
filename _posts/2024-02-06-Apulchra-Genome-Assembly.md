@@ -590,5 +590,28 @@ busco --config "$EBROOTBUSCO/config/config.ini"  -f -c 20 --long -i "${query}" -
 echo "busco complete for canu-assembled fasta" $(date)
 ```
 
-Submitted batch job 301599. This appears to have worked!
+Submitted batch job 301599. This appears to have worked! Took about an hour to run. This is the primary result in the out file: 
 
+```
+# BUSCO version is: 5.2.2 
+# The lineage dataset is: metazoa_odb10 (Creation date: 2024-01-08, number of genomes: 65, number of BUSCOs: 954)
+# Summarized benchmarking in BUSCO notation for file /data/putnamlab/jillashey/Apul_Genome/assembly/data/apul.contigs.fasta
+# BUSCO was run in mode: genome
+# Gene predictor used: metaeuk
+
+        ***** Results: *****
+
+        C:94.4%[S:9.4%,D:85.0%],F:2.7%,M:2.9%,n:954        
+        901     Complete BUSCOs (C)                        
+        90      Complete and single-copy BUSCOs (S)        
+        811     Complete and duplicated BUSCOs (D)         
+        26      Fragmented BUSCOs (F)                      
+        27      Missing BUSCOs (M)                         
+        954     Total BUSCO groups searched                
+```
+
+We have 94.4% completeness with this assembly but 85% complete and duplicated BUSCOs. The busco manual says this on high levels of duplication: "BUSCO completeness results make sense only in the context of the biology of your organism. You have to understand whether missing or duplicated genes are of biological or technical origin. For instance, a high level of duplication may be explained by a recent whole duplication event (biological) or a chimeric assembly of haplotypes (technical). Transcriptomes and protein sets that are not filtered for isoforms will lead to a high proportion of duplicates. Therefore you should filter them before a BUSCO analysis". 
+
+Danielle also got a high number (78.9%) of duplicated BUSCOs in her [de novo transcriptome](https://github.com/daniellembecker/DanielleBecker_Lab_Notebook/blob/master/_posts/2023-08-31-Acropora-pulchra-denovo-transcriptome.md) of Apulchra, but Kevin got much less duplication (6.9%) in his Past [transcriptome assembly](https://github.com/kevinhwong1/KevinHWong_Notebook/blob/master/_posts/2021-01-04-20210104-BUSCO-on-P.-astreoides-transcriptome-assembly.md). I need to ask Danielle if she ended up using her Trinity results (which had a high duplication percentage) for her alignment for Apul. I also need to ask her if she thinks the high duplication percentage is biologically meaningful. 
+
+Might be worth running [HiFiAdapter Filt](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-022-08375-1)
