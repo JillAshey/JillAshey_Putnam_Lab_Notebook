@@ -130,3 +130,11 @@ February 2024 goals and daily notebook entries.
 - Wrote some of ICRS cover letter 
 - Starting running busco on canu assembly 
 - Looked at busco results 
+
+### February 14
+
+- Prepped for ribofree library prep tomorrow (set thermocycler, labeled tubes, located + prepped reagents)
+- ICRS edits 
+- Lab meeting 
+- Aquarium 
+- Writing up protocol for ribofree
