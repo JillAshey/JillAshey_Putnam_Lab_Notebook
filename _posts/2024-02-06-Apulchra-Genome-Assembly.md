@@ -615,3 +615,7 @@ We have 94.4% completeness with this assembly but 85% complete and duplicated BU
 Danielle also got a high number (78.9%) of duplicated BUSCOs in her [de novo transcriptome](https://github.com/daniellembecker/DanielleBecker_Lab_Notebook/blob/master/_posts/2023-08-31-Acropora-pulchra-denovo-transcriptome.md) of Apulchra, but Kevin got much less duplication (6.9%) in his Past [transcriptome assembly](https://github.com/kevinhwong1/KevinHWong_Notebook/blob/master/_posts/2021-01-04-20210104-BUSCO-on-P.-astreoides-transcriptome-assembly.md). I need to ask Danielle if she ended up using her Trinity results (which had a high duplication percentage) for her alignment for Apul. I also need to ask her if she thinks the high duplication percentage is biologically meaningful. 
 
 Might be worth running [HiFiAdapter Filt](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-022-08375-1)
+
+### 20240215 
+
+Last night, the hifiasm job failed after almost 2 days but the email says PREEMPTED, ExitCode0. Two minutes after the job failed, job 300534 started again on the server and it says its a hifiasm job...I did not start this job myself, not sure what happened. Looking on the server now, hifiasm is running but has only been running for about 18 hours (as of 2pm today). It's the same job number though which is strange. 

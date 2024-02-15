@@ -138,3 +138,9 @@ February 2024 goals and daily notebook entries.
 - Lab meeting 
 - Aquarium room stuff
 - Writing up protocol for ribofree
+- Freezer inventory w/ Zoe
+
+### February 15
+
+- Submitted ICRS app! 
+- RiboFree library prep with 2 samples (M60 and M72) + QC on tapestation 
