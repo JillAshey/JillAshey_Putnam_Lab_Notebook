@@ -93,13 +93,117 @@ Once buffers are prepared for a kit, they do not need to be prepared again.
 	- Mix by pipetting until homogenized
 	- Incubate for 5 mins at room temperature 
 	- Put samples on magnetic stand for 5 mins or until beads have fully separated from solution 
-	- Aspirate slowly and discard and supernatent 
+	- Aspirate slowly and discard supernatent 
 	- While the sample is still on the magnetic stand, add 200 uL of Zymo-Seq Wash Buffer without disturbing the pellet 
 	- Aspirate slowly and discard supernatent 
 	- Repeat this wash step again 
-	- Keep the caps open to air-dry bead
-	-  
+	- Keep the caps open to air-dry bead for 1 minute 
+	-  Aspirate any residual wash buffer
+	-  Continue to air dry pellet until it appears matte (see picture below)
+		- XXXX add picture
+	- Remove sample from magnetic stand 
+	- Resuspend beads in 11 uL of DNA Elution buffer 
+	- Put samples on magnetic stand for 1-2 minutes or until elute is clear
+	- Move elute to new PCR tubes 
+- Put samples in thermocycler and run Steps 11-12 (DNA Elution)
+- Remove samples from thermocycler and centrifuge briefly 
+- Put samples on magnetic stand and wait until elute is clear 
+- Transfer 10 uL of elute to new PCR tubes 
 
+#### Section 3: Adapter Ligation (green caps)
+
+- Thaw Adapter Ligation Master Mix to room temperature. Once thawed, vortex for at least 30 seconds and invert to mix 
+- Preheat thermocycler to 98°C for a 3 minute incubation (lid temperature at 105°C)
+- Combine the following on ice in the PCR tube containing the 10 uL elute 
+
+| Component                 | Volume |
+| ------------------------- | ------ |
+| Elute                     | 10     |
+| Adapter Ligation Buffer 1 | 2      |
+| DNase/RNase-Free Water    | 8      |
+| **TOTAL**                     | **20**     |
+
+- Mix by pipetting and centrifuge briefly 
+- Incubate the tube on ice for 2 minutes 
+- Heat shock by immediately placing tube in 98°C thermocycler (105°C lid) for 3 minutes 
+- Return tube to ice and incubate for at least 2 minutes
+	- Reset thermocycler to 37°C (lid temperature at 45°C) for a 1 hour incubation
+- Vortex the Adapter Ligation Master Mix for at least 30 seconds and invert to mix
+- Add the following on ice in the order defined below to the sample tube
+
+| Component                   | Volume |
+| --------------------------- | ------ |
+| Reaction from steps above   | 20     |
+| Adapter Ligation Buffer 2   | 2      |
+| Adapter Ligation Buffer 3   | 2      |
+| Adapter Ligation Master Mix | 26     |
+| **TOTAL**                       | **50**     |
+
+- Mix entire reaction thoroughly by vortexting for 1 minute to ensure complete homogenization 
+- Centrifuge briefly 
+- Incubate samples at 37°C (lid temperature at 45°C) for a 1 hour incubation
+- Remove samples from thermocycler 
+- At room temperature, add 85 uL of DNA Elution Buffer to each sample 
+- Mix by pipetting 
+- Do clean-up with MagBeads 
+	- Add 48.6 uL of Select-a-Size MagBeads to each sample 
+	- Mix by pipetting until homogenized
+	- Incubate for 5 mins at room temperature 
+	- Put samples on magnetic stand for 5 mins or until beads have fully separated from solution 
+	- Aspirate slowly and discard supernatent 
+	- While the sample is still on the magnetic stand, add 200 uL of Zymo-Seq Wash Buffer without disturbing the pellet 
+	- Aspirate slowly and discard supernatent 
+	- Repeat this wash step again 
+	- Keep the caps open to air-dry bead for 1 minute 
+	-  Aspirate any residual wash buffer
+	-  Continue to air dry pellet until it appears matte (see picture below)
+		- XXXX add picture
+	- Remove sample from magnetic stand 
+	- Resuspend beads in 15 uL of DNA Elution buffer 
+	- Put samples on magnetic stand for 1-2 minutes or until elute is clear
+	- Move elute to new PCR tubes 
+
+#### Section 4: Library Amplification (clear caps)
+
+- Allow Library Binding Solution to equilibrate to room temperature for >30 minutes before use
+- Add 10 uL of specific Zymo-Seq UDI Primers to each sample 
+- Mix by pipetting 
+- Add 25 uL of Amplification PreMix to each sample 
+- Mix by gently pipetting and centrifuge briefly 
+- Put samples in thermocycler and run program above 
+- Remove samples from thermocycler and centrifuge briefly 
+- At room temperature, add 50 uL of DNA Elution Buffer 
+- Add 80 uL of Select-a-Size MagBeads to each sample 
+- Mix thoroughly by pipetting until homogenous 
+- Incubate for 5 minutes at room temperature 
+- Place samples on magnetic stand for 5 minutes or until solution is clear 
+- Aspirate and discard supernatent 
+- Remove samples from magnetic stand 
+- Add 100 uL of DNA Elution Buffer to beads 
+- Mix thoroughly by pipetting until homogenous 
+- Add 80 uL of Library Binding Solution to each sample 
+- Mix thoroughly by pipetting until homogenous 
+- Incubate for 5 minutes at room temperature 
+- Do clean-up with MagBeads 
+	- Put samples on magnetic stand for 5 mins or until beads have fully separated from solution 
+	- Aspirate slowly and discard supernatent 
+	- While the sample is still on the magnetic stand, add 200 uL of Zymo-Seq Wash Buffer without disturbing the pellet 
+	- Aspirate slowly and discard supernatent 
+	- Repeat this wash step again 
+	- Keep the caps open to air-dry bead for 1 minute 
+	-  Aspirate any residual wash buffer
+	-  Continue to air dry pellet until it appears matte (see picture below)
+		- XXXX add picture
+	- Remove sample from magnetic stand 
+	- Resuspend beads in 20 uL of DNA Elution buffer 
+	- Put samples on magnetic stand for 1-2 minutes or until elute is clear
+	- Move elute to new PCR tubes 
+
+THIS IS THE FINAL RNA-SEQ LIBRARY. STORE AT -20°C
+
+#### QC
+
+Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/blob/master/_posts/2019-07-30-DNA-Tapestation.md) for visualize libraries. 
 
 
 

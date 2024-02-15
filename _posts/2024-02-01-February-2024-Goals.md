@@ -136,5 +136,5 @@ February 2024 goals and daily notebook entries.
 - Prepped for ribofree library prep tomorrow (set thermocycler, labeled tubes, located + prepped reagents)
 - ICRS edits 
 - Lab meeting 
-- Aquarium 
+- Aquarium room stuff
 - Writing up protocol for ribofree
