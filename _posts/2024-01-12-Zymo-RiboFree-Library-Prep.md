@@ -15,8 +15,7 @@ I'll be using samples M60 and M72 for this test. They were extracted on [2/10/24
 
 Here's the RiboFree library prep workflow: 
 
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/ribofree_workflow.png)
 
 ### Materials 
 
@@ -29,6 +28,9 @@ XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 - Aluminum beads (to keep things on ice)
 - Magnetic stand for PCR tubes 
 - 1.5 mL tubes 
+- Kit contents 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/ribofree_kit_contents.png)
 
 ### Buffer preperation 
 
@@ -55,7 +57,10 @@ Once buffers are prepared for a kit, they do not need to be prepared again.
 
 #### Section 1: cDNA Synthesis (yellow caps)
 
-- Set thermocycler program (XXXXXX) 
+Thermocycler settings: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/ribofree_cDNA_synthesis_thermocycler.png)
+
 - Thaw samples and reagents on ice (cDNA Synthesis Reagent 1 and cDNA Synthesis Reagent 2)
 - Prepare samples to correct volume in strip tubes 
 
@@ -72,6 +77,10 @@ Once buffers are prepared for a kit, they do not need to be prepared again.
 - Run Steps 3-5 (Reverse Transcription)
 
 #### Section 2: RiboFree Universal Depletion (red caps)
+
+Thermocycler settings: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/ribofree_depletion_thermocycler.png)
 
 - While in thermocycler on the 4°C hold, add 10 uL of Depletion Reagent 1 to each sample for a total of 30 uL. 
 - Mix by pipetting. Centrifuge briefly 
@@ -100,7 +109,7 @@ Once buffers are prepared for a kit, they do not need to be prepared again.
 	- Keep the caps open to air-dry bead for 1 minute 
 	-  Aspirate any residual wash buffer
 	-  Continue to air dry pellet until it appears matte (see picture below)
-		- XXXX add picture
+		- ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/ribofree_beads.png)
 	- Remove sample from magnetic stand 
 	- Resuspend beads in 11 uL of DNA Elution buffer 
 	- Put samples on magnetic stand for 1-2 minutes or until elute is clear
@@ -157,13 +166,17 @@ Once buffers are prepared for a kit, they do not need to be prepared again.
 	- Keep the caps open to air-dry bead for 1 minute 
 	-  Aspirate any residual wash buffer
 	-  Continue to air dry pellet until it appears matte (see picture below)
-		- XXXX add picture
+		- See photo above
 	- Remove sample from magnetic stand 
 	- Resuspend beads in 15 uL of DNA Elution buffer 
 	- Put samples on magnetic stand for 1-2 minutes or until elute is clear
 	- Move elute to new PCR tubes 
 
 #### Section 4: Library Amplification (clear caps)
+
+Thermocycler settings: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/ribofree_library_amp_thermocycler.png)
 
 - Allow Library Binding Solution to equilibrate to room temperature for >30 minutes before use
 - Add 10 uL of specific Zymo-Seq UDI Primers to each sample 
@@ -193,7 +206,7 @@ Once buffers are prepared for a kit, they do not need to be prepared again.
 	- Keep the caps open to air-dry bead for 1 minute 
 	-  Aspirate any residual wash buffer
 	-  Continue to air dry pellet until it appears matte (see picture below)
-		- XXXX add picture
+		- See photo above
 	- Remove sample from magnetic stand 
 	- Resuspend beads in 20 uL of DNA Elution buffer 
 	- Put samples on magnetic stand for 1-2 minutes or until elute is clear
@@ -203,7 +216,9 @@ THIS IS THE FINAL RNA-SEQ LIBRARY. STORE AT -20°C
 
 #### QC
 
-Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/blob/master/_posts/2019-07-30-DNA-Tapestation.md) for visualize libraries. 
+Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/blob/master/_posts/2019-07-30-DNA-Tapestation.md) for visualize libraries. Here's an example of what the library should look like on a Tapestation: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/ribofree_library_visual_example.png)
 
 
 
