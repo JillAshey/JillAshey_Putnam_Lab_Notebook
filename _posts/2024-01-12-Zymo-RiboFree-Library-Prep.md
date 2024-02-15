@@ -228,6 +228,8 @@ Here's how my samples turned out on 2/15/24. Decent concentration in M72, but no
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M72_20240215.png)
 
-The peaks are in the correct places but not as pronounced as they should be. Maybe I should increase the number of PCR amplification cycles? 
+The peaks are in the correct places but not as pronounced as they should be. They are also spread out a decent amount on the x-axis. Maybe I should increase the number of PCR amplification cycles? Discussed with Cassie and she recommended to increase the number of PCR cycles. Maggie (she used an older version of the ribofree kit) had a similar problem to me where she was getting low concentrations and the peaks were more like hills when there were 12 PCR amplification cycles (see her protocol [here](https://meschedl.github.io/MESPutnam_Open_Lab_Notebook/zribo-lib-RNA-second/)). Her tapestation results are [here](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/blob/master/tapestation_pdfs/2019-09-10%20-%2013.12.25.pdf). For the amplification step, she ended up increasing the number of cycles to 15 and tapestation [results](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/blob/master/tapestation_pdfs/2019-09-11%20-%2009.28.34.pdf) looked much better (ie higher peaks, not as wide). Using the same samples (M60 and M72), I will increase the number of PCR cycles to 15 and keep the rest of the protocol the same. 
+
+Overall, I feel pretty good that I got peaks/hills in the correct locations! I think that increasing the number of amplification cycles will help remedy this issue. 
 
 
