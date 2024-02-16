@@ -42,7 +42,6 @@ Once buffers are prepared for a kit, they do not need to be prepared again.
 	- These should be prepared at least 5 days ahead of library prep. 
 - Add 24 mL of 100% ethanol to the Zymo-Seq Wash Buffer concentrate. Store at room temperature. 
 
-
 ### Best practices 
 
 - Preset the thermocycler programs 
