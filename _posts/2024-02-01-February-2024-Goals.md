@@ -145,3 +145,7 @@ February 2024 goals and daily notebook entries.
 - Submitted ICRS app! 
 - RiboFree library prep with 2 samples (M60 and M72) + QC on tapestation 
 - Started to write up library prep protocol for miRNAs 
+
+### February 16
+
+- Finished DEG analysis for AST 2021 (still need to make figures pretty)
