@@ -1,7 +1,7 @@
 ---
 layout: post
 title: RiboFree library prep
-date: '2023-10-27'
+date: '2024-01-12'
 categories:
 tags: [DNA, RNA, Library prep, Protocols]
 projects: Mcap developmental time series 
@@ -179,6 +179,8 @@ Thermocycler settings:
 
 - Allow Library Binding Solution to equilibrate to room temperature for >30 minutes before use
 - Add 10 uL of specific Zymo-Seq UDI Primers to each sample 
+	- M60 = 01 primer
+	- M72 = 02 primer
 - Mix by pipetting 
 - Add 25 uL of Amplification PreMix to each sample 
 - Mix by gently pipetting and centrifuge briefly 
@@ -213,7 +215,7 @@ Thermocycler settings:
 
 THIS IS THE FINAL RNA-SEQ LIBRARY. STORE AT -20°C
 
-#### QC
+### QC
 
 Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/blob/master/_posts/2019-07-30-DNA-Tapestation.md) for visualize libraries. Here's an example of what the library should look like on a Tapestation: 
 

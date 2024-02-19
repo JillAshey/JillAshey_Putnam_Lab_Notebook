@@ -149,3 +149,10 @@ February 2024 goals and daily notebook entries.
 ### February 16
 
 - Finished DEG analysis for AST 2021 (still need to make figures pretty)
+- Met w/ new undergrad + Zoe 
+- Colloquium 
+
+### February 19 
+
+- Ribofree library prep with 2 samples (M60 and M72 again) -- only changed number of PCR amplification cycles (from 11 to 15)
+- Adding bioxriv papers to Astrangia review manuscript
