@@ -44,4 +44,14 @@ Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/bl
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/ribofree_library_visual_example.png)
 
-Here's how my samples turned out on 2/19/24. 
+Here's how my samples turned out on 2/19/24. See full report [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_RiboFree_2024-02-19.pdf). 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_overview_20240219.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M60_20240219.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M72_20240219.png)
+
+Concentrations look better but peaks are still pretty wide. Maybe need to do 13 PCR cycles?? How do I make the peaks not so wide? 
+
+I also only have 8 preps left from this kit so I need to be strategic in troubleshooting and running my actual samples (8 total). 
