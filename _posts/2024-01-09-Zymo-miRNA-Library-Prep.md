@@ -9,11 +9,9 @@ projects: Mcap developmental time series
 
 # miRNA library prep for Mcap developmental time series Hawaii 2023
 
-This post details the info about the library prep steps for the *M. capitata* developmental time series experiment in Hawaii 2023. The github for that project is linked [here](https://github.com/JillAshey/Hawaii_Developmental_TimeSeries). I'm using the [Zymo-Seq miRNA library kit](https://www.zymoresearch.com/products/zymo-seq-mirna-library-kit) for small RNA library prep (I got the 12 prep kit). See Zymo's protocol [here](https://files.zymoresearch.com/protocols/r3006_r3007-zymo-seq_mirna_library_kit.pdf). 
+This post details the info about the miRNA library prep steps for the *M. capitata* developmental time series experiment in Hawaii 2023. The github for that project is linked [here](https://github.com/JillAshey/Hawaii_Developmental_TimeSeries). I'm using the [Zymo-Seq miRNA library kit](https://www.zymoresearch.com/products/zymo-seq-mirna-library-kit) for small RNA library prep (I got the 12 prep kit). See Zymo's protocol [here](https://files.zymoresearch.com/protocols/r3006_r3007-zymo-seq_mirna_library_kit.pdf). 
 
-The kit needs a minimum input of 1 ng of total RNA or a maximum input of 200 ng of total RNA. 
-
-ADD INFO ABOUT THE AMOUNT OF RNA ADDING 
+The kit needs a minimum input of 1 ng of total RNA or a maximum input of 200 ng of total RNA in 6.5 uL. In my Ribofree library preps, I used ~190 ng of RNA from each sample. For this kit, I have no starting point with which to base my input amount. I will likely start with 100 ng as a happy middle ground. 
 
 Here's the miRNA library prep workflow: 
 
@@ -69,7 +67,10 @@ Create these programs beforehand with the lid heading ON and set to >95°C
 	- Pre-heat Ligation Enhancer at 37°C for 5 minutes to improve ease of pipetting, as its very viscous
 - Prepare samples to correct volume in strip tubes 
 
-XXXXXX add info 
+| TubeID | Volume for 100 ng RNA (uL) | Volume ultrapure water (uL) | Total volume (uL) |
+| ------ | -------------------------- | --------------------------- | ----------------- |
+| M60    | 2.74                       | 3.76                        | 6.5               |
+| M72    | 4.15                       | 2.35                        | 6.5               |
 
 - Add 1 uL of miRNA Adapter to each sample on ice  
 - Add 4 uL of Ligation Enhancer to each sample slowly (enhancer is viscous)

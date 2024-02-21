@@ -619,3 +619,83 @@ Might be worth running [HiFiAdapter Filt](https://bmcgenomics.biomedcentral.com/
 ### 20240215 
 
 Last night, the hifiasm job failed after almost 2 days but the email says PREEMPTED, ExitCode0. Two minutes after the job failed, job 300534 started again on the server and it says its a hifiasm job...I did not start this job myself, not sure what happened. Looking on the server now, hifiasm is running but has only been running for about 18 hours (as of 2pm today). It's the same job number though which is strange. 
+
+### 20240220
+
+Hifiasm job is still running after ~5 days. In the meantime, I'm going to run [HiFiAdapterFilt](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-022-08375-1#Sec6), which is an adapter filtering command for PacBio HiFi data. On the github [page](https://github.com/sheinasim/HiFiAdapterFilt/tree/master), it says that the tool converts .bam to .fastq and removes reads with remnant PacBio adapter sequences. Required dependencies are BamTools and BLAST+; optional dependencies are NCBI FCS Adaptor and pigz. It looks like I'll need to use the original bam file instead of the converted fastq file. 
+
+The github says I should add the script and database to my path using: 
+
+```
+export PATH=$PATH:[PATH TO HiFiAdapterFilt]
+export PATH=$PATH:[PATH TO HiFiAdapterFilt]/DB
+```
+
+I will do this in the script for the adapter filt code that I write myself. In the scripts folder, make a folder for hifi information
+
+```
+mkdir HiFiAdapterFilt
+cd HiFiAdapterFilt
+``` 
+
+I need to make a script for the hifi adapter [code](https://raw.githubusercontent.com/sheinasim/HiFiAdapterFilt/master/hifiadapterfilt.sh). In the `scripts/HiFiAdapterFilt` folder, I copy and pasted the linked code into `hifiadapterfilt.sh`. Make a folder for pacbio databases and copy in the [db information](https://github.com/sheinasim/HiFiAdapterFilt/blob/master/DB/pacbio_vectors_db) from the github. 
+
+```
+mkdir DB
+cd DB
+nano pacbio_vectors_db
+>gnl|uv|NGB00972.1:1-45 Pacific Biosciences Blunt Adapter
+ATCTCTCTCTTTTCCTCCTCCTCCGTTGTTGTTGTTGAGAGAGAT
+>gnl|uv|NGB00973.1:1-35 Pacific Biosciences C2 Primer
+AAAAAAAAAAAAAAAAAATTAACGGAGGAGGAGGA
+```
+
+In the `scripts/HiFiAdapterFilt` folder: `nano hifiadapterfilt_JA.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts/HiFiAdapterFilt
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load GCCcore/11.3.0 # need this to resolve conflicts between GCCcore/8.3.0 and loaded GCCcore/11.3.0
+module load BamTools/2.5.1-GCC-8.3.0 
+module load BLAST+/2.9.0-iimpi-2019b 
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/scripts/HiFiAdapterFilt
+
+echo "Setting paths" $(date)
+
+export PATH=$PATH:[/data/putnamlab/jillashey/Apul_Genome/assembly/scripts/HiFiAdapterFilt] # path to original script
+export PATH=$PATH:[/data/putnamlab/jillashey/Apul_Genome/assembly/scripts/HiFiAdapterFilt]/DB # path to db info 
+
+echo "Paths set, starting adapter filtering" $(date)
+
+bash hifiadapterfilt.sh -p /data/putnamlab/KITT/hputnam/20240129_Apulchra_Genome_LongRead/m84100_240128_024355_s2.hifi_reads.bc1029 -l 44 -m 97 -o /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Completing adapter filtering" $(date)
+```
+
+The `-l` and `-m` refer to the minimum length of adapter match to remove and the minumum percent match of adapter to remove, respectively. I left them as the default settings for now. Submitted batch job 303636. Giving me this error: 
+
+```
+hifiadapterfilt.sh: line 63: /data/putnamlab/KITT/hputnam/20240129_Apulchra_Genome_LongRead/m84100_240128_024355_s2.hifi_reads.bc1029.temp_file_list: Permission denied
+cat: /data/putnamlab/KITT/hputnam/20240129_Apulchra_Genome_LongRead/m84100_240128_024355_s2.hifi_reads.bc1029.bam.temp_file_list: No such file or directory
+cat: /data/putnamlab/KITT/hputnam/20240129_Apulchra_Genome_LongRead/m84100_240128_024355_s2.hifi_reads.bc1029.bam.temp_file_list: No such file or directory
+```
+
+Giving me permission denied to write in the folder? I'll sym link the bam file to my data folder
+
+```
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+ln -s /data/putnamlab/KITT/hputnam/20240129_Apulchra_Genome_LongRead/m84100_240128_024355_s2.hifi_reads.bc1029.bam
+```
+
+Editing script so that the prefix is connecting with the sym linked file. Submitted batch job 303637. Still giving me the same error. Hollie may need to give me permission to write and access files in that specific folder. 

@@ -156,3 +156,19 @@ February 2024 goals and daily notebook entries.
 
 - Ribofree library prep with 2 samples (M60 and M72 again) -- only changed number of PCR amplification cycles (from 11 to 15)
 - Adding bioxriv papers to Astrangia review manuscript
+
+### February 20
+
+- Little sick 
+- Lab meeting, discussed bleaching paper 
+- Tried to get hifiadapterfilt to work
+
+### February 21
+
+- Still kinda sick
+- Eye appointment 
+- Dr appointment 
+- Changed solutions for Zoe corals 
+- Labeled tubes for extractions
+- Figuring out what samples to do for the rest of ribofree preps 
+- Looking at miRNA library prep input amount 
