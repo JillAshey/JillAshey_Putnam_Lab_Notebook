@@ -172,3 +172,4 @@ February 2024 goals and daily notebook entries.
 - Labeled tubes for extractions
 - Figuring out what samples to do for the rest of ribofree preps 
 - Looking at miRNA library prep input amount 
+- Tried different iterations of canu and purge dups for Apul genome assembly 

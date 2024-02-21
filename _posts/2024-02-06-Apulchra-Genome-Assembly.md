@@ -699,3 +699,290 @@ ln -s /data/putnamlab/KITT/hputnam/20240129_Apulchra_Genome_LongRead/m84100_2401
 ```
 
 Editing script so that the prefix is connecting with the sym linked file. Submitted batch job 303637. Still giving me the same error. Hollie may need to give me permission to write and access files in that specific folder. 
+
+### 20240221
+
+Probably need to run [haplomerger2](https://github.com/mapleforest/HaploMerger2/releases/), which is installed on the server already. 
+
+I'm also looking at the Canu FAQs to see if there is any info about using PacBio HiFi reads. Under the question ["What parameters should I use for my reads?"](https://canu.readthedocs.io/en/latest/faq.html), they have this info:
+
+```
+The defaults for -pacbio-hifi should work on this data. There is still some variation in data quality between samples. If you have poor continuity, it may be because the data is lower quality than expected. Canu will try to auto-adjust the error thresholds for this (which will be included in the report). If that still doesn’t give a good assembly, try running the assembly with -untrimmed. You will likely get a genome size larger than you expect, due to separation of alleles. See My genome size and assembly size are different, help! for details on how to remove this duplication.
+```
+
+When I look at the question ["My genome size and assembly size are different, help!"](https://canu.readthedocs.io/en/latest/faq.html#my-genome-size-and-assembly-size-are-different-help), it says that this difference could be due to a heterozygous genome where the assembly separated some loci or the previous estimate is incorrect. They recommended running BUSCO to check completeness of the assembly (which I already did) and using [purge_dups](https://github.com/dfguan/purge_dups?tab=readme-ov-file#usg) to remove duplication. I will look into this. 
+
+Next steps 
+
+- Run Canu with `-untrimmed` option 
+- Run purge_dups - targets the removal of duplicated sequences to enhance overall quality of assembly 
+- Run haplomerger - merges haplotypes to addresws heterozygosity 
+
+In the scripts folder: `nano canu_untrimmed.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 500:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load canu/2.2-GCCcore-11.2.0 
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+#echo "Unzip paco-bio fastq file" $(date)
+
+#gunzip m84100_240128_024355_s2.hifi_reads.bc1029.fastq.fastq.gz
+
+echo "Starting assembly w/ untrimmed flag" $(date)
+
+canu -p apul.canu.untrimmed -d /data/putnamlab/jillashey/Apul_Genome/assembly/data genomeSize=475m -raw -pacbio-hifi m84100_240128_024355_s2.hifi_reads.bc1029.fastq.fastq
+
+echo "Canu assembly complete" $(date)
+```
+
+Submitted batch job 303660
+
+On the purge_dups [github](https://github.com/dfguan/purge_dups?tab=readme-ov-file#usg), they say to install using the following: 
+
+```
+git clone https://github.com/dfguan/purge_dups.git
+cd purge_dups/src && make
+
+# only needed if running run_purge_dups.py
+git clone https://github.com/dfguan/runner.git
+cd runner && python3 setup.py install --user
+```
+
+Cloned both into the assembly folder (ie `/data/putnamlab/jillashey/Apul_Genome/assembly/`). 
+
+First, use pd_config.py to generate a configuration file. Here's possible usage: 
+
+```
+usage: pd_config.py [-h] [-s SRF] [-l LOCD] [-n FN] [--version] ref pbfofn
+
+generate a configuration file in json format
+
+positional arguments:
+  ref                   reference file in fasta/fasta.gz format
+  pbfofn                list of pacbio file in fastq/fasta/fastq.gz/fasta.gz format (one absolute file path per line)
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -s SRF, --srfofn SRF  list of short reads files in fastq/fastq.gz format (one record per line, the
+                        record is a tab splitted line of abosulte file path
+                        plus trimmed bases, refer to
+                        https://github.com/dfguan/KMC) [NONE]
+  -l LOCD, --localdir LOCD
+                        local directory to keep the reference and lists of the
+                        pacbio, short reads files [.]
+  -n FN, --name FN      output config file name [config.json]
+  --version             show program's version number and exit
+
+# Example 
+./scripts/pd_config.py -l iHelSar1.pri -s 10x.fofn -n config.iHelSar1.PB.asm1.json ~/vgp/release/insects/iHelSar1/iHlSar1.PB.asm1/iHelSar1.PB.asm1.fa.gz pb.fofn
+```
+
+I need to make a list of the pacbio files that I'll use in the script and put it in a file called pb.fofn. 
+
+```
+for filename in *.fastq; do echo $PWD/$filename; done > pb.fofn
+```
+
+In my scripts folder: `nano pd_config_apul.py`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load Python/3.9.6-GCCcore-11.2.0 # do i need python?
+
+echo "Making config file for purge dups scripts" $(date)
+
+/data/putnamlab/jillashey/Apul_Genome/assembly/purge_dups/scripts/pd_config.py -l /data/putnamlab/jillashey/Apul_Genome/assembly/data -n config.apul.canu.json /data/putnamlab/jillashey/Apul_Genome/assembly/data/m84100_240128_024355_s2.hifi_reads.bc1029.fastq.fastq /data/putnamlab/jillashey/Apul_Genome/assembly/data/pb.fofn
+
+echo "Config file complete" $(date)
+```
+
+Submitted batch job 303661. Ran in 1 second. Got this in the error file: 
+
+```
+cp: ‘/data/putnamlab/jillashey/Apul_Genome/assembly/data/m84100_240128_024355_s2.hifi_reads.bc1029.fastq.fastq’ and ‘/data/putnamlab/jillashey/Apul_Genome/assembly/data/m84100_240128_024355_s2.hifi_reads.bc1029.fastq.fastq’ are the same file
+cp: ‘/data/putnamlab/jillashey/Apul_Genome/assembly/data/pb.fofn’ and ‘/data/putnamlab/jillashey/Apul_Genome/assembly/data/pb.fofn’ are the same file
+```
+
+But it did generate a config file, which looks like this: 
+
+```
+{
+  "cc": {
+    "fofn": "/data/putnamlab/jillashey/Apul_Genome/assembly/data/pb.fofn",
+    "isdip": 1,
+    "core": 12,
+    "mem": 20000,
+    "queue": "normal",
+    "mnmp_opt": "",
+    "bwa_opt": "",
+    "ispb": 1,
+    "skip": 0
+  },
+  "sa": {
+    "core": 12,
+    "mem": 10000,
+    "queue": "normal"
+  },
+  "busco": {
+    "core": 12,
+    "mem": 20000,
+    "queue": "long",
+    "skip": 0,
+    "lineage": "mammalia",
+    "prefix": "m84100_240128_024355_s2.hifi_reads.bc1029.fastq_purged",
+    "tmpdir": "busco_tmp"
+  },
+  "pd": {
+    "mem": 20000,
+    "queue": "normal"
+  },
+  "gs": {
+    "mem": 10000,
+    "oe": 1
+  },
+  "kcp": {
+    "core": 12,
+    "mem": 30000,
+    "fofn": "",
+    "prefix": "m84100_240128_024355_s2.hifi_reads.bc1029.fastq_purged_kcm",
+    "tmpdir": "kcp_tmp",
+    "skip": 1
+  },
+  "ref": "/data/putnamlab/jillashey/Apul_Genome/assembly/data/m84100_240128_024355_s2.hifi_reads.bc1029.fastq.fastq",
+  "out_dir": "m84100_240128_024355_s2.hifi_reads.bc1029.fastq"
+}
+```
+
+My config file looks basically the same as the example one on the github. Manually edited the config file so that the out_dir was `/data/putnamlab/jillashey/Apul_Genome/assembly/data/`. Now the purging can begin using `run_purge_dups.py`. Here's possible usage: 
+
+```
+usage: run_purge_dups.py [-h] [-p PLTFM] [-w WAIT] [-r RETRIES] [--version]
+                         config bin_dir spid
+
+purge_dups wrapper
+
+positional arguments:
+  config                configuration file
+  bin_dir               directory of purge_dups executable files
+  spid                  species identifier
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -p PLTFM, --platform PLTFM
+                        workload management platform, input bash if you want to run locally
+  -w WAIT, --wait WAIT  <int> seconds sleep intervals
+  -r RETRIES, --retries RETRIES
+                        maximum number of retries
+  --version             show program's version number and exit
+  
+# Example 
+python scripts/run_purge_dups.py config.iHelSar1.json src iHelSar1
+```
+
+In my scripts folder: `nano run_purge_dups_apul.py`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load Python/3.9.6-GCCcore-11.2.0 # do i need python?
+
+echo "Starting to purge duplications" $(date)
+
+/data/putnamlab/jillashey/Apul_Genome/assembly/purge_dups/scripts/run_purge_dups.py /data/putnamlab/jillashey/Apul_Genome/assembly/scripts/config.apul.canu.json /data/putnamlab/jillashey/Apul_Genome/assembly/purge_dups/src apul
+
+echo "Duplication purge complete" $(date)
+```
+
+Submitted batch job 303662. Failed immediately with this error: 
+
+```
+Traceback (most recent call last):
+  File "/data/putnamlab/jillashey/Apul_Genome/assembly/purge_dups/scripts/run_purge_dups.py", line 3, in <module>
+    from runner.manager import manager
+ModuleNotFoundError: No module named 'runner'
+```
+
+I installed runner but the code is not seeing it...where am I supposed to put it? inside of the purge_dups github? Okay going to move `runner` folder inside of the `purge_dups` folder. 
+
+```
+cd /data/putnamlab/jillashey/Apul_Genome/assembly
+mv runner/ purge_dups/scripts/
+```
+
+Submitting job again, Submitted batch job 303663. Got the same error. In the `run_purge_dups.py` script itself, the first few lines are: 
+
+```
+#!/usr/bin/env python3
+
+from runner.manager import manager
+from runner.hpc import hpc
+from multiprocessing import Process, Pool
+import sys, os, json
+import argparse
+```
+
+So it isn't seeing that the runner module is there. This [issue](https://github.com/dfguan/purge_dups/issues/96) and this [issue](https://github.com/dfguan/purge_dups/issues/83) on the github were reported but never really answered in a clear way. Will have to look into this more. 
+
+In other news, the canu script finished running but looks like it failed. This is the bottom of the error message: 
+
+```
+ERROR:
+ERROR:  Failed with exit code 139.  (rc=35584)
+ERROR:
+
+ABORT:
+ABORT: canu 2.2
+ABORT: Don't panic, but a mostly harmless error occurred and Canu stopped.
+ABORT: Try restarting.  If that doesn't work, ask for help.
+ABORT:
+ABORT:   failed to configure the overlap store.
+ABORT:
+ABORT: Disk space available:  8477.134 GB
+ABORT:
+ABORT: Last 50 lines of the relevant log file (unitigging/apul.canu.untrimmed.ovlStore.config.err):
+ABORT:
+ABORT:   
+ABORT:   Finding number of overlaps per read and per file.
+ABORT:   
+ABORT:      Moverlaps
+ABORT:   ------------ ----------------------------------------
+ABORT:   
+ABORT:   Failed with 'Segmentation fault'; backtrace (libbacktrace):
+ABORT:
+```
+
+Unsure what it means...
