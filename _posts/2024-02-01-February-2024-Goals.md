@@ -176,4 +176,14 @@ February 2024 goals and daily notebook entries.
 
 ### February 22
 
-- 
+- Still a lil sick
+- Extraction w/ 18 DT samples (some new, some re-extractions)
+- Cleaned freezers 
+- Checked invoices for AH
+- Read a little for e5 meeting 
+
+### February 23
+
+- Read for e5 meeting 
+- Thought/wrote more about UPR 
+- e5 meeting 
