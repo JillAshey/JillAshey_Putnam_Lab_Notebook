@@ -187,3 +187,13 @@ February 2024 goals and daily notebook entries.
 - Read for e5 meeting 
 - Thought/wrote more about UPR 
 - e5 meeting 
+- Wrote out some of pico methyl-seq protocol 
+- Organized spreadsheets for pico library prep samples 
+
+### February 25
+
+- Organized sample info for ribofree library prep tomorrow with 6 samples 
+
+### February 26
+
+- hifiasm still running 

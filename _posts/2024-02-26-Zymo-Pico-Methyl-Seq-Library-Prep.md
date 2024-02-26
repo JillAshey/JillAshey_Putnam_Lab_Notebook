@@ -178,13 +178,25 @@ XXXXX
 
 | Component                 | Volume (uL) |
 | ------------------------- | ------ |
-| LibraryAmp Master Mix (2x)                     | 12.5     |
-| Index Primer (10 uM) | 0.5      |
+| LibraryAmp Master Mix (2x)                     | 13     |
+| Index Primer i7 (10 uM) | 0.5      |
+| Index Primer i5 (10 uM) | 0.5      |
 | Sample elute    | 12      |
 | **TOTAL**                     | **25**     |
 
 - Run thermocycler program for a total of 12 cycles 
-	- The zymo protocol says 10 cycles but in Maggie's protocol, she did 12 cycles 
+	- The zymo protocol says 10 cycles but in Maggie's protocol, she did 12 cycles with 1 ng input DNA input and 10 cycles with 10 ng DNA input
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 - Label 1.5 mL tubes + IC columns for each sample
 - Heat DNA Elution buffer to 56°C on thermoblock
 - Move the sample from the PCR tube into the 1.5 mL tube 
@@ -203,3 +215,4 @@ XXXXX
 NEED TO COMPLETE PROTOCOL AND COMPARE WITH EMMA + MAGGIE'S 
 
 Emma suggested using 20ng of DNA, double check that 
+
