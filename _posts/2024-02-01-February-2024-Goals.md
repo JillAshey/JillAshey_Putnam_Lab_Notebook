@@ -198,3 +198,4 @@ February 2024 goals and daily notebook entries.
 
 - hifiasm still running 
 - Ribofree library prep with 6 samples 
+- Running test sample for quantifier.pl mirdeep2

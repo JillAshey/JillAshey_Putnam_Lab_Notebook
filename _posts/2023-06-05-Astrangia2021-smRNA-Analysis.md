@@ -5128,8 +5128,6 @@ Success! mirdeep2 finished running, took about 1.5 days. I'm going to download t
 
 I think my next steps will be filtering in R. I'm going to filter the csv so that I retain potential miRNAs that have an mirdeep2 score > 10, no rfam info, at least 10 reads in mature and star read count, and significant randfold pvalue (this has been done in most of the other cnidarian miRNA papers). When I did this filtering in this [script](https://github.com/JillAshey/Astrangia_repo/blob/main/scripts/miRNA_compare.Rmd), I ended up with 278 novel miRNAs. 
 
-Next, I did something tomorrow.
-
 Additionally, I will need to write a script that looks at: "“requirement of a 2-nucleotide overhang on the 3' end of the precursor miRNA, 5' consistency of the mature miRNA strand (at least 90% of the reads have to be starting from the same position), and at least 16 nucleotide complementarity between mature and star strand” (Praher et al., 2021). I may do this manually by looking at the PDFs...
 
 I also need to figure out how MFE is calculated? 
@@ -5142,6 +5140,160 @@ After I do that, I will probably blast the predicted seqs against a tRNA and rRN
 	- [tRNAscan-SE](http://trna.ucsc.edu/tRNAscan-SE/)
 
 I should also blast it against the NCBI database. 
+
+### 20240226 
+
+Since mirdeep2 has run with all R1 reads concatenated, I can now run the quantifier module for each sample. I think I might need to collapse each R1 file and modify it with the correct headers. From the mirdeep2 [github](https://github.com/rajewsky-lab/mirdeep2/tree/master), it says the input for the quantifier module is: 
+
+- A FASTA file with precursor sequences,
+- a FASTA file with mature miRNA sequences,
+- a FASTA file with deep sequencing reads, and
+- optionally a FASTA file with star sequences and the 3 letter code of the species of interest.
+
+The fasta files with the precursor, mature and star sequences are in this folder: `/data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57`. The fasta files are separated by known and novel, so I will cat the known and novel sequences together. 
+
+```
+cat known_mature_04_02_2024_t_11_15_57_score-50_to_na.fa novel_mature_04_02_2024_t_11_15_57_score-50_to_na.fa > mature_all.fa
+cat known_pres_04_02_2024_t_11_15_57_score-50_to_na.fa novel_pres_04_02_2024_t_11_15_57_score-50_to_na.fa > precursor_all.fa
+cat known_star_04_02_2024_t_11_15_57_score-50_to_na.fa novel_star_04_02_2024_t_11_15_57_score-50_to_na.fa > star_all.fa
+```
+
+Let's try to run a sample without collapsing it. 
+
+```
+conda activate /data/putnamlab/mirdeep2
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -s /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/star_all.fa -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1065_R1_001.fastq.gz_1.fastq
+```
+
+As I suspected, it gave me this error: 
+
+```
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1065_R1_001.fastq.gz_1.fastq ids do not have the correct format
+
+    it must have the id line >SSS_INT_xINT
+
+    SSS is a three letter code indicating the sample origin
+    INT is just a running number
+    xINT is the number of read occurrences
+```
+
+But it did give me this recommendation: 
+
+```
+You can use the mapper.pl module to create such a file from a fasta file with
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1065_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1065_R1_001.fastq.gz_1.fastq.collapsed
+```
+
+So lets give that a try! Ran in about a minute. Let's try to run the quantifier module now. 
+
+```
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -s /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/star_all.fa -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1065_R1_001.fastq.gz_1.fastq.collapsed
+```
+
+Ran in about a minute and gave this output: 
+
+```
+getting samples and corresponding read numbers
+
+Converting input files
+building bowtie index
+mapping mature sequences against index
+mapping read sequences against index
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 17829111	43551	17785560	0.244	99.756
+seq: 17829111	43551	17785560	0.244	99.756
+mapping star sequences against index
+analyzing data
+
+1873 mature mappings to precursors
+
+
+1865 star mappings to precursors
+
+Expressed miRNAs are written to expression_analyses/expression_analyses_1708999755/miRNA_expressed.csv
+    not expressed miRNAs are written to expression_analyses/expression_analyses_1708999755/miRNA_not_expressed.csv
+
+Creating miRBase.mrd file
+
+Mapped READS readin - DONE 
+
+make_html2.pl -q expression_analyses/expression_analyses_1708999755/miRBase.mrd -k mature_all.fa -y 1708999755  -o -i expression_analyses/expression_analyses_1708999755/mature_all.fa_mapped.arf -j expression_analyses/expression_analyses_1708999755/star_all.fa_mapped.arf -l  -M miRNAs_expressed_all_samples_1708999755.csv  
+miRNAs_expressed_all_samples_1708999755.csv file with miRNA expression values
+parsing miRBase.mrd file finished
+creating PDF files
+Can't use string ("29") as a HASH ref while "strict refs" in use at /data/putnamlab/mirdeep2/bin/make_html2.pl line 658.
+```
+
+I also ran the code so that the `-s` argument was removed. It gave the same mapping but it did print out `creating pdf for chromosome_XXXX` while the other line of code didn't. I looked at `less miRNAs_expressed_all_samples_1708999755.csv`
+
+```
+#miRNA  read_count      precursor       total   seq     seq(norm)
+chromosome_10_365643    2.00    chromosome_10_365643    2.00    2.00    33.80
+chromosome_10_365701    2.00    chromosome_10_365701    2.00    2.00    33.80
+chromosome_10_366823    1.00    chromosome_10_366823    1.00    1.00    16.90
+chromosome_10_366897    229.00  chromosome_10_366897    229.00  229.00  3870.47
+chromosome_10_367039    2.00    chromosome_10_367039    2.00    2.00    33.80
+chromosome_10_367612    0.00    chromosome_10_367612    0.00    0       0
+chromosome_10_367894    56.00   chromosome_10_367894    56.00   56.00   946.49
+chromosome_10_368110    0.00    chromosome_10_368110    0.00    0       0
+chromosome_10_368443    0.00    chromosome_10_368443    0.00    0       0
+chromosome_10_370371    11.00   chromosome_10_370371    11.00   11.00   185.92
+chromosome_10_370480    0.00    chromosome_10_370480    0.00    0       0
+chromosome_10_370856    2.00    chromosome_10_370856    2.00    2.00    33.80
+```
+
+I'm not sure what read count, seq and seq(norm) means...but this file looks different than `miRNA_expressed.csv`
+
+```
+#miRNA  read_count      precursor
+chromosome_10_365643    2       chromosome_10_365643
+chromosome_10_365701    2       chromosome_10_365701
+chromosome_10_366823    1       chromosome_10_366823
+chromosome_10_366897    229     chromosome_10_366897
+chromosome_10_367039    2       chromosome_10_367039
+chromosome_10_367612    0       chromosome_10_367612
+chromosome_10_367894    56      chromosome_10_367894
+chromosome_10_368110    0       chromosome_10_368110
+chromosome_10_368443    0       chromosome_10_368443
+chromosome_10_370371    11      chromosome_10_370371
+chromosome_10_370480    0       chromosome_10_370480
+chromosome_10_370856    2       chromosome_10_370856
+chromosome_10_371859    1       chromosome_10_371859
+chromosome_10_371901    0       chromosome_10_371901
+```
+
+It looks like they have the same read counts but what does seq(norm) mean???? I need to read this [page](https://github.com/rajewsky-lab/mirdeep2/blob/master/FAQ.md). I think I would just use the read count info but the counts seem so low. This is just one sample and I'm not seeing all of the potential miRNAs. 
+
+Also maybe look at this: https://www.biorxiv.org/content/10.1101/2021.10.19.464446v1.full.pdf 
+
+It would be interesting to try the `-W` and `-k` tags in the quantifier module. `-W` indicates that read counts are weighed by their number of mappings. e.g. A read maps twice so each position gets 0.5 added to its read profile. `-k` also considers precursor-mature mappings that have different ids, eg let7c would be allowed to map to pre-let7a.  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
