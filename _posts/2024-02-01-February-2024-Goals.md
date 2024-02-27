@@ -197,3 +197,4 @@ February 2024 goals and daily notebook entries.
 ### February 26
 
 - hifiasm still running 
+- Ribofree library prep with 6 samples 
