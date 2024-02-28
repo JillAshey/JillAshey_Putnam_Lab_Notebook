@@ -5245,7 +5245,7 @@ chromosome_10_370480    0.00    chromosome_10_370480    0.00    0       0
 chromosome_10_370856    2.00    chromosome_10_370856    2.00    2.00    33.80
 ```
 
-I'm not sure what read count, seq and seq(norm) means...but this file looks different than `miRNA_expressed.csv`
+I'm not sure what read count, seq and seq(norm) means...but this file looks different than `miRNA_expressed.csv`, which looks like: 
 
 ```
 #miRNA  read_count      precursor
@@ -5265,26 +5265,460 @@ chromosome_10_371859    1       chromosome_10_371859
 chromosome_10_371901    0       chromosome_10_371901
 ```
 
-It looks like they have the same read counts but what does seq(norm) mean???? I need to read this [page](https://github.com/rajewsky-lab/mirdeep2/blob/master/FAQ.md). I think I would just use the read count info but the counts seem so low. This is just one sample and I'm not seeing all of the potential miRNAs. 
+It looks like they have the same read counts but what does seq(norm) mean???? I need to read this [page](https://github.com/rajewsky-lab/mirdeep2/blob/master/FAQ.md). I think I would just use the read count info but the counts seem so low. This is also just one sample and I'm not seeing all of the potential miRNAs when I just look at the data briefly. 
 
 Also maybe look at this: https://www.biorxiv.org/content/10.1101/2021.10.19.464446v1.full.pdf 
 
 It would be interesting to try the `-W` and `-k` tags in the quantifier module. `-W` indicates that read counts are weighed by their number of mappings. e.g. A read maps twice so each position gets 0.5 added to its read profile. `-k` also considers precursor-mature mappings that have different ids, eg let7c would be allowed to map to pre-let7a.  
 
+### 20240227
+
+Going to continue looking at the mirdeep2 quantifier output. When looking at other miRNA cnidarian papers (eg Liew et al. 2014, Baumgarten et al.), it seems like my counts (at least for this one sample) are comparable. Let's try with the `-W` tag. 
+
+```
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -W -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1065_R1_001.fastq.gz_1.fastq.collapsed
+
+getting samples and corresponding read numbers
+
+Converting input files
+building bowtie index
+mapping mature sequences against index
+mapping read sequences against index
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 17829111	43551	17785560	0.244	99.756
+seq: 17829111	43551	17785560	0.244	99.756
+analyzing data
+
+1873 mature mappings to precursors
+
+Expressed miRNAs are written to expression_analyses/expression_analyses_1709042138/miRNA_expressed.csv
+    not expressed miRNAs are written to expression_analyses/expression_analyses_1709042138/miRNA_not_expressed.csv
+
+Creating miRBase.mrd file
+
+Mapped READS readin - DONE 
+
+make_html2.pl -q expression_analyses/expression_analyses_1709042138/miRBase.mrd -k mature_all.fa -y 1709042138  -o -i expression_analyses/expression_analyses_1709042138/mature_all.fa_mapped.arf  -l  -M miRNAs_expressed_all_samples_1709042138.csv  -W expression_analyses/expression_analyses_1709042138/read_occ
+miRNAs_expressed_all_samples_1709042138.csv file with miRNA expression values
+parsing miRBase.mrd file finished
+```
+
+Took a few mins to run and generate the pdfs. Let's look at the expressed file: 
+
+```
+#miRNA  read_count      precursor
+chromosome_10_365643    2       chromosome_10_365643
+chromosome_10_365701    2       chromosome_10_365701
+chromosome_10_366823    0.5     chromosome_10_366823
+chromosome_10_366897    229     chromosome_10_366897
+chromosome_10_367039    2       chromosome_10_367039
+chromosome_10_367612    0       chromosome_10_367612
+chromosome_10_367894    3.83455475552999        chromosome_10_367894
+chromosome_10_368110    0       chromosome_10_368110
+chromosome_10_368443    0       chromosome_10_368443
+chromosome_10_370371    0.703267973856209       chromosome_10_370371
+chromosome_10_370480    0       chromosome_10_370480
+chromosome_10_370856    2       chromosome_10_370856
+chromosome_10_371859    1       chromosome_10_371859
+chromosome_10_371901    0       chromosome_10_371901
+```
+
+Interesting. So with the `-W` tag, read counts are weighed by their number of mappings. e.g. A read maps twice so each position gets 0.5 added to its read profile. So for instance, does that mean that chromosome_10_366823 has 2 reads mapped to it? That's confusing. 
+
+Let's try with the `-k` tag. 
+
+```
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -k -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1065_R1_001.fastq.gz_1.fastq.collapsed
+
+getting samples and corresponding read numbers
+
+Converting input files
+building bowtie index
+mapping mature sequences against index
+mapping read sequences against index
+Mapping statistics
+
+#desc	total	mapped	unmapped	%mapped	%unmapped
+total: 17829111	43551	17785560	0.244	99.756
+seq: 17829111	43551	17785560	0.244	99.756
+analyzing data
+
+6029 mature mappings to precursors
+
+Expressed miRNAs are written to expression_analyses/expression_analyses_1709043340/miRNA_expressed.csv
+    not expressed miRNAs are written to expression_analyses/expression_analyses_1709043340/miRNA_not_expressed.csv
+
+Creating miRBase.mrd file
+
+Mapped READS readin - DONE 
+
+make_html2.pl -q expression_analyses/expression_analyses_1709043340/miRBase.mrd -k mature_all.fa -y 1709043340  -o -i expression_analyses/expression_analyses_1709043340/mature_all.fa_mapped.arf    -M miRNAs_expressed_all_samples_1709043340.csv  
+miRNAs_expressed_all_samples_1709043340.csv file with miRNA expression values
+parsing miRBase.mrd file finished
+```
+
+Not sure what is different looking at the output files. It is giving me more mature mappings to precursors because I set it so that it would map to multiple locations. 
+
+I think I am just going to stick with the original code without the star sequence information. Going to now process the rest of the samples. I moved all of the stuff I did above into a folder called test (`/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/test`). First, going to run the mapper module to collapse the samples. I could definitely do this in a script but I want to do it manually the first time so that I am understanding how the code works. 
 
 
+```
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1065_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1065_R1_001.fastq.gz_1.fastq.collapsed 
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1147_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1147_R1_001.fastq.gz_1.fastq.collapsed 
+# Log file for this run is in mapper_logs and called mapper.log_156798
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1412_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1412_R1_001.fastq.gz_1.fastq.collapsed 
+# Log file for this run is in mapper_logs and called mapper.log_157142
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1560_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1560_R1_001.fastq.gz_1.fastq.collapsed 
+Log file for this run is in mapper_logs and called mapper.log_187756
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1567_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1567_R1_001.fastq.gz_1.fastq.collapsed 
+# Log file for this run is in mapper_logs and called mapper.log_157352
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1617_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1617_R1_001.fastq.gz_1.fastq.collapsed 
+# Log file for this run is in mapper_logs and called mapper.log_157469
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1722_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1722_R1_001.fastq.gz_1.fastq.collapsed
+# Log file for this run is in mapper_logs and called mapper.log_157568
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2000_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2000_R1_001.fastq.gz_1.fastq.collapsed
+# Log file for this run is in mapper_logs and called mapper.log_157668
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2007_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2007_R1_001.fastq.gz_1.fastq.collapsed
+# Log file for this run is in mapper_logs and called mapper.log_157831
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2302_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2302_R1_001.fastq.gz_1.fastq.collapsed
+# Log file for this run is in mapper_logs and called mapper.log_157928
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2360_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2360_R1_001.fastq.gz_1.fastq.collapsed
+# Log file for this run is in mapper_logs and called mapper.log_158073
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2398_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2398_R1_001.fastq.gz_1.fastq.collapsed
+# Log file for this run is in mapper_logs and called mapper.log_158172
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2404_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2404_R1_001.fastq.gz_1.fastq.collapsed
+# Log file for this run is in mapper_logs and called mapper.log_158270
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2412_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2412_R1_001.fastq.gz_1.fastq.collapsed
+# Log file for this run is in mapper_logs and called mapper.log_158370
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2512_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2512_R1_001.fastq.gz_1.fastq.collapsed
+# Log file for this run is in mapper_logs and called mapper.log_158493
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2523_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2523_R1_001.fastq.gz_1.fastq.collapsed
+# Log file for this run is in mapper_logs and called mapper.log_158577
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2563_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2563_R1_001.fastq.gz_1.fastq.collapsed
+# Log file for this run is in mapper_logs and called mapper.log_158695
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2729_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2729_R1_001.fastq.gz_1.fastq.collapsed
+# Log file for this run is in mapper_logs and called mapper.log_158793
+
+mapper.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2755_R1_001.fastq.gz_1.fastq -e -m -h -s /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2755_R1_001.fastq.gz_1.fastq.collapsed
+# Log file for this run is in mapper_logs and called mapper.log_158919
+```
+
+This is what the top lines of one of the collapsed files looks like: 
+
+```
+head AST-2755_R1_001.fastq.gz_1.fastq.collapsed
+>seq_0_x282696
+GCACTGGTGGTTCAGTGGTAGAATTCTCGC
+>seq_282696_x73794
+TGAAAATCTTTTCTCTGAAGTGGAA
+>seq_356490_x65651
+TGACTAGATATATACTCATGCT
+>seq_422141_x62171
+GCACTGATGGTTCAGTGGTAGAATTCTCGC
+>seq_484312_x61289
+TGACTAGATATACACTCATTCT```
+
+Count the number of unique sequences in each collapsed file. 
+
+```
+zgrep -c ">" *fastq.collapsed
+
+AST-1065_R1_001.fastq.gz_1.fastq.collapsed:5255291
+AST-1147_R1_001.fastq.gz_1.fastq.collapsed:7375460
+AST-1412_R1_001.fastq.gz_1.fastq.collapsed:4942609
+AST-1567_R1_001.fastq.gz_1.fastq.collapsed:4255807
+AST-1617_R1_001.fastq.gz_1.fastq.collapsed:3410530
+AST-1560_R1_001.fastq.gz_1.fastq.collapsed:5054135
+AST-1722_R1_001.fastq.gz_1.fastq.collapsed:3144650
+AST-2000_R1_001.fastq.gz_1.fastq.collapsed:4692561
+AST-2007_R1_001.fastq.gz_1.fastq.collapsed:3658938
+AST-2302_R1_001.fastq.gz_1.fastq.collapsed:4891546
+AST-2360_R1_001.fastq.gz_1.fastq.collapsed:4165438
+AST-2398_R1_001.fastq.gz_1.fastq.collapsed:4065976
+AST-2404_R1_001.fastq.gz_1.fastq.collapsed:5091971
+AST-2412_R1_001.fastq.gz_1.fastq.collapsed:4462387
+AST-2512_R1_001.fastq.gz_1.fastq.collapsed:4235505
+AST-2523_R1_001.fastq.gz_1.fastq.collapsed:5171942
+AST-2563_R1_001.fastq.gz_1.fastq.collapsed:5147628
+AST-2729_R1_001.fastq.gz_1.fastq.collapsed:4622195
+AST-2755_R1_001.fastq.gz_1.fastq.collapsed:4816214
+```
+
+Retained 3-7 million unique reads per sample. Run quantifier module on all samples. Again, I could definitely do this in a script but I want to do it manually the first time so that I am understanding how the code works. 
+
+```
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa  -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1065_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 17829111	43551	17785560	0.244	99.756
+#seq: 17829111	43551	17785560	0.244	99.756
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709048527/miRNA_expressed.csv
+
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1147_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 40415224	869326	39545898	2.151	97.849
+#seq: 40415224	869326	39545898	2.151	97.849
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709052026/miRNA_expressed.csv
+
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1412_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 16279555	69729	16209826	0.428	99.572
+#seq: 16279555	69729	16209826	0.428	99.572
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709053021/miRNA_expressed.csv
 
 
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1560_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 17827024	6510	17820514	0.037	99.963
+#seq: 17827024	6510	17820514	0.037	99.963
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709054526/miRNA_expressed.csv
 
 
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1567_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 16611397	105945	16505452	0.638	99.362
+#seq: 16611397	105945	16505452	0.638	99.362
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709053231/miRNA_expressed.csv
 
 
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1617_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 16077717	121046	15956671	0.753	99.247
+#seq: 16077717	121046	15956671	0.753	99.247
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709055134/miRNA_expressed.csv
 
 
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1722_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 16430221	258350	16171871	1.572	98.428
+#seq: 16430221	258350	16171871	1.572	98.428
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709055319/miRNA_expressed.csv
 
 
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2000_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 17428854	91821	17337033	0.527	99.473
+#seq: 17428854	91821	17337033	0.527	99.473
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709055397/miRNA_expressed.csv
 
 
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2007_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 16559551	102426	16457125	0.619	99.381
+#seq: 16559551	102426	16457125	0.619	99.381
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709055480/miRNA_expressed.csv
+
+
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2302_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 16665370	230870	16434500	1.385	98.615
+#seq: 16665370	230870	16434500	1.385	98.615
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709055687/miRNA_expressed.csv
+
+
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2360_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 16648356	20477	16627879	0.123	99.877
+#seq: 16648356	20477	16627879	0.123	99.877
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709055924/miRNA_expressed.csv
+
+
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2398_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 16788208	230412	16557796	1.372	98.628
+#seq: 16788208	230412	16557796	1.372	98.628
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709055986/miRNA_expressed.csv
+
+
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2404_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 16712903	128490	16584413	0.769	99.231
+#seq: 16712903	128490	16584413	0.769	99.231
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709057037/miRNA_expressed.csv
+
+
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2412_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 17488508	27520	17460988	0.157	99.843
+#seq: 17488508	27520	17460988	0.157	99.843
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709057124/miRNA_expressed.csv
+
+
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2512_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 16265716	14678	16251038	0.090	99.910
+#seq: 16265716	14678	16251038	0.090	99.910
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709057192/miRNA_expressed.csv
+
+
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2523_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 16995265	88993	16906272	0.524	99.476
+#seq: 16995265	88993	16906272	0.524	99.476
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709057251/miRNA_expressed.csv
+
+
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2563_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 17023002	70635	16952367	0.415	99.585
+#seq: 17023002	70635	16952367	0.415	99.585
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709057330/miRNA_expressed.csv
+
+
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2729_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 17121869	23317	17098552	0.136	99.864
+#seq: 17121869	23317	17098552	0.136	99.864
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709057412/miRNA_expressed.csv
+
+
+quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/precursor_all.fa -m /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -d -r /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2755_R1_001.fastq.gz_1.fastq.collapsed
+#desc	total	mapped	unmapped	%mapped	%unmapped
+#total: 16269823	127434	16142389	0.783	99.217
+#seq: 16269823	127434	16142389	0.783	99.217
+#analyzing data
+#1873 mature mappings to precursors
+#Expressed miRNAs are written to expression_analyses/expression_analyses_1709057479/miRNA_expressed.csv
+```
+
+Mapped % are very low for all samples (<1%). This does not surprise me since miRNAs are super abundant in the genome. For each sample, a `miRNAs_expressed_all_samples_XXXXX.csv` file got produced, as well as files of miRNAs expressed and not expressed. Look at how many lines are in the miRNA expressed all samples file for each sample: 
+
+```
+wc -l miRNAs_expressed_all_samples*
+
+   1874 miRNAs_expressed_all_samples_1709048527.csv
+   1874 miRNAs_expressed_all_samples_1709052026.csv
+   1874 miRNAs_expressed_all_samples_1709052927.csv
+   1874 miRNAs_expressed_all_samples_1709053021.csv
+   1874 miRNAs_expressed_all_samples_1709053231.csv
+   1874 miRNAs_expressed_all_samples_1709054272.csv
+   1874 miRNAs_expressed_all_samples_1709054526.csv
+   1874 miRNAs_expressed_all_samples_1709055134.csv
+   1874 miRNAs_expressed_all_samples_1709055319.csv
+   1874 miRNAs_expressed_all_samples_1709055397.csv
+   1874 miRNAs_expressed_all_samples_1709055480.csv
+   1874 miRNAs_expressed_all_samples_1709055687.csv
+   1874 miRNAs_expressed_all_samples_1709055924.csv
+   1874 miRNAs_expressed_all_samples_1709055986.csv
+   1874 miRNAs_expressed_all_samples_1709057037.csv
+   1874 miRNAs_expressed_all_samples_1709057124.csv
+   1874 miRNAs_expressed_all_samples_1709057192.csv
+   1874 miRNAs_expressed_all_samples_1709057251.csv
+   1874 miRNAs_expressed_all_samples_1709057330.csv
+   1874 miRNAs_expressed_all_samples_1709057412.csv
+   1874 miRNAs_expressed_all_samples_1709057479.csv
+  39354 total
+```
+
+All have the same number of lines. Are they in the same order? 
+
+```
+# Top of file 
+head miRNAs_expressed_all_samples_1709048527.csv
+#miRNA	read_count	precursor	total	seq	seq(norm)
+chromosome_10_365643	2.00	chromosome_10_365643	2.00	2.00	36.63
+chromosome_10_365701	2.00	chromosome_10_365701	2.00	2.00	36.63
+chromosome_10_366823	1.00	chromosome_10_366823	1.00	1.00	18.31
+chromosome_10_366897	229.00	chromosome_10_366897	229.00	229.00	4193.60
+chromosome_10_367039	2.00	chromosome_10_367039	2.00	2.00	36.63
+chromosome_10_367612	0.00	chromosome_10_367612	0.00	0	0
+chromosome_10_367894	56.00	chromosome_10_367894	56.00	56.00	1025.51
+chromosome_10_368110	0.00	chromosome_10_368110	0.00	0	0
+chromosome_10_368443	0.00	chromosome_10_368443	0.00	0	0
+
+head miRNAs_expressed_all_samples_1709057479.csv
+#miRNA	read_count	precursor	total	seq	seq(norm)
+chromosome_10_365643	10.00	chromosome_10_365643	10.00	10.00	58.13
+chromosome_10_365701	0.00	chromosome_10_365701	0.00	0	0
+chromosome_10_366823	10.00	chromosome_10_366823	10.00	10.00	58.13
+chromosome_10_366897	1.00	chromosome_10_366897	1.00	1.00	5.81
+chromosome_10_367039	8.00	chromosome_10_367039	8.00	8.00	46.50
+chromosome_10_367612	0.00	chromosome_10_367612	0.00	0	0
+chromosome_10_367894	54.00	chromosome_10_367894	54.00	54.00	313.89
+chromosome_10_368110	0.00	chromosome_10_368110	0.00	0	0
+chromosome_10_368443	15.00	chromosome_10_368443	15.00	15.00	87.19
+
+# Bottom of file 
+tail miRNAs_expressed_all_samples_1709048527.csv
+chromosome_9_363461	0.00	chromosome_9_363461	0.00	0	0
+chromosome_9_363522	3.00	chromosome_9_363522	3.00	3.00	54.94
+chromosome_9_363632	0.00	chromosome_9_363632	0.00	0	0
+chromosome_9_363719	6.00	chromosome_9_363719	6.00	6.00	109.88
+chromosome_9_364029	3.00	chromosome_9_364029	3.00	3.00	54.94
+chromosome_9_364032	0.00	chromosome_9_364032	0.00	0	0
+chromosome_9_364034	49.00	chromosome_9_364034	49.00	49.00	897.32
+chromosome_9_364498	0.00	chromosome_9_364498	0.00	0	0
+chromosome_9_364714	13.00	chromosome_9_364714	13.00	13.00	238.06
+chromosome_9_364995	2.00	chromosome_9_364995	2.00	2.00	36.63
+
+tail miRNAs_expressed_all_samples_1709057479.csv
+chromosome_9_363461	6.00	chromosome_9_363461	6.00	6.00	34.88
+chromosome_9_363522	4.00	chromosome_9_363522	4.00	4.00	23.25
+chromosome_9_363632	0.00	chromosome_9_363632	0.00	0	0
+chromosome_9_363719	5.00	chromosome_9_363719	5.00	5.00	29.06
+chromosome_9_364029	33.00	chromosome_9_364029	33.00	33.00	191.82
+chromosome_9_364032	0.00	chromosome_9_364032	0.00	0	0
+chromosome_9_364034	159.00	chromosome_9_364034	159.00	159.00	924.24
+chromosome_9_364498	2.00	chromosome_9_364498	2.00	2.00	11.63
+chromosome_9_364714	9.00	chromosome_9_364714	9.00	9.00	52.32
+chromosome_9_364995	7.00	chromosome_9_364995	7.00	7.00	40.69
+```
+
+From a quick look at the top and bottom of files, it looks like they are in the same order. I copied all `miRNAs_expressed_all_samples_XXXX.csv` files to my local computer and renamed each file so that the sample ID was in the name of the file. Now I'll look at them in R. 
 
 
 

@@ -199,3 +199,14 @@ February 2024 goals and daily notebook entries.
 - hifiasm still running 
 - Ribofree library prep with 6 samples 
 - Running test sample for quantifier.pl mirdeep2
+
+### February 27 
+
+- Collapsing smRNA reads in prep for quantification 
+- Finished comments on AH Mcap 2021 manuscript 
+- Writing meeting 
+- Worked on Astrangia review edits, framing the story 
+- Quantified Astrangia miRNAs for all samples
+- Comparing miRNA data in R
+- Creating thermocycler settings for miRNA library prep 
+- Aquarium room stuff
