@@ -1,7 +1,7 @@
 ---
 layout: post
 title: miRNA library prep
-date: '2023-10-27'
+date: '2024-02-29'
 categories:
 tags: [DNA, RNA, Library prep, Protocols]
 projects: Mcap developmental time series 
@@ -11,7 +11,7 @@ projects: Mcap developmental time series
 
 This post details the info about the miRNA library prep steps for the *M. capitata* developmental time series experiment in Hawaii 2023. The github for that project is linked [here](https://github.com/JillAshey/Hawaii_Developmental_TimeSeries). I'm using the [Zymo-Seq miRNA library kit](https://www.zymoresearch.com/products/zymo-seq-mirna-library-kit) for small RNA library prep (I got the 12 prep kit). See Zymo's protocol [here](https://files.zymoresearch.com/protocols/r3006_r3007-zymo-seq_mirna_library_kit.pdf). 
 
-The kit needs a minimum input of 1 ng of total RNA or a maximum input of 200 ng of total RNA in 6.5 uL. In my Ribofree library preps, I used ~190 ng of RNA from each sample. For this kit, I have no starting point with which to base my input amount. I will likely start with 100 ng as a happy middle ground. 
+I'll be using samples M60 and M72 for this test. They were extracted on [2/10/24](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-02-10-MiniprepPlus-DNA%3ARNA-extractions-McapLarvae-DT.md) and had an average of 36.5 and 24.1 ng/ul of RNA, respectively. The kit needs a minimum input of 1 ng of total RNA or a maximum input of 200 ng of total RNA in 6.5 uL. In my Ribofree library preps, I used ~190 ng of RNA from each sample. For this kit, I have no starting point with which to base my input amount. I will likely start with 100 ng as a happy middle ground. Today, 
 
 Here's the miRNA library prep workflow: 
 

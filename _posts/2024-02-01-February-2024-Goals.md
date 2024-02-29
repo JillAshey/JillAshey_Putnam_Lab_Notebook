@@ -225,3 +225,4 @@ February 2024 goals and daily notebook entries.
 - miRNA library prep test w/ 2 samples + QC 
 - Edits to Astrangia review 
 - Molecular methods for DT manuscript
+- Programmed thermocycler for switchfree library prep 
