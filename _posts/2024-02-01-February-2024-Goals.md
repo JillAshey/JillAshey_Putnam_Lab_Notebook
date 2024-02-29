@@ -210,3 +210,18 @@ February 2024 goals and daily notebook entries.
 - Comparing miRNA data in R
 - Creating thermocycler settings for miRNA library prep 
 - Aquarium room stuff
+
+### February 28
+
+- Biweekly summary 
+- Edits to Astrangia review manuscript 
+- Remaking fig 4 for Astrangia review manuscript 
+- Lab meeting 
+- Short DIBP 
+- Remade some figures for Astrangia review 
+
+### February 29 
+
+- miRNA library prep test w/ 2 samples + QC 
+- Edits to Astrangia review 
+- Molecular methods for DT manuscript
