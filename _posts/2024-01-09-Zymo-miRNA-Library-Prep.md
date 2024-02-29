@@ -174,3 +174,20 @@ Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/bl
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/miRNA_library_visual_example.png)
 
+Here's how my samples turned out on 2/29/24. See full report [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_ZymomiRNA_2024-02-29.pdf).
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_overview_20240229.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M60_20240229.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M72_20240229.png)
+
+Concentrations are pretty low. Compared to the example tapestation from Zymo, concentrations are low. M60 has a similar peak location to the example, whereas M72 does not. The Zymo protocol says that the expected library size is ~165 bp and that the protocol has been optimized to eliminate adapter dimer products (~148 bp). M60 peaks at 155 bp, which is pretty close to the expected library size. M72 peaks at 122 bp, which is close to the adapter dimer size, making me think that these are just adapter dimer products but not sure (read more about adapter dimers [here](https://knowledge.illumina.com/library-preparation/general/library-preparation-general-troubleshooting-list/000001911)). 
+
+My initial thoughts to address these issues are to do one or multiple of the following: 
+
+- Increase input amount of RNA
+- Increase number of PCR cycles 
+- Add another wash step for bead cleanup 
+
+
