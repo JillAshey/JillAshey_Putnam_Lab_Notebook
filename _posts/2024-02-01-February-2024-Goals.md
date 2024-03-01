@@ -226,3 +226,4 @@ February 2024 goals and daily notebook entries.
 - Edits to Astrangia review 
 - Molecular methods for DT manuscript
 - Programmed thermocycler for switchfree library prep 
+- Wrote up part of switchfree protocol 

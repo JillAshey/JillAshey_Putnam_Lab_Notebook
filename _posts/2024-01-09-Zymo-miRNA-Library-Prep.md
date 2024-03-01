@@ -165,6 +165,7 @@ Create these programs beforehand with the lid heading ON and set to >95°C
 - Incubate for 5 minutes at room temperature 
 - Put samples on a magnetic stand until elute is clear (~3-5 mins)
 - Transfer 10 uL of elute into a new tube 
+	- I ended up transferring 12 uL because I wanted a larger volume
 
 THIS IS THE FINAL miRNA-SEQ LIBRARY. STORE AT -20°C
 
