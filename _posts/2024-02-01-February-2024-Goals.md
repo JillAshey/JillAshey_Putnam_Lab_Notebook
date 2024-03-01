@@ -227,3 +227,33 @@ February 2024 goals and daily notebook entries.
 - Molecular methods for DT manuscript
 - Programmed thermocycler for switchfree library prep 
 - Wrote up part of switchfree protocol 
+
+## February reflection 
+
+Let's reflect on how I did with my goals this month.   
+
+### Writing and manuscripts 
+              
+1. Full draft of dissertation proposal - no, but plan to have a full draft by end of next week
+2. Write full methods and physiological results for Astrangia 2021 experiment - still need to finish phys results
+3. Resubmit Astrangia review manuscript - still in revision 
+4. ICRS app - due Feb 15 - done!
+5. Finish methods for Pacuta HI 2022 paper - basically done
+6. Finish intro and methods for e5 ncRNA paper - intro mostly done
+
+### Sample processing
+
+1. Complete Mcap dev timeseries extractions - done? did all of the ones that I needed to do for the time being 
+2. Library prep for miRNAs (8 samples) - in progress
+3. Library prep with ribofree (8 samples) - done!
+4. Library prep for WGBS (27 samples) - not done, reading about protocol. Will start in the next few weeks
+5. Carbs for DT samples - nope
+
+### Data analysis
+1. Finish stats for Astrangia 2021 phys data - nope
+2. Work on Astrangia 2021 DEG and functional enrichment analysis - DEG analysis done, need to do functional annotation
+3. Map and quantify Astrangia 2021 miRNAs - done! 
+4. Run miranda - not done
+5. Begin genome assembly for Apul - ran canu, hifiasm running currently 
+
+
