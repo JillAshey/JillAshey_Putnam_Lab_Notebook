@@ -60,6 +60,7 @@ Thermocycler settings:
 
 XXXXXXXXX
 
+- Thaw PolyA R1 Reagent and R2 Reagent on ice 
 - Prepare samples to correct volume in strip tubes 
 - Add 5 uL of PolyA R1 Reagent to each sample 
 - Mix by pipetting and centrifuge briefly 
@@ -103,4 +104,79 @@ Thermocycler settings:
 Step 1: 95°C for 3 minutes, 4°C for 2 minutes, 4°C hold 
 Step 2: 25°C for 45 minutes (lid temperature at 40°C), 4°C hold 
 
-- 
+- Thaw 3'mRNA L Reagent on ice 
+- Put samples in thermocycler and run Step 1 
+- Remove samples from thermocycler and put on ice 
+- Add 15 uL of 3'mRNA L Reagent to each sample 
+- Mix by pipetting and centrifuge briefly 
+- Run Step 2 
+- Remove samples from thermocycler 
+- Add 25 uL of DNase/RNase free water to each sample 
+- Do bead clean-up with Select-a-Size MagBeads 
+	- Allow beads to equilibrate to room temperature >30 minutes before use 
+	- Resuspend beads immediately before use by shaking or vortexing until homogenous 
+	- Add 100 uL of Select-a-Size MagBeads to each sample 
+	- Pipette to mix until homogenous
+	- Incubate for 5 minutes at room temperature 
+	- Put samples on magnetic stand for 5 mins or until beads have fully separated from solution 
+	- Aspirate slowly and discard supernatent 
+	- While the sample is still on the magnetic stand, add 200 uL of DNA Wash Buffer without disturbing the pellet 
+	- Aspirate slowly and discard supernatent 
+	- Repeat this wash step again 
+	- Keep the caps open to air-dry bead for 1 minute 
+	-  Aspirate any residual wash buffer
+	-  Continue to air dry pellet until it appears matte without cracking (see picture above)
+	- Remove sample from magnetic stand 
+	- Add 15 uL of DNA Elution Buffer to each sample 
+	- Pipette to mix until homogenous
+	- Put samples on magnetic stand for 1-2 minutes or until elute is clear
+	- Move elute to new PCR tubes 
+
+#### Section 3: Library amplification 
+
+Thermocycler settings: 
+
+XXXXXXX 
+
+- Thaw Index Primers and ZymoTaq Premix on ice 
+- Allow Library Binding Solution to equilibrate to room temperature >30 minutes before use 
+- Add 10 uL of unique Index Primer to each sample
+- Mix by pipetting 
+- Add 25 uL of Zymo TaqPremix to each sample 
+- Mix by pipetting and centrifuge briefly 
+- Run thermocycler program above 
+- Remove samples from thermocycler 
+- Add 50 uL of DNase/RNase free water to each sample 
+- Add 80 uL of Select-a-Size MagBeads to each sample 
+- Pipette until homogenous 
+- Incubate for 5 minutes at room temperature 
+- Place samples on magnetic stand for 5 minutes or until beads have separated from solution 
+- Aspirate slowly and discard supernatent 
+- Remove samples from magnetic stand 
+- Add 100 uL of DNA Elution Buffer to beads 
+- Pipette until homogenous 
+- Add 80 uL of Library Binding Solution to each sample 
+- Pipette until homogenous 
+- Incubate for 5 minutes at room temperature 
+- Do bead clean-up with Select-a-Size MagBeads (beads already added to samples)
+	- Put samples on magnetic stand for 5 mins or until beads have fully separated from solution 
+	- Aspirate slowly and discard supernatent 
+	- While the sample is still on the magnetic stand, add 200 uL of DNA Wash Buffer without disturbing the pellet 
+	- Aspirate slowly and discard supernatent 
+	- Repeat this wash step again 
+	- Keep the caps open to air-dry bead for 1 minute 
+	-  Aspirate any residual wash buffer
+	-  Continue to air dry pellet until it appears matte without cracking (see picture above)
+	- Remove sample from magnetic stand 
+	- Add 15-20 uL of DNA Elution Buffer to each sample 
+	- Pipette to mix until homogenous
+	- Put samples on magnetic stand for 1-2 minutes or until elute is clear
+	- Move elute to new PCR tubes 
+
+THIS IS THE FINAL 3' mRNA-seq LIBRARY. STORE AT -20°C. 
+
+#### QC
+
+Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/blob/master/_posts/2019-07-30-DNA-Tapestation.md) to visualize libraries. Here's an example of what the library should look like on a Tapestation: 
+
+XXXXXXXX
