@@ -986,3 +986,62 @@ ABORT:
 ```
 
 Unsure what it means...
+
+### 20240301
+
+BIG NEWS!!!!! This week, a paper came out that assembled and annotated the *Orbicella faveolata* genome using PacBio HiFi reads ([Young et al. 2024](https://link.springer.com/article/10.1186/s12864-024-10092-w?utm_source=rct_congratemailt&utm_medium=email&utm_campaign=oa_20240229&utm_content=10.1186/s12864-024-10092-w#Sec12334225451))!!!!!!! The [github](https://github.com/benyoung93/orbicella_faveolata_pacbio_genome_transcriptome/blob/main) for this paper has a detailed pipeline for how the genome was put together. Since I am also using HiFi reads, I will be following their methodology! I am using this [pipeline](https://github.com/benyoung93/orbicella_faveolata_pacbio_genome_transcriptome/blob/main/ofav_genome_pipeline.Rmd) starting at line 260. 
+
+I changed the file from bam to fastq, but now I need to change it to fasta with [`seqtk`](https://github.com/lh3/seqtk). In the scripts folder: `nano seqtk.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load seqtk/1.3-GCC-9.3.0
+
+echo "Convert PacBio fastq file to fasta file" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+seqtk seq -a m84100_240128_024355_s2.hifi_reads.bc1029.fastq.fastq > m84100_240128_024355_s2.hifi_reads.bc1029.fasta
+
+echo "Fastq to fasta complete! Summarize read lengths" $(date)
+
+awk '/^>/{printf("%s\t",substr($0,2));next;} {print length}' m84100_240128_024355_s2.hifi_reads.bc1029.fasta > rr_read_lengths.txt
+
+echo "Read length summary complete" $(date)
+```
+
+Submitted batch job 304257. 
+
+In R, I looked at the data to quantify length for each read. See code [here](https://github.com/hputnam/Apulchra_genome/blob/main/scripts/genome_analysis.Rmd). 
+
+```{r, echo=F}read.table(file = "../data/rr_read_lengths.txt",            header = F) %>%   dplyr::rename("hifi_read_name" = 1,          "length" = 2) -> hifi_read_lengthnrow(hifi_read_length) # 5,898,386 total readsmean(hifi_read_length$length) # mean length of reads is 13,424.64sum(hifi_read_length$length) #length sum 79,183,709,778. Will need this for the NCBI submission```
+
+Make histogram for read bins from raw hifi data
+```{r, echo = F}ggplot(data = hifi_read_length,        aes(x = length, fill = "blue")) +  geom_histogram(binwidth = 2000) +   labs(x = "Raw Read Length", y = "Count", title = "Histogram of Raw HiFi Read Lengths") +   scale_fill_manual(values = c("blue")) +   scale_y_continuous(labels = function(x) format(x, scientific = FALSE))```
+
+
+
+
+
+
+
+
+
+
+
+
+The first thing this paper did was remove any contaminant reads from the raw hifi reads. "Raw HiFi reads first underwent a contamination screening, following the methodology in [68], using BLASTn [32, 68] against the assembled mitochondrial O. faveolata genome and the following databases: common eukaryote contaminant sequences (ftp.ncbi.nlm.nih. gov/pub/kitts/contam_in_euks.fa.gz), NCBI viral (ref_ viruses_rep_genomes) and prokaryote (ref_prok_rep_ genomes) representative genome sets". 
+
+How to update NCBI db: https://danielbruzzese.wordpress.com/2018/12/08/how-to-update-or-install-your-local-ncbi-blast-database-in-a-unix-shell-using-update_blastdb-pl/
+- will need for viral and prok genomes 
