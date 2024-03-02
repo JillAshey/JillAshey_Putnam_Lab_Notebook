@@ -19,7 +19,7 @@ The kit needs a minimum of 10 ng of total RNA or a maximum of 500 ng of total RN
 
 Here's the SwitchFree library prep workflow: 
 
-XXXXXX add 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/switchfree_lib_prep_workflow.png)
 
 ### Materials 
 
@@ -31,7 +31,7 @@ XXXXXX add
 - Magnetic stand for PCR tubes 
 - Kit contents 
 
-XXXXXX
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/switchfree_lib_prep_contents.png)
 
 ### Buffer preperation 
 
@@ -58,7 +58,7 @@ Once buffers are prepared for a kit, they do not need to be prepared again.
 
 Thermocycler settings: 
 
-XXXXXXXXX
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/switchfree_lib_prep_section1_thermocycler.png)
 
 - Thaw PolyA R1 Reagent and R2 Reagent on ice 
 - Prepare samples to correct volume in strip tubes 
@@ -136,7 +136,7 @@ Step 2: 25°C for 45 minutes (lid temperature at 40°C), 4°C hold
 
 Thermocycler settings: 
 
-XXXXXXX 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/switchfree_lib_prep_section3_thermocycler.png) 
 
 - Thaw Index Primers and ZymoTaq Premix on ice 
 - Allow Library Binding Solution to equilibrate to room temperature >30 minutes before use 
@@ -179,4 +179,4 @@ THIS IS THE FINAL 3' mRNA-seq LIBRARY. STORE AT -20°C.
 
 Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/blob/master/_posts/2019-07-30-DNA-Tapestation.md) to visualize libraries. Here's an example of what the library should look like on a Tapestation: 
 
-XXXXXXXX
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/switchfree_lib_prep_library_example.png)
