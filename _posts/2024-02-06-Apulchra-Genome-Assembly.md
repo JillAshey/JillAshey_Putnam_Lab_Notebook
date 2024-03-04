@@ -1092,3 +1092,43 @@ echo "Contaminant seqs removed from hifi fasta" $(date)
 
 Submitted batch job 304389. Finished in about 2.5 hours. Looked at the output in R (code [here](https://github.com/hputnam/Apulchra_genome/blob/main/scripts/genome_analysis.Rmd)). 
 
+### 20240304
+
+Emailed Kevin Bryan this morning and asked if he knew anything about why the `update_blastdb.pl` wasn't working. Still waiting to hear back from him. 
+
+Kevin Bryan also emailed me this morning about my hifiasm job that has been running for 18 days and said: "This job has been running for 18 days. I just took a look at it and it appears you didn’t specify -t $SLURM_CPUS_ON_NODE (and also #SBATCH --exclusive) to make use of all of the CPU cores on the node. You might want to consider re-submitting this job with those parameters. Because the nodes generally have 36 cores, it should be able to catch up to where it is now in a little over half a day, assuming perfect scaling." 
+
+I need to add those parameters into the hifiasm code, so cancelling the `300534` job. In `/data/putnamlab/jillashey/Apul_Genome/assembly/scripts`, `nano hifiasm.sh`:
+
+```
+#!/bin/bash -i
+#SBATCH -t 30-00:00:00
+#SBATCH --nodes=1 --ntasks-per-node=36
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --exclusive
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+conda activate /data/putnamlab/conda/hifiasm
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Starting assembly with hifiasm" $(date)
+
+hifiasm -o apul.hifiasm m84100_240128_024355_s2.hifi_reads.bc1029.fastq.fastq -t 36
+
+echo "Assembly with hifiasm complete!" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 304463
+
+
+
+
