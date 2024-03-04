@@ -17,7 +17,7 @@ ADD INFO ABOUT EXTRACTIONS AND WHAT AMT OF DNA TO ADD (Emma suggested starting w
 
 Here's the Pico Methyl-Seq library prep workflow: 
 
-ADD 
+![](https://raw.githubusercontent.com/meschedl/MESPutnam_Open_Lab_Notebook/master/images/PMS-workflow.png) 
 
 ### Materials 
 
@@ -30,10 +30,10 @@ ADD
 - Aluminum beads (to keep things on ice)
 - Magnetic stand for PCR tubes 
 - 1.5 mL tubes 
+- Shaker
 - Kit contents 
-- Shaker 
 
-ADD 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/pico_lib_prep_contents.png)
 
 ### Buffer preperation 
 
@@ -52,7 +52,7 @@ Once buffers are prepared for a kit, they do not need to be prepared again.
 
 Thermocycler settings: 
 
-XXXXX
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/pico_lib_prep_section1_thermocycler.png)
 
 - Thaw samples on ice 
 - Prepare samples to correct volume in strip tubes 
@@ -90,7 +90,7 @@ NEXT DAY!
 
 Thermocycler settings: 
 
-XXXXX
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/pico_lib_prep_section2_thermocycler.png)
 
 Lid should be set at 25°C
 
@@ -148,6 +148,8 @@ Lid should be set at 25°C
 Thermocycler settings: 
 
 XXXXX
+
+I will do 8 total cycles instead of 6 (based off of Maggie and Emma's experience). 
 
 - Make Amplification Master Mix (AMM or D) on ice. Vortex and centrifuge briefly
 	- 12.5 uL 2X Library Amp Mix * n =
