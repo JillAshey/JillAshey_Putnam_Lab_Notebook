@@ -13,7 +13,7 @@ This post details the info about the WGBS library prep steps for the e5 deep div
 
 Since there are 3 species for this project (*Acropora pulchra*, *Pocillopora spp.*, and *Porites evermanni*), I'll be doing a test of one of each species today. 
 
-ADD INFO ABOUT EXTRACTIONS AND WHAT AMT OF DNA TO ADD (Emma suggested starting with 20 ng of DNA). Both Maggie and Emma have done this protocol before (add links to their github posts)
+ADD INFO ABOUT EXTRACTIONS AND WHAT AMT OF DNA TO ADD (Emma suggested starting with 20 ng of DNA). Both [Maggie](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/blob/master/_posts/2020-09-18-WGBS-PMS-protocol.md) and [Emma](https://github.com/emmastrand/GMGI_Notebook/blob/main/posts/2023-08-24%20Zymo%20Pico%20Methyl%20Seq%20Kit%20Protocol.md) have done this protocol before with success. 
 
 Here's the Pico Methyl-Seq library prep workflow: 
 
