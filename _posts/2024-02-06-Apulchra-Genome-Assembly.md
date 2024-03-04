@@ -1090,5 +1090,5 @@ awk '{ if( ($4 >= 50 && $4 <= 99 && $3 >=98 ) ||
 echo "Contaminant seqs removed from hifi fasta" $(date)
 ```
 
-Submitted batch job 304389. Finished in about 2.5 hours. 
+Submitted batch job 304389. Finished in about 2.5 hours. Looked at the output in R (code [here](https://github.com/hputnam/Apulchra_genome/blob/main/scripts/genome_analysis.Rmd)). 
 
