@@ -1030,18 +1030,65 @@ In R, I looked at the data to quantify length for each read. See code [here](htt
 Make histogram for read bins from raw hifi data
 ```{r, echo = F}ggplot(data = hifi_read_length,        aes(x = length, fill = "blue")) +  geom_histogram(binwidth = 2000) +   labs(x = "Raw Read Length", y = "Count", title = "Histogram of Raw HiFi Read Lengths") +   scale_fill_manual(values = c("blue")) +   scale_y_continuous(labels = function(x) format(x, scientific = FALSE))```
 
+![](https://raw.githubusercontent.com/hputnam/Apulchra_genome/main/output/rr_length_histogram.png)
+
+### 20240303 
+
+My next step is to remove any contaminant reads from the raw hifi reads. From Young et al. 2024: "Raw HiFi reads first underwent a contamination screening, following the methodology in [68], using BLASTn [32, 68] against the assembled mitochondrial O. faveolata genome and the following databases: common eukaryote contaminant sequences (ftp.ncbi.nlm.nih. gov/pub/kitts/contam_in_euks.fa.gz), NCBI viral (ref_ viruses_rep_genomes) and prokaryote (ref_prok_rep_ genomes) representative genome sets". 
+
+I tried to run the `update_blastdb.pl` script (included in the blast program) with the `BLAST+/2.13.0-gompi-2022a` module but I got this error: 
+
+```
+Can't locate Archive/Tar.pm in @INC (@INC contains: /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5 .) at /opt/software/BLAST+/2.13.0-gompi-2022a/bin/update_blastdb.pl line 41.
+BEGIN failed--compilation aborted at /opt/software/BLAST+/2.13.0-gompi-2022a/bin/update_blastdb.pl line 41.
+```
+
+Not sure what this means...will email Kevin Bryan to ask about it, as I don't want to mess with anything on the installed modules. I did download the `contam_in_euks.fa.gz` db to my computer so I'm going to copy it to Andromeda. This file is considerably smaller than the viral or prok dbs. 
+
+Make a database folder in the Apul genome folder. 
+
+```
+cd /data/putnamlab/jillashey/Apul_Genome
+mkdir dbs 
+cd dbs
+
+zgrep -c ">" contam_in_euks.fa 
+3554
+```
+
+Now I ran run a script that blasts the pacbio fasta against these sequences. In `/data/putnamlab/jillashey/Apul_Genome/assembly/scripts`, `nano blast_contam_euk.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BLAST+/2.13.0-gompi-2022a
+
+echo "BLASTing hifi fasta against eukaryote contaminant sequences" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
 
 
+blastn -query m84100_240128_024355_s2.hifi_reads.bc1029.fasta -subject /data/putnamlab/jillashey/Apul_Genome/dbs/contam_in_euks.fa -task megablast -outfmt 6 -evalue 4 -perc_identity 90 -num_threads 15 -out contaminant_hits_euks_rr.txt
 
+echo "BLAST complete, remove contaminant seqs from hifi fasta" $(date)
 
+awk '{ if( ($4 >= 50 && $4 <= 99 && $3 >=98 ) ||
+         ($4 >= 100 && $4 <= 199 && $3 >= 94 ) ||
+         ($4 >= 200 && $3 >= 90) )  {print $0}
+    }' contaminant_hits_euks_rr.txt > contaminants_pass_filter_euks_rr.txt
 
+echo "Contaminant seqs removed from hifi fasta" $(date)
+```
 
+Submitted batch job 304389. Finished in about 2.5 hours. 
 
-
-
-
-
-The first thing this paper did was remove any contaminant reads from the raw hifi reads. "Raw HiFi reads first underwent a contamination screening, following the methodology in [68], using BLASTn [32, 68] against the assembled mitochondrial O. faveolata genome and the following databases: common eukaryote contaminant sequences (ftp.ncbi.nlm.nih. gov/pub/kitts/contam_in_euks.fa.gz), NCBI viral (ref_ viruses_rep_genomes) and prokaryote (ref_prok_rep_ genomes) representative genome sets". 
-
-How to update NCBI db: https://danielbruzzese.wordpress.com/2018/12/08/how-to-update-or-install-your-local-ncbi-blast-database-in-a-unix-shell-using-update_blastdb-pl/
-- will need for viral and prok genomes 
