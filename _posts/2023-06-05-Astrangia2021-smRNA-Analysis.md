@@ -5435,7 +5435,8 @@ TGACTAGATATATACTCATGCT
 >seq_422141_x62171
 GCACTGATGGTTCAGTGGTAGAATTCTCGC
 >seq_484312_x61289
-TGACTAGATATACACTCATTCT```
+TGACTAGATATACACTCATTCT
+```
 
 Count the number of unique sequences in each collapsed file. 
 
@@ -5716,11 +5717,16 @@ chromosome_9_364034	159.00	chromosome_9_364034	159.00	159.00	924.24
 chromosome_9_364498	2.00	chromosome_9_364498	2.00	2.00	11.63
 chromosome_9_364714	9.00	chromosome_9_364714	9.00	9.00	52.32
 chromosome_9_364995	7.00	chromosome_9_364995	7.00	7.00	40.69
+
 ```
 
 From a quick look at the top and bottom of files, it looks like they are in the same order. I copied all `miRNAs_expressed_all_samples_XXXX.csv` files to my local computer and renamed each file so that the sample ID was in the name of the file. Now I'll look at them in R. 
 
+### 20240305
 
+Still trying to figure out how the heck MFE is calculated and where that number is stored in the files that mirdeep2 produces. I looked through all of the files and STILL CAN'T FIND IT...
+
+I do think that the files `mature_vs_precursors.bwt` and `reads_vs_precursors.bwt` in `/data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/dir_prepare_signature1707063877` will help me calculate if 90% of the reads share the same nucleotide start at the 5' end. 
 
 
 

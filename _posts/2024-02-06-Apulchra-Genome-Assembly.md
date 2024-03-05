@@ -1193,4 +1193,4 @@ blastn -query m84100_240128_024355_s2.hifi_reads.bc1029.fasta -db ref_prok_rep_g
 echo "Blast complete!" $(date)
 ```
 
-Submitted batch job 304501
+Submitted batch job 304502
