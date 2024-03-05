@@ -33,7 +33,7 @@ Here's the miRNA library prep workflow:
 
 ### Materials 
 
-Protocol was followed according to this [post]((https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-01-09-Zymo-miRNA-Library-Prep.md)). The only change was the input RNA amount. M60 got primer 3; M72 got primer 4. 
+Protocol was followed according to this [post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-01-09-Zymo-miRNA-Library-Prep.md). The only change was the input RNA amount. M60 got primer 3; M72 got primer 4. 
 
 ### QC 
 
