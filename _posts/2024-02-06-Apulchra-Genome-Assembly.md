@@ -1129,6 +1129,68 @@ conda deactivate
 
 Submitted batch job 304463
 
+### 20240304
 
+Response from Kevin Bryan about viral and prok blast databases: "Ok, I downloaded those databases, and actually consolidated the rest of them into `/data/shared/ncbi-db/`, under which is a directory for today, and then there will be a new one next Sunday and following Sundays. There’s a file `/data/shared/ncbi-db/.ncbirc` that gets updated to point to the current directory, which the blast* tools will automatically pick up, so you can just do `-db ref_prok_rep_ genomes`, for example.
 
+For other tools that can read the ncbi databases, you can use `blastdb_path -db  ref_viruses_rep_genomes` to get the path, although for some reason with the nr database you need to specify `-dbtype prot`, i.e., `blastdb_path -db  nr -dbtype prot`.
 
+The reason for the extra complication is because otherwise a job that runs while the database is being updated may fail or return strange results. The dated directories should resolve this issue. Note that Unity blast-plus modules work in a similar way with a different path, `/datasets/bio/ncbi-db`."
+
+Amazing! Now I can move forward with the blasting against viral and prok genomes. In the scripts folder: `nano blastn_viral.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 30-00:00:00
+#SBATCH --nodes=1 --ntasks-per-node=36
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --exclusive
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BLAST+/2.13.0-gompi-2022a
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Blasting hifi reads against viral genomes to look for contaminants" $(date)
+
+blastn -query m84100_240128_024355_s2.hifi_reads.bc1029.fasta -db ref_viruses_rep_genomes -outfmt 6 -evalue 1e-4 -perc_identity 90 -out viral_contaminant_hits_rr.txt
+
+echo "Blast complete!" $(date)
+```
+
+Submitted batch job 304500
+
+In the scripts folder: `nano blastn_prok.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 30-00:00:00
+#SBATCH --nodes=1 --ntasks-per-node=36
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --exclusive
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BLAST+/2.13.0-gompi-2022a
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Blasting hifi reads against prokaryote genomes to look for contaminants" $(date)
+
+blastn -query m84100_240128_024355_s2.hifi_reads.bc1029.fasta -db ref_prok_rep_genomes -outfmt 6 -evalue 1e-4 -perc_identity 90 -out prok_contaminant_hits_rr.txt
+
+echo "Blast complete!" $(date)
+```
+
+Submitted batch job 304501

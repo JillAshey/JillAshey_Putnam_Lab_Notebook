@@ -11,9 +11,13 @@ projects: e5
 
 This post details the info about the WGBS library prep steps for the e5 deep dive samples collected in Moorea in 2020. The github for that project is linked [here](https://github.com/urol-e5/deep-dive). I'm using the [Zymo Pico Methyl Seq Library Prep](https://www.zymoresearch.com/products/pico-methyl-seq-library-prep-kit) for library prep (we have several kits with 25 preps). See Zymo's protocol [here](https://files.zymoresearch.com/protocols/_d5455_d5456_picomethylseq.pdf). 
 
-Since there are 3 species for this project (*Acropora pulchra*, *Pocillopora spp.*, and *Porites evermanni*), I'll be doing a test of one of each species today. 
+Since there are 3 species for this project (*Acropora pulchra*, *Pocillopora tuahiniensis*, and *Porites evermanni*), I'll be doing a test of one of each species today. I selected 439 (ACR-173), 403 (POC-48), and 421 (POR-82). The kit needs a minimum input of 10 ng DNA or a maximum input of 100 ng DNA. Emma suggested using 20 ng, as that amount has yielded better libraries than 10 ng, so I'll go with 25 ng. Both [Maggie](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/blob/master/_posts/2020-09-18-WGBS-PMS-protocol.md) and [Emma](https://github.com/emmastrand/GMGI_Notebook/blob/main/posts/2023-08-24%20Zymo%20Pico%20Methyl%20Seq%20Kit%20Protocol.md) have done this protocol before with success. 
 
-ADD INFO ABOUT EXTRACTIONS AND WHAT AMT OF DNA TO ADD (Emma suggested starting with 20 ng of DNA). Both [Maggie](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/blob/master/_posts/2020-09-18-WGBS-PMS-protocol.md) and [Emma](https://github.com/emmastrand/GMGI_Notebook/blob/main/posts/2023-08-24%20Zymo%20Pico%20Methyl%20Seq%20Kit%20Protocol.md) have done this protocol before with success. 
+| Number | colony_id | Species                  | DNA average (ng/uL) | DNA input (uL) | Tris (uL) | Total starting volume | Primer |
+| ------ | --------- | ------------------------ | ------------------- | -------------- | --------- | --------------------- | ------ |
+| 439    | ACR-173   | Acropora pulchra         | 19.9                | 1.3            | 18.7      | 20                    | 20     |
+| 403    | POC-48    | Pocillopora tuahiniensis | 29.1                | 0.9            | 19.1      | 20                    | 21     |
+| 421    | POR-82    | Porites evermanni        | 3.41                | 7.3            | 12.7      | 20                    | 22     |
 
 Here's the Pico Methyl-Seq library prep workflow: 
 
@@ -47,6 +51,9 @@ Once buffers are prepared for a kit, they do not need to be prepared again.
 - Preset the thermocycler programs 
 - Thaw and keep -80°C and -20°C components on ice unless instructed otherwise. Flick to mix and centrifuge before use
 	- Avoid multiple freeze-thaws, make aliquots if needed
+- Calculate master mix volumes before library prepping (see spreadsheet [here](https://docs.google.com/spreadsheets/d/181TkQAdRiK4hujx4Gp0ZyYXXA8b9TpUmqMsMnZkHjtU/edit#gid=0))
+- Allow Kapa beads to equilibrate to room temperature >30 mins before use
+- Resuspend magnetic particles immediately before each use by gently inverting until homogenous
 
 #### Section 1: Bisulfite Conversion of DNA 
 
@@ -56,9 +63,7 @@ Thermocycler settings:
 
 - Thaw samples on ice 
 - Prepare samples to correct volume in strip tubes 
-
-XXXXXX add info 
-
+	- See table above 
 - Add 130 uL of Lightning Conversion Reagent to each tube 
 - Vortex for 10 seconds and centrifuge briefly 
 - Run thermocycler program (labeled BS CONVERSION PICO under Maggie's profile)
@@ -147,7 +152,7 @@ Lid should be set at 25°C
 
 Thermocycler settings: 
 
-XXXXX
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/pico_lib_prep_section4_thermocycler.png)
 
 I will do 8 total cycles instead of 6 (based off of Maggie and Emma's experience). 
 
@@ -180,7 +185,7 @@ I will do 8 total cycles instead of 6 (based off of Maggie and Emma's experience
 
 Thermocycler settings: 
 
-XXXXX
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/pico_lib_prep_section6_thermocycler.png)
 
 - Move 10.5 uL of sample into new strip tubes
 - Add 12.5 uL of 2X Library Amp Master Mix to each sample 
@@ -190,7 +195,7 @@ XXXXX
 
 #### Section 7: 1x Bead Cleanup 
 
-- Take Kappa beads out of fridge >30 minutes before using to allow beads to equilibrate to room temperature
+- Take Kapa beads out of fridge >30 minutes before using to allow beads to equilibrate to room temperature
 - Shake the bottle to mix the beads (don't vortex)
 - Make fresh 80% ethanol using 100% ethanol 
 - Add 25 uL of beads to each sample 
@@ -215,6 +220,7 @@ THIS IS THE FINAL WGBS LIBRARY. STORE AT -20°C.
 
 Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/blob/master/_posts/2019-07-30-DNA-Tapestation.md) for visualize libraries. Here's an example of what the library should look like on a Tapestation: 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/pico_lib_prep_library_example.png)
 
 
 
