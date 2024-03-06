@@ -1194,3 +1194,50 @@ echo "Blast complete!" $(date)
 ```
 
 Submitted batch job 304502
+
+### 20240306
+
+Making list of all software programs that Young et al. 2024 used and if they are on Andromeda 
+
+- blastn 
+	- On Andromeda? YES
+- Meryl
+	- On Andromeda? NO
+- Genome-Scope2
+	- On Andromeda? NO
+- Hifiasm
+	- On Andromeda? NO but I added it to `putnamlab` via conda
+- Quast
+	- On Andromeda? YES
+- Busco
+	- On Andromeda? YES
+- Merqury
+	- On Andromeda? NO
+- RepeatModeler2
+	- On Andromeda? NO
+- Repeat-Masker 
+	- On Andromeda? YES
+- TeloScafs 
+	- On Andromeda? NO
+- PASA
+	- On Andromeda? NO
+- funnannotate 
+	- On Andromeda? NO
+- Augustus
+	- On Andromeda? YES
+- GeneMark-ES/ET
+	- On Andromeda? YES but only GeneMark-ET
+- snap 
+	- On Andromeda? YES
+- glimmerhmm
+	- On Andromeda? NO
+- Evidence Modeler
+	- On Andromeda? NO
+- tRNAscan-SE
+	- On Andromeda? YES
+- Trinity 
+	- On Andromeda? Yes
+- InterproScan 
+	- On Andromeda? YES
+	
+
