@@ -1240,4 +1240,31 @@ Making list of all software programs that Young et al. 2024 used and if they are
 - InterproScan 
 	- On Andromeda? YES
 	
+### 20240311
 
+Hifiasm (with unfiltered reads) finished running over the weekend and the prok blast script preemptively ended and then restarted in the early hours of this morning. I think this might be because I am not making use of all cores on the node (similar to my earlier hifiasm script). I cancelled the prok blast job (`304502`) and edited the script so that it includes the flag `-num_threads 36`. Submitted batch job 305351
+
+It created many files:
+
+```
+-rw-r--r--. 1 jillashey  19G Mar  7 23:58 apul.hifiasm.ec.bin
+-rw-r--r--. 1 jillashey  47G Mar  8 00:08 apul.hifiasm.ovlp.source.bin
+-rw-r--r--. 1 jillashey  17G Mar  8 00:12 apul.hifiasm.ovlp.reverse.bin
+-rw-r--r--. 1 jillashey 1.2G Mar  8 01:37 apul.hifiasm.bp.r_utg.gfa
+-rw-r--r--. 1 jillashey  21M Mar  8 01:37 apul.hifiasm.bp.r_utg.noseq.gfa
+-rw-r--r--. 1 jillashey 8.6M Mar  8 01:41 apul.hifiasm.bp.r_utg.lowQ.bed
+-rw-r--r--. 1 jillashey 1.1G Mar  8 01:42 apul.hifiasm.bp.p_utg.gfa
+-rw-r--r--. 1 jillashey  21M Mar  8 01:42 apul.hifiasm.bp.p_utg.noseq.gfa
+-rw-r--r--. 1 jillashey 8.2M Mar  8 01:46 apul.hifiasm.bp.p_utg.lowQ.bed
+-rw-r--r--. 1 jillashey 506M Mar  8 01:47 apul.hifiasm.bp.p_ctg.gfa
+-rw-r--r--. 1 jillashey  11M Mar  8 01:47 apul.hifiasm.bp.p_ctg.noseq.gfa
+-rw-r--r--. 1 jillashey 2.0M Mar  8 01:49 apul.hifiasm.bp.p_ctg.lowQ.bed
+-rw-r--r--. 1 jillashey 469M Mar  8 01:50 apul.hifiasm.bp.hap1.p_ctg.gfa
+-rw-r--r--. 1 jillashey 9.9M Mar  8 01:50 apul.hifiasm.bp.hap1.p_ctg.noseq.gfa
+-rw-r--r--. 1 jillashey 2.0M Mar  8 01:52 apul.hifiasm.bp.hap1.p_ctg.lowQ.bed
+-rw-r--r--. 1 jillashey 468M Mar  8 01:52 apul.hifiasm.bp.hap2.p_ctg.gfa
+-rw-r--r--. 1 jillashey 9.9M Mar  8 01:52 apul.hifiasm.bp.hap2.p_ctg.noseq.gfa
+-rw-r--r--. 1 jillashey 1.9M Mar  8 01:54 apul.hifiasm.bp.hap2.p_ctg.lowQ.bed
+```
+
+I'm not really sure where to start. 
