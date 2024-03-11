@@ -1857,3 +1857,23 @@ echo "busco complete for unfiltered hifiasm-assembled fasta" $(date)
 ```
 
 Submitted batch job 305426. I could also run some analysis on the hap assemblies, but I'm going to wait until I am done with the filtering and re-assembly, as that assembly is the one that I will likely be moving forward with. How are they making the distinction between hap1/father and hap2/mother? 
+
+Busco ran in ~45 mins and results look a lot better than they did with canu! This is the primary result from the output file: 
+
+```
+2024-03-11 13:37:21 INFO:       
+
+        --------------------------------------------------
+        |Results from dataset metazoa_odb10               |
+        --------------------------------------------------
+        |C:93.3%[S:92.0%,D:1.3%],F:3.1%,M:3.6%,n:954      |
+        |890    Complete BUSCOs (C)                       |
+        |878    Complete and single-copy BUSCOs (S)       |
+        |12     Complete and duplicated BUSCOs (D)        |
+        |30     Fragmented BUSCOs (F)                     |
+        |34     Missing BUSCOs (M)                        |
+        |954    Total BUSCO groups searched               |
+        --------------------------------------------------
+```
+
+This looks so much better than the canu assembly! The previous canu assembly was 94.4% complete, but had only 9.4% single copy BUSCOs and 85% duplicated BUSCOs. Ideally, the duplication level should be lower. The hifiasm assembly had 93.3% completeness, 92% single copy BUSCOs, and 1.3% duplicated BUSCOs. Hifiasm is definitely the way to go for assembly. Now I just have to wait until the blast prok is done so I can remove any contamination. After I remove contamination, I will re-assemble using hifiasm. 
