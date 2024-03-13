@@ -193,4 +193,46 @@ blastp -query Biomineralization_Spist_subset_sequences.fasta -db nr -outfmt 6 -o
 echo "Blast complete" $(date)
 ```
 
-Submitted batch job 305441
+Submitted batch job 305441. Job was running for about a day but there still wasn't any data in the output file so I cancelled the job. Going to edit the script so that I'm using the nr database that we have in the putnam lab shared folder. 
+
+In the scripts folder: `nano blast_biomin_subset.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --exclusive
+#SBATCH -D /data/putnamlab/jillashey/Pacuta_HI_2022/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BLAST+/2.13.0-gompi-2022a
+
+gunzip /data/putnamlab/shared/databases/nr.gz
+
+cd /data/putnamlab/jillashey/Pacuta_HI_2022/data/blast
+
+echo "Blasting Pacuta subset biomin genes against nr database" $(date)
+
+blastp -query Biomineralization_Pacuta_subset_sequences.fasta -db /data/putnamlab/shared/databases/nr -outfmt 6 -out Biomineralization_blast_results_Pacuta_subset.txt 
+
+echo "Pacuta subset biomin genes blast complete, now blasting Spist subset biomin genes" $(date)
+
+blastp -query Biomineralization_Spist_subset_sequences.fasta -db /data/putnamlab/shared/databases/nr -outfmt 6 -out Biomineralization_blast_results_Spist_subset.txt 
+
+echo "Blast complete" $(date)
+```
+
+Submitted batch job 308861. Completed in 1.5 hours, but didn't work. There was nothing in the output files and I got this error: 
+
+```
+BLAST Database error: No alias or index file found for protein database [/data/putnamlab/shared/databases/nr] in search path [/glfs/brick01/gv0/putnamlab/jillashey/Pacuta_HI_2022/data/blast::/glfs/brick01/gv0/shared/ncbi-db/2024-03-11:]
+BLAST Database error: No alias or index file found for protein database [/data/putnamlab/shared/databases/nr] in search path [/glfs/brick01/gv0/putnamlab/jillashey/Pacuta_HI_2022/data/blast::/glfs/brick01/gv0/shared/ncbi-db/2024-03-11:]
+```
+
+I'll revisit this....
