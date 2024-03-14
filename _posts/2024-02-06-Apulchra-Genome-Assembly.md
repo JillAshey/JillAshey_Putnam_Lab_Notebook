@@ -1877,3 +1877,7 @@ Busco ran in ~45 mins and results look a lot better than they did with canu! Thi
 ```
 
 This looks so much better than the canu assembly! The previous canu assembly was 94.4% complete, but had only 9.4% single copy BUSCOs and 85% duplicated BUSCOs. Ideally, the duplication level should be lower. The hifiasm assembly had 93.3% completeness, 92% single copy BUSCOs, and 1.3% duplicated BUSCOs. Hifiasm is definitely the way to go for assembly. Now I just have to wait until the blast prok is done so I can remove any contamination. After I remove contamination, I will re-assemble using hifiasm. 
+
+### 20240313
+
+Blast prok failed after 2 days and then restarted on Andromeda. Maybe I should stop the code after 2 days...idk. Maybe I need to increase the memory for the job? Canceling the job (`305351`) and increasing the memory (`#SBATCH --mem=500GB`). Submitted batch job 308997

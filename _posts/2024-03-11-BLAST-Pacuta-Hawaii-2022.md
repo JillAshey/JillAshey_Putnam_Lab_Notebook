@@ -236,3 +236,40 @@ BLAST Database error: No alias or index file found for protein database [/data/p
 ```
 
 I'll revisit this....
+
+I think I will retry to run the code above but use the remote NCBI server? Idk if this will work. Editing the script to include the `-remote` flag: 
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=20
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --exclusive
+#SBATCH -D /data/putnamlab/jillashey/Pacuta_HI_2022/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BLAST+/2.13.0-gompi-2022a
+
+cd /data/putnamlab/jillashey/Pacuta_HI_2022/data/blast
+
+echo "Blasting Pacuta subset biomin genes against remote nr database" $(date)
+
+blastp -query Biomineralization_Pacuta_subset_sequences.fasta -db nr -remote -outfmt 6 -out Biomineralization_blast_results_Pacuta_subset.txt 
+
+echo "Pacuta subset biomin genes blast complete, now blasting Spist subset biomin genes" $(date)
+
+blastp -query Biomineralization_Spist_subset_sequences.fasta -db nr -remote -outfmt 6 -out Biomineralization_blast_results_Spist_subset.txt 
+
+echo "Blast complete" $(date)
+``` 
+
+Submitted batch job 309006. Failed with this error: 
+
+```
+Error: [blastp] internal_error: (Severe Error) Blast search error: Details: search failed. # Informational Message: [blastsrv4.REAL]: Error: CPU usage limit was exceeded, resulting in SIGXCPU (24).  
+```
