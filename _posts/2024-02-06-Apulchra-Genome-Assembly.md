@@ -1881,3 +1881,17 @@ This looks so much better than the canu assembly! The previous canu assembly was
 ### 20240313
 
 Blast prok failed after 2 days and then restarted on Andromeda. Maybe I should stop the code after 2 days...idk. Maybe I need to increase the memory for the job? Canceling the job (`305351`) and increasing the memory (`#SBATCH --mem=500GB`). Submitted batch job 308997
+
+### 20240316
+
+Copied the prok data to my local computer. It is still running on the server, but I'm nervous it will restart again. If it does restart, I'll cancel the job and just use this data from today. On my local computer, I combined the prok and viral blast results and then removed any hits whose bit score was <1000. 
+
+```
+cd /Users/jillashey/Desktop/PutnamLab/Apulchra_genome
+cat viral_contaminant_hits_rr.txt prok_contaminant_hits_rr.txt > all_contaminant_hits_rr.txt
+awk '$12 > 1000 {print $0}' all_contaminant_hits_rr.txt > contaminant_hits_pv_passfilter_rr.txt
+```
+
+I then looked at the contamination hits in R. See code [here](https://github.com/hputnam/Apulchra_genome/blob/main/scripts/genome_analysis.Rmd). 
+
+As a summary, I first read in the eukaryotic blast hits that passed the contamination threshold. I found that only 2 reads had any euk contamination (`m84100_240128_024355_s2/48759857/ccs` and `m84100_240128_024355_s2/234751852/ccs`). I then read in the prokaryotic and viral blast hits that passed the threshold (only 224 blast hits passed). I calculated the percentage of each hits align length to the contigs so if there was a result that had 100%, that would mean that the whole contig was a contaminant. I looked at a histogram of the % alignments and found that most of the % alignments are on the lower size and there are not many 100% sequences. I summarized the contigs that were to be filtered out and found that 222 contigs had some level of pv contamination. I added the euk + pv contamination reads together (224 total) and calculated the proportion of contamination to raw reads. The contamination ended up being only 0.003797649% of the raw reads, which is pretty amazing! I calculated the mean length of the filtered reads (13,242.1 bp) and the sums of the unfiltered read length (79183709778 total bp) and filtered read length (79181142809 total bp).  Using these lengths, I calculated a rough estimation of sequencing depth and found we have roughly 100x coverage! That's similar to the Young et al. 2024 results as well. Finally, I wrote the list of filtered reads to a text file on my local computer. This information will be used to filter the raw reads on Andromeda prior to assembly. I'm impressed with the low contamination and the high coverage of the PacBio HiFi reads. 
