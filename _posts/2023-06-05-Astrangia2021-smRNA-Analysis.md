@@ -5636,7 +5636,7 @@ quantifier.pl -p /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirn
 #Expressed miRNAs are written to expression_analyses/expression_analyses_1709057479/miRNA_expressed.csv
 ```
 
-Mapped % are very low for all samples (<1%). This does not surprise me since miRNAs are super abundant in the genome. For each sample, a `miRNAs_expressed_all_samples_XXXXX.csv` file got produced, as well as files of miRNAs expressed and not expressed. Look at how many lines are in the miRNA expressed all samples file for each sample: 
+Mapped % are very low for all samples (<1%). This does not surprise me since miRNAs aren't super abundant in the genome. For each sample, a `miRNAs_expressed_all_samples_XXXXX.csv` file got produced, as well as files of miRNAs expressed and not expressed. Look at how many lines are in the miRNA expressed all samples file for each sample: 
 
 ```
 wc -l miRNAs_expressed_all_samples*
@@ -5728,10 +5728,50 @@ Still trying to figure out how the heck MFE is calculated and where that number 
 
 I do think that the files `mature_vs_precursors.bwt` and `reads_vs_precursors.bwt` in `/data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/dir_prepare_signature1707063877` will help me calculate if 90% of the reads share the same nucleotide start at the 5' end. 
 
+### 20240319
 
+I have now identified all putative miRNAs (code [here](https://github.com/JillAshey/Astrangia_repo/blob/main/scripts/miRNA_discovery.Rmd)) and run DESeq2 (code [here](https://github.com/JillAshey/Astrangia_repo/blob/main/scripts/DESeq2_miRNA.Rmd)). For both the mRNAs and the miRNAs, I now have a list of unique differentially expressed [genes](https://github.com/JillAshey/Astrangia_repo/blob/main/output/Molecular/mRNA/DEG_list.txt) or [miRNAs](https://github.com/JillAshey/Astrangia_repo/blob/main/output/Molecular/smRNA/DEM_list.txt). I can use these lists to filter the gene and miRNA fastas so that I can run miranda with the subsetted sequences. 
 
+I need to do mirnda with the 3' UTR of the mRNA, meaning I have to use the gff to identify the 3' UTR in the genome and then subset those sequences specifically...When looking at the Astrangia gff, there are only 687 3' UTR rows in the gff, despite there being >48,000 genes. Somehow, I need to get the sequences of the 3 UTRs for all mRNA sequences. 
 
+These are some options for IDing the 3' end: 
 
+- https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-017-4241-1
+- GETUTR
+- 3USS
+- UTRscan 
+- Maker 
+- Augustus
+
+I know this won't be the same, but I am going to run blast with the query as the miRNA sequences and the reference db as the mRNA sequences. In the scripts folder: `nano blastn_miRNA.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BLAST+/2.13.0-gompi-2022a
+
+echo "Making blast db from mRNA sequences" $(date)
+
+makeblastdb -in /data/putnamlab/jillashey/Astrangia_Genome/apoculata_mrna_v2.0.fasta -dbtype nucl -out /data/putnamlab/jillashey/Astrangia2021/smRNA/data/apoc_mRNA_db 
+
+echo "Blast db creation complete, blasting miRNAs against db" $(date)
+
+blastn -query /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -db /data/putnamlab/jillashey/Astrangia2021/smRNA/data/apoc_mRNA_db -outfmt 6 -evalue 4 -num_threads 15 -out /data/putnamlab/jillashey/Astrangia2021/smRNA/data/blastn_miRNA_query.tab
+
+echo "Blast complete!" $(date)
+```
+
+Submitted batch job 309649. Ran fast, but output file was empty...
 
 
 

@@ -1895,3 +1895,27 @@ awk '$12 > 1000 {print $0}' all_contaminant_hits_rr.txt > contaminant_hits_pv_pa
 I then looked at the contamination hits in R. See code [here](https://github.com/hputnam/Apulchra_genome/blob/main/scripts/genome_analysis.Rmd). 
 
 As a summary, I first read in the eukaryotic blast hits that passed the contamination threshold. I found that only 2 reads had any euk contamination (`m84100_240128_024355_s2/48759857/ccs` and `m84100_240128_024355_s2/234751852/ccs`). I then read in the prokaryotic and viral blast hits that passed the threshold (only 224 blast hits passed). I calculated the percentage of each hits align length to the contigs so if there was a result that had 100%, that would mean that the whole contig was a contaminant. I looked at a histogram of the % alignments and found that most of the % alignments are on the lower size and there are not many 100% sequences. I summarized the contigs that were to be filtered out and found that 222 contigs had some level of pv contamination. I added the euk + pv contamination reads together (224 total) and calculated the proportion of contamination to raw reads. The contamination ended up being only 0.003797649% of the raw reads, which is pretty amazing! I calculated the mean length of the filtered reads (13,242.1 bp) and the sums of the unfiltered read length (79183709778 total bp) and filtered read length (79181142809 total bp).  Using these lengths, I calculated a rough estimation of sequencing depth and found we have roughly 100x coverage! That's similar to the Young et al. 2024 results as well. Finally, I wrote the list of filtered reads to a text file on my local computer. This information will be used to filter the raw reads on Andromeda prior to assembly. I'm impressed with the low contamination and the high coverage of the PacBio HiFi reads. 
+
+### 20240319 
+
+Prok blast script finally finished running! Cat the prok and viral results together and remove anything that has a bit score <1000. 
+
+```
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+cat viral_contaminant_hits_rr.txt prok_contaminant_hits_rr.txt > all_contaminant_hits_rr.txt
+awk '$12 > 1000 {print $0}' all_contaminant_hits_rr.txt > contaminant_hits_pv_passfilter_rr.txt
+```
+
+Similarly to what I did above, I looked at the contamination hits in R. See code [here](https://github.com/hputnam/Apulchra_genome/blob/main/scripts/genome_analysis.Rmd). 
+
+As a summary, I first read in the eukaryotic blast hits that passed the contamination threshold. I found that only 2 reads had any euk contamination (`m84100_240128_024355_s2/48759857/ccs` and `m84100_240128_024355_s2/234751852/ccs`). I then read in the prokaryotic and viral blast hits that passed the threshold
+
+ADD NEW VALUES FROM UPDATED FILTERING  
+
+
+
+
+
+
+ (only 224 blast hits passed). I calculated the percentage of each hits align length to the contigs so if there was a result that had 100%, that would mean that the whole contig was a contaminant. I looked at a histogram of the % alignments and found that most of the % alignments are on the lower size and there are not many 100% sequences. I summarized the contigs that were to be filtered out and found that 222 contigs had some level of pv contamination. I added the euk + pv contamination reads together (224 total) and calculated the proportion of contamination to raw reads. The contamination ended up being only 0.003797649% of the raw reads, which is pretty amazing! I calculated the mean length of the filtered reads (13,242.1 bp) and the sums of the unfiltered read length (79183709778 total bp) and filtered read length (79181142809 total bp).  Using these lengths, I calculated a rough estimation of sequencing depth and found we have roughly 100x coverage! That's similar to the Young et al. 2024 results as well. Finally, I wrote the list of filtered reads to a text file on my local computer. This information will be used to filter the raw reads on Andromeda prior to assembly. I'm impressed with the low contamination and the high coverage of the PacBio HiFi reads. 
