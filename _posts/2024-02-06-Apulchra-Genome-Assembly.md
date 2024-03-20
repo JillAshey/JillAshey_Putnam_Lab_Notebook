@@ -1909,16 +1909,7 @@ awk '$12 > 1000 {print $0}' all_contaminant_hits_rr.txt > contaminant_hits_pv_pa
 
 Similarly to what I did above, I looked at the contamination hits in R. See code [here](https://github.com/hputnam/Apulchra_genome/blob/main/scripts/genome_analysis.Rmd). 
 
-As a summary, I first read in the eukaryotic blast hits that passed the contamination threshold. I found that only 2 reads had any euk contamination (`m84100_240128_024355_s2/48759857/ccs` and `m84100_240128_024355_s2/234751852/ccs`). I then read in the prokaryotic and viral blast hits that passed the threshold
-
-ADD NEW VALUES FROM UPDATED FILTERING  
-
-
-
-
-
-
- (only 224 blast hits passed). I calculated the percentage of each hits align length to the contigs so if there was a result that had 100%, that would mean that the whole contig was a contaminant. I looked at a histogram of the % alignments and found that most of the % alignments are on the lower size and there are not many 100% sequences. I summarized the contigs that were to be filtered out and found that 222 contigs had some level of pv contamination. I added the euk + pv contamination reads together (224 total) and calculated the proportion of contamination to raw reads. The contamination ended up being only 0.003797649% of the raw reads, which is pretty amazing! I calculated the mean length of the filtered reads (13,242.1 bp) and the sums of the unfiltered read length (79183709778 total bp) and filtered read length (79181142809 total bp).  Using these lengths, I calculated a rough estimation of sequencing depth and found we have roughly 100x coverage! That's similar to the Young et al. 2024 results as well. Finally, I wrote the list of filtered reads to a text file on my local computer. This information will be used to filter the raw reads on Andromeda prior to assembly. I'm impressed with the low contamination and the high coverage of the PacBio HiFi reads. 
+As a summary, I first read in the eukaryotic blast hits that passed the contamination threshold. I found that only 2 reads had any euk contamination (`m84100_240128_024355_s2/48759857/ccs` and `m84100_240128_024355_s2/234751852/ccs`). I then read in the prokaryotic and viral blast hits that passed the threshold (only 2 blast hits passed). I calculated the percentage of each hits align length to the contigs so if there was a result that had 100%, that would mean that the whole contig was a contaminant. I looked at a histogram of the % alignments and found that most of the % alignments are on the lower size and there are not many 100% sequences. I summarized the contigs that were to be filtered out and found that 494 contigs had some level of pv contamination. I added the euk + pv contamination reads together (496 contigs total) and calculated the proportion of contamination to raw reads. The contamination ended up being only 0.00840908% of the raw reads, which is pretty amazing! I calculated the mean length of the filtered reads (13,424.84 bp) and the sums of the unfiltered read length (79183709778 total bp) and filtered read length (79178244314 total bp).  Using these lengths, I calculated a rough estimation of sequencing depth and found we have roughly 100x coverage! That's similar to the Young et al. 2024 results as well. Finally, I wrote the list of filtered reads to a text file on my local computer. This information will be used to filter the raw reads on Andromeda prior to assembly. I'm impressed with the low contamination and the high coverage of the PacBio HiFi reads. 
 
 ### 20240320
 
@@ -2049,4 +2040,111 @@ Not ideal. It looks like it only took the first letter from each sequence. Maybe
 awk '{$2=""; print $0}' all_contam_rem_good_hifi_read_list.txt > output_file.txt
 ```
 
-Edit the script so that the list of reads to keep is `output_file.txt` and decrease mem to 250GB. Submitted batch job 309672
+Edit the script so that the list of reads to keep is `output_file.txt` and decrease mem to 250GB. Submitted batch job 309672. This appears to have worked! 
+
+```
+zgrep -c ">" hifi_rr_allcontam_rem.fasta
+5897892
+```
+
+Following Young et al. 2024, I need to use [Merqury](https://github.com/marbl/merqury/tree/master) and [GenomeScope2](https://github.com/tbenavi1/genomescope2.0?tab=readme-ov-file) analysis of the cleaned reads. Merqury and Meryl seem to be related somehow, but not sure. [Meryl](https://github.com/marbl/meryl?tab=readme-ov-file) is a tool for counting and working with sets of k-mers. It is a part of Canu as well. So it seems like Meryl counts the k-mers and Merqury estimates accuracy and completeness? Young et al. 2024 used only meryl here to generate a kmer database, which was then used as input to genomescope2. Merqury was used after hifiasm assembly. 
+
+First, the best value for k needs to be determined for use in Meryl. This can be done with the [`best_k.sh`](https://github.com/marbl/merqury/blob/master/best_k.sh) script from Merqury. I'm going to copy this script into my own scripts folder. Young et al. 2024 used 500mb estimated genome size. This is what I will use too, as previous coral/Acropora genomes are about this size. I will need to install Meryl and Merqury first. I'm following the Meryl and Merqury githubs for installation instructions. 
+
+For Meryl: 
+
+```
+wget https://github.com/marbl/meryl/releases/download/v1.4.1/meryl-1.4.1.Linux-amd64.tar.xz
+tar -xJf meryl-1.4.1.Linux-amd64.tar.xz
+export PATH=/data/putnamlab/jillashey/Apul_Genome/assembly/meryl-1.4.1/bin:$PATH
+```
+
+Now that I have exported the PATH variable to include the directory where the Meryl executable files are, I can run Meryl commands (I think), regardless of working directory. For now, lets run meryl with k=18. The k-mer database will be generated using k=18 and the cleaned reads. In the scripts folder: `nano meryl.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+export PATH=/data/putnamlab/jillashey/Apul_Genome/assembly/meryl-1.4.1/bin:$PATH
+
+echo "Creating meryl k-mer db" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+meryl k=18 \
+count hifi_rr_allcontam_rem.fasta \
+output meryl_merc
+
+echo "Meryl k-mer db complete!" $(date)
+```
+
+Submitted batch job 309682. While this runs, lets try to install Merqury. 
+
+```
+git clone https://github.com/marbl/merqury.git
+cd merqury
+export MERQURY=$PWD:$PATH
+```
+
+Hypothetically, Merqury is now installed. Perhaps now we can run the best k script? I am not sure what genome size estimate to use. [Shinzato et al. 2020](https://academic.oup.com/mbe/article/38/1/16/5900672) assessed several Acropora genomes and found the genome size ranged from 384 (Acropora microphthalma) to 447 (Acropora hyacinthus) Mb. I think I will go with 450 Mb. Let's try to run the best k script. 
+
+```
+$MERQURY/best_k.sh 450000000
+```
+
+Giving me this error: 
+
+```
+-bash: /data/putnamlab/jillashey/Apul_Genome/assembly/merqury:/data/putnamlab/jillashey/Apul_Genome/assembly/meryl-1.4.1/bin:/path/to/meryl-1.4.1/bin:/path/to/meryl/…/bin:/opt/software/Miniconda3/4.9.2/bin:/opt/software/Miniconda3/4.9.2/condabin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/jillashey/.local/bin:/home/jillashey/bin/best_k.sh: No such file or directory
+```
+
+I'm not sure what it means or how to fix it. On the Merqury [github](https://github.com/marbl/merqury), it lists dependencies that Merqury may need to run: 
+
+- gcc 10.2.0 or higher (for installing Meryl)
+- Meryl v1.4.1
+- Java run time environment (JRE)
+- R with argparse, ggplot2, and scales (recommend R 4.0.3+)
+- bedtools
+- samtools
+
+Maybe I need to load these? Idk I am confused. I may just continue with the initial assembly...because I don't really see the importance of this step. In Young et al. 2024, it says "the kmer profile of cleaned raw HiFi reads was generated with Meryl [34], and used for genome profiling with GenomeScope2 [69] to estimate genome size, repetitiveness, heterozygosity, and ploidy." I will come back to this. I may need to email Kevin Bryan to install meryl, merqury and genomescope2. 
+
+While I wait for his response, I will start running the initial hifiasm assembly with default flags. I have a script for hifiasm on the server, but I'm going to make a new one for the initial assembly. In the scripts folder: `nano initial_hifiasm.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 30-00:00:00
+#SBATCH --nodes=1 --ntasks-per-node=36
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --exclusive
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+conda activate /data/putnamlab/conda/hifiasm
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Starting assembly with hifiasm" $(date)
+
+hifiasm -o apul.hifiasm.intial hifi_rr_allcontam_rem.fasta -t 36 2> apul_hifiasm_allcontam_rem_initial.asm.log
+
+echo "Assembly with hifiasm complete!" $(date)
+
+conda deactivate
+``` 
+
+Submitted batch job 309689
