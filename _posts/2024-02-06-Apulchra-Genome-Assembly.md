@@ -1898,7 +1898,7 @@ As a summary, I first read in the eukaryotic blast hits that passed the contamin
 
 ### 20240319 
 
-Prok blast script finally finished running! Cat the prok and viral results together and remove anything that has a bit score <1000. 
+Prok blast script finally finished running! Took about 5 days. Cat the prok and viral results together and remove anything that has a bit score <1000. 
 
 ```
 cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
@@ -1919,3 +1919,134 @@ ADD NEW VALUES FROM UPDATED FILTERING
 
 
  (only 224 blast hits passed). I calculated the percentage of each hits align length to the contigs so if there was a result that had 100%, that would mean that the whole contig was a contaminant. I looked at a histogram of the % alignments and found that most of the % alignments are on the lower size and there are not many 100% sequences. I summarized the contigs that were to be filtered out and found that 222 contigs had some level of pv contamination. I added the euk + pv contamination reads together (224 total) and calculated the proportion of contamination to raw reads. The contamination ended up being only 0.003797649% of the raw reads, which is pretty amazing! I calculated the mean length of the filtered reads (13,242.1 bp) and the sums of the unfiltered read length (79183709778 total bp) and filtered read length (79181142809 total bp).  Using these lengths, I calculated a rough estimation of sequencing depth and found we have roughly 100x coverage! That's similar to the Young et al. 2024 results as well. Finally, I wrote the list of filtered reads to a text file on my local computer. This information will be used to filter the raw reads on Andromeda prior to assembly. I'm impressed with the low contamination and the high coverage of the PacBio HiFi reads. 
+
+### 20240320
+
+Before filtered the hifi reads, I'm going to clean up the `/data/putnamlab/jillashey/Apul_Genome/assembly/data` folder so that I have more memory for the next steps. Here's whats in there right now: 
+
+```
+total 312G
+-rw-r--r--. 1 jillashey 148G Feb  8 02:37 m84100_240128_024355_s2.hifi_reads.bc1029.fastq.fastq
+-rwxr-xr-x. 1 jillashey 1.1K Feb  8 14:13 apul.seqStore.sh
+-rw-r--r--. 1 jillashey  951 Feb  8 14:31 apul.seqStore.err
+drwxr-xr-x. 3 jillashey 4.0K Feb  8 14:32 apul.seqStore
+-rw-r--r--. 1 jillashey  23K Feb  9 01:47 apul.report
+-rw-r--r--. 1 jillashey 7.0M Feb  9 01:51 apul.contigs.layout.tigInfo
+-rw-r--r--. 1 jillashey 155M Feb  9 01:51 apul.contigs.layout.readToTig
+-rw-r--r--. 1 jillashey 2.8G Feb  9 01:57 apul.unassembled.fasta
+-rw-r--r--. 1 jillashey 943M Feb  9 02:01 apul.contigs.fasta
+drwxr-xr-x. 2 jillashey 4.0K Feb 13 14:01 busco_output
+drwxr-xr-x. 3 jillashey 4.0K Feb 13 14:01 busco_downloads
+-rw-r--r--. 1 jillashey 7.2K Feb 13 14:02 busco_96228.log
+lrwxrwxrwx. 1 jillashey  108 Feb 20 14:08 m84100_240128_024355_s2.hifi_reads.bc1029.bam -> /data/putnamlab/KITT/hputnam/20240129_Apulchra_Genome_LongRead/m84100_240128_024355_s2.hifi_reads.bc1029.bam
+-rw-r--r--. 1 jillashey  106 Feb 21 16:48 pb.fofn
+drwxr-xr-x. 9 jillashey 4.0K Feb 21 16:53 unitigging
+-rw-r--r--. 1 jillashey  74G Mar  1 16:08 m84100_240128_024355_s2.hifi_reads.bc1029.fasta
+-rw-r--r--. 1 jillashey 244M Mar  1 16:36 rr_read_lengths.txt
+-rw-r--r--. 1 jillashey 106K Mar  3 16:27 contaminant_hits_euks_rr.txt
+-rw-r--r--. 1 jillashey 2.4K Mar  3 16:29 contaminants_pass_filter_euks_rr.txt
+-rw-r--r--. 1 jillashey  69M Mar  5 23:20 viral_contaminant_hits_rr.txt
+-rw-r--r--. 1 jillashey  19G Mar  7 23:58 apul.hifiasm.ec.bin
+-rw-r--r--. 1 jillashey  47G Mar  8 00:08 apul.hifiasm.ovlp.source.bin
+-rw-r--r--. 1 jillashey  17G Mar  8 00:12 apul.hifiasm.ovlp.reverse.bin
+-rw-r--r--. 1 jillashey 1.2G Mar  8 01:37 apul.hifiasm.bp.r_utg.gfa
+-rw-r--r--. 1 jillashey  21M Mar  8 01:37 apul.hifiasm.bp.r_utg.noseq.gfa
+-rw-r--r--. 1 jillashey 8.6M Mar  8 01:41 apul.hifiasm.bp.r_utg.lowQ.bed
+-rw-r--r--. 1 jillashey 1.1G Mar  8 01:42 apul.hifiasm.bp.p_utg.gfa
+-rw-r--r--. 1 jillashey  21M Mar  8 01:42 apul.hifiasm.bp.p_utg.noseq.gfa
+-rw-r--r--. 1 jillashey 8.2M Mar  8 01:46 apul.hifiasm.bp.p_utg.lowQ.bed
+-rw-r--r--. 1 jillashey 506M Mar  8 01:47 apul.hifiasm.bp.p_ctg.gfa
+-rw-r--r--. 1 jillashey  11M Mar  8 01:47 apul.hifiasm.bp.p_ctg.noseq.gfa
+-rw-r--r--. 1 jillashey 2.0M Mar  8 01:49 apul.hifiasm.bp.p_ctg.lowQ.bed
+-rw-r--r--. 1 jillashey 469M Mar  8 01:50 apul.hifiasm.bp.hap1.p_ctg.gfa
+-rw-r--r--. 1 jillashey 9.9M Mar  8 01:50 apul.hifiasm.bp.hap1.p_ctg.noseq.gfa
+-rw-r--r--. 1 jillashey 2.0M Mar  8 01:52 apul.hifiasm.bp.hap1.p_ctg.lowQ.bed
+-rw-r--r--. 1 jillashey 468M Mar  8 01:52 apul.hifiasm.bp.hap2.p_ctg.gfa
+-rw-r--r--. 1 jillashey 9.9M Mar  8 01:52 apul.hifiasm.bp.hap2.p_ctg.noseq.gfa
+-rw-r--r--. 1 jillashey 1.9M Mar  8 01:54 apul.hifiasm.bp.hap2.p_ctg.lowQ.bed
+-rw-r--r--. 1 jillashey 495M Mar 11 12:52 apul.hifiasm.bp.p_ctg.fa
+-rw-r--r--. 1 jillashey 246M Mar 19 14:05 prok_contaminant_hits_rr.txt
+-rw-r--r--. 1 jillashey 315M Mar 19 16:08 all_contaminant_hits_rr.txt
+-rw-r--r--. 1 jillashey 1.1M Mar 19 16:09 contaminant_hits_pv_passfilter_rr.txt
+```
+
+I removed the following: 
+
+```
+rm -r apul.seqStore
+rm apul*
+rm -r busco*
+rm pb.fofn 
+rm -r unitigging/
+```
+
+Now I have more space. Copy the file `all_contam_rem_good_hifi_read_list.txt` that was generated from the [R code](https://github.com/hputnam/Apulchra_genome/blob/main/scripts/genome_analysis.Rmd) mentioned above. This specific file was written starting on line 242. It contains the reads that have passed contamination filtering. I copied this file into `/data/putnamlab/jillashey/Apul_Genome/assembly/data`. 
+
+```
+wc -l all_contam_rem_good_hifi_read_list.txt
+ 5897892 all_contam_rem_good_hifi_read_list.txt
+```
+
+The vast majority of the hifi reads are retained after contamination filtering, which is a good sign of high quality sequencing. My next step is to subset the raw hifi fasta file to remove the contaminants identified above. I can do this with the [seqtk subseq](https://github.com/lh3/seqtk) command. In the scripts folder: `nano subseq.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load seqtk/1.3-GCC-9.3.0
+
+echo "Subsetting hifi reads that passed contamination filtering" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+seqtk subseq m84100_240128_024355_s2.hifi_reads.bc1029.fasta all_contam_rem_good_hifi_read_list.txt > hifi_rr_allcontam_rem.fasta
+
+echo "Subsetting complete!" $(date)
+```
+
+Submitted batch job 309659. Finished in about 8 mins but the output file looks like this: 
+
+```
+>m84100_240128_024355_s2/261887593/ccs:18224-18224
+A
+>m84100_240128_024355_s2/255530003/ccs:21870-21870
+A
+>m84100_240128_024355_s2/249237028/ccs:23691-23691
+A
+>m84100_240128_024355_s2/262606536/ccs:14772-14772
+A
+>m84100_240128_024355_s2/217322854/ccs:12923-12923
+A
+>m84100_240128_024355_s2/256512826/ccs:12914-12914
+A
+>m84100_240128_024355_s2/245632166/ccs:28440-28440
+A
+>m84100_240128_024355_s2/250548903/ccs:23076-23076
+A
+>m84100_240128_024355_s2/256054930/ccs:15405-15405
+A
+>m84100_240128_024355_s2/241242930/ccs:15521-15521
+A
+>m84100_240128_024355_s2/254348773/ccs:14578-14578
+C
+>m84100_240128_024355_s2/252319399/ccs:12407-12407
+A
+>m84100_240128_024355_s2/229183717/ccs:5757-5757
+```
+
+Not ideal. It looks like it only took the first letter from each sequence. Maybe I need to remove the length information from the `all_contam_rem_good_hifi_read_list.txt` file? 
+
+```
+awk '{$2=""; print $0}' all_contam_rem_good_hifi_read_list.txt > output_file.txt
+```
+
+Edit the script so that the list of reads to keep is `output_file.txt` and decrease mem to 250GB. Submitted batch job 309672

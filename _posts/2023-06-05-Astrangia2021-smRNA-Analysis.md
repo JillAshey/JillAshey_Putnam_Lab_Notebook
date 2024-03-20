@@ -5762,7 +5762,7 @@ module load BLAST+/2.13.0-gompi-2022a
 
 echo "Making blast db from mRNA sequences" $(date)
 
-makeblastdb -in /data/putnamlab/jillashey/Astrangia_Genome/apoculata_mrna_v2.0.fasta -dbtype nucl -out /data/putnamlab/jillashey/Astrangia2021/smRNA/data/apoc_mRNA_db 
+makeblastdb -in /data/putnamlab/jillashey/Astrangia_Genome/apoculata_mrna_v2.0.fasta -dbtype 'nucl' -out /data/putnamlab/jillashey/Astrangia2021/smRNA/data/apoc_mRNA_db 
 
 echo "Blast db creation complete, blasting miRNAs against db" $(date)
 
@@ -5772,6 +5772,40 @@ echo "Blast complete!" $(date)
 ```
 
 Submitted batch job 309649. Ran fast, but output file was empty...
+
+### 20240320 
+
+Going to try to rerun the script above but removing any extraneous flags in hopes that this will fix the problem. Submitted batch job 309660. Still empty but not getting any error...I find it hard to believe that there are no blast matches between the miRNAs and the mRNAs...though I guess I am looking for complementary sequences, not identical sequences. Is there a way to do this in blast? Yes there is! I just need to add `-strand both` to allow BLAST to search both the forward and reverse-complement strands of the database sequences. Submitted batch job 309661. Still ran but still output file is empty.............Truly don't understand and I am quite frustrated. Maybe let's try blastx? In the scripts folder: `nano blastx_miRNA.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BLAST+/2.13.0-gompi-2022a
+
+echo "Making blast db from mRNA sequences" $(date)
+
+makeblastdb -in /data/putnamlab/jillashey/Astrangia_Genome/apoculata_proteins_v2.0.fasta -dbtype prot -out /data/putnamlab/jillashey/Astrangia2021/smRNA/data/apoc_prot_db 
+
+echo "Blast db creation complete, blasting miRNAs against db" $(date)
+
+blastx -query /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -db /data/putnamlab/jillashey/Astrangia2021/smRNA/data/apoc_prot_db -out /data/putnamlab/jillashey/Astrangia2021/smRNA/data/blastx_miRNA_query.txt -outfmt 6
+
+echo "Blast complete!" $(date)
+```
+
+Submitted batch job 309665. That worked! It was very fast. I wonder why it's not working with the nucleotide sequences...Maybe there really are no hits? I just find that hard to believe but idk maybe. 
+
+
 
 
 
