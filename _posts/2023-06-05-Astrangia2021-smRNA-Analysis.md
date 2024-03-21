@@ -5805,6 +5805,257 @@ echo "Blast complete!" $(date)
 
 Submitted batch job 309665. That worked! It was very fast. I wonder why it's not working with the nucleotide sequences...Maybe there really are no hits? I just find that hard to believe but idk maybe. 
 
+### 20240321
+
+Coming to the realization that I either have to locate the 3' UTRs in the genome myself or run a gene prediction software (augustus/maker) to find the 3' UTR coordinates. My worry is that I use augustus or maker and not all of the 3'UTRs for the mRNAs are identified. 
+
+The other idea was to look at the stop codon coordinates for each mRNA and assume that everything after the stop codon sequence is the 3'UTR. This will probably take me less time but still not sure how to do it. After searching around, the `bedtools` suite may help me. Someone on a github [issue page](https://github.com/shenkers/isoscm/issues/4) suggested the following:
+
+"I recommend you get a BED file with the position of the CDS (the annotation is always correct....). You can then use some Bedtools operations:
+bedtools merge the different exons of your Isoscm gtf files which form a same gene (they are next to each other). Use bedtools substract using the CDS bed file, leaving you with this structure: 5'/ a hole corresponding to the cds/3'.
+To finish, use bedtools closest with this last file and the CDS bed file to get the closest features to the right of each cds. You get the 3' of each cds this way. Use bedtools intersect on the original Isoscm file and you are left with only the 3' features (exons and introns)."
+
+In other words: 
+
+Exons = gene - introns
+
+CDS = gene - introns - UTRs
+
+therefore also:
+
+CDS = Exons - UTRs
+
+This makes sense to me. First, I'm going make a cds and exon specific gff file. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia_Genome
+
+awk '$3 == "exon"' apoculata_v2.0.gff3 > exons.gff
+wc -l exons.gff 
+239708 exons.gff
+
+head exon.gff
+chromosome_1	tRNAScan-SE	exon	12926481	12926553	62.76	+	.	ID=Ser_58_exon;Parent=Ser_58_tRNA
+chromosome_1	tRNAScan-SE	exon	20472613	20472685	57.43	-	.	ID=Ser_104_exon;Parent=Ser_104_tRNA
+chromosome_1	.	exon	15863279	15863694	.	-	.	ID=evm.model.chromosome_1.1448.exon3;Parent=evm.model.chromosome_1.1448
+chromosome_1	.	exon	15864523	15864816	.	-	.	ID=evm.model.chromosome_1.1448.exon2;Parent=evm.model.chromosome_1.1448
+chromosome_1	.	exon	15865287	15865521	.	-	.	ID=evm.model.chromosome_1.1448.exon1;Parent=evm.model.chromosome_1.1448
+chromosome_1	.	exon	15865882	15865901	.	-	.	ID=evm.model.chromosome_1.1449.exon27;Parent=evm.model.chromosome_1.1449
+chromosome_1	.	exon	15866163	15866244	.	-	.	ID=evm.model.chromosome_1.1449.exon26;Parent=evm.model.chromosome_1.1449
+chromosome_1	.	exon	15866990	15867097	.	-	.	ID=evm.model.chromosome_1.1449.exon25;Parent=evm.model.chromosome_1.1449
+chromosome_1	.	exon	15867543	15867625	.	-	.	ID=evm.model.chromosome_1.1449.exon24;Parent=evm.model.chromosome_1.1449
+chromosome_1	.	exon	15868562	15868656	.	-	.	ID=evm.model.chromosome_1.1449.exon23;Parent=evm.model.chromosome_1.1449
+
+
+awk '$3 == "CDS"' apoculata_v2.0.gff3 > cds.gff
+wc -l cds.gff 
+236997 cds.gff
+
+head cds.gff
+chromosome_1	.	CDS	15863279	15863694	.	-	2	ID=cds.evm.model.chromosome_1.1448;Parent=evm.model.chromosome_1.1448
+chromosome_1	.	CDS	15864523	15864816	.	-	2	ID=cds.evm.model.chromosome_1.1448;Parent=evm.model.chromosome_1.1448
+chromosome_1	.	CDS	15865287	15865377	.	-	0	ID=cds.evm.model.chromosome_1.1448;Parent=evm.model.chromosome_1.1448
+chromosome_1	.	CDS	15865882	15865901	.	-	2	ID=cds.evm.model.chromosome_1.1449;Parent=evm.model.chromosome_1.1449
+chromosome_1	.	CDS	15866163	15866244	.	-	0	ID=cds.evm.model.chromosome_1.1449;Parent=evm.model.chromosome_1.1449
+chromosome_1	.	CDS	15866990	15867097	.	-	0	ID=cds.evm.model.chromosome_1.1449;Parent=evm.model.chromosome_1.1449
+chromosome_1	.	CDS	15867543	15867625	.	-	2	ID=cds.evm.model.chromosome_1.1449;Parent=evm.model.chromosome_1.1449
+chromosome_1	.	CDS	15868562	15868656	.	-	1	ID=cds.evm.model.chromosome_1.1449;Parent=evm.model.chromosome_1.1449
+chromosome_1	.	CDS	15870067	15870167	.	-	0	ID=cds.evm.model.chromosome_1.1449;Parent=evm.model.chromosome_1.1449
+chromosome_1	.	CDS	15870684	15870725	.	-	0	ID=cds.evm.model.chromosome_1.1449;Parent=evm.model.chromosome_1.1449
+```
+
+There are multiple exons and CDSs for many genes. I'm going to merge both of these features with [bedtools merge](https://bedtools.readthedocs.io/en/latest/content/tools/merge.html). 
+
+```
+cd /data/putnamlab/jillashey/Astrangia_Genome
+mkdir scripts 
+cd scripts 
+```
+
+Bedtools merge requires that the data is pre-sorted by chromosome and then by start position. In the scripts folder: `nano bed_merge.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia_Genome/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BEDTools/2.30.0-GCC-11.3.0
+
+cd /data/putnamlab/jillashey/Astrangia_Genome
+
+echo "Sorting by chromosome and then by start position" $(date)
+
+sort -k1,1 -k4,4n exons.gff > exons.sorted.gff
+sort -k1,1 -k4,4n cds.gff > cds.sorted.gff
+
+echo "Sorting complete, starting merge with exons" $(date)
+
+bedtools merge -i exons.sorted.gff > exon.merge.bed
+
+echo "Exon merge complete, starting merge with CDS" $(date)
+
+bedtools merge -i cds.sorted.gff > cds.merge.bed
+
+echo "Merges complete!" $(date)
+```
+
+Submitted batch job 309744. That ran super fast but the number of lines in each file did not decrease all that much. I'm going to add the `-d` flag, which controls how close two features must be in order to merge. By default, it is set to 0, but I'm going to set it at 2000. Submitted batch job 309748. Once again, ran super fast.
+
+```
+wc -l exon.merge.bed
+47035 exon.merge.bed
+
+wc -l cds.merge.bed 
+46485 cds.merge.bed
+```
+
+These values make more sense to me, as that is about how many genes are in the genome. But they are still not identical...Going to do the subtraction anyway and see what happens. I'll subtract the exon from the CDS? Using [bedtools subtract](https://bedtools.readthedocs.io/en/latest/content/tools/subtract.html). In the scripts folder: `nano bed_subtract.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia_Genome/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BEDTools/2.30.0-GCC-11.3.0
+
+cd /data/putnamlab/jillashey/Astrangia_Genome
+
+echo "Subtracting exons from CDS" $(date)
+
+bedtools subtract -a cds.merge.bed -b exon.merge.bed > test.bed
+
+echo "Subtraction complete!" $(date)
+```
+
+Submitted batch job 309749. Test.bed file is empty...I'm guessing this was because the files are different lengths. I need to somehow remove the genes that do not have CDSs or exons annotated. In R (code [here](https://github.com/JillAshey/Astrangia_repo/blob/main/scripts/GFF_three_prime_UTR_filtering.Rmd)), I created a separate column for the parent ID in the attribute column and removed rows that do not have a row corresponding to an mRNA, an exon or a CDS. I then made two dataframes, one that contained only exons and one that contained only CDSs. I saved these as new gffs and put it in the Astrangia genome folder on Andromeda. I edited the `bed_merge.sh` to include the new gffs as input. Submitted batch job 309756. Look at number of lines and header: 
+
+```
+wc -l exon.merge.bed 
+67105 exon.merge.bed
+
+wc -l cds.merge.bed 
+64688 cds.merge.bed
+
+head exon.merge.bed
+Ala_1098_tRNA	22229936	22230008
+Ala_1107_tRNA	20496372	20496446
+Ala_1112_tRNA	18122334	18122406
+Ala_1113_tRNA	18121779	18121851
+Ala_1114_tRNA	18121543	18121615
+Ala_1115_tRNA	18121306	18121378
+Ala_1116_tRNA	18121069	18121141
+Ala_1117_tRNA	18120832	18120904
+Ala_1144_tRNA	11456062	11456134
+Ala_1158_tRNA	8187155	8187227
+
+head cds.merge.bed
+evm.model.chromosome_10.1	12622	13741
+evm.model.chromosome_10.10	55895	56373
+evm.model.chromosome_10.10	58725	58982
+evm.model.chromosome_10.100	966627	971367
+evm.model.chromosome_10.1000	9548910	9549171
+evm.model.chromosome_10.1001	9559190	9569583
+evm.model.chromosome_10.1001	9572518	9574130
+evm.model.chromosome_10.1002	9580187	9582242
+evm.model.chromosome_10.1003	9587494	9595116
+evm.model.chromosome_10.1004	9597669	9600588
+```
+
+They are still not the same number of lines. But let's QC real quick. Pull out the bed data from a gene that is in both the exon and cds files. 
+
+```
+# cds file 
+evm.model.chromosome_10.1004    9597669 9600588
+# 9600588 - 9597669 = 2919
+evm.model.chromosome_10.1004	9602637	9607464
+# 9607464 - 9602637 = 4827
+
+# exon file 
+evm.model.chromosome_10.1004    9597669 9600588
+# 9600588 - 9597669 = 2919
+
+evm.model.chromosome_10.1004    9602637 9607464
+# 9607464 - 9602637 = 4827
+```
+
+Both the cds and exon file has two lines for this gene, interesting. Why? Maybe too far apart to be grouped even though they appear to be assigned to the same gene. If I subtract the end of the first entry from the start of the second entry, I get: `9607464 - 9597669 = 9795`. So these two portions of the same gene (I think) are separated by ~10000 bp. I'm going to increase the `-d` flag to 15000. I also added `wc -l` into the script for each ending file so I don't have to do it manually. Submitted batch job 309759. Still not the same, but I am going to remove any gene/chromosome names that have `tRNA` in them, as I don't think these are true exons. Removed them in R and reuploaded gffs to server. Now rerunning `bed_merge.sh`. Submitted batch job 309764. Here are the line numbers. 
+
+```
+46551 exon.merge.bed
+46547 cds.merge.bed
+```
+
+So close... I wonder what the discrepancy is? The rows also look similar in both files...Changing d flag to 10000 and rerunning. Submitted batch job 309766
+
+```
+47001 exon.merge.bed
+46993 cds.merge.bed
+```
+
+Still close...and still look the same: 
+
+```
+head -20 exon.merge.bed 
+evm.model.chromosome_10.1	12622	13741
+evm.model.chromosome_10.10	55895	58982
+evm.model.chromosome_10.100	966626	971376
+evm.model.chromosome_10.1000	9548910	9549171
+evm.model.chromosome_10.1001	9559190	9574130
+evm.model.chromosome_10.1002	9580187	9582242
+evm.model.chromosome_10.1003	9587494	9595116
+evm.model.chromosome_10.1004	9597669	9607464
+evm.model.chromosome_10.1005	9616973	9637640
+evm.model.chromosome_10.1006	9645049	9652090
+evm.model.chromosome_10.1007	9660976	9662278
+evm.model.chromosome_10.1008	9662508	9662954
+evm.model.chromosome_10.1009	9663218	9665033
+evm.model.chromosome_10.101	971989	975710
+evm.model.chromosome_10.1010	9667643	9669122
+evm.model.chromosome_10.1011	9669880	9673441
+evm.model.chromosome_10.1012	9676142	9683173
+evm.model.chromosome_10.1013	9689782	9691495
+evm.model.chromosome_10.1014	9697732	9706569
+evm.model.chromosome_10.1015	9707472	9711010
+(base) [jillashey@ssh3 Astrangia_Genome]$ head -20 cds.merge.bed 
+evm.model.chromosome_10.1	12622	13741
+evm.model.chromosome_10.10	55895	58982
+evm.model.chromosome_10.100	966627	971367
+evm.model.chromosome_10.1000	9548910	9549171
+evm.model.chromosome_10.1001	9559190	9574130
+evm.model.chromosome_10.1002	9580187	9582242
+evm.model.chromosome_10.1003	9587494	9595116
+evm.model.chromosome_10.1004	9597669	9607464
+evm.model.chromosome_10.1005	9616973	9637640
+evm.model.chromosome_10.1006	9645049	9652090
+evm.model.chromosome_10.1007	9660976	9662278
+evm.model.chromosome_10.1008	9662508	9662954
+evm.model.chromosome_10.1009	9663218	9665033
+evm.model.chromosome_10.101	971989	975710
+evm.model.chromosome_10.1010	9667643	9669122
+evm.model.chromosome_10.1011	9669880	9673441
+evm.model.chromosome_10.1012	9676142	9683173
+evm.model.chromosome_10.1013	9689782	9691495
+evm.model.chromosome_10.1014	9697732	9706569
+evm.model.chromosome_10.1015	9707472	9711010
+```
+
+If I subtract the cds from the exon, it will result in 0. Not sure what to do here...I may call it quits for the day here. Will ask the molecular mechanisms team tomorrow if they have any suggestions.
 
 
 

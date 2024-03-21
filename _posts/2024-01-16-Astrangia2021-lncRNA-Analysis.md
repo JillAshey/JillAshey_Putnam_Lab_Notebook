@@ -140,7 +140,266 @@ ResolvePackageNotFound:
 
 Install failed. Going to email Kevin Bryan to see if he can install. 
 
-Once we have the lncRNA fasta, what do we do with it? How do we identify lncRNAs in the samples themselves?
+### 20240321
+
+It's been a while. Kevin Bryan did install CPC2 on the server (`CPC2/1.0.1-foss-2022a`) so I can run it there. I already copied the [CPC2](https://github.com/gao-lab/CPC2_standalone/blob/master/bin/CPC2.py) python script to the server. In the scripts folder: `nano cpc2.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/lncRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module avail Python/3.7.0-foss-2018b
+module avail CPC2/1.0.1-foss-2022a
+
+echo "Evaluating coding potential of lncRNA candidates" $(date)
+
+python CPC2.py -i /data/putnamlab/jillashey/Astrangia2021/lncRNA/data/Apoc_lncRNA_candidates.fasta -o /data/putnamlab/jillashey/Astrangia2021/lncRNA/output/CPC2
+
+echo "Evaluation complete!" $(date)
+```
+
+Submitted batch job 309769. Ran for about 20 seconds and got this error: 
+
+```
+------------------------------- /opt/modules/all -------------------------------
+Python/3.7.0-foss-2018b
+
+------------------------------- /opt/modules/all -------------------------------
+CPC2/1.0.1-foss-2022a
+Traceback (most recent call last):
+  File "CPC2.py", line 6, in <module>
+    import commands
+ModuleNotFoundError: No module named 'commands'
+```
+
+This looks like a python issue...maybe try a different version. On the [CPC2 github](https://github.com/gao-lab/CPC2_standalone), it says that "This is a python 2 verison of CPC2" so I'll try a python 2 version: `Python/2.7.15-foss-2018b`. I am also now realizing the I put 'module avail' instead of 'module load' in the code so fixing that. Submitted batch job 309770. Failed, got a lot of module conflicting with other modules. 
+
+```
+foss/2022a(24):ERROR:150: Module 'foss/2022a' conflicts with the currently loaded module(s) 'foss/2018b'
+foss/2022a(24):ERROR:102: Tcl command execution failed: conflict foss
+
+Python/3.10.4-GCCcore-11.3.0(62):ERROR:150: Module 'Python/3.10.4-GCCcore-11.3.0' conflicts with the currently loaded module(s) 'Python/2.7.15-foss
+-2018b'
+Python/3.10.4-GCCcore-11.3.0(62):ERROR:102: Tcl command execution failed: conflict Python
+
+GCCcore/11.3.0(24):ERROR:150: Module 'GCCcore/11.3.0' conflicts with the currently loaded module(s) 'GCCcore/7.3.0'
+GCCcore/11.3.0(24):ERROR:102: Tcl command execution failed: conflict GCCcore
+
+binutils/.2.38-GCCcore-11.3.0(22):ERROR:150: Module 'binutils/.2.38-GCCcore-11.3.0' conflicts with the currently loaded module(s) 'binutils/2.30-GCCcore-7.3.0'
+binutils/.2.38-GCCcore-11.3.0(22):ERROR:102: Tcl command execution failed: conflict binutils
+
+foss/2022a(24):ERROR:150: Module 'foss/2022a' conflicts with the currently loaded module(s) 'foss/2018b'
+foss/2022a(24):ERROR:102: Tcl command execution failed: conflict foss
+```
+
+Adding `module purge` above the module load. Nope didn't like that. I may have to load a specific version of GCCcore. I'm going to do: 
+
+```
+module load GCCcore/7.3.0 
+module load Python/2.7.15-foss-2018b 
+module load CPC2/1.0.1-foss-2022a
+```
+
+Submitted batch job 309773. Now getting this error: 
+
+```
+------------------------------- /opt/modules/all -------------------------------
+CPC2/1.0.1-foss-2022a
+Traceback (most recent call last):
+  File "CPC2.py", line 11, in <module>
+    from Bio.Seq import Seq
+ImportError: No module named Bio.Seq
+```
+
+Try with this version: `Python/2.7.15-GCCcore-7.3.0-bare`. Submitted batch job 309774. Now getting this error: 
+
+```
+------------------------------- /opt/modules/all -------------------------------
+CPC2/1.0.1-foss-2022a
+Traceback (most recent call last):
+  File "CPC2.py", line 10, in <module>
+    import numpy as np
+ImportError: No module named numpy
+```
+
+Let's try this: 
+
+```
+module load GCCcore/9.3.0 
+module load Python/3.8.2-GCCcore-9.3.0
+```
+
+Submitted batch job 309775. Back to the commands error...ChatGPT recommended that I try this: 
+
+```
+module purge  # Unload conflicting modules
+module load GCCcore/7.3.0  # Load compatible GCCcore version
+module load Python/2.7.15-foss-2018b  # Load Python 2 environment
+pip install numpy  # Install numpy package
+pip install biopython  # Install biopython package (which includes Bio.Seq)
+```
+
+Added it to the script. Submitted batch job 309776. Failed with this error: 
+
+```
+You are using pip version 10.0.1, however version 20.3.4 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+Command "python setup.py egg_info" failed with error code 1 in /tmp/pip-install-PyLt8e/biopython/
+You are using pip version 10.0.1, however version 20.3.4 is available.
+You should consider upgrading via the 'pip install --upgrade pip' command.
+Traceback (most recent call last):
+  File "CPC2.py", line 11, in <module>
+    from Bio.Seq import Seq
+ImportError: No module named Bio.Seq
+```
+
+ChatGPT recommended this: `pip install --upgrade pip`. Adding to code. Submitted batch job 309777. Basically the same error as above along with: 
+
+```
+Could not install packages due to an EnvironmentError: [Errno 13] Permission denied: '/opt/software/Python/2.7.15-foss-2018b/bin/pip'
+Consider using the `--user` option or check the permissions.
+```
+
+Bleh. I could try on the online version. If submitting in fasta format, it must be 50 Mb max. Going to try to break it up: 
+
+```
+cd ../data
+awk '/^>/{s=++d".fasta"} {print > s}' RS= d=0 Apoc_lncRNA_candidates.fasta
+```
+
+Didn't work. I'm seeing that when I load the CPC2 module, it can autofill `CPC2.py`, so maybe I don't even need to load python. Submitted batch job 309778 (also removed `python` from beginning of code). Got this error: 
+
+```
+Traceback (most recent call last):
+  File "/opt/software/CPC2/1.0.1-foss-2022a/bin/CPC2.py", line 374, in <module>
+    sys.exit(__main())
+  File "/opt/software/CPC2/1.0.1-foss-2022a/bin/CPC2.py", line 47, in __main
+    if calculate_potential(options.fasta,strand,output_orf,options.outfile):
+  File "/opt/software/CPC2/1.0.1-foss-2022a/bin/CPC2.py", line 262, in calculate_potential
+    ftmp_result = open(outfile,"w")
+IsADirectoryError: [Errno 21] Is a directory: '/data/putnamlab/jillashey/Astrangia2021/lncRNA/output/CPC2'
+```
+
+Going to remove the `-o` flag. Submitted batch job 309780. This appears to have worked!!!!! Ran very fast and output a file that includes each transcript and its coding/noncoding potential. Move this file to the output folder. 
+
+```
+mv cpc2output.txt.txt ../output/CPC2
+cd ../output/CPC2
+```
+
+Remove transcripts with the label 'coding'. We only keeping noncoding!
+
+```
+awk '$8 != "coding"' cpc2output.txt.txt > apoc_noncoding_transcripts_info.txt
+
+awk '$8 == "noncoding" {print $1}' cpc2output.txt.txt > apoc_noncoding_transcripts_ids.txt
+
+grep -Fwf apoc_noncoding_transcripts_ids.txt /data/putnamlab/jillashey/Astrangia2021/lncRNA/data/Apoc_lncRNA_candidates.fasta > apoc_merged_final_lncRNAs.gtf
+
+wc -l *
+   28981 apoc_merged_final_lncRNAs.gtf
+   28981 apoc_noncoding_transcripts_ids.txt
+   28982 apoc_noncoding_transcripts_info.txt
+   45485 cpc2output.txt.txt
+```
+
+Hooray!! Remove duplicate lines from gtf
+
+```
+awk '!seen[$0]++' apoc_merged_final_lncRNAs.gtf > apoc_deduplicated_final_lncRNAs.gtf
+
+wc -l apoc_deduplicated_final_lncRNAs.gtf 
+28810 apoc_deduplicated_final_lncRNAs.gtf
+``` 
+
+Started with 45485 potential lncRNA candidates and finished with 28810 putative lncRNAs. Format gtf to bed file. 
+
+```
+awk -F":|-" '{print $3 "\t" $4 "\t" $5}' apoc_deduplicated_final_lncRNAs.gtf > apoc_deduplicated_final_lncRNAs.bed
+```
+
+The bed file should have the chromosome name, start position and stop position. Use bedtools `getfasta` to extract lncRNA sequences from genome. 
+
+```
+module load BEDTools/2.30.0-GCC-11.3.0 
+
+bedtools getfasta -fi /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta -bed apoc_deduplicated_final_lncRNAs.bed -fo apoc_bedtools_lncRNAs.fasta -name
+
+zgrep -c ">" apoc_bedtools_lncRNAs.fasta 
+28810
+```
+
+Yay! We now have a fasta of our lncRNAs. Now we want to quantify them using [kallisto](https://pachterlab.github.io/kallisto/manual) (following Zach's [workflow](https://github.com/zbengt/oyster-lnc/blob/main/code/10-count-matrices-DESeq2-final.Rmd) for quantifying lncRNAs). First, make a kallisto folder in the output folder. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/lncRNA/output
+mkdir kallisto
+cd kallisto
+```
+
+The lncRNA fasta that was just created (`apoc_bedtools_lncRNAs.fasta`) will be used to generate the kallisto index. Then, the RNA-seq reads (located `/data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim`) will be aligned to the lncRNA index using kallisto. In the scripts folder: `nano kallisto.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/lncRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load kallisto/0.48.0-gompi-2022a 
+
+echo "Creating kallisto index from lncRNA fasta" $(date)
+
+kallisto index -i /data/putnamlab/jillashey/Astrangia2021/lncRNA/output/kallisto/apoc_lncRNA_index /data/putnamlab/jillashey/Astrangia2021/lncRNA/output/CPC2/apoc_bedtools_lncRNAs.fasta 
+
+echo "lncRNA index creation complete, starting read alignment" $(date)
+
+array=($(ls /data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/*R1_001.fastq.gz)) # call the clean sequences - make an array to align
+
+for i in ${array[@]}; do
+kallisto quant -i /data/putnamlab/jillashey/Astrangia2021/lncRNA/output/kallisto/apoc_lncRNA_index -o /data/putnamlab/jillashey/Astrangia2021/lncRNA/output/kallisto/kallisto.${i} ${i} $(echo ${i}|sed s/_R1/_R2/) 
+done 
+
+echo "lncRNA alignment complete!" $(date)
+```
+
+Submitted batch job 309785. Index was create successfully, but quant failed. I got this error for all of my samples: 
+
+```
+[quant] fragment length distribution will be estimated from the data
+Error: could not create directory /data/putnamlab/jillashey/Astrangia2021/lncRNA/output/kallisto/kallisto./data/putnamlab/jillashey/Astrangia2021/mRNA/data/trim/test.AST-1065_R1_001.fastq.gz
+```
+
+I modified the for loop in the code (and commented out the indexing step, as that was already done)
+
+```
+for i in ${array[@]}; do
+    # Extract just the filename from the input FASTQ file path
+    filename=$(basename ${i})
+    # Construct the output directory path
+    output_dir="/data/putnamlab/jillashey/Astrangia2021/lncRNA/output/kallisto/kallisto.${filename}"
+    # Run kallisto quant
+    kallisto quant -i /data/putnamlab/jillashey/Astrangia2021/lncRNA/output/kallisto/apoc_lncRNA_index -o ${output_dir} ${i} $(echo ${i} | sed 's/_R1/_R2/')
+done
+```
+
+Submitted batch job 309786
+
 
 Possible lncRNA-mRNA interaction software
 
