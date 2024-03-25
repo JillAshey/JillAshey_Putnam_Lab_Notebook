@@ -2339,5 +2339,118 @@ Basically just a lot of conflicting modules. Below are the results for the Busco
         --------------------------------------------------
 ```
 
-Going to edit the `initial_qc.sh` script so that I am including all things for busco to run properly. I'm also commenting out the lines that ran successfully. Submitted batch job 309984
+Going to edit the `initial_qc.sh` script so that I am including all things for busco to run properly. I'm also commenting out the lines that ran successfully and switching the module to `QUAST/5.0.2-foss-2020b-Python-2.7.18`. Submitted batch job 309984. It ran, but only the hap1 busco scores were generated, not hap2. Below are the results for the hap1 assembly: 
 
+```
+        --------------------------------------------------
+        |Results from dataset metazoa_odb10               |
+        --------------------------------------------------
+        |C:93.3%[S:92.8%,D:0.5%],F:3.0%,M:3.7%,n:954      |
+        |890    Complete BUSCOs (C)                       |
+        |885    Complete and single-copy BUSCOs (S)       |
+        |5      Complete and duplicated BUSCOs (D)        |
+        |29     Fragmented BUSCOs (F)                     |
+        |35     Missing BUSCOs (M)                        |
+        |954    Total BUSCO groups searched               |
+        --------------------------------------------------
+```
+
+Quast also failed again with this error:
+
+```
+Python/2.7.18-GCCcore-10.2.0(58):ERROR:150: Module 'Python/2.7.18-GCCcore-10.2.0' conflicts with the currently loaded module(s) 'Python/3.8.6-GCCcore-10.2.0'
+Python/2.7.18-GCCcore-10.2.0(58):ERROR:102: Tcl command execution failed: conflict Python
+
+Python/2.7.18-GCCcore-10.2.0(58):ERROR:150: Module 'Python/2.7.18-GCCcore-10.2.0' conflicts with the currently loaded module(s) 'Python/3.8.6-GCCcore-10.2.0'
+Python/2.7.18-GCCcore-10.2.0(58):ERROR:102: Tcl command execution failed: conflict Python
+```
+
+I'm going to add `module purge` and `module load Python/2.7.18-GCCcore-10.2.0` prior to loading quast. I'm also going to comment out lines that have already run successfully. Submitted batch job 310034. Ran in ~45 mins. Below are the results for the hap2 assembly: 
+
+```
+        --------------------------------------------------
+        |Results from dataset metazoa_odb10               |
+        --------------------------------------------------
+        |C:94.0%[S:92.7%,D:1.3%],F:2.9%,M:3.1%,n:954      |
+        |896    Complete BUSCOs (C)                       |
+        |884    Complete and single-copy BUSCOs (S)       |
+        |12     Complete and duplicated BUSCOs (D)        |
+        |28     Fragmented BUSCOs (F)                     |
+        |30     Missing BUSCOs (M)                        |
+        |954    Total BUSCO groups searched               |
+        --------------------------------------------------
+```
+
+Once again, quast failed to run and I got this error: 
+
+```
+ERROR! File not found (contigs): apul.hifiasm.intial.bp.p_ctg.fa
+In case you have troubles running QUAST, you can write to quast.support@cab.spbu.ru
+or report an issue on our GitHub repository https://github.com/ablab/quast/issues
+Please provide us with quast.log file from the output directory.
+```
+
+I'm going to write quast its own script. Quast can be run with or without a reference genome. I'm going to try both, using Amillepora as the reference genome. In the scripts folder: `nano initial_quast.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+module purge
+module load Python/2.7.18-GCCcore-10.2.0
+module load QUAST/5.0.2-foss-2020b-Python-2.7.18
+# previously used QUAST/5.2.0-foss-2021b but it failed and produced module conflict errors
+
+echo "Begin quast of primary and haplotypes (initial run) w/ reference" $(date)
+
+quast -t 10 --eukaryote \
+apul.hifiasm.intial.bp.p_ctg.fa \
+apul.hifiasm.intial.bp.hap1.p_ctg.fa \
+apul.hifiasm.intial.bp.hap2.p_ctg.fa \
+/data/putnamlab/jillashey/genome/Amil_v2.01/Amil.v2.01.chrs.fasta \
+-o /data/putnamlab/jillashey/Apul_Genome/assembly/output/quast
+
+echo "Quast complete (initial run); all QC complete!" $(date)
+```
+
+Submitted batch job 310038. I need to read more about [quast command line](https://quast.sourceforge.net/docs/manual.html#sec2) options, as there seem to be a lot of options. Also need to look into including a reference vs not including a reference. Ran super fast but success! Quast is super informative!!!!! The most useful information is in the `report.*` files. This is from the `report.txt` file: 
+
+```
+All statistics are based on contigs of size >= 500 bp, unless otherwise noted (e.g., "# contigs (>= 0 bp)" and "Total length (>= 0 bp)" include all contigs).
+
+Assembly                    apul.hifiasm.intial.bp.p_ctg  apul.hifiasm.intial.bp.hap1.p_ctg  apul.hifiasm.intial.bp.hap2.p_ctg  Amil.v2.01.chrs
+# contigs (>= 0 bp)         188                           275                                162                                854            
+# contigs (>= 1000 bp)      188                           275                                162                                851            
+# contigs (>= 5000 bp)      188                           273                                162                                748            
+# contigs (>= 10000 bp)     186                           271                                162                                672            
+# contigs (>= 25000 bp)     166                           246                                153                                545            
+# contigs (>= 50000 bp)     98                            163                                124                                445            
+Total length (>= 0 bp)      518528298                     481372407                          480341213                          475381253      
+Total length (>= 1000 bp)   518528298                     481372407                          480341213                          475378544      
+Total length (>= 5000 bp)   518528298                     481363561                          480341213                          475052084      
+Total length (>= 10000 bp)  518514885                     481349140                          480341213                          474498957      
+Total length (>= 25000 bp)  518188097                     480901871                          480181619                          472383091      
+Total length (>= 50000 bp)  515726224                     477880931                          479141568                          468867721      
+# contigs                   188                           275                                162                                854            
+Largest contig              45111900                      21532546                           22038975                           39361238       
+Total length                518528298                     481372407                          480341213                          475381253      
+GC (%)                      39.05                         39.03                              39.04                              39.06          
+N50                         16268372                      12353884                           13054353                           19840543       
+N75                         13007972                      7901416                            8791894                            1469964        
+L50                         11                            15                                 15                                 9              
+L75                         20                            28                                 26                                 23             
+# N's per 100 kbp           0.00                          0.00                               0.00                               7.79
+```
+
+Look at all of that info! The initial assembly appears to be the best in terms of all the stats. The total length is longer than the Amillepora and the haplotype assemblies. Additionally, it has the largest contig. The Amillepora genome has a higher N50 but the N50 for the primary assembly still looks good. There were 188 contigs generated in the primary assembly. Haplotype 1 assembly had more contigs (275), while haplotype 2 had less (162). Amillepora has 854 contigs which is so high! The primary assembly contig number is much lower than Atenuis (614), Adigitifera (955), or Amillepora (854). Quast, you have converted me <3. My next steps are to play with the `-s` flag in hifiasm to determine the threshold at which duplicate haplotigs should be purged. The default is 0.55 and Young et al. (2024) ran it with a range of values (0.55, 0.50, 0.45, 0.40, 0.35, 0.30). They found that all worked well to resolve haplotypes, so they stuck with the default of 0.55. They also used the `--primary` flag, which outputs a primary and alternate assembly as opposed to the primary, hap1 and hap2 assemblies. In their [code](https://github.com/benyoung93/orbicella_faveolata_pacbio_genome_transcriptome/blob/main/ofav_genome_pipeline.Rmd), they justified this by saying "running hifiasm using the primary flag as we have no real way of knowing if the haplotypes produced are real or not" (line 826). 
