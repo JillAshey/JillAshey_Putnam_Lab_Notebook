@@ -398,7 +398,243 @@ for i in ${array[@]}; do
 done
 ```
 
-Submitted batch job 309786
+Submitted batch job 309786. finished running in about 5 hours. Now I need to convert the gene abundances that kallisto generated into a count matrix for DESeq2. It appears that Zach did this two different ways: one way using [Trinity](https://github.com/zbengt/oyster-lnc/blob/main/code/10-count-matrices-DESeq2-final.Rmd) and one way using an [R script](https://zbengt.github.io/2023-03-09-Mergin-Kallisto_Abundance/). I'll come back to this. 
+
+```
+Trinity/2.12.0-foss-2019b-Python-3.7.4
+abundance_estimates_to_matrix
+```
+
+### 20240322 
+
+Now that I have identified the lncRNAs, I can run blast with lncRNAs as the query and protein, genome, mRNAs and smRNAs in input dbs (similar to what has been done in the e5 [code](https://github.com/urol-e5/deep-dive/blob/main/E-Peve/code/02-Peve-lncRNA-align.md)). 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/lncRNA/
+mkdir blast 
+```
+
+All of my lncRNA blast output will go into the blast folder above. For now, I will not set any specific e-value or bitscore cutoffs. I will write 4 different scripts for blasting protein, genome, mRNAs and smRNAs. In the scripts folder: `nano blastx_lncRNA.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/lncRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BLAST+/2.13.0-gompi-2022a
+
+echo "Use the prot db already created in small RNA folder, do not have to make new db. Blasting lncRNAs against prot db" $(date)
+
+blastx -query /data/putnamlab/jillashey/Astrangia2021/lncRNA/output/CPC2/apoc_bedtools_lncRNAs.fasta -db /data/putnamlab/jillashey/Astrangia2021/smRNA/data/apoc_prot_db -out /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastx_prot_lncRNA_query.tab -outfmt 6
+
+echo "Number of hits?"
+wc -l /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastx_prot_lncRNA_query.tab
+
+echo "File header"
+head /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastx_prot_lncRNA_query.tab
+
+echo "Blast complete!" $(date)
+```
+
+Submitted batch job 309831. Next, blast lncRNAs to genome. In the scripts folder: `nano blastn_genome_lncRNA.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/lncRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BLAST+/2.13.0-gompi-2022a
+
+echo "Making blast db from genome" $(date)
+
+makeblastdb -in /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta -dbtype nucl -out /data/putnamlab/jillashey/Astrangia_Genome/apoc_genome_db
+
+echo "Blast db creation complete, blasting lncRNAs against db" $(date)
+
+blastn -query /data/putnamlab/jillashey/Astrangia2021/lncRNA/output/CPC2/apoc_bedtools_lncRNAs.fasta -db /data/putnamlab/jillashey/Astrangia_Genome/apoc_genome_db -out /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastn_genome_lncRNA_query.tab -outfmt 6
+
+echo "Number of hits?"
+wc -l /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastn_genome_lncRNA_query.tab
+
+echo "File header"
+head /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastn_genome_lncRNA_query.tab
+
+echo "Blast complete!" $(date)
+```
+
+Submitted batch job 309837. Next, blast lncRNAs to mRNAs. This is probably the one that I am most interested in. In the scripts folder: `nano blastn_mRNA_lncRNA.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/lncRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BLAST+/2.13.0-gompi-2022a
+
+echo "Use the mRNA db already created in small RNA folder, do not have to make new db. Blasting lncRNAs against mRNA db" $(date)
+
+blastn -query /data/putnamlab/jillashey/Astrangia2021/lncRNA/output/CPC2/apoc_bedtools_lncRNAs.fasta -db /data/putnamlab/jillashey/Astrangia2021/smRNA/data/apoc_mRNA_db -out /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastn_mRNA_lncRNA_query.tab -outfmt 6
+
+echo "Number of hits?"
+wc -l /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastn_mRNA_lncRNA_query.tab
+
+echo "File header"
+head /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastn_mRNA_lncRNA_query.tab
+
+echo "Blast complete!" $(date)
+```
+
+Submitted batch job 309836. Lastly, blast lncRNAs to smRNAs. In the scripts folder: `nano blastn_smRNA_lncRNA.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/lncRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BLAST+/2.13.0-gompi-2022a
+
+echo "Making blast db from smRNA" $(date)
+
+makeblastdb -in /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa -dbtype nucl -out /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/apoc_smRNA_db
+
+echo "Blast db creation complete, blasting lncRNAs against db" $(date)
+
+blastn -query /data/putnamlab/jillashey/Astrangia2021/lncRNA/output/CPC2/apoc_bedtools_lncRNAs.fasta -db /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/apoc_smRNA_db -out /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastn_smRNA_lncRNA_query.tab -outfmt 6
+
+echo "Number of hits?"
+wc -l /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastn_smRNA_lncRNA_query.tab
+
+echo "File header"
+head /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastn_smRNA_lncRNA_query.tab
+
+echo "Blast complete!" $(date)
+```
+
+Submitted batch job 309839
+
+### 20240325
+
+The blast scripts all pended for a while and then ran. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast
+
+ls -othr
+total 6.3G
+-rw-r--r--. 1 jillashey 102M Mar 22 19:39 blastn_mRNA_lncRNA_query.tab
+-rw-r--r--. 1 jillashey 5.3G Mar 22 21:07 blastn_genome_lncRNA_query.tab
+-rw-r--r--. 1 jillashey    0 Mar 22 21:18 blastn_smRNA_lncRNA_query.tab
+-rw-r--r--. 1 jillashey 870M Mar 22 23:31 blastx_prot_lncRNA_query.tab
+```
+
+There were no hits for the lncRNAs against the small RNAs which is strange. I would have assumed there would be some hits. Let's look at the output file for each blast result. 
+
+lncRNA blasting to protein sequences: 
+
+```
+Number of hits?
+7966677 /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastx_prot_lncRNA_query.tab
+File header
+::chromosome_1:34635-40489      protein|evm.model.chromosome_1.2        98.113  53      1       0       252     410     32      84      3.13e-27
+        111
+::chromosome_1:34635-40489      protein|evm.model.chromosome_1.2        95.238  42      2       0       5726    5851    158     199     5.91e-18
+        84.7
+::chromosome_1:34635-40489      protein|evm.model.chromosome_1.2        98.077  52      1       0       2918    3073    85      136     2.18e-16
+        80.1
+::chromosome_1:34635-40489      protein|evm.model.chromosome_1.2        72.000  50      12      1       4       147     1       50      2.55e-13
+        71.2
+::chromosome_1:34635-40489      protein|evm.model.chromosome_1.2        100.000 23      0       0       5175    5243    137     159     2.6     32.7
+::chromosome_1:34635-40489      protein|evm.model.chromosome_9.2265     44.615  65      28      2       899     1093    202     258     1.78e-06
+        52.0
+::chromosome_1:34635-40489      protein|evm.model.chromosome_3.1096     44.615  65      28      2       899     1093    336     392     2.93e-06
+        52.4
+::chromosome_1:34635-40489      protein|evm.model.chromosome_1.366      60.526  38      15      0       980     1093    1007    1044    4.44e-05
+        49.3
+::chromosome_1:34635-40489      protein|evm.model.chromosome_11.2373    58.333  36      15      0       983     1090    346     381     7.66e-05
+        47.8
+::chromosome_1:34635-40489      protein|evm.model.chromosome_7.1885     40.000  50      29      1       947     1093    17      66      8.63e-05
+```
+
+lncRNA blasting to genome: 
+
+```
+Number of hits?
+55347126 /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastn_genome_lncRNA_query.tab
+File header
+::chromosome_1:34635-40489      chromosome_1    100.000 5854    0       0       1       5854    34636   40489   0.0     10811
+::chromosome_1:34635-40489      chromosome_1    81.850  1427    101     75      3229    4529    1503669 1502275 0.0     1055
+::chromosome_1:34635-40489      chromosome_1    89.669  242     15      5       495     730     4524407 4524644 1.07e-78        300
+::chromosome_1:34635-40489      chromosome_1    87.552  241     19      8       497     729     13968647        13968410        3.03e-69        268
+::chromosome_1:34635-40489      chromosome_1    87.554  233     21      4       495     724     17099195        17098968        1.41e-67        263
+::chromosome_1:34635-40489      chromosome_1    84.644  267     36      5       1790    2055    17004614        17004352        5.07e-67        261
+::chromosome_1:34635-40489      chromosome_1    87.773  229     17      8       505     727     3663790 3664013 6.56e-66        257
+::chromosome_1:34635-40489      chromosome_1    87.069  232     22      4       495     723     3648353 3648127 2.36e-65        255
+::chromosome_1:34635-40489      chromosome_1    87.215  219     17      3       4195    4412    13516147        13516355        2.38e-60        239
+::chromosome_1:34635-40489      chromosome_1    76.860  484     57      19      3707    4161    13515581        13516038        2.39e-55        222
+```
+
+lncRNA blasting to mRNA sequences: 
+
+```
+Number of hits?
+1071243 /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastn_mRNA_lncRNA_query.tab
+File header
+::chromosome_1:34635-40489      evm.model.chromosome_1.2        100.000 159     0       0       253     411     98      256     6.28e-78        294
+::chromosome_1:34635-40489      evm.model.chromosome_1.2        100.000 157     0       0       2919    3075    257     413     8.12e-77        291
+::chromosome_1:34635-40489      evm.model.chromosome_1.2        100.000 124     0       0       5731    5854    480     603     1.80e-58        230
+::chromosome_1:34635-40489      evm.model.chromosome_1.2        100.000 99      0       0       1       99      1       99      1.42e-44        183
+::chromosome_1:34635-40489      evm.model.chromosome_1.2        100.000 68      0       0       5175    5242    412     479     2.42e-27        126
+::chromosome_1:62281-74713      evm.model.chromosome_3.1716     99.485  1165    6       0       5287    6451    1329    165     0.0     2119
+::chromosome_1:62281-74713      evm.model.chromosome_9.2364     91.733  1137    84      2       5287    6414    1136    1       0.0     1570
+::chromosome_1:62281-74713      evm.model.chromosome_14.123     96.715  822     13      9       5630    6451    1857    1050    0.0     1356
+::chromosome_1:62281-74713      evm.model.chromosome_5.1437     98.503  735     3       1       5717    6451    2838    2112    0.0     1290
+::chromosome_1:62281-74713      evm.model.chromosome_1.5        100.000 204     0       0       11093   11296   1151    1354    1.29e-102       377
+```
+
+lncRNA blasting to smRNA sequences: 
+
+```
+Number of hits?
+0 /data/putnamlab/jillashey/Astrangia2021/lncRNA/blast/blastn_smRNA_lncRNA_query.tab
+```
+
+Maybe I should blast to the collapsed smRNA file instead of the mature miRNA file. I'm not going to do that for now but I am going to download the blast lncRNA results to my local computer. I only moved the mRNA results to my github and the others to my local computer, as they were too large to be stored on github. I need to make an OSF repo and move the larger files there.  
+
+
+
+
 
 
 Possible lncRNA-mRNA interaction software

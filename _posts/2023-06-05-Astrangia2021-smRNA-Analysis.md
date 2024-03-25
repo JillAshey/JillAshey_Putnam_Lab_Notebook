@@ -6058,7 +6058,9 @@ evm.model.chromosome_10.1015	9707472	9711010
 If I subtract the cds from the exon, it will result in 0. Not sure what to do here...I may call it quits for the day here. Will ask the molecular mechanisms team tomorrow if they have any suggestions.
 
 
+### 20240325
 
+- 
 
 
 

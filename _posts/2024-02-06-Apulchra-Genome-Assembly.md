@@ -2148,3 +2148,196 @@ conda deactivate
 ``` 
 
 Submitted batch job 309689
+
+### 20240325
+
+Initial assembly ran in about 3 days. These are the files that were generated: 
+
+```
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+-rw-r--r--. 1 jillashey  19G Mar 24 02:10 apul.hifiasm.intial.ec.bin
+-rw-r--r--. 1 jillashey  47G Mar 24 02:20 apul.hifiasm.intial.ovlp.source.bin
+-rw-r--r--. 1 jillashey  17G Mar 24 02:23 apul.hifiasm.intial.ovlp.reverse.bin
+-rw-r--r--. 1 jillashey 1.2G Mar 24 03:40 apul.hifiasm.intial.bp.r_utg.gfa
+-rw-r--r--. 1 jillashey  21M Mar 24 03:40 apul.hifiasm.intial.bp.r_utg.noseq.gfa
+-rw-r--r--. 1 jillashey 8.6M Mar 24 03:44 apul.hifiasm.intial.bp.r_utg.lowQ.bed
+-rw-r--r--. 1 jillashey 1.1G Mar 24 03:45 apul.hifiasm.intial.bp.p_utg.gfa
+-rw-r--r--. 1 jillashey  21M Mar 24 03:45 apul.hifiasm.intial.bp.p_utg.noseq.gfa
+-rw-r--r--. 1 jillashey 8.2M Mar 24 03:49 apul.hifiasm.intial.bp.p_utg.lowQ.bed
+-rw-r--r--. 1 jillashey 506M Mar 24 03:50 apul.hifiasm.intial.bp.p_ctg.gfa
+-rw-r--r--. 1 jillashey  11M Mar 24 03:50 apul.hifiasm.intial.bp.p_ctg.noseq.gfa
+-rw-r--r--. 1 jillashey 2.0M Mar 24 03:52 apul.hifiasm.intial.bp.p_ctg.lowQ.bed
+-rw-r--r--. 1 jillashey 469M Mar 24 03:52 apul.hifiasm.intial.bp.hap1.p_ctg.gfa
+-rw-r--r--. 1 jillashey 9.9M Mar 24 03:52 apul.hifiasm.intial.bp.hap1.p_ctg.noseq.gfa
+-rw-r--r--. 1 jillashey 2.0M Mar 24 03:54 apul.hifiasm.intial.bp.hap1.p_ctg.lowQ.bed
+-rw-r--r--. 1 jillashey 468M Mar 24 03:55 apul.hifiasm.intial.bp.hap2.p_ctg.gfa
+-rw-r--r--. 1 jillashey 9.9M Mar 24 03:55 apul.hifiasm.intial.bp.hap2.p_ctg.noseq.gfa
+-rw-r--r--. 1 jillashey 1.9M Mar 24 03:56 apul.hifiasm.intial.bp.hap2.p_ctg.lowQ.bed
+-rw-r--r--. 1 jillashey  80K Mar 24 03:57 apul_hifiasm_allcontam_rem_initial.asm.log
+```
+
+Many files. The output file description can be found above and also on the hifiasm [output](https://hifiasm.readthedocs.io/en/latest/interpreting-output.html#interpreting-output) website. The log output file contains the k-mer histogram (similar to what is posted above), which shows two peaks, indicative of a heterozygous genome assembly. This is what the bottom of the log file looks like: 
+
+```
+[M::ha_pt_gen::] counting in normal mode
+[M::yak_count] collected 2137171007 minimizers
+[M::ha_pt_gen::281249.073*35.34] ==> indexed 2135566893 positions, counted 17030417 distinct minimizer k-mers
+[M::ha_assemble::292970.825*35.36@202.994GB] ==> found overlaps for the final round
+[M::ha_print_ovlp_stat] # overlaps: 1183659340
+[M::ha_print_ovlp_stat] # strong overlaps: 596745652
+[M::ha_print_ovlp_stat] # weak overlaps: 586913688
+[M::ha_print_ovlp_stat] # exact overlaps: 1149035007
+[M::ha_print_ovlp_stat] # inexact overlaps: 34624333
+[M::ha_print_ovlp_stat] # overlaps without large indels: 1180991403
+[M::ha_print_ovlp_stat] # reverse overlaps: 410771728
+Writing reads to disk... 
+Reads has been written.
+Writing ma_hit_ts to disk... 
+ma_hit_ts has been written.
+Writing ma_hit_ts to disk... 
+ma_hit_ts has been written.
+bin files have been written.
+[M::purge_dups] homozygous read coverage threshold: 168
+[M::purge_dups] purge duplication coverage threshold: 210
+Writing raw unitig GFA to disk... 
+Writing processed unitig GFA to disk... 
+[M::purge_dups] homozygous read coverage threshold: 168
+[M::purge_dups] purge duplication coverage threshold: 210
+[M::mc_solve_core::0.308] ==> Partition
+[M::adjust_utg_by_primary] primary contig coverage range: [142, infinity]
+Writing apul.hifiasm.intial.bp.p_ctg.gfa to disk... 
+[M::adjust_utg_by_trio] primary contig coverage range: [142, infinity]
+[M::adjust_utg_by_trio] primary contig coverage range: [142, infinity]
+Writing apul.hifiasm.intial.bp.hap1.p_ctg.gfa to disk... 
+[M::adjust_utg_by_trio] primary contig coverage range: [142, infinity]
+Writing apul.hifiasm.intial.bp.hap2.p_ctg.gfa to disk... 
+Inconsistency threshold for low-quality regions in BED files: 70%
+[M::main] Version: 0.16.1-r375
+[M::main] CMD: hifiasm -o apul.hifiasm.intial -t 36 hifi_rr_allcontam_rem.fasta
+[M::main] Real time: 299500.413 sec; CPU: 10366612.139 sec; Peak RSS: 202.994 GB
+```
+
+Does the `M::purge_dups` mean that this is the value that I should be using for the `purge_dups` flag in hifiasm? It gives me two lines for `M::purge_dups`: `homozygous read coverage threshold: 168` and `purge duplication coverage threshold: 210`. I may need to talk with Ross and Hollie more about this. I'm going to QC the assembly and the haplotype assemblies with [busco](https://busco.ezlab.org/busco_userguide.html) and [quast](https://github.com/ablab/quast). In the scripts folder: `nano initial_qc.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Convert from gfa to fasta for downstream use" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data/
+
+awk '/^S/{print ">"$2;print $3}' apul.hifiasm.intial.bp.p_ctg.gfa > apul.hifiasm.intial.bp.p_ctg.fa
+
+awk '/^S/{print ">"$2;print $3}' apul.hifiasm.intial.bp.hap1.p_ctg.gfa > apul.hifiasm.intial.bp.hap1.p_ctg.fa
+
+awk '/^S/{print ">"$2;print $3}' apul.hifiasm.intial.bp.hap2.p_ctg.gfa > apul.hifiasm.intial.bp.hap2.p_ctg.fa
+
+echo "Begin busco on filtered hifiasm-assembled fasta (initial run)" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/Apul_Genome/assembly/data/apul.hifiasm.intial.bp.p_ctg.fa" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${Apul_Genome/assembly/data}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apul.initial.busco -m genome
+
+echo "busco complete for unfiltered hifiasm-assembled fasta (initial run)" $(date)
+echo "Begin busco on hifiasm-assembled haplotype 1 fasta" $(date)
+
+# Reset query 
+[ -z "$query" ] && query="${labbase}/jillashey/Apul_Genome/assembly/data/apul.hifiasm.intial.bp.hap1.p_ctg.fa" # set this to the query (genome/transcriptome) you are running
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${Apul_Genome/assembly/data}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apul.initial.hap1.busco -m genome
+
+echo "busco complete for hifiasm-assembled haplotype 1 fasta (initial run)" $(date)
+echo "Begin busco on hifiasm-assembled haplotype 2 fasta" $(date)
+
+# Reset query 
+[ -z "$query" ] && query="${labbase}/jillashey/Apul_Genome/assembly/data/apul.hifiasm.intial.bp.hap2.p_ctg.fa" # set this to the query (genome/transcriptome) you are running
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${Apul_Genome/assembly/data}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apul.initial.hap2.busco -m genome
+
+echo "busco complete for hifiasm-assembled haplotype 2 fasta (initial run)" $(date)
+echo "busco complete all assemblies of interest (initial run)" $(date)
+echo "Begin quast of primary and haplotypes (initial run)" $(date)
+
+module load QUAST/5.2.0-foss-2021b 
+# there is another version of quast if the one above does not work: QUAST/5.0.2-foss-2020b-Python-2.7.18
+
+quast -t 15 --eukaryote \
+apul.hifiasm.intial.bp.p_ctg.fa \
+apul.hifiasm.intial.bp.hap1.p_ctg.fa \
+apul.hifiasm.intial.bp.hap2.p_ctg.fa \
+/data/putnamlab/jillashey/genome/Amil_v2.01/Amil.v2.01.chrs.fasta \
+-o /data/putnamlab/jillashey/Apul_Genome/assembly/output/quast
+
+echo "Quast complete (initial run); all QC complete!" $(date)
+
+```
+
+Submitted batch job 309969. Ran in ~2 hours. Busco ran but only for the primariy assembly. For some reason, the hap1 and hap2 busco did not run. Quast appears to have failed with these errors: 
+
+```
+foss/2021b(24):ERROR:150: Module 'foss/2021b' conflicts with the currently loaded module(s) 'foss/2020b'
+foss/2021b(24):ERROR:102: Tcl command execution failed: conflict foss
+
+Python/3.9.6-GCCcore-11.2.0(61):ERROR:150: Module 'Python/3.9.6-GCCcore-11.2.0' conflicts with the currently loaded module(s) 'Python/3.8.6-GCCcore-10.2.0'
+Python/3.9.6-GCCcore-11.2.0(61):ERROR:102: Tcl command execution failed: conflict Python
+
+Perl/5.34.0-GCCcore-11.2.0(133):ERROR:150: Module 'Perl/5.34.0-GCCcore-11.2.0' conflicts with the currently loaded module(s) 'Perl/5.32.0-GCCcore-10.2.0'
+Perl/5.34.0-GCCcore-11.2.0(133):ERROR:102: Tcl command execution failed: conflict Perl
+
+foss/2021b(24):ERROR:150: Module 'foss/2021b' conflicts with the currently loaded module(s) 'foss/2020b'
+foss/2021b(24):ERROR:102: Tcl command execution failed: conflict foss
+
+Python/3.9.6-GCCcore-11.2.0(61):ERROR:150: Module 'Python/3.9.6-GCCcore-11.2.0' conflicts with the currently loaded module(s) 'Python/3.8.6-GCCcore-10.2.0'
+Python/3.9.6-GCCcore-11.2.0(61):ERROR:102: Tcl command execution failed: conflict Python
+
+SciPy-bundle/2021.10-foss-2021b(30):ERROR:150: Module 'SciPy-bundle/2021.10-foss-2021b' conflicts with the currently loaded module(s) 'SciPy-bundle/2020.11-foss-2020b'
+SciPy-bundle/2021.10-foss-2021b(30):ERROR:102: Tcl command execution failed: conflict SciPy-bundle
+
+GCCcore/11.2.0(24):ERROR:150: Module 'GCCcore/11.2.0' conflicts with the currently loaded module(s) 'GCCcore/10.2.0'
+GCCcore/11.2.0(24):ERROR:102: Tcl command execution failed: conflict GCCcore
+```
+
+Basically just a lot of conflicting modules. Below are the results for the Busco code for the primary assembly: 
+
+```
+        --------------------------------------------------
+        |Results from dataset metazoa_odb10               |
+        --------------------------------------------------
+        |C:93.3%[S:92.0%,D:1.3%],F:3.1%,M:3.6%,n:954      |
+        |890    Complete BUSCOs (C)                       |
+        |878    Complete and single-copy BUSCOs (S)       |
+        |12     Complete and duplicated BUSCOs (D)        |
+        |30     Fragmented BUSCOs (F)                     |
+        |34     Missing BUSCOs (M)                        |
+        |954    Total BUSCO groups searched               |
+        --------------------------------------------------
+```
+
+Going to edit the `initial_qc.sh` script so that I am including all things for busco to run properly. I'm also commenting out the lines that ran successfully. Submitted batch job 309984
+
