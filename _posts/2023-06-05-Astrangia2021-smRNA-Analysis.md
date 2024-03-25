@@ -6060,11 +6060,160 @@ If I subtract the cds from the exon, it will result in 0. Not sure what to do he
 
 ### 20240325
 
-- 
+Javi sent me code to create 3'UTRs! I will use it to create 3'UTRs for my GFF so that I can extract the 3'UTR sequences for miranda. First, identify the counts of each feature from the gff file. 
+
+```
+GFF_FILE="/data/putnamlab/jillashey/Astrangia_Genome/apoculata_v2.0.gff3"
+genome="/data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta"
+grep -v '^#' ${GFF_FILE} | cut -s -f 3 | sort | uniq -c | sort -rn > all_features.txt
+
+cat all_features.txt
+ 239708 exon
+ 236997 CDS
+  47156 gene
+  45867 mRNA
+  44823 stop_codon
+  44312 start_codon
+   2889 five_prime_UTR
+   2317 tRNA
+    687 three_prime_UTR
+```
+
+Extract feature types and generate individual gffs for each figure. In Javi's code, he has `grep $'\tmRNA\t' ${GFF_FILE} | grep -v '^NC_' > ACER_k2.GFFannotation.mRNA.gff`, which I will follow. I'm not sure why he is removing lines that have NC_ in them...maybe its a Acerv specific thing? I'm going to remove it for now, but may come back if I need to filter out specific rows. 
+
+```
+grep $'\texon\t' ${GFF_FILE} > apoc_GFFannotation.exon.gff
+grep $'\tCDS\t' ${GFF_FILE} > apoc_GFFannotation.CDS.gff
+grep $'\tgene\t' ${GFF_FILE} > apoc_GFFannotation.gene.gff
+grep $'\tmRNA\t' ${GFF_FILE} > apoc_GFFannotation.mRNA.gff
+grep $'\tstop_codon\t' ${GFF_FILE} > apoc_GFFannotation.stop_codon.gff
+grep $'\tstart_codon\t' ${GFF_FILE} > apoc_GFFannotation.start_codon.gff
+grep $'\tfive_prime_UTR\t' ${GFF_FILE} > apoc_GFFannotation.five_prime_UTR.gff
+grep $'\ttRNA\t' ${GFF_FILE} > apoc_GFFannotation.tRNA.gff
+grep $'\tthree_prime_UTR\t' ${GFF_FILE} > apoc_GFFannotation.three_prime_UTR.gff
+```
+
+Extract chromosome lengths
+
+```
+cat is ${genome} | awk '$0 ~ ">" {if (NR > 1) {print c;} c=0;printf substr($0,2,100) "\t"; } $0 !~ ">" {c+=length($0);} END { print c; }' > apoc.Chromosome_lenghts.txt
+
+cat apoc.Chromosome_lenghts.txt
+chromosome_1    21106950
+chromosome_2    21532011
+chromosome_3    22725890
+chromosome_4    27282911
+chromosome_5    29602567
+chromosome_6    30212294
+chromosome_7    30683508
+chromosome_8    29863146
+chromosome_9    31044737
+chromosome_10   33861578
+chromosome_11   33534404
+chromosome_12   42634786
+chromosome_13   42928715
+chromosome_14   58409227
+```
+
+Extract scaffold names 
+
+```
+awk -F" " '{print $1}' apoc.Chromosome_lenghts.txt > apoc.Chromosome_names.txt
+```
+
+Sort the gffs by chromosome name. In the scripts of the `Astrangia_Genome` folder: `nano bed_sort.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia_Genome/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BEDTools/2.30.0-GCC-11.3.0
+
+cd /data/putnamlab/jillashey/Astrangia_Genome
+
+echo "Sorting gffs by chromosome" $(date)
+
+sortBed -faidx apoc.Chromosome_names.txt -i apoc_GFFannotation.exon.gff > apoc_GFFannotation.exon_sorted.gff
+sortBed -faidx apoc.Chromosome_names.txt -i apoc_GFFannotation.CDS.gff > apoc_GFFannotation.CDS_sorted.gff
+sortBed -faidx apoc.Chromosome_names.txt -i apoc_GFFannotation.gene.gff > apoc_GFFannotation.gene_sorted.gff
+sortBed -faidx apoc.Chromosome_names.txt -i apoc_GFFannotation.mRNA.gff > apoc_GFFannotation.mRNA_sorted.gff
+sortBed -faidx apoc.Chromosome_names.txt -i apoc_GFFannotation.stop_codon.gff > apoc_GFFannotation.stop_codon_sorted.gff
+sortBed -faidx apoc.Chromosome_names.txt -i apoc_GFFannotation.start_codon.gff > apoc_GFFannotation.start_codon_sorted.gff
+sortBed -faidx apoc.Chromosome_names.txt -i apoc_GFFannotation.five_prime_UTR.gff > apoc_GFFannotation.five_prime_UTR_sorted.gff
+sortBed -faidx apoc.Chromosome_names.txt -i apoc_GFFannotation.tRNA.gff > apoc_GFFannotation.tRNA_sorted.gff
+sortBed -faidx apoc.Chromosome_names.txt -i apoc_GFFannotation.three_prime_UTR.gff > apoc_GFFannotation.three_prime_UTR_sorted.gff
+
+echo "Sorting complete!" $(date)
+```
+
+Submitted batch job 309987. Ran super fast. Use [flankBed](https://bedtools.readthedocs.io/en/latest/content/tools/flank.html) to extract the UTRs around the genes. Javi used 2kb and 3kb as his cutoffs (ie he extracted the flanks that were 2000 and 3000 bp around his gene of interest). In his actual analysis, he used 3kb. I'm going to use 3kb for now, but may have to redo with a different number. I need to look into how far the UTRs are away from the gene end. I'm also going to remove portions of the UTRs that overlap with neighboring genes. In the scripts folder: `nano flank_sub_bed.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia_Genome/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BEDTools/2.30.0-GCC-11.3.0
+
+cd /data/putnamlab/jillashey/Astrangia_Genome
+
+echo "Extracting 3kb UTRs" $(date)
+
+flankBed -i apoc_GFFannotation.gene_sorted.gff -g ${genome} -l 0 -r 3000 -s | awk '{gsub("gene","3prime_UTR",$3); print $0 }' | awk '{if($5-$4 > 3)print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' | tr ' ' '\t' > apoc.GFFannotation.3UTR_3kb.gff
+
+flankBed -i apoc_GFFannotation.gene_sorted.gff -g ${genome} -l 3000 -r 0 -s | awk '{gsub("gene","5prime_UTR",$3); print $0 }'| awk '{if($5-$4 > 3)print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}'| tr ' ' '\t' > apoc.GFFannotation.5UTR_3kb.gff
+
+echo "Subtract portions of UTRs that overlap nearby genes" $(date)
+
+subtractBed -a apoc.GFFannotation.3UTR_3kb.gff -b apoc_GFFannotation.gene_sorted.gff > apoc.GFFannotation.3UTR_3kb_corrected.gff subtractBed -a apoc.GFFannotation.5UTR_3kb.gff -b apoc_GFFannotation.gene_sorted.gff > apoc.GFFannotation.5UTR_3kb_corrected.gff 
+
+echo "UTRs identified!" $(date)
+```
+
+Submitted batch job 309994. Gave me this error: 
+
+```
+*****ERROR: Unrecognized parameter: 0 *****
+*****ERROR: Need both -l and -r. 
+*****ERROR: Must supply -l and -r or just -b with -s. 
+```
+
+It does not seem to like 0 being set for `-l` or `-r`. I'm going to set the 0 to 1 instead. Submitted batch job 309995. Still getting an error saying unrecognized parameter. Replace `flankBed` with `bedtools flank` and `subtractBed` with `bedtools subtract`. Submitted batch job 309997. Still getting an error saying unrecognized parameter. I might need to give the `-g` flag the `apoc.Chromosome_lenghts.txt` file. In the help notes, it says: 
+
+```
+The genome file should tab delimited and structured as follows:
+
+        <chromName><TAB><chromSize>
+
+        For example, Human (hg19):
+        chr1    249250621
+        chr2    243199373
+        ...
+        chr18_gl000207_random   4262
+```
+
+Going to add `apoc.Chromosome_lenghts.txt` as the `-g` argument. Submitted batch job 310001. Now getting the error: `Error: Unable to open file apoc.GFFannotation.5UTR_3kb.gff. Exiting.` Editing output file names so that they correspond to 5' or 3'. Submitted batch job 310005. Worked, hooray! 
 
 
 
-
+JA STOPPED HERE 3/25/24. 
 
 
 
