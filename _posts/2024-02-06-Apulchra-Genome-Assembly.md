@@ -2454,3 +2454,65 @@ L75                         20                            28                    
 ```
 
 Look at all of that info! The initial assembly appears to be the best in terms of all the stats. The total length is longer than the Amillepora and the haplotype assemblies. Additionally, it has the largest contig. The Amillepora genome has a higher N50 but the N50 for the primary assembly still looks good. There were 188 contigs generated in the primary assembly. Haplotype 1 assembly had more contigs (275), while haplotype 2 had less (162). Amillepora has 854 contigs which is so high! The primary assembly contig number is much lower than Atenuis (614), Adigitifera (955), or Amillepora (854). Quast, you have converted me <3. My next steps are to play with the `-s` flag in hifiasm to determine the threshold at which duplicate haplotigs should be purged. The default is 0.55 and Young et al. (2024) ran it with a range of values (0.55, 0.50, 0.45, 0.40, 0.35, 0.30). They found that all worked well to resolve haplotypes, so they stuck with the default of 0.55. They also used the `--primary` flag, which outputs a primary and alternate assembly as opposed to the primary, hap1 and hap2 assemblies. In their [code](https://github.com/benyoung93/orbicella_faveolata_pacbio_genome_transcriptome/blob/main/ofav_genome_pipeline.Rmd), they justified this by saying "running hifiasm using the primary flag as we have no real way of knowing if the haplotypes produced are real or not" (line 826). 
+
+Starting a run where `-s` is 0.3 and 0.8. In the `/data/putnamlab/jillashey/Apul_Genome/assembly/scripts` folder, `nano s30_hifiasm.sh`:
+
+```
+#!/bin/bash -i
+#SBATCH -t 30-00:00:00
+#SBATCH --nodes=1 --ntasks-per-node=36
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --exclusive
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+conda activate /data/putnamlab/conda/hifiasm
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Starting assembly with hifiasm" $(date)
+
+hifiasm -o apul.hifiasm.s30 hifi_rr_allcontam_rem.fasta -s 0.3 -t 36 2> apul_hifiasm_allcontam_rem_s30.asm.log
+
+echo "Assembly with hifiasm complete!" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 310048. In the scripts folder, `nano s80_hifiasm.sh`:
+
+```
+#!/bin/bash -i
+#SBATCH -t 30-00:00:00
+#SBATCH --nodes=1 --ntasks-per-node=36
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --exclusive
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+conda activate /data/putnamlab/conda/hifiasm
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Starting assembly with hifiasm" $(date)
+
+hifiasm -o apul.hifiasm.s80 hifi_rr_allcontam_rem.fasta -s 0.80 -t 36 2> apul_hifiasm_allcontam_rem_s80.asm.log
+
+echo "Assembly with hifiasm complete!" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 310049
+
+
