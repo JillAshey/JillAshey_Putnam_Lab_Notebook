@@ -6251,7 +6251,128 @@ TTCCAGGAATTTTGAAATAATTTTCTACAATTAATTTATTGTAATAAGAAAATCAACTGTATGCAATTGTTATGTAGACA
 
 Hooray! I have the 3' UTRs! But how do I know which gene they go with?? I guess the location? Editing the script above so that instead of `-name`, its `fullHeader`. Submitted batch job 310037. Nope that didn't change anything. Well somehow I need to figure out how to obtain the gene id that the 3'UTR sequence corresponds to, likely based on the coordinates of the 3'UTR and gene sequences. 
 
+### 20240326
 
+I'm going to run a test of miranda with the mature miRNAs and the 3'UTRs. In the miranda [documentation](https://www.animalgenome.org/bioinfo/resources/manuals/miranda.html), file1 is the miRNA file and file2 is the 3'UTR sequences. There are options to play with scaling and alignment parameters (ie `-en`, `-sc`, `-scale`, `-loose`, etc) but for now I will just run a basic test to see if it works. In the scripts folder, `nano miranda_test.sh`:
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts   
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/miranda 
+
+miranda /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa /data/putnamlab/jillashey/Astrangia_Genome/apoc_3UTR.fasta
+
+conda deactivate
+```
+
+miranda conda stuff appears to be empty on the server...might need to reactivate? Removing miranda from `/data/putnamlab` and going to try to create a new one in the conda folder on putnam lab. 
+
+```
+cd /data/putnamlab/conda 
+
+module load Miniconda3/4.9.2
+
+# Create a new environment 
+
+conda create --prefix /data/putnamlab/conda/miranda
+
+conda install miranda 
+```
+
+Gives me this error: `EnvironmentLocationNotFound: Not a conda environment: /data/putnamlab/miranda`. There is a miranda folder but it only has the history of the commands that I have run for this. I deleted this folder and am going to try installing with `mamba`, as this is what the bioconda [website](https://bioconda.github.io/recipes/miranda/README.html) recommends. 
+
+```
+module load Mamba/22.11.1-4
+
+# Create a new environment 
+
+mamba create --name miranda_JA miranda
+```
+
+Didn't work, gave me this error: 
+
+```
+Looking for: ['miranda']
+
+error    libmamba Could not open lockfile '/opt/software/Mamba/22.11.1-4/pkgs/cache/cache.lock'
+error    libmamba Could not open lockfile '/opt/software/Mamba/22.11.1-4/pkgs/cache/cache.lock'
+conda-forge/noarch                                  16.3MB @   7.2MB/s  2.4s
+conda-forge/linux-64                                39.1MB @   7.1MB/s  6.2s
+
+Could not solve for environment specs
+Encountered problems while solving:
+  - nothing provides requested miranda
+
+The environment can't be solved, aborting the operation
+```
+
+Trying again 
+
+```
+module purge 
+module load Miniconda3/4.9.2
+
+conda create --prefix /data/putnamlab/conda/miranda
+
+cd /data/putnamlab/conda/miranda
+conda install bioconda::miranda
+
+Downloading and Extracting Packages
+ca-certificates-2024 | 127 KB    | ######################################################################################## | 100% 
+certifi-2024.2.2     | 159 KB    | ######################################################################################## | 100% 
+miranda-3.3a         | 58 KB     | ######################################################################################## | 100% 
+Preparing transaction: done
+Verifying transaction: failed
+
+EnvironmentNotWritableError: The current user does not have write permissions to the target environment.
+  environment location: /opt/software/Miniconda3/4.9.2
+  uid: 1050
+  gid: 1012
+```
+
+Says that I do not have permissions to write to Miniconda location. But I'm not trying to write there. Asked chatGPT and this is what it gave me: 
+
+```
+conda create --prefix /data/putnamlab/conda/miranda
+conda activate /data/putnamlab/conda/miranda
+conda install bioconda::miranda
+```
+
+Success! Looks like I just had to activate the environment. Let's now trying running miranda. In the scripts folder, `nano miranda_test.sh`:
+
+```
+#!/bin/bash -i
+#SBATCH -t 72:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts   
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/conda/miranda 
+
+miranda /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa /data/putnamlab/jillashey/Astrangia_Genome/apoc_3UTR.fasta
+
+conda deactivate
+```
+
+Submitted batch job 310076
 
 
 
