@@ -1,7 +1,7 @@
 ---
 layout: post
 title: SwitchFree library prep
-date: '2024-02-29'
+date: '2024-03-28'
 categories:
 tags: [DNA, RNA, Library prep, Protocols]
 projects: Kit test 
@@ -11,11 +11,17 @@ projects: Kit test
 
 This post details the info about the SwitchFree library prep steps. Hollie got this kit as a test to see if we can produce adequate libraries for RNA sequencing with different species. I'm using the [Zymo-Seq SwitchFree 3' mRNA Library Kit](https://www.zymoresearch.com/products/zymo-seq-switchfree-3-mrna-library-kit). See Zymo's protocol [here](https://files.zymoresearch.com/protocols/_r3008_r3009__zymo_seq_switchfree_3_mrna_library_kit.pdf). 
 
-We will be using XXXXXX samples 
+We will be using samples 6, 7, 107, 108, 110, and 113 from the POC 2023 spawning project. These samples were extracted on [3/27/24](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-03-27-MiniprepPlus-DNA%3ARNA-extractions-Poc2023.md). The kit needs a minimum of 10 ng of total RNA or a maximum of 500 ng of total RNA, which is a large range. Since some of the concentrations in these samples were low, we will be using 11 ng of total RNA as input. Here's a breakdown of input RNA volumes for each sample: 
 
-The kit needs a minimum of 10 ng of total RNA or a maximum of 500 ng of total RNA, which is a large range. Add info about starting input amt XXXXXXXXX
 
-5 uL starting volume 
+| TubeID | TS RNA (ng/uL) | Strip tube # | RNA (uL) | Ultrapure water (uL) | Total starting volume (ul) | Primer |
+| ------ | -------------- | ------------ | -------- | -------------------- | -------------------------- | ------ |
+| 6      | 9.52           | 1            | 1.2      | 3.8                  | 5.0                        | 1      |
+| 7      | 11.5           | 1            | 1.0      | 4.0                  | 5.0                        | 2      |
+| 107    | 4.65           | 1            | 2.4      | 2.6                  | 5.0                        | 3      |
+| 108    | 2.76           | 1            | 4.0      | 1.0                  | 5.0                        | 4      |
+| 110    | 5.23           | 1            | 2.1      | 2.9                  | 5.0                        | 5      |
+| 113    | 3.5            | 1            | 3.1      | 1.9                  | 5.0                        | 6      |
 
 Here's the SwitchFree library prep workflow: 
 
@@ -102,6 +108,7 @@ Thermocycler settings:
 Thermocycler settings: 
 
 Step 1: 95°C for 3 minutes, 4°C for 2 minutes, 4°C hold 
+
 Step 2: 25°C for 45 minutes (lid temperature at 40°C), 4°C hold 
 
 - Thaw 3'mRNA L Reagent on ice 
@@ -136,7 +143,9 @@ Step 2: 25°C for 45 minutes (lid temperature at 40°C), 4°C hold
 
 Thermocycler settings: 
 
-![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/switchfree_lib_prep_section3_thermocycler.png) 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/switchfree_lib_prep_section2_thermocycler.png) 
+
+Given the low input for these preps and my previous experience with other Zymo kits, we are going to do 21 PCR amplification cycles. 
 
 - Thaw Index Primers and ZymoTaq Premix on ice 
 - Allow Library Binding Solution to equilibrate to room temperature >30 minutes before use 

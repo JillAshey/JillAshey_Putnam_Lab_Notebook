@@ -6374,6 +6374,35 @@ conda deactivate
 
 Submitted batch job 310076
 
+### 20240328 
+
+miranda test finished in about a day. The output is in `slurm-310076.out` in the scripts folder, I should've piped it to an output file but oh well. The file is quite large. Here's an example of the information in it: 
+
+```
+Read Sequence:chromosome_1:40489-43489 (3000 nt)
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Performing Scan: chromosome_12_481048 vs chromosome_1:40489-43489
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+   Forward:     Score: 152.000000  Q:2 to 18  R:855 to 875 Align Len (17) (70.59%) (82.35%)
+
+   Query:    3' cccTTGTTCG-GCTTTGTAAc 5'
+                   ||:  || :|||||||| 
+   Ref:      5' ctaAATTTGCGTGAAACATTt 3'
+
+   Energy:  -11.470000 kCal/Mol
+
+Scores for this hit:
+>chromosome_12_481048   chromosome_1:40489-43489        152.00  -11.47  2 18    855 875 17      70.59%  82.35%
+
+Score for this Scan:
+Seq1,Seq2,Tot Score,Tot Energy,Max Score,Max Energy,Strand,Len1,Len2,Positions
+>>chromosome_12_481048  chromosome_1:40489-43489        152.00  -11.47  152.00  -11.47  2       20      3000     855
+Complete
+```
+
+So much information...Let's go through this line by line. The top line `Read Sequence` is the 3'UTR sequence. The `Performing Scan` line indicates the specific miRNA that will be compared to the specified 3'UTR sequence. The `Forward` line has information about the score and the lengths of the query and reference sequences that matched up. I'm not sure what the percentages mean...Maybe its a percent of base pairs in the miRNA that aligned? The `Query` is the miRNA sequence and the `Ref` is the 3'UTR sequence. The bars between the query and reference sequence represent aligned bps and the dots between the sequences an instance of a base wobble pair. The `Scores for this hit` 
+
 
 
 Understanding mirdeep2 output -- I understand the mirdeep2 output but I do not understand the known miRNA output info. On the summary table that is outputted with the csv/html, it says XXXX # of known miRNAs were detected. However, In the `/data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1560/dir_prepare_signature1705975309` folder, there is a file (`mature_vs_precursors.arf`) that has info about known sequences which I am confused by. It looks like these are known miRNAs that were identified in the Astrangia genome, as they are given genomic coordinates. I may need to go through these files and make sure I am not missing anything. For instance, when I look up `chromosome_7_11677` (genomic coordinates for known miRNA ola-miR-100) in that file, it provides me with 80 other matches that have the same genomic coordinates and are the same as miR-100. I may need to go through these files for each sample to make sure that I am not missing any known info. 
