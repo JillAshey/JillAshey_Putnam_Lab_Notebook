@@ -6401,8 +6401,22 @@ Seq1,Seq2,Tot Score,Tot Energy,Max Score,Max Energy,Strand,Len1,Len2,Positions
 Complete
 ```
 
-So much information...Let's go through this line by line. The top line `Read Sequence` is the 3'UTR sequence. The `Performing Scan` line indicates the specific miRNA that will be compared to the specified 3'UTR sequence. The `Forward` line has information about the score and the lengths of the query and reference sequences that matched up. I'm not sure what the percentages mean...Maybe its a percent of base pairs in the miRNA that aligned? The `Query` is the miRNA sequence and the `Ref` is the 3'UTR sequence. The bars between the query and reference sequence represent aligned bps and the dots between the sequences an instance of a base wobble pair. The `Scores for this hit` 
+So much information...Let's go through this line by line. The top line `Read Sequence` is the 3'UTR sequence. The `Performing Scan` line indicates the specific miRNA that will be compared to the specified 3'UTR sequence. The `Forward` line has information about the score and the lengths of the query and reference sequences that matched up. I'm not sure what the percentages mean...Maybe its a percent of base pairs in the miRNA that aligned? The `Query` is the miRNA sequence and the `Ref` is the 3'UTR sequence. The bars between the query and reference sequence represent aligned bps and the dots between the sequences an instance of a base wobble pair. The `Scores for this hit` has the total score and energy of this interaction. A good cutoff is typically 100-150 for score and -10 kcal/mol for energy. I think the 2 and 18 is the miRNA sequence that aligns with the query, and vice versa with the 3'UTR sequence (855 and 875). Still not sure what the percentages mean. The `Scores for this scan` includes much of the same information as above. I'm guessing that hit vs scan is the hit of the miRNA to a specific portion of the 3'UTR and the scan refers to all of the hits along a specific 3'UTR sequence? Not totally sure though. 
 
+This file is massive. It would have taken ~1 hour to download to my personal computer. I'm going to add some lines to the script that count all of the putative interactions. This code is being added to the `miranda_test.sh` script (and the actual miranda code is being commented out so it does not run again). 
+
+```
+zgrep -c "Performing Scan" slurm-310076.out
+```
+
+I used the "Performing Scan" phrase because I believe that this is the header for each putative interaction. Submitted batch job 310209. Ran in about 6 mins and there are 112,558,341 putative interactions! That is crazy. I think I should apply some filtering parameters in the miranda code now. I'm going to add `-sc 100` and `-en -10`. Also adding `-out test_miranda.tab`. Submitted batch job 310211
+
+
+
+
+
+
+How do I invoke strict seed binding? 
 
 
 Understanding mirdeep2 output -- I understand the mirdeep2 output but I do not understand the known miRNA output info. On the summary table that is outputted with the csv/html, it says XXXX # of known miRNAs were detected. However, In the `/data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1560/dir_prepare_signature1705975309` folder, there is a file (`mature_vs_precursors.arf`) that has info about known sequences which I am confused by. It looks like these are known miRNAs that were identified in the Astrangia genome, as they are given genomic coordinates. I may need to go through these files and make sure I am not missing anything. For instance, when I look up `chromosome_7_11677` (genomic coordinates for known miRNA ola-miR-100) in that file, it provides me with 80 other matches that have the same genomic coordinates and are the same as miR-100. I may need to go through these files for each sample to make sure that I am not missing any known info. 
@@ -6420,4 +6434,5 @@ Interpretation of mirdeep2 output
 good resource for miranda 
 - https://bioinformaticsworkbook.org/dataAnalysis/SmallRNA/Miranda_miRNA_Target_Prediction.html#gsc.tab=0 
 
-Other potential miRNA target prediction programs: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7839038/#:~:text=TargetScan%20primarily%20predicts%20potential%20miRNA,to%20include%20only%20conserved%20sites. 
+This could be a good R use for downstread miRNA:mRNA analysis: https://link.springer.com/article/10.1186/s12864-022-08558-w
+- https://bioconductor.org/packages/release/bioc/html/mirTarRnaSeq.html
