@@ -1,7 +1,7 @@
 ---
 layout: post
 title: SwitchFree library prep
-date: '2024-03-28'
+date: '2024-03-29'
 categories:
 tags: [DNA, RNA, Library prep, Protocols]
 projects: Kit test 
@@ -189,3 +189,21 @@ THIS IS THE FINAL 3' mRNA-seq LIBRARY. STORE AT -20°C.
 Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/blob/master/_posts/2019-07-30-DNA-Tapestation.md) to visualize libraries. Here's an example of what the library should look like on a Tapestation: 
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/switchfree_lib_prep_library_example.png)
+
+I ran the tapestation on the libraries on 3/31/24. See the full report [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_switchfree_POC_2024-03-31.pdf). 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_overview_20240331.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_6_20240331.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_7_20240331.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_107_20240331.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_108_20240331.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_110_20240331.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_113_20240331.png)
+
+Tapestation looks great!! Sample 108 looks a little wonky, perhaps due to a PCR bubble product (read more [here](https://knowledge.illumina.com/library-preparation/general/library-preparation-general-reference_material-list/000001918)). Libraries with a bubble product can still be sequenced, which is good. Need to discuss next steps with Hollie + Ariana. 
