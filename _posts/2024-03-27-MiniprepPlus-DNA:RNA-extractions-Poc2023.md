@@ -76,7 +76,7 @@ Gel from second extraction
 
 This gel looks much better! There are bands for all samples, even if some of the bands are faint. The two brightest bands are the embryo samples (6 & 7) in ambient temperatures, and the others are larvae 8hpf in high (107 & 113) and ambient (108 & 110) temperatures. We did not get RNA qubit values for all of the samples. Tomorrow, I'm going to run an RNA tapestation on the 6 samples from the second extraction batch. Based on how the tapestation looks, we will determine if we want to use these samples for the Zymo 3' switchfree library prep kit. In order to use the library prep kit, we need to have some idea of the concentration of the samples. 
 
-I also ran a RNA tapestation on the six extractions from the second extraction batch to see if the lower concentration samples could be picked up. See full tapestation report [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/RNA_POC_2023-03-28.pdf). 
+On the following day (3/28/24), I also ran a RNA tapestation on the six extractions from the second extraction batch to see if the lower concentration samples could be picked up. See full tapestation report [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/RNA_POC_2023-03-28.pdf). 
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/RNA_TS_overview_20240328.png)
 

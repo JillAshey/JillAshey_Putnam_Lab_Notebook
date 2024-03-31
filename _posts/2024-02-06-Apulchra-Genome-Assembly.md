@@ -2515,4 +2515,169 @@ conda deactivate
 
 Submitted batch job 310049
 
+### 20240329 
 
+The s30 script finished running in about 3 days. Now I'm going to run busco and quast for QC on these assemblies. In the scripts folder: `nano s30_primary_busco.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Convert from gfa to fasta for downstream use" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data/
+
+awk '/^S/{print ">"$2;print $3}' apul.hifiasm.s30.bp.p_ctg.gfa > apul.hifiasm.s30.bp.p_ctg.fa
+
+echo "Begin busco on hifiasm-assembled primary fasta with -s 0.30" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/Apul_Genome/assembly/data/apul.hifiasm.s30.bp.p_ctg.fa" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${Apul_Genome/assembly/data}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apul.s30.primary.busco -m genome
+
+echo "busco complete for hifiasm-assembled primary fasta with -s 0.30" $(date)
+```
+
+Submitted batch job 310241. In the scripts folder: `nano s30_hap1_busco.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Convert from gfa to fasta for downstream use" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data/
+
+awk '/^S/{print ">"$2;print $3}' apul.hifiasm.s30.bp.hap1.p_ctg.gfa > apul.hifiasm.s30.bp.hap1.p_ctg.fa
+
+echo "Begin busco on hifiasm-assembled fasta hap1 with -s 0.30" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/Apul_Genome/assembly/data/apul.hifiasm.s30.bp.hap1.p_ctg.fa" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${Apul_Genome/assembly/data}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apul.s30.hap1.busco -m genome
+
+echo "busco complete for hifiasm-assembled fasta hap1 with -s 0.30" $(date)
+```
+
+Submitted batch job 310242. In the scripts folder: `nano s30_hap2_busco.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Convert from gfa to fasta for downstream use" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data/
+
+awk '/^S/{print ">"$2;print $3}' apul.hifiasm.s30.bp.hap2.p_ctg.gfa > apul.hifiasm.s30.bp.hap2.p_ctg.fa
+
+echo "Begin busco on hifiasm-assembled fasta hap2 with -s 0.30" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/Apul_Genome/assembly/data/apul.hifiasm.s30.bp.hap2.p_ctg.fa" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${Apul_Genome/assembly/data}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apul.s30.hap2.busco -m genome
+
+echo "busco complete for hifiasm-assembled fasta hap2 with -s 0.30" $(date)
+```
+
+Submitted batch job 310243. In the scripts folder: `nano s30_quast.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+module purge
+module load Python/2.7.18-GCCcore-10.2.0
+module load QUAST/5.0.2-foss-2020b-Python-2.7.18
+# previously used QUAST/5.2.0-foss-2021b but it failed and produced module conflict errors
+
+echo "Begin quast of primary and haplotypes (s30 run) w/ reference" $(date)
+
+quast -t 10 --eukaryote \
+apul.hifiasm.s30.bp.p_ctg.fa \
+apul.hifiasm.s30.bp.hap1.p_ctg.fa \
+apul.hifiasm.s30.bp.hap2.p_ctg.fa \
+/data/putnamlab/jillashey/genome/Amil_v2.01/Amil.v2.01.chrs.fasta \
+-o /data/putnamlab/jillashey/Apul_Genome/assembly/output/quast/s30
+
+echo "Quast complete (s30 run); all QC complete!" $(date)
+```
+
+Submitted batch job 310244. So many jobs! The primary busco finished in about an hour. Let's look at the results. 
+
+Busco for primary assembly: 
+
+```
+        --------------------------------------------------
+        |Results from dataset metazoa_odb10               |
+        --------------------------------------------------
+        |C:93.3%[S:92.9%,D:0.4%],F:3.1%,M:3.6%,n:954      |
+        |890    Complete BUSCOs (C)                       |
+        |886    Complete and single-copy BUSCOs (S)       |
+        |4      Complete and duplicated BUSCOs (D)        |
+        |30     Fragmented BUSCOs (F)                     |
+        |34     Missing BUSCOs (M)                        |
+        |954    Total BUSCO groups searched               |
+        --------------------------------------------------
+```
+
+Pretty similar to the initial primary assembly, which was the same in completeness (93.3%) but slightly lower in single copy buscos (92% in initial vs 92.9% in s30). 
