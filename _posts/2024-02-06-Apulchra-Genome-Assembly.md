@@ -2681,3 +2681,193 @@ Busco for primary assembly:
 ```
 
 Pretty similar to the initial primary assembly, which was the same in completeness (93.3%) but slightly lower in single copy buscos (92% in initial vs 92.9% in s30). 
+
+Busco for the hap1 assembly:
+
+```
+        --------------------------------------------------
+        |Results from dataset metazoa_odb10               |
+        --------------------------------------------------
+        |C:93.4%[S:92.9%,D:0.5%],F:3.1%,M:3.5%,n:954      |
+        |891    Complete BUSCOs (C)                       |
+        |886    Complete and single-copy BUSCOs (S)       |
+        |5      Complete and duplicated BUSCOs (D)        |
+        |30     Fragmented BUSCOs (F)                     |
+        |33     Missing BUSCOs (M)                        |
+        |954    Total BUSCO groups searched               |
+        --------------------------------------------------
+```
+
+Almost identical to primary assembly with this flag. Also pretty similar to the initial hap1 assembly. 
+
+```
+        --------------------------------------------------
+        |Results from dataset metazoa_odb10               |
+        --------------------------------------------------
+        |C:93.9%[S:93.6%,D:0.3%],F:2.8%,M:3.3%,n:954      |
+        |896    Complete BUSCOs (C)                       |
+        |893    Complete and single-copy BUSCOs (S)       |
+        |3      Complete and duplicated BUSCOs (D)        |
+        |27     Fragmented BUSCOs (F)                     |
+        |31     Missing BUSCOs (M)                        |
+        |954    Total BUSCO groups searched               |
+        --------------------------------------------------
+```
+
+Once again, pretty similar to the primary and hap1 assemblies, as well as the initial hap2 assembly. So what do these results mean? That the assembly results aren't really affected by the `-s` flag? I will have to see what the s80 results look like. 
+
+### 20240401
+
+The s80 script finished a couple of days ago. Now time to assess completeness and what not. In the scripts folder: `nano s80_primary_busco.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Convert from gfa to fasta for downstream use" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data/
+
+awk '/^S/{print ">"$2;print $3}' apul.hifiasm.s80.bp.p_ctg.gfa > apul.hifiasm.s80.bp.p_ctg.fa
+
+echo "Begin busco on hifiasm-assembled primary fasta with -s 0.80" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/Apul_Genome/assembly/data/apul.hifiasm.s80.bp.p_ctg.fa" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${Apul_Genome/assembly/data}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apul.s80.primary.busco -m genome
+
+echo "busco complete for hifiasm-assembled primary fasta with -s 0.80" $(date)
+```
+
+Submitted batch job 310321. In the scripts folder: `nano s80_hap1_busco.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Convert from gfa to fasta for downstream use" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data/
+
+awk '/^S/{print ">"$2;print $3}' apul.hifiasm.s80.bp.hap1.p_ctg.gfa > apul.hifiasm.s80.bp.hap1.p_ctg.fa
+
+echo "Begin busco on hifiasm-assembled fasta hap1 with -s 0.80" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/Apul_Genome/assembly/data/apul.hifiasm.s80.bp.hap1.p_ctg.fa" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${Apul_Genome/assembly/data}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apul.s80.hap1.busco -m genome
+
+echo "busco complete for hifiasm-assembled fasta hap1 with -s 0.80" $(date)
+```
+
+Submitted batch job 310322. In the scripts folder: `nano s80_hap2_busco.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Convert from gfa to fasta for downstream use" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data/
+
+awk '/^S/{print ">"$2;print $3}' apul.hifiasm.s80.bp.hap2.p_ctg.gfa > apul.hifiasm.s80.bp.hap2.p_ctg.fa
+
+echo "Begin busco on hifiasm-assembled fasta hap2 with -s 0.80" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/Apul_Genome/assembly/data/apul.hifiasm.s80.bp.hap2.p_ctg.fa" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${Apul_Genome/assembly/data}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apul.s80.hap2.busco -m genome
+
+echo "busco complete for hifiasm-assembled fasta hap2 with -s 0.80" $(date)
+```
+
+Submitted batch job 310323
+
+Talked with Hollie last week about possibly assembly the mitochondrial genome for Apul. There are some Apul mito sequences on [NCBI](https://www.ncbi.nlm.nih.gov/gene/?term=acropora%20pulchra), which I'm going to pull and blast against the pacbio raw reads. If there are any hits, I will know that mito sequences are present in the data and its possible to do a mito assembly. There are 16 putative mito sequences for Apul in the NCBI link above. I'm going to pull those sequences and blast them. Make mito folders:
+
+```
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+mkdir mito
+cd mito
+```
+
+Using the putative Apul mito sequences from [NCBI](https://www.ncbi.nlm.nih.gov/gene/?term=acropora%20pulchra), make a fasta file with the 16 sequences. File is called `mito_seqs_ncbi.fasta`. Similar to what I did with the viral, euk and prok sequences, blast the mito sequences against the raw reads. In the scripts folder: `nano blastn_mito_seqs_ncbi.sh` 
+
+```
+#!/bin/bash 
+#SBATCH -t 30-00:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --exclusive
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BLAST+/2.13.0-gompi-2022a
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Build mito seq db" $(date)
+
+makeblastdb -in /data/putnamlab/jillashey/Apul_Genome/assembly/data/mito/mito_seqs_ncbi.fasta -dbtype nucl -out /data/putnamlab/jillashey/Apul_Genome/assembly/data/mito/mito_seqs_ncbi_db
+
+echo "Blasting hifi reads against viral genomes to look for contaminants" $(date)
+
+blastn -query m84100_240128_024355_s2.hifi_reads.bc1029.fasta -db /data/putnamlab/jillashey/Apul_Genome/assembly/data/mito/mito_seqs_ncbi_db -outfmt 6 -evalue 1e-4 -perc_identity 90 -out mito_hits_rr.txt
+
+echo "Blast complete!" $(date)
+```
+
+Submitted batch job 310324
