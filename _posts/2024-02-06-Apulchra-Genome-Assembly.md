@@ -2870,4 +2870,144 @@ blastn -query m84100_240128_024355_s2.hifi_reads.bc1029.fasta -db /data/putnamla
 echo "Blast complete!" $(date)
 ```
 
-Submitted batch job 310324
+Submitted batch job 310324. Checking back a couple hours later. Let's look at the mito results first: 
+
+```
+wc -l mito_hits_rr.txt 
+12449 mito_hits_rr.txt
+
+head mito_hits_rr.txt 
+m84100_240128_024355_s2/246617425/ccs	NC_081454.1:14774-15130	94.175	103	6	0	6728	6830	308	206	1.49e-39	158
+m84100_240128_024355_s2/246617425/ccs	NC_081454.1:2434-16341	94.175	103	6	0	6728	6830	12648	12546	1.49e-39	158
+m84100_240128_024355_s2/246485798/ccs	NC_081454.1:14774-15130	94.175	103	6	0	4066	4168	308	206	8.50e-40	158
+m84100_240128_024355_s2/246485798/ccs	NC_081454.1:2434-16341	94.175	103	6	0	4066	4168	12648	12546	8.50e-40	158
+m84100_240128_024355_s2/248320207/ccs	NC_081454.1:14442-14741	92.079	202	14	2	19987	20187	67	267	3.13e-77	283
+m84100_240128_024355_s2/248320207/ccs	NC_081454.1:2434-16341	92.079	202	14	2	19987	20187	12075	12275	3.13e-77	283
+m84100_240128_024355_s2/257166685/ccs	NC_081454.1:14442-14741	93.035	201	14	0	16520	16720	67	267	1.18e-80	294
+m84100_240128_024355_s2/257166685/ccs	NC_081454.1:2434-16341	93.035	201	14	0	16520	16720	12075	12275	1.18e-80	294
+m84100_240128_024355_s2/255267441/ccs	NC_081454.1:14442-14741	92.537	201	14	1	14988	15187	67	267	1.86e-78	287
+m84100_240128_024355_s2/255267441/ccs	NC_081454.1:2434-16341	92.537	201	14	1	14988	15187	12075	12275	1.86e-78	287
+```
+
+I need to talk more with Hollie about the mito asssembly because I am still a little confused about this portion. 
+
+The busco information for the s80 assembly run also finished. Let's look at the results! 
+
+Primary assembly: 
+
+```
+        --------------------------------------------------
+        |Results from dataset metazoa_odb10               |
+        --------------------------------------------------
+        |C:93.5%[S:89.8%,D:3.7%],F:3.2%,M:3.3%,n:954      |
+        |892    Complete BUSCOs (C)                       |
+        |857    Complete and single-copy BUSCOs (S)       |
+        |35     Complete and duplicated BUSCOs (D)        |
+        |31     Fragmented BUSCOs (F)                     |
+        |31     Missing BUSCOs (M)                        |
+        |954    Total BUSCO groups searched               |
+        --------------------------------------------------
+```
+
+Hap1 assembly: 
+
+```
+        --------------------------------------------------
+        |Results from dataset metazoa_odb10               |
+        --------------------------------------------------
+        |C:93.6%[S:91.4%,D:2.2%],F:3.1%,M:3.3%,n:954      |
+        |893    Complete BUSCOs (C)                       |
+        |872    Complete and single-copy BUSCOs (S)       |
+        |21     Complete and duplicated BUSCOs (D)        |
+        |30     Fragmented BUSCOs (F)                     |
+        |31     Missing BUSCOs (M)                        |
+        |954    Total BUSCO groups searched               |
+        --------------------------------------------------
+```
+
+Hap2 assembly: 
+
+```
+        --------------------------------------------------
+        |Results from dataset metazoa_odb10               |
+        --------------------------------------------------
+        |C:92.3%[S:91.0%,D:1.3%],F:2.9%,M:4.8%,n:954      |
+        |880    Complete BUSCOs (C)                       |
+        |868    Complete and single-copy BUSCOs (S)       |
+        |12     Complete and duplicated BUSCOs (D)        |
+        |28     Fragmented BUSCOs (F)                     |
+        |46     Missing BUSCOs (M)                        |
+        |954    Total BUSCO groups searched               |
+        --------------------------------------------------
+```
+
+Assemblies look quite similar to one another and to the prior assemblies. 89.8% of single copy buscos for the primary assembly is the lowest of all of the assemblies. I'm now going to run quast with the initial, -s 0.30, -s 0.80, and the Amillepora assemblies to compare. In the scripts folder: `nano test_quast.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+module purge
+module load Python/2.7.18-GCCcore-10.2.0
+module load QUAST/5.0.2-foss-2020b-Python-2.7.18
+# previously used QUAST/5.2.0-foss-2021b but it failed and produced module conflict errors
+
+echo "Begin quast of initial, s30, and s80 assemblies w/ reference" $(date)
+
+quast -t 15 --eukaryote \
+apul.hifiasm.intial.bp.p_ctg.fa \
+apul.hifiasm.intial.bp.hap1.p_ctg.fa \
+apul.hifiasm.intial.bp.hap2.p_ctg.fa \
+apul.hifiasm.s30.bp.p_ctg.fa \
+apul.hifiasm.s30.bp.hap1.p_ctg.fa \
+apul.hifiasm.s30.bp.hap2.p_ctg.fa \
+apul.hifiasm.s80.bp.p_ctg.fa \
+apul.hifiasm.s80.bp.hap1.p_ctg.fa \
+apul.hifiasm.s80.bp.hap2.p_ctg.fa \
+/data/putnamlab/jillashey/genome/Amil_v2.01/Amil.v2.01.chrs.fasta \
+-o /data/putnamlab/jillashey/Apul_Genome/assembly/output/quast/s80
+
+echo "Quast complete" $(date)
+```
+
+Submitted batch job 310352. Finished in about 5 mins. Here's quast:
+
+```
+All statistics are based on contigs of size >= 500 bp, unless otherwise noted (e.g., "# contigs (>= 0 bp)" and "Total length (>= 0 bp)" include all contigs).
+
+Assembly                    apul.hifiasm.intial.bp.p_ctg  apul.hifiasm.intial.bp.hap1.p_ctg  apul.hifiasm.intial.bp.hap2.p_ctg  apul.hifiasm.s30.bp.p_ctg  apul.hifiasm.s30.bp.hap1.p_ctg  apul.hifiasm.s30.bp.hap2.p_ctg  apul.hifiasm.s80.bp.p_ctg  apul.hifiasm.s80.bp.hap1.p_ctg  apul.hifiasm.s80.bp.hap2.p_ctg  Amil.v2.01.chrs
+# contigs (>= 0 bp)         188                           275                                162                                180                        247                             167                             206                        258                             189                             854            
+# contigs (>= 1000 bp)      188                           275                                162                                180                        247                             167                             206                        258                             189                             851            
+# contigs (>= 5000 bp)      188                           273                                162                                180                        247                             167                             206                        256                             189                             748            
+# contigs (>= 10000 bp)     186                           271                                162                                178                        246                             166                             204                        255                             187                             672            
+# contigs (>= 25000 bp)     166                           246                                153                                158                        219                             161                             187                        235                             178                             545            
+# contigs (>= 50000 bp)     98                            163                                124                                92                         142                             132                             120                        155                             150                             445            
+Total length (>= 0 bp)      518528298                     481372407                          480341213                          504851641                  484060404                       461127429                       558522339                  509131880                       465604880                       475381253      
+Total length (>= 1000 bp)   518528298                     481372407                          480341213                          504851641                  484060404                       461127429                       558522339                  509131880                       465604880                       475378544      
+Total length (>= 5000 bp)   518528298                     481363561                          480341213                          504851641                  484060404                       461127429                       558522339                  509123034                       465604880                       475052084      
+Total length (>= 10000 bp)  518514885                     481349140                          480341213                          504838228                  484053588                       461119824                       558508926                  509116218                       465589833                       474498957      
+Total length (>= 25000 bp)  518188097                     480901871                          480181619                          504499732                  483598713                       461019312                       558241588                  508764673                       465424962                       472383091      
+Total length (>= 50000 bp)  515726224                     477880931                          479141568                          502109496                  480738474                       460002421                       555789785                  505834173                       464397174                       468867721      
+# contigs                   188                           275                                162                                180                        247                             167                             206                        258                             189                             854            
+Largest contig              45111900                      21532546                           22038975                           30476199                   22329680                        19744096                        22038975                   22153531                        22038975                        39361238       
+Total length                518528298                     481372407                          480341213                          504851641                  484060404                       461127429                       558522339                  509131880                       465604880                       475381253      
+GC (%)                      39.05                         39.03                              39.04                              39.04                      39.03                           39.04                           39.07                      39.05                           39.03                           39.06          
+N50                         16268372                      12353884                           13054353                           16275225                   13330421                        14742043                        14962207                   11978068                        12847727                        19840543       
+N75                         13007972                      7901416                            8791894                            13021168                   9796342                         9573480                         10779388                   8114208                         6210685                         1469964        
+L50                         11                            15                                 15                                 13                         14                              14                              16                         16                              14                              9              
+L75                         20                            28                                 26                                 21                         24                              24                              27                         29                              26                              23             
+# N's per 100 kbp           0.00                          0.00                               0.00                               0.00                       0.00                            0.00                            0.00                       0.00                            0.00                            7.79           
+```
+
+So much good info!!! The initial assembly still has the largest contig, but the s80 assembly has the longest total lengths. The Amillepora genome still has the best N50 value but the initial assembly also has a good N50. Overall, the initial assembly is the best out of these assemblies. The initial hap2 assembly has the lowest number of contigs (162). Out of the primary assemblies, the s30 assembly has the lowest number of contigs (180), while the initial assembly had 188 contigs and the s80 assembly had 206 contigs. 

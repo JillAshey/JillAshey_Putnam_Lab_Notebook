@@ -6411,9 +6411,43 @@ zgrep -c "Performing Scan" slurm-310076.out
 
 I used the "Performing Scan" phrase because I believe that this is the header for each putative interaction. Submitted batch job 310209. Ran in about 6 mins and there are 112,558,341 putative interactions! That is crazy. I think I should apply some filtering parameters in the miranda code now. I'm going to add `-sc 100` and `-en -10`. Also adding `-out test_miranda.tab`. Submitted batch job 310211
 
+### 20240401
 
+Miranda has pre-emptively stopped and restarted a couple times. I'm going to stop job `310211` now and assess the results thus far. 
 
+These were the current settings: 
 
+```
+Current Settings:
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Query Filename:         /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa
+Reference Filename:     /data/putnamlab/jillashey/Astrangia_Genome/apoc_3UTR.fasta
+Gap Open Penalty:       -9.000000
+Gap Extend Penalty:     -4.000000
+Score Threshold:        100.000000
+Energy Threshold:       -10.000000 kcal/mol
+Scaling Parameter:      4.000000
+```
+
+If I want to invoke strict seed binding, I will probably have to play with the gap open and extend penalty thresholds. Here's an example of one of the miRNA:mRNA matches:
+
+```
+Performing Scan: chromosome_12_481048 vs chromosome_1:17663-20663
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+   Forward:     Score: 143.000000  Q:2 to 17  R:2880 to 2900 Align Len (16) (75.00%) (87.50%)
+
+   Query:    3' ccctTGTT-CGGCTTTGTAAc 5'
+                    |||| | :||||:||| 
+   Ref:      5' tttcACAATGGTGAAATATTc 3'
+
+   Energy:  -12.000000 kCal/Mol
+
+Scores for this hit:
+>chromosome_12_481048   chromosome_1:17663-20663        143.00  -12.00  2 17    2880 2900       16      75.00%  87.50%
+```
+
+Very cool! 
 
 
 How do I invoke strict seed binding? 
