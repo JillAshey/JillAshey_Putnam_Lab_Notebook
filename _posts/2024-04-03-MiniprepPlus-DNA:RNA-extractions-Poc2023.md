@@ -15,7 +15,7 @@ This protocol is based on Maggie’s coral egg/larvae extraction [protocol](http
 
 The samples run today were 8, 9, 106, 109, 111, and 112. These samples had ~400 ul of larvae per tube and were preserved in 500 uL of DNA/RNA Shield. They were transported in a freezer box that also included formalin-fixed samples and were stored at 4°C for ~3 months. This photo is post-bead beating: 
 
-XXXXXX
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/samples_20240403.JPG)
 
 
 ### Materials 
