@@ -64,5 +64,18 @@ There are very very very faint bands in the RNA samples for the last 4 samples. 
 
 See full tapestation report [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/RNA_POC_2024-04-03.pdf). 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/RNA_TS_overview_20240403.png)
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/RNA_TS_8_20240403.png)
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/RNA_TS_9_20240403.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/RNA_TS_106_20240403.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/RNA_TS_109_20240403.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/RNA_TS_111_20240403.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/RNA_TS_113_20240403.png)
+
+Tapestation looks great! Concentrations are all relatively high, even in the samples that Qubit did not pick up. There are also two bands in the TS gel. These look good to go for library prep. 
