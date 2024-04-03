@@ -41,6 +41,8 @@ Protocol was followed according to this [post](https://github.com/JillAshey/Jill
 
 ### QC 
 
+All QC was run the same day as extractions. 
+
 #### Qubit results 
 
 | [Tube.ID](http://tube.id/) | DNA1_ng_uL | DNA2_ng_uL | DNA_avg_ng_uL | RNA1_ng_uL | RNA2_ng_uL | RNA_avg_ng_uL |
@@ -57,3 +59,10 @@ Protocol was followed according to this [post](https://github.com/JillAshey/Jill
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20240403.JPG)
 
 There are very very very faint bands in the RNA samples for the last 4 samples. I did not get Qubit values for the last 2 samples but hopefully will get tapestation concentrations for them. 
+
+#### Tapestation 
+
+See full tapestation report [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/RNA_POC_2024-04-03.pdf). 
+
+
+
