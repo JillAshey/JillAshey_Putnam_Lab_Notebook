@@ -43,6 +43,17 @@ Protocol was followed according to this [post](https://github.com/JillAshey/Jill
 
 #### Qubit results 
 
+| [Tube.ID](http://tube.id/) | DNA1_ng_uL | DNA2_ng_uL | DNA_avg_ng_uL | RNA1_ng_uL | RNA2_ng_uL | RNA_avg_ng_uL |
+| -------------------------- | ---------- | ---------- | ------------- | ---------- | ---------- | ------------- |
+| 8                          | NA         | NA         | NA            | 29.6       | 29.4       | 29.5          |
+| 9                          | NA         | NA         | NA            | 46         | 46.4       | 46.2          |
+| 106                        | 3.48       | 3.46       | 3.47          | 11         | 11         | 11            |
+| 109                        | 4.54       | 4.56       | 4.55          | 10.4       | 10.2       | 10.3          |
+| 111                        | 3.96       | 4          | 3.98          | NA         | NA         | NA            |
+| 112                        | 3.52       | 3.52       | 3.52          | NA         | NA         | NA            |
 
 #### Gel 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20240403.JPG)
+
+There are very very very faint bands in the RNA samples for the last 4 samples. I did not get Qubit values for the last 2 samples but hopefully will get tapestation concentrations for them. 
