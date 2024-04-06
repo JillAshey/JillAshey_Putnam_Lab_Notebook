@@ -11,7 +11,7 @@ projects: Kit test
 
 This post details the info about the SwitchFree library prep steps. Hollie got this kit as a test to see if we can produce adequate libraries for RNA sequencing with different species. I'm using the [Zymo-Seq SwitchFree 3' mRNA Library Kit](https://www.zymoresearch.com/products/zymo-seq-switchfree-3-mrna-library-kit). See Zymo's protocol [here](https://files.zymoresearch.com/protocols/_r3008_r3009__zymo_seq_switchfree_3_mrna_library_kit.pdf). 
 
-We will be using samples 8, 9, 106, 109, 111, and 112 from the POC 2023 spawning project. These samples were extracted on [3/27/24](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-03-27-MiniprepPlus-DNA%3ARNA-extractions-Poc2023.md). The kit needs a minimum of 10 ng of total RNA or a maximum of 500 ng of total RNA, which is a large range. Since some of the concentrations in these samples were low, we will be using 11 ng of total RNA as input. Here's a breakdown of input RNA volumes for each sample: 
+We will be using samples 8, 9, 106, 109, 111, and 112 from the POC 2023 spawning project. These samples were extracted on [4/3/24](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-04-03-MiniprepPlus-DNA%3ARNA-extractions-Poc2023.md). The kit needs a minimum of 10 ng of total RNA or a maximum of 500 ng of total RNA, which is a large range. Since some of the concentrations in these samples were low, we will be using 11 ng of total RNA as input. Here's a breakdown of input RNA volumes for each sample: 
 
 
 | TubeID | TS RNA (ng/uL) | Strip tube # | RNA (uL) | Ultrapure water (uL) | Total starting volume (ul) | Primer |
