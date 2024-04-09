@@ -6447,10 +6447,212 @@ Scores for this hit:
 >chromosome_12_481048   chromosome_1:17663-20663        143.00  -12.00  2 17    2880 2900       16      75.00%  87.50%
 ```
 
-Very cool! 
+Very cool! How do I invoke strict seed binding? 
+
+### 20240409 
+
+In order for miranda to run faster, I am going to filter the input so that I'm only getting the differentially expressed genes and miRNAs. First, I'm going to subset the `mature_all.fa` file. [This](https://github.com/JillAshey/Astrangia_repo/blob/main/output/Molecular/smRNA/DEM_list.txt) is a list of my differentially expressed miRNAs. I'm copying it to the server into `/data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57`. Subset the mature fasta file based on the miRNAs in the DEM list. 
+
+```
+grep -A 1 -f DEM_list.txt mature_all.fa | grep -v "^--$" > mature_DE.fa
+
+zgrep -c ">" mature_DE.fa 
+50
+```
+
+Excellent, now all differentially expressed miRNAs are in the `mature_DE.fa`. Time to work on subsetting the gene list by the DEGs. This one is a little bit more complicated because I have a fasta of the 3’UTR sequences for each gene which is being used as input for the miranda script. However the 3’UTR sequences are only labeled with a coordinate (ie >chromosome14:1-200) as opposed to what gene corresponds to that specific 3’UTR sequence (ie >gene1). I can do this with bedtools intersect (also used above). First, convert the fasta headers of the 3'UTR fasta file to bed file format. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia_Genome
+
+awk -F'[:-]' '/^>/ {print $2 "\t" $3-1 "\t" $4}' apoc_3UTR.fasta > apoc_3UTR.bed
+```
+
+Intersect BED files with primary GFF. In the scripts folder: `nano bed_intersect_3UTR.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia_Genome/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BEDTools/2.30.0-GCC-11.3.0
+
+cd /data/putnamlab/jillashey/Astrangia_Genome
+
+echo "Merging 3'UTR bed file with gff file to get genes associated with 3'UTR sequences" $(date)
+
+bedtools intersect -a apoc_3UTR.bed -b apoculata_v2.0.gff3 -wa -wb > intersect_output.txt
+
+echo "Merge complete" $(date)
+```
+
+Submitted batch job 310666. Got this error: 
+
+```
+Error: Type checker found wrong number of fields while tokenizing data line.
+Perhaps you have extra TAB at the end of your line? Check with "cat -t"
+```
+
+Apparently the bed tools is looking for the bed file to have chromosome, start and end columns. I need to include the chromosome columns
+
+```
+awk -F'[:-]' '/^>/ {chromosome=substr($1, 2); start=$2; end=$3; print chromosome "\t" start "\t" end}' apoc_3UTR.fasta > apoc_3UTR.bed
+
+head apoc_3UTR.bed 
+chromosome_1	17663	20663
+chromosome_1	40489	43489
+chromosome_1	53463	55801
+chromosome_1	53463	55801
+chromosome_1	74713	76735
+chromosome_1	74713	76735
+chromosome_1	92518	93919
+chromosome_1	94852	95518
+chromosome_1	92518	93919
+chromosome_1	101190	104190
+```
+
+Now try running the `bed_intersect_3UTR.sh` script. Submitted batch job 310668. It runs but the output file is 0...try using `apoc_GFFannotation.gene_sorted.gff` as gff input. Submitted batch job 310669. Still produced nothing...
+
+```
+head apoc_GFFannotation.gene_sorted.gff
+chromosome_1	EVM	gene	20664	21393	.	-	.	ID=evm.TU.chromosome_1.1;Name=EVM%20prediction%20chromosome_1.1
+chromosome_1	.	gene	34636	40489	.	+	.	ID=evm.TU.chromosome_1.2;Name=EVM%20prediction%20chromosome_1.2
+chromosome_1	.	gene	43758	53463	.	+	.	ID=evm.TU.chromosome_1.3;Name=EVM%20prediction%20chromosome_1.3
+chromosome_1	.	gene	55802	60431	.	-	.	ID=evm.TU.chromosome_1.4;Name=EVM%20prediction%20chromosome_1.4
+chromosome_1	.	gene	62282	74713	.	+	.	ID=evm.TU.chromosome_1.5;Name=EVM%20prediction%20chromosome_1.5
+chromosome_1	.	gene	76736	78519	.	-	.	ID=evm.TU.chromosome_1.6;Name=EVM%20prediction%20chromosome_1.6
+chromosome_1	.	gene	78661	92518	.	+	.	ID=evm.TU.chromosome_1.7;Name=EVM%20prediction%20chromosome_1.7
+chromosome_1	.	gene	93920	94852	.	-	.	ID=evm.TU.chromosome_1.8;Name=EVM%20prediction%20chromosome_1.8
+chromosome_1	.	gene	104191	109764	.	-	.	ID=evm.TU.chromosome_1.9;Name=EVM%20prediction%20chromosome_1.9
+chromosome_1	.	gene	113080	113418	.	-	.	ID=evm.TU.chromosome_1.10;Name=EVM%20prediction%20chromosome_1.10
+
+>chromosome_1:17663-20663
+GGAACGCGTACCAATTTTATCCGTGATCGGACTACCTCGCGACTAGGTCCGGGTAAAATTTTGGTTCAGCACGGGTGAGGTAAATCCGTTTACACGTCAAATGTTATCCGTGCTGAACCATTTTTTTCGGTATGCGTTCCATTTTTACTCGAGCCGTGCCGCGTAAAATGGGCTTGAGTTATAAGCAATCAAAACTAAAATGAAGGGTGTCATTGCAAGATTAAACTGTTGCTTTGGTAACCTTTTATGTCATAAAAATCATAACAACGTGTTCCGCAATCATTGGGCATTTGTTTGACACCATGATTGTAGCATCAACTGATGAAGAGTGGTTAAAGTGACCCGTCAAAATCCAAGACTTGGAAAGTGCTGGAAAATTGAGCCAGCCACCTTAAACCTTCATCTTAACTCAGTGAAGGCAAGAACTAGCCAAAAATTCTTATAAACAATGAACAGGGTCAGTGACAGACCCCGTTAAGTGTCAACAGGATAACCCCCGACTACTCGTATTTATTATTCAAACAGTTCAGTTTCTCTCTAAGATAAAATTCAAATTTAAGAGGCTGTGTCTGTAATACTGGTCTGCCCGATCTGGCTTGTTAAATAGATTTCGCTCTTTTCTAGTGTGTTGCAAGACTTTCATGTACTTATACTAAAAACACAATTCACTTGACCGGATCATTAATTTTTTTTTCGAGTTTTTAAGGATTTTCGATTCACCCGAACGAGCACTTGTAACGACCACTGTCAAGGCTTAAATTTACCACAACTTTGAAAATTAATTAAAACAGAACTAACAACTTCTGTACCAAACAAACACCACAGCCTGTTAAATTATGTCTGTTTAATTTATCACACCAACTTTCACGAACATTGAGCTCGAATCAAGCTAGCAGCAAAACATTAACGACACCCCTATCACACATCTTGATGAAACACTTGAAAACGGCTCAGATTCAAACTTTAGTTTTGAAAAAGTGGGGCGGTCTACTTCAATCAAACCAACGCAGCCGAAAAGTAGATGTAAAAAAAAAATGCTCCTATCGTAAAAAACCTTCTGGTATCGTCTTAATGACATATTTACAGCTGTGTAAACTTGCCCAATTTCGAAGATCTTCATGTTTGCAGTCATTTTGAGGGACTCGTCAGGACGAGGAGTTTGATCAACTGGCCTCGCAGACATACCTAACACCATCAGAAATAAACAAAGATTAGATATAAATGCATTGCAGTTCAACTGAAAGAGAATAAATCGTGTAATAGATCAACGGGTCGAGAATTATGATTAACGTTTAGCTATAAGCTTTATATTGATCTACTCCCGTTGTTATTGTTGAATGAATCGGAGAGTTTTTCAAAAAATTATTTAACATCTGTTACAAATAAAAATAACAACAATTTTTTTTTTCAAGTTTACAAAATAGCTCGTGCAGTATTTGATCTTAACGACTGAAAAAGACATAGTATATCTTGTTTCTAAGCCCTTACCTCTTTTATCGGGTCGAGAATTCACCTTATAAAACTCTGTGCGTTTGCAAATAAAACAAAACAAATCATTTCGCACTGATCAAGCTTGACGCGTTGTTTAAATGCCGCCGACATCGAAAAAATTACACCAATATTGTAGCCATCAGATACCATCTGTGGCGTCCGAAATATATTATCGTAAGTAAAGAAATAGTTTATTCTATGTTCGTTTTTAAAAAAGATTAATAAAAATGAAATCGTTTTCAGTAAACCTACCAAAGTTTCGTGATGTTAACGTTCCCTGATGGTGTTCAATTATTCTAAAAATAGTCGTTTAATTTGAACGGAATAGTTTCAATTAAAACTTAAATATCTTTTAATTTTAAAAAAGTTAATATACAAGGCTTCCAAAAATAAACAAACCAGCATGCACAGAACATTTTTTAGCAAAACTGAACGAGTTTTTCTGGGTAGGGTTATAAAACAGGCTACGCCTGCACTGTTATAATGAAACGCTTTGTTAAAGGGAACCTCTGTTGTTTAGGCAAGTTGACGTTGAGTTGTTTGAAATAATGCCTAAACTACAATTGTACAGGACAGGGGAGAAACAGCATTTAATAACAACCGTAAACGGAAAAGAAAAAGGCTTTTAAATTTCCCGCTCGGCGCCATTTTGAAATTTATGACGTTAGTGCGTTGTCCAAATGTTTCACTCAAAAGAACCTCTGCTTTCTAATAATAGCGGCAACGCAGTGACGTCATAAAATTCAAAATGGCGGCGCGCGGGAAATTCAAAAGCACAAAAATTGACAAATCAAAGGCCCAGTATTCCAATTAAAAAATGGAATCCGCGACTTTAAACAACCAAAACGATTTTAGACTGTGGTAAACTTATTATTTTGACCAAAACTGTTTTACAGTCGAGGTTCCCTTTAAGCAAAACACCTTAAAGCTTAATAGTCCAGTCATTTTGTGGTTGGACCTGCAACTAATTGCAACAGAAGCTTTTTGACCGCAAATCATTTCGAATAAGTCTCTAGATTAACATACTAAAAGTCCCAAAGGATTCATGCATGGGAACATCTCGAAAATTTAACGGATTCTAAGTTGTGCTTTTGCGTAACATGAAAACGAGGCTCAAAAACAGAGGTTCTGTTATTATGCTTGTTTATGGCAAGAATTTCATTTATTTCATCCAAAAACAATGAAATATACTTTAAATATGCTTGAAAACTTTCATCCAGAGGAAAAATTAATCAAAAAGTATTCAATAAGCAAAATAAATCTCATTATATTTAAATTTTCAATTGTGAAGCGAATTGGACTACACCAAAAATGGTAGTTGCGATAGTTTATTATCCTTTTATGGATCGCACAAAAAAATTGCAAGCGAGCCAACAAATAAATATATCTTTCACAATGGTGAAATATTCTAAAAGAACATCGTTTGTGAAATGAAAACGAATTTCACAGTTTCTTCCAGCTCTTGTGTCAATCACCGTCGTCATCGCTATCATCGAAATCTTGATGGGG
+>chromosome_1:40489-43489
+TTCCAGGAATTTTGAAATAATTTTCTACAATTAATTTATTGTAATAAGAAAATCAACTGTATGCAATTGTTATGTAGACAGTCTCTAAATATCTTCTTAGTACACTCCAGAAAGCACATCATTTCTCACCACCATTGAAAAGTGCATATAAAAACTCTCAGATTCTCGCCATGTTTTCGAGCTGCAAAGAGCTTTATAACTTCTTTTGGATCCTCTCCGCATATTCGTGACGTAAATCTGATTTCACAGGTAGCCCAGGAGGTCTGAACTCCGCTTTCACTGTAGTCGTGTTCGGGTGGATTTTGTCTTGATTCAAAATACTAGCTGGTGTGGCTTGTCCAGCTGGATGTAAAGTTTATATATAGCTTTTTAGAACCAGAAACACAACTAGTATCTATTATTTTATACACTTTTTAATTGTGGCGGGAAAACGTGTACAACATGATGTACGTTGATGGGATCGTGTCCTCA
+```
+
+Hmm so the gene and the utr do not overlap by the looks of it. The first line in the sorted gene gff has start and stops here: `20664	21393` but the 3'UTR sequence goes from `chromosome_1:17663-20663` so there is no overlap. Maybe I need to use the 3'UTR sorted gff file aka `apoc_GFFannotation.three_prime_UTR_sorted.gff`? Submitted batch job 310671. Still empty :'(. Maybe I calculated 3'UTR incorrectly...or maybe not but I am not getting the overlap because I used flank bed. so how to connect them...
+
+This is what flank bed did: 
+
+![](https://bedtools.readthedocs.io/en/latest/_images/flank-glyph.png)
+
+I need to know the flanks, which are the 3'UTRs, and what is being flanked, which is the input or the gene itself. I need to know the genes that were flanked! Trying the `apoc.GFFannotation.3UTR_3kb.gff`. Submitted batch job 310686. This was the gff that was produced from flank bed. This got an output file but I'm not sure I understand it. 
+
+```
+wc -l test.txt 
+117033 test.txt
+
+head test.txt 
+chromosome_1	17663	20663	chromosome_1	EVM	3prime_UTR	17664	20663	.	-	.	ID=evm.TU.chromosome_1.1;Name=EVM%20prediction%20chromosome_1.1
+chromosome_1	40489	43489	chromosome_1	.	3prime_UTR	40490	43489	.	+	.	ID=evm.TU.chromosome_1.2;Name=EVM%20prediction%20chromosome_1.2
+chromosome_1	53463	55801	chromosome_1	.	3prime_UTR	53464	56463	.	+	.	ID=evm.TU.chromosome_1.3;Name=EVM%20prediction%20chromosome_1.3
+chromosome_1	53463	55801	chromosome_1	.	3prime_UTR	52802	55801	.	-	.	ID=evm.TU.chromosome_1.4;Name=EVM%20prediction%20chromosome_1.4
+chromosome_1	53463	55801	chromosome_1	.	3prime_UTR	53464	56463	.	+	.	ID=evm.TU.chromosome_1.3;Name=EVM%20prediction%20chromosome_1.3
+chromosome_1	53463	55801	chromosome_1	.	3prime_UTR	52802	55801	.	-	.	ID=evm.TU.chromosome_1.4;Name=EVM%20prediction%20chromosome_1.4
+chromosome_1	74713	76735	chromosome_1	.	3prime_UTR	74714	77713	.	+	.	ID=evm.TU.chromosome_1.5;Name=EVM%20prediction%20chromosome_1.5
+chromosome_1	74713	76735	chromosome_1	.	3prime_UTR	73736	76735	.	-	.	ID=evm.TU.chromosome_1.6;Name=EVM%20prediction%20chromosome_1.6
+chromosome_1	74713	76735	chromosome_1	.	3prime_UTR	74714	77713	.	+	.	ID=evm.TU.chromosome_1.5;Name=EVM%20prediction%20chromosome_1.5
+chromosome_1	74713	76735	chromosome_1	.	3prime_UTR	73736	76735	.	-	.	ID=evm.TU.chromosome_1.6;Name=EVM%20prediction%20chromosome_1.6
+```
+
+The numbers don't look correct. It's trying to find the intersections and it is finding them but its the same info because its the 3UTR 3kb downstream gff. There is an associated ID which corresponds to gene but I am hesitant to use it, especially since there are so many rows, there are probably repeats. I could use [bed closest](https://bedtools.readthedocs.io/en/latest/content/tools/closest.html), which searches for the nearest feature in the other file. In the scripts folder: `nano bed_close_3UTR.sh` 
 
 
-How do I invoke strict seed binding? 
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia_Genome/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BEDTools/2.30.0-GCC-11.3.0
+
+cd /data/putnamlab/jillashey/Astrangia_Genome
+
+echo "Finding closest gene to 3'UTR seqs " $(date)
+
+bedtools closest -a apoc_3UTR.bed -b apoc_GFFannotation.gene_sorted.gff > closest_genes.txt
+
+echo "Complete!" $(date)
+```
+
+Submitted batch job 310687. Got this error: 
+
+```
+Error: Sorted input specified, but the file apoc_3UTR.bed has the following out of order record
+chromosome_1    92518   93919
+```
+
+Adding this line: `sort -k1,1 -k2,2n -o apoc_3UTR_sorted.bed apoc_3UTR.bed` to the script. Submitted batch job 310688. Now got this error: 
+
+```
+ERROR: chromomsome sort ordering for file apoc_GFFannotation.gene_sorted.gff is inconsistent with other files. Record was:
+chromosome_10   .       gene    12623   13741   .       +       .       ID=evm.TU.chromosome_10.1;Name=EVM%20prediction%20chromosome_10.1
+```
+
+But an output file did get produced!
+
+```
+wc -l closest_genes.txt 
+73170 closest_genes.txt
+
+chromosome_1	17663	20663	chromosome_1	EVM	gene	20664	21393	.	-	.	ID=evm.TU.chromosome_1.1;Name=EVM%20prediction%20chromosome_1.1
+chromosome_1	40489	43489	chromosome_1	.	gene	34636	40489	.	+	.	ID=evm.TU.chromosome_1.2;Name=EVM%20prediction%20chromosome_1.2
+chromosome_1	53463	55801	chromosome_1	.	gene	43758	53463	.	+	.	ID=evm.TU.chromosome_1.3;Name=EVM%20prediction%20chromosome_1.3
+chromosome_1	53463	55801	chromosome_1	.	gene	55802	60431	.	-	.	ID=evm.TU.chromosome_1.4;Name=EVM%20prediction%20chromosome_1.4
+chromosome_1	53463	55801	chromosome_1	.	gene	43758	53463	.	+	.	ID=evm.TU.chromosome_1.3;Name=EVM%20prediction%20chromosome_1.3
+chromosome_1	53463	55801	chromosome_1	.	gene	55802	60431	.	-	.	ID=evm.TU.chromosome_1.4;Name=EVM%20prediction%20chromosome_1.4
+chromosome_1	74713	76735	chromosome_1	.	gene	62282	74713	.	+	.	ID=evm.TU.chromosome_1.5;Name=EVM%20prediction%20chromosome_1.5
+chromosome_1	74713	76735	chromosome_1	.	gene	76736	78519	.	-	.	ID=evm.TU.chromosome_1.6;Name=EVM%20prediction%20chromosome_1.6
+chromosome_1	74713	76735	chromosome_1	.	gene	62282	74713	.	+	.	ID=evm.TU.chromosome_1.5;Name=EVM%20prediction%20chromosome_1.5
+chromosome_1	74713	76735	chromosome_1	.	gene	76736	78519	.	-	.	ID=evm.TU.chromosome_1.6;Name=EVM%20prediction%20chromosome_1.6
+```
+
+Interesting, there are duplicates, which makes sense since it was doing it for all the genes. I think I need to select the ones on the `-` strand. 
+
+```
+awk '$10 == "-" {print}' closest_genes.txt > closest_genes_neg_strand.txt
+
+wc -l closest_genes_neg_strand.txt 
+21183 closest_genes_neg_strand.txt
+```
+
+Maybe not? Idk. Some chromosome info is just on the + strand and some on the - strand. An example: 
+
+```
+chromosome_1    1315574 1318574 chromosome_1    EVM     gene    1318575 1320328 .       -       .       ID=evm.TU.chromosome_1.94;Name=EVM%20prediction%20chromosome_1.94
+chromosome_1    1320328 1321584 chromosome_1    EVM     gene    1318575 1320328 .       -       .       ID=evm.TU.chromosome_1.94;Name=EVM%20prediction%20chromosome_1.94
+
+chromosome_1    1335009 1336339 chromosome_1    .       gene    1330359 1335009 .       +       .       ID=evm.TU.chromosome_1.96;Name=EVM%20prediction%20chromosome_1.96
+chromosome_1    1335009 1336339 chromosome_1    .       gene    1330359 1335009 .       +       .       ID=evm.TU.chromosome_1.96;Name=EVM%20prediction%20chromosome_1.96
+```
+evm.TU.chromosome_1.94 is only on the - strand, even though it shows up twice. evm.TU.chromosome_1.96 is only on the + strand, even though it shows up twice as well. Lot of duplicates? I am confused about the strandness. 
+
+Next steps: 
+
+- filter `closest_genes.txt` to only contain DEGs. 
+- extract 3'UTR sequence info about the DEGs
+- Use this info to subset the 3'UTR DEG sequences
+
+
+
+
 
 
 Understanding mirdeep2 output -- I understand the mirdeep2 output but I do not understand the known miRNA output info. On the summary table that is outputted with the csv/html, it says XXXX # of known miRNAs were detected. However, In the `/data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1560/dir_prepare_signature1705975309` folder, there is a file (`mature_vs_precursors.arf`) that has info about known sequences which I am confused by. It looks like these are known miRNAs that were identified in the Astrangia genome, as they are given genomic coordinates. I may need to go through these files and make sure I am not missing anything. For instance, when I look up `chromosome_7_11677` (genomic coordinates for known miRNA ola-miR-100) in that file, it provides me with 80 other matches that have the same genomic coordinates and are the same as miR-100. I may need to go through these files for each sample to make sure that I am not missing any known info. 
