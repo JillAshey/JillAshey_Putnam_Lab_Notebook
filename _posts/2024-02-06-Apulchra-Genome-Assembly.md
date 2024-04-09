@@ -3011,3 +3011,186 @@ L75                         20                            28                    
 ```
 
 So much good info!!! The initial assembly still has the largest contig, but the s80 assembly has the longest total lengths. The Amillepora genome still has the best N50 value but the initial assembly also has a good N50. Overall, the initial assembly is the best out of these assemblies. The initial hap2 assembly has the lowest number of contigs (162). Out of the primary assemblies, the s30 assembly has the lowest number of contigs (180), while the initial assembly had 188 contigs and the s80 assembly had 206 contigs. 
+
+### 20240408
+
+Let's see how many rows have >1000 bit score
+
+```
+awk '{ if ($NF > 1000) count++ } END { print count }' mito_hits_rr.txt 
+7056
+```
+
+How many rows have a % match >85%? 
+
+```
+awk '$3 > 85 {count++} END {print count}' mito_hits_rr.txt
+12449
+
+wc -l mito_hits_rr.txt 
+12449 mito_hits_rr.txt
+```
+
+There are definitely mito sequences in the raw hifi reads. I'll be using [MitoHiFi](https://github.com/marcelauliano/MitoHiFi) to assemble the Apul mito genome. This tool is specific for mitogenome assembly from PacBio HiFi reads. After I assemble it, I will remove it from the hifi raw reads before assembly of the nuclear genome. First, I'll need to install with conda following the instructions on their github. 
+
+```
+cd /data/putnamlab/conda
+module load Miniconda3/4.9.2
+
+# Clone repo
+git clone https://github.com/marcelauliano/MitoHiFi.git
+
+# Create a conda environment with yml file that is inside MitoHiFi/environment
+conda env create -n mitohifi_env -f MitoHiFi/environment/mitohifi_env.yml 
+```
+
+To activate and run the now-installed mitohifi:
+
+```
+conda activate mitohifi_env
+(mitohifi_env) python MitoHiFi/src/mitohifi.py -h
+```
+
+Now we can run mito hifi! Go back to assembly folder and create a mito db folder. I will need to use mitohifi command `findMitoReference.py` to pull mito references from closely related genomes. Young et al. 2024 pulled 4 mito genomes from NCBI (Platygyra carnosa, Favites abdita, Dipsastraea favus, and the old Orbicella faveolata). He then ran mitohifi for all of them with the Ofav hifi reads, which I'm not really sure why he did that. Maybe because he wanted to create a phylogenetic tree downstream? I'm going to pull the Acropora millepora mito sequences as a reference. 
+
+When I try to activate the conda env, I am getting this: 
+
+```
+conda activate /data/putnamlab/conda/mitohifi_env
+Not a conda environment: /data/putnamlab/conda/mitohifi_env
+
+conda activate /data/putnamlab/conda/MitoHiFi
+Not a conda environment: /data/putnamlab/conda/MitoHiFi
+```
+
+Very strange...maybe I just need to load miniconda and run `python /data/putnamlab/conda/MitoHiFi/src/findMitoReference.py`? 
+
+Go to the assembly sequence folder: `nano find_mito_ref.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=125GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module purge
+module load Miniconda3/4.9.2
+
+echo "Grabbing mito refs from NCBI" $(date)
+
+python /data/putnamlab/conda/MitoHiFi/src/findMitoReference.py --species "Acropora millepora" --email jillashey@uri.edu --outfolder /data/putnamlab/jillashey/Apul_Genome/dbs
+
+echo "Mito grab complete!" $(date)
+```
+
+Submitted batch job 310649. Immediately got this error: 
+
+```
+Traceback (most recent call last):
+  File "/data/putnamlab/conda/MitoHiFi/src/findMitoReference.py", line 23, in <module>
+    from Bio import Entrez
+ModuleNotFoundError: No module named 'Bio'
+```
+
+So I think I do need to activate the environment. Try to create a new env. 
+
+```
+cd /data/putnamlab/conda/
+conda create -n mitohifi_env -f MitoHiFi/environment/mitohifi_env.yml 
+
+WARNING: A conda environment already exists at '/home/jillashey/.conda/envs/mitohifi_env'
+Remove existing environment (y/[n])? n
+```
+
+Ooooo I have a super secret conda env. Let's try to activate it in the script. 
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=125GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module purge
+module load Miniconda3/4.9.2
+
+conda activate /home/jillashey/.conda/envs/mitohifi_env
+
+echo "Grabbing mito refs from NCBI" $(date)
+
+python findMitoReference.py --species "Acropora millepora" --email jillashey@uri.edu --outfolder /data/putnamlab/jillashey/Apul_Genome/dbs
+
+echo "Mito grab complete!" $(date)
+
+conda deactivate
+```
+
+Immediately got this error: 
+
+```
+CommandNotFoundError: Your shell has not been properly configured to use 'conda activate'.
+To initialize your shell, run
+
+    $ conda init <SHELL_NAME>
+
+Currently supported shells are:
+  - bash
+  - fish
+  - tcsh
+  - xonsh
+  - zsh
+  - powershell
+
+See 'conda init --help' for more information and options.
+```
+
+I need to do `conda init` but where? 
+
+```
+cd /home/jillashey/.conda/envs/mitohifi_env
+
+conda init
+no change     /opt/software/Miniconda3/4.9.2/condabin/conda
+no change     /opt/software/Miniconda3/4.9.2/bin/conda
+no change     /opt/software/Miniconda3/4.9.2/bin/conda-env
+no change     /opt/software/Miniconda3/4.9.2/bin/activate
+no change     /opt/software/Miniconda3/4.9.2/bin/deactivate
+no change     /opt/software/Miniconda3/4.9.2/etc/profile.d/conda.sh
+no change     /opt/software/Miniconda3/4.9.2/etc/fish/conf.d/conda.fish
+no change     /opt/software/Miniconda3/4.9.2/shell/condabin/Conda.psm1
+no change     /opt/software/Miniconda3/4.9.2/shell/condabin/conda-hook.ps1
+no change     /opt/software/Miniconda3/4.9.2/lib/python3.8/site-packages/xontrib/conda.xsh
+no change     /opt/software/Miniconda3/4.9.2/etc/profile.d/conda.csh
+no change     /home/jillashey/.bashrc
+No action taken.
+```
+
+Need to figure this out! Here's what the conda installation portion of their [github](https://github.com/marcelauliano/MitoHiFi) says: 
+
+1. Install MitoFinder and/or MITOS outside of Conda.
+2. Ensure MitoFinder and/or MITOS are added to the PATH before starting the run. Please note that MitoFinder and/or MITOS should be installed separately and made accessible via the PATH environment variable to ensure their proper integration with MitoHiFi. Once those are installed, do:
+
+```
+#Clone MitoHiFi git repo
+git clone https://github.com/marcelauliano/MitoHiFi.git
+
+#create a conda environment with our yml file that is inside MitoHiFi/environment
+conda env create -n mitohifi_env -f MitoHiFi/environment/mitohifi_env.yml 
+```
+
+Add MitoFinder and/or MITOS to the PATH and then activate your mitohifi_env conda environment.
+
+Hmm confused. come back to this. 
