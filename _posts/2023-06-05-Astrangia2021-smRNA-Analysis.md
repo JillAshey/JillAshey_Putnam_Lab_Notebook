@@ -6567,7 +6567,6 @@ chromosome_1	74713	76735	chromosome_1	.	3prime_UTR	73736	76735	.	-	.	ID=evm.TU.c
 
 The numbers don't look correct. It's trying to find the intersections and it is finding them but its the same info because its the 3UTR 3kb downstream gff. There is an associated ID which corresponds to gene but I am hesitant to use it, especially since there are so many rows, there are probably repeats. I could use [bed closest](https://bedtools.readthedocs.io/en/latest/content/tools/closest.html), which searches for the nearest feature in the other file. In the scripts folder: `nano bed_close_3UTR.sh` 
 
-
 ```
 #!/bin/bash 
 #SBATCH -t 24:00:00
@@ -6646,9 +6645,247 @@ evm.TU.chromosome_1.94 is only on the - strand, even though it shows up twice. e
 
 Next steps: 
 
-- filter `closest_genes.txt` to only contain DEGs. 
+- subset `closest_genes.txt` to only contain DEGs. 
 - extract 3'UTR sequence info about the DEGs
 - Use this info to subset the 3'UTR DEG sequences
+
+### 20240410
+
+I'm going to subset the `closest_genes.txt` file to contain only DEGs. [This](https://github.com/JillAshey/Astrangia_repo/blob/main/output/Molecular/mRNA/DEG_list.txt) is a list of my differentially expressed genes. I'm copying it to the server into `/data/putnamlab/jillashey/Astrangia_Genome`. In the `closest_genes.txt` file, the 12th column has the information about the corresponding gene. This info is under the `ID=XXXXX` part of the file. 
+
+```
+grep -Ff DEG_list.txt closest_genes.txt > deg_closest_genes.txt
+wc -l deg_closest_genes.txt 
+3187 deg_closest_genes.txt
+```
+
+Sanity checking by randomly taking IDs and searching the DEG list. Not seeing all of the DEGs...Ah because grep was looking for anything that matched. So for example, if I had DEG `evm.TU.chromosome_4.153`, grep would also pull `evm.TU.chromosome_4.1535` because it contains the same string. Remove `ID=` and other extraneous info from last column. 
+
+```
+awk 'BEGIN{FS=OFS="\t"} {split($NF, id, ";"); split(id[1], id_value, "="); $NF=id_value[2]; print $0, id_value[1]}' closest_genes.txt > modified_closest_genes.txt
+
+head modified_closest_genes.txt 
+chromosome_1	17663	20663	chromosome_1	EVM	gene	20664	21393	.	-	.	evm.TU.chromosome_1.1	ID
+chromosome_1	40489	43489	chromosome_1	.	gene	34636	40489	.	+	.	evm.TU.chromosome_1.2	ID
+chromosome_1	53463	55801	chromosome_1	.	gene	43758	53463	.	+	.	evm.TU.chromosome_1.3	ID
+chromosome_1	53463	55801	chromosome_1	.	gene	55802	60431	.	-	.	evm.TU.chromosome_1.4	ID
+chromosome_1	53463	55801	chromosome_1	.	gene	43758	53463	.	+	.	evm.TU.chromosome_1.3	ID
+chromosome_1	53463	55801	chromosome_1	.	gene	55802	60431	.	-	.	evm.TU.chromosome_1.4	ID
+chromosome_1	74713	76735	chromosome_1	.	gene	62282	74713	.	+	.	evm.TU.chromosome_1.5	ID
+chromosome_1	74713	76735	chromosome_1	.	gene	76736	78519	.	-	.	evm.TU.chromosome_1.6	ID
+chromosome_1	74713	76735	chromosome_1	.	gene	62282	74713	.	+	.	evm.TU.chromosome_1.5	ID
+chromosome_1	74713	76735	chromosome_1	.	gene	76736	78519	.	-	.	evm.TU.chromosome_1.6	ID
+```
+
+Not sure why it make an column that just has "ID" in it but whatever. Count number of columns and rows:
+
+```
+awk '{print NF}' modified_closest_genes.txt | sort -nu | tail -n 1
+# 13 columns 
+
+wc -l modified_closest_genes.txt
+# 73170 rows
+```
+
+Remove any duplicate rows
+
+```
+awk '!seen[$0]++' modified_closest_genes.txt > uniq_modified_closest_genes.txt
+
+awk '{print NF}' uniq_modified_closest_genes.txt | sort -nu | tail -n 1
+# 13 columns 
+
+wc -l uniq_modified_closest_genes.txt 
+57300 uniq_modified_closest_genes.txt
+```
+
+Okay now I can filter `uniq_modified_closest_genes.txt` by the DEG list. 
+
+```
+awk 'NR==FNR{deg[$1]; next} $12 in deg' DEG_list.txt uniq_modified_closest_genes.txt > uniq_modified_closest_degs.txt
+
+head uniq_modified_closest_degs.txt 
+chromosome_1	987846	990846	chromosome_1	.	gene	990847	993879	.	-	.	evm.TU.chromosome_1.74	ID
+chromosome_1	993879	996650	chromosome_1	.	gene	990847	993879	.	-	.	evm.TU.chromosome_1.74	ID
+chromosome_1	1335009	1336339	chromosome_1	.	gene	1330359	1335009	.	+	.	evm.TU.chromosome_1.96	ID
+chromosome_1	1397052	1400052	chromosome_1	EVM	gene	1400053	1410554	.	-	.	evm.TU.chromosome_1.105	ID
+chromosome_1	2741797	2744797	chromosome_1	.	gene	2744798	2746546	.	-	.	evm.TU.chromosome_1.220	ID
+chromosome_1	3378499	3381499	chromosome_1	.	gene	3381500	3384205	.	-	.	evm.TU.chromosome_1.267	ID
+chromosome_1	3387647	3390647	chromosome_1	.	gene	3390648	3394579	.	-	.	evm.TU.chromosome_1.268	ID
+chromosome_1	3452321	3455321	chromosome_1	.	gene	3455322	3508018	.	-	.	evm.TU.chromosome_1.272	ID
+chromosome_1	3790853	3791719	chromosome_1	EVM	gene	3791720	3796967	.	-	.	evm.TU.chromosome_1.303	ID
+chromosome_1	4998359	5000981	chromosome_1	.	gene	4997077	4998359	.	+	.	evm.TU.chromosome_1.419	ID
+
+wc -l uniq_modified_closest_degs.txt 
+956 uniq_modified_closest_degs.txt
+```
+
+Does this make sense? That not all of the DEGs are represented in the 3'UTRs? I also see there are some duplicates (evm.TU.chromosome_1.74) where two 3'UTR sequences were closest to evm.TU.chromosome_1.74 coordinates. 
+
+```
+tail uniq_modified_closest_degs.txt 
+chromosome_9	23374102	23375784	chromosome_9	.	gene	23369259	23374102	.	-	.	evm.TU.chromosome_9.2218	ID
+chromosome_9	23399610	23402610	chromosome_9	.	gene	23402611	23417409	.	-	.	evm.TU.chromosome_9.2221	ID
+chromosome_9	23472207	23473119	chromosome_9	.	gene	23469848	23472207	.	+	.	evm.TU.chromosome_9.2232	ID
+chromosome_9	23484687	23486331	chromosome_9	.	gene	23486332	23493309	.	-	.	evm.TU.chromosome_9.2235	ID
+chromosome_9	23643484	23646484	chromosome_9	.	gene	23646485	23658996	.	-	.	evm.TU.chromosome_9.2248	ID
+chromosome_9	23662284	23664931	chromosome_9	EVM	gene	23664932	23667853	.	+	.	evm.TU.chromosome_9.2250	ID
+chromosome_9	23667853	23669741	chromosome_9	EVM	gene	23664932	23667853	.	+	.	evm.TU.chromosome_9.2250	ID
+chromosome_9	23837944	23840944	chromosome_9	.	gene	23832305	23837944	.	+	.	evm.TU.chromosome_9.2269	ID
+chromosome_9	24085331	24088331	chromosome_9	.	gene	24088332	24106631	.	-	.	evm.TU.chromosome_9.2293	ID
+chromosome_9	24157356	24160356	chromosome_9	.	gene	24160357	24173706	.	-	.	evm.TU.chromosome_9.2299	ID
+```
+
+Only goes up to chromosome 9?? Weird. Even `closest_genes.txt` file only goes up to chromosome 9...I think it goes back to this error from above: 
+
+```
+ERROR: chromomsome sort ordering for file apoc_GFFannotation.gene_sorted.gff is inconsistent with other files. Record was:
+chromosome_10   .       gene    12623   13741   .       +       .       ID=evm.TU.chromosome_10.1;Name=EVM%20prediction%20chromosome_10.1
+```
+
+Let's try to resort the gff? 
+
+```
+sort -k1,1 -k4,4n apoc_GFFannotation.gene_sorted.gff > sorted_apoc_GFFannotation.gene_sorted.gff
+```
+
+Ah so its sorting it so chromosome 1 is first, then 10, etc. 9 is last because it is that last number in 1-9. But the original file (`apoc_GFFannotation.gene_sorted.gff`) is sorted by chromosome? I am so frustrated haha. Look at all lines with chromosome 10: 
+
+```
+awk '$1 == "chromosome_10"' apoc_GFFannotation.gene_sorted.gff
+```
+
+Weird, it looks like chromosome 10 is repeating itself? 
+
+```
+chromosome_10	EVM	gene	33840711	33841013	.	-	.	ID=evm.TU.chromosome_10.3274;Name=EVM%20prediction%20chromosome_10.3274
+chromosome_10	.	gene	33859427	33860415	.	+	.	ID=evm.TU.chromosome_10.3275;Name=EVM%20prediction%20chromosome_10.3275
+chromosome_10	.	gene	12623	13741	.	+	.	ID=evm.TU.chromosome_10.1;Name=EVM%20prediction%20chromosome_10.1
+chromosome_10	.	gene	15707	16786	.	-	.	ID=evm.TU.chromosome_10.2;Name=EVM%20prediction%20chromosome_10.2
+chromosome_10	EVM	gene	18626	18934	.	+	.	ID=evm.TU.chromosome_10.3;Name=EVM%20prediction%20chromosome_10.3
+chromosome_10	.	gene	22435	26984	.	-	.	ID=evm.TU.chromosome_10.4;Name=EVM%20prediction%20chromosome_10.4
+chromosome_10	EVM	gene	29369	30803	.	+	.	ID=evm.TU.chromosome_10.5;Name=EVM%20prediction%20chromosome_10.5
+chromosome_10	EVM	gene	31529	36887	.	-	.	ID=evm.TU.chromosome_10.6;Name=EVM%20prediction%20chromosome_10.6
+```
+
+It ends with evm.TU.chromosome_10.3275, then restarts with evm.TU.chromosome_10.1...Are all of the chromosomes 10-14 like this? 
+
+```
+awk '$1 == "chromosome_11"' apoc_GFFannotation.gene_sorted.gff
+```
+
+Nope 11 doesn't look like that. Let's try to remove duplicate rows from `apoc_GFFannotation.gene_sorted.gff`? 
+
+```
+wc -l apoc_GFFannotation.gene_sorted.gff
+47156 apoc_GFFannotation.gene_sorted.gff
+
+awk '!seen[$0]++' apoc_GFFannotation.gene_sorted.gff > uniq_apoc_GFFannotation.gene_sorted.gff
+
+wc -l uniq_apoc_GFFannotation.gene_sorted.gff 
+47156 uniq_apoc_GFFannotation.gene_sorted.gff
+```
+
+This didn't do anything. Looking at the `bed_close_3UTR.sh` script, I have a line that does: `sort -k1,1 -k2,2n -o apoc_3UTR_sorted.bed apoc_3UTR.bed` aka not sorting by bedtools. In this line: `bedtools closest -a apoc_3UTR_sorted.bed -b apoc_GFFannotation.gene_sorted.gff > closest_genes.txt`, let's try to sub `apoc_GFFannotation.gene_sorted.gff` for `sorted_apoc_GFFannotation.gene_sorted.gff`. Submitted batch job 311017. No error message produced. 
+
+```
+wc -l closest_genes.txt 
+89784 closest_genes.txt
+```
+
+Now let's try this again. Make Id column.
+
+```
+awk 'BEGIN{FS=OFS="\t"} {split($NF, id, ";"); split(id[1], id_value, "="); $NF=id_value[2]; print $0, id_value[1]}' closest_genes.txt > modified_closest_genes.txt
+
+wc -l modified_closest_genes.txt 
+89784 modified_closest_genes.txt
+```
+
+Remove any duplicate rows
+
+```
+awk '!seen[$0]++' modified_closest_genes.txt > uniq_modified_closest_genes.txt
+
+wc -l uniq_modified_closest_genes.txt 
+67788 uniq_modified_closest_genes.txt
+```
+
+Okay now I can filter `uniq_modified_closest_genes.txt` by the DEG list. 
+
+```
+awk 'NR==FNR{deg[$1]; next} $12 in deg' DEG_list.txt uniq_modified_closest_genes.txt > uniq_modified_closest_degs.txt
+```
+
+Sanity check! Check some of the IDs from `uniq_modified_closest_degs.txt` against the DEG list. Okay looking good so far. Now I need to make a new column that combines columns 1, 2, and 3 (ie the 3UTR info columns) so that a new column is created that it represents the file headers in `apoc_3UTR.fasta`. Ie the new column should look like this: `chromosome_1:17663-20663`. 
+
+```
+awk '{print $1":"$2"-"$3, $0}' uniq_modified_closest_degs.txt > uniq_modified_closest_degs_3UTRid.txt
+
+head uniq_modified_closest_degs_3UTRid.txt
+chromosome_1:987846-990846 chromosome_1	987846	990846	chromosome_1	.	gene	990847	993879	.	-	.	evm.TU.chromosome_1.74	ID
+chromosome_1:993879-996650 chromosome_1	993879	996650	chromosome_1	.	gene	990847	993879	.	-	.	evm.TU.chromosome_1.74	ID
+chromosome_1:1335009-1336339 chromosome_1	1335009	1336339	chromosome_1	.	gene	1330359	1335009	.	+	.	evm.TU.chromosome_1.96	ID
+chromosome_1:1397052-1400052 chromosome_1	1397052	1400052	chromosome_1	EVM	gene	1400053	1410554	.	-	.	evm.TU.chromosome_1.105	ID
+chromosome_1:2741797-2744797 chromosome_1	2741797	2744797	chromosome_1	.	gene	2744798	2746546	.	-	.	evm.TU.chromosome_1.220	ID
+chromosome_1:3378499-3381499 chromosome_1	3378499	3381499	chromosome_1	.	gene	3381500	3384205	.	-	.	evm.TU.chromosome_1.267	ID
+chromosome_1:3387647-3390647 chromosome_1	3387647	3390647	chromosome_1	.	gene	3390648	3394579	.	-	.	evm.TU.chromosome_1.268	ID
+chromosome_1:3452321-3455321 chromosome_1	3452321	3455321	chromosome_1	.	gene	3455322	3508018	.	-	.	evm.TU.chromosome_1.272	ID
+chromosome_1:3790853-3791719 chromosome_1	3790853	3791719	chromosome_1	EVM	gene	3791720	3796967	.	-	.	evm.TU.chromosome_1.303	ID
+chromosome_1:4998359-5000981 chromosome_1	4998359	5000981	chromosome_1	.	gene	4997077	4998359	.	+	.	evm.TU.chromosome_1.419	ID
+```
+
+Separate the new column into its own text file. 
+
+```
+awk '{print $1}' uniq_modified_closest_degs_3UTRid.txt > DEG_3UTR.txt
+```
+
+Now subset the 3'UTR fasta file based on the 3'UTR DEG seqs in the `DEG_3UTR.txt` list. 
+
+```
+grep -A 1 -f DEG_3UTR.txt apoc_3UTR.fasta | grep -v "^--$" > 3UTR_DE.fa
+
+zgrep -c ">" 3UTR_DE.fa 
+2179
+```
+
+**Important note**: `uniq_modified_closest_degs_3UTRid.txt` has the DEG and 3'UTR ids in it. I copied this file, along with `3UTR_DE.fa` to my local computer. 
+
+I believe I can run miranda now!!!!!!!!! In `/data/putnamlab/jillashey/Astrangia2021/smRNA/scripts`: `nano miranda_de.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts   
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "starting miranda run with differentially expressed genes and miRNAs with score cutoff >100 and energy cutoff <-10"$(date)
+
+module load Miniconda3/4.9.2
+conda activate /data/putnamlab/conda/miranda 
+
+miranda /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_DE.fa /data/putnamlab/jillashey/Astrangia_Genome/3UTR_DE.fa -sc 100 -en -10 -out /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_de.tab
+
+conda deactivate
+
+echo "miranda run finished!"$(date)
+echo "counting number of putative interactions predicted"$(date)
+
+zgrep -c "Performing Scan" /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_de.tab
+```
+
+Submitted batch job 311424
+
+
+
 
 
 
