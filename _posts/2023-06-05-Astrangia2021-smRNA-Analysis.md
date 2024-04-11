@@ -6884,6 +6884,75 @@ zgrep -c "Performing Scan" /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda
 
 Submitted batch job 311424
 
+### 20240411
+
+Miranda finished running in about 15 mins and ~108,000 putative interactions were predicted! This is great! Let's look at some of the results: 
+
+```
+   Forward:     Score: 123.000000  Q:2 to 18  R:676 to 694 Align Len (16) (81.25%) (87.50%)
+
+   Query:    3' cccTTGTTCGGCTTTGTAAc 5'
+                   |||||||| |||: || 
+   Ref:      5' tcaAACAAGCC-AAATTTTc 3'
+
+   Energy:  -12.090000 kCal/Mol
+
+Scores for this hit:
+>chromosome_12_481048   chromosome_1:987846-990846      123.00  -12.09  2 18    676 694 16      81.25%  87.50%
+```
+
+Woohoo. In this example, there isn't exactly strict seed binding and there is a G:U wobble pair. Once again, how do I invoke strict seed binding?? A comment on this [biostars question](https://www.biostars.org/p/251946/) about miranda output meaning said: "No, I'm currently still using miRanda but I might complement it by using other Tools. Anyway, if you do not use the default parameters and therefore add this function " -strict " in the command, this means that you require strict alignment in the seed region (position 2-8). We already identified some interesting targets." In the [manual](https://www.animalgenome.org/bioinfo/resources/manuals/miranda.html), it does not say anything about `-strict` function. Maybe I'll try it? Added the strict flag and renamed the output file. Submitted batch job 311700. The question also recommended the following to parse the miranda output: 
+
+```
+grep -A 1 "Scores for this hit:" miranda_out.txt | sort | grep '>'
+```
+
+Which will provide me with this: 
+
+```
+>mirna_name      transcript_target        143.00  -22.87  2 18    339 357 16      75.00%  87.50%
+```
+
+With the header being this: 
+
+```
+mirna Target  Score Energy-Kcal/Mol Query-Aln(start-end) Subjetct-Al(Start-End) Al-Len Subject-Identity Query-Identity
+```
+
+The strict miranda ran, but no difference in number of outputs it looks like. But there looks to be less info in the strict file: 
+
+```
+ls -othr
+total 355M
+-rw-r--r--. 1 jillashey 315M Apr 10 11:57 miranda_de.tab
+-rw-r--r--. 1 jillashey  40M Apr 11 10:16 miranda_de_strict.tab
+```
+
+Let's parse the outputs from both files. 
+
+```
+grep -A 1 "Scores for this hit:" miranda_de.tab | sort | grep '>' > miranda_de_parsed.txt
+wc -l miranda_de_parsed.txt 
+750674 miranda_de_parsed.txt
+
+grep -A 1 "Scores for this hit:" miranda_de_strict.tab | sort | grep '>' > miranda_de_strict_parsed.txt
+wc -l miranda_de_strict_parsed.txt
+14899 miranda_de_strict_parsed.txt
+```
+
+Strict definitely resulted in less hits, which is probably good because I want the binding to be pretty stringent, given the strict seed binding that appears to be present in cnidarians. Yay!!!!!!! Copying `miranda_de_strict_parsed.txt` to my local computer. 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
