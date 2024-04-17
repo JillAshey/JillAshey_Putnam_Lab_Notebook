@@ -21,6 +21,10 @@ Samples (18 samples, positive control, negative control) from A. Huffmyer's 2023
 - Positive control (Mcap 2020 sample)
 - Negative control (ultrapure h2o
 
+Samples were thawed on ice. When they thawed, there was a weird-looking separation happening in all of the tubes (see photo below). I'm not sure what the bottom layer was, but I assumed that the PCR product was the top layer. Flicking and brief vortexing did not seem to affect it. For the protocol, I took material from the top layer.
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/samples_20240417.jpg)
+
 ### Equipment and materials 
 
 - [Kapa Pure Beads](https://elabdoc-prod.roche.com/eLD/web/pi/en/products/SEQ-KAPA-0161?searchTerm=07983271001&catalog=Researcher&orderBy=Relevance)
@@ -41,4 +45,8 @@ Protocol was followed according to this [post](https://github.com/AHuffmyer/ASH_
 ### QC 
 
 Following the clean-up protocol, I ran a 2% gel for 90 minutes at 80 volts to check if the primer dimers were removed. I also used a 1kb ladder and a 100 bp ladder. 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20240417.JPG)
+
+There still looks to be some faint primer dimer contamination. Maybe another bead clean-up or more ethanol wash steps would help? Will send to Hollie and Ariana for their thoughts. 
 
