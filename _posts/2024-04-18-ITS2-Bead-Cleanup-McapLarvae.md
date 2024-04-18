@@ -1,7 +1,7 @@
 ---
 layout: post
-title: ITS2 clean-up test for Mcap C/D
-date: '2024-04-17'
+title: ITS2 clean-up for Mcap C/D
+date: '2024-04-18'
 categories:
 tags: [DNA, ITS2, Extractions, Protocols]
 projects: Larvae C/D 
@@ -13,7 +13,7 @@ This post details information on ITS2 clean-up for the Mcap larval C/D 2023 expe
 
 ### Samples 
 
-Samples (18 samples, positive control, negative control) from A. Huffmyer's 2023 experiment were amplified but there appeared to be some contamination in the gels, as evidenced by bands ~100bp. After further troubleshooting, it was determined that these bands are likely [primer dimers](https://www.minipcr.com/primer-dimer-pcr/). Therefore, we decided to do a bead clean-up to remove the primer dimer in the samples. Today, I ran a test clean-up. Samples used today were: 
+Samples (18 samples, positive control, negative control) from A. Huffmyer's 2023 experiment were amplified but there appeared to be some contamination in the gels, as evidenced by bands ~100bp. After further troubleshooting, it was determined that these bands are likely [primer dimers](https://www.minipcr.com/primer-dimer-pcr/). Therefore, we decided to do a bead clean-up to remove the primer dimer in the samples. On [4/17/24](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-04-17-ITS2-Bead-Cleanup-McapLarvae.md), I ran a test clean-up on 3 samples, which adequately cleaned up the samples. Today, I cleaned the rest of the samples. Samples used today were: 
 
 - R58
 - R65
@@ -21,9 +21,7 @@ Samples (18 samples, positive control, negative control) from A. Huffmyer's 2023
 - Positive control (Mcap 2020 sample)
 - Negative control (ultrapure h2o)
 
-Samples were thawed on ice. When they thawed, there was a weird-looking separation happening in all of the tubes (see photo below). I'm not sure what the bottom layer was, but I assumed that the PCR product was the top layer. Flicking and brief vortexing did not seem to affect it. For the protocol, I took material from the top layer.
-
-![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/samples_20240417.jpg)
+Samples were thawed on ice. Similar to [4/17/24 clean-up](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-04-17-ITS2-Bead-Cleanup-McapLarvae.md), there was a weird-looking separation happening in all of the tubes (see photo in 4/17/24 post). I'm not sure what the bottom layer was, but I assumed that the PCR product was the top layer. Flicking and brief vortexing did not seem to affect it. For the protocol, I took material from the top layer.
 
 ### Equipment and materials 
 
@@ -46,7 +44,6 @@ Protocol was followed according to this [post](https://github.com/AHuffmyer/ASH_
 
 Following the clean-up protocol, I ran a 2% gel for 90 minutes at 80 volts to check if the primer dimers were removed. I also used a 1kb ladder and a 100 bp ladder. 
 
-![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20240417.JPG)
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20240418.JPG)
 
-There still looks to be some faint primer dimer contamination. Maybe another bead clean-up or more ethanol wash steps would help? Will send to Hollie and Ariana for their thoughts. 
-
+There still looks to be some faint primer dimer contamination but this is likely good enough to send for ITS2 sequencing!
