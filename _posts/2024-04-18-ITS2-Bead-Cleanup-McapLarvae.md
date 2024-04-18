@@ -15,9 +15,21 @@ This post details information on ITS2 clean-up for the Mcap larval C/D 2023 expe
 
 Samples (18 samples, positive control, negative control) from A. Huffmyer's 2023 experiment were amplified but there appeared to be some contamination in the gels, as evidenced by bands ~100bp. After further troubleshooting, it was determined that these bands are likely [primer dimers](https://www.minipcr.com/primer-dimer-pcr/). Therefore, we decided to do a bead clean-up to remove the primer dimer in the samples. On [4/17/24](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-04-17-ITS2-Bead-Cleanup-McapLarvae.md), I ran a test clean-up on 3 samples, which adequately cleaned up the samples. Today, I cleaned the rest of the samples. Samples used today were: 
 
-- R58
-- R65
-- R72
+- R55
+- R56
+- R57
+- R59
+- R60
+- R61
+- R62
+- R63
+- R64
+- R66
+- R67
+- R68
+- R69
+- R70
+- R71
 - Positive control (Mcap 2020 sample)
 - Negative control (ultrapure h2o)
 
