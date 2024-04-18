@@ -19,7 +19,7 @@ Samples (18 samples, positive control, negative control) from A. Huffmyer's 2023
 - R65
 - R72
 - Positive control (Mcap 2020 sample)
-- Negative control (ultrapure h2o
+- Negative control (ultrapure h2o)
 
 Samples were thawed on ice. When they thawed, there was a weird-looking separation happening in all of the tubes (see photo below). I'm not sure what the bottom layer was, but I assumed that the PCR product was the top layer. Flicking and brief vortexing did not seem to affect it. For the protocol, I took material from the top layer.
 
