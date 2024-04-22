@@ -632,6 +632,54 @@ Number of hits?
 
 Maybe I should blast to the collapsed smRNA file instead of the mature miRNA file. I'm not going to do that for now but I am going to download the blast lncRNA results to my local computer. I only moved the mRNA results to my github and the others to my local computer, as they were too large to be stored on github. I need to make an OSF repo and move the larger files there.  
 
+### 20240421
+
+Zach confirmed that he used [Trinity](https://github.com/zbengt/oyster-lnc/blob/main/code/10-count-matrices-DESeq2-final.Rmd) to generate the lncRNA count matrix. I've done the kallisto part of the code but now I need to do the trinity portion. In the `/data/putnamlab/jillashey/Astrangia2021/lncRNA/scripts` folder: `nano trinity_gene_matrix.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=32GB --cpus-per-task=24
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/lncRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load Trinity/2.15.1-foss-2022a
+
+echo "Use trinity to generate lncRNA count matrix" $(date)
+
+perl $EBROOTTRINITY/trinityrnaseq-v2.15.1/util/abundance_estimates_to_matrix.pl \
+--est_method kallisto \
+--gene_trans_map none \
+--out_prefix /data/putnamlab/jillashey/Astrangia2021/lncRNA/output/kallisto/Apoc_lncRNA_count_matrix \
+--name_sample_by_basedir \
+/data/putnamlab/jillashey/Astrangia2021/lncRNA/output/kallisto/*/abundance.tsv
+
+echo "LncRNA count matrix created!" $(date)
+```
+
+Submitted batch job 312600. Ran super fast, but got this error: XXXXx
+
+The code did generate 4 output files: 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/lncRNA/output/kallisto
+
+-rw-r--r--. 1 jillashey 3.6M Apr 21 19:07 Apoc_lncRNA_count_matrix.isoform.counts.matrix
+-rw-r--r--. 1 jillashey 4.4M Apr 21 19:07 Apoc_lncRNA_count_matrix.isoform.TPM.not_cross_norm
+-rw-r--r--. 1 jillashey    0 Apr 21 19:07 Apoc_lncRNA_count_matrix.isoform.TMM.EXPR.matrix
+-rw-r--r--. 1 jillashey  690 Apr 21 19:07 Apoc_lncRNA_count_matrix.isoform.TPM.not_cross_norm.runTMM.R
+```
+
+The `Apoc_lncRNA_count_matrix.isoform.counts.matrix` and `Apoc_lncRNA_count_matrix.isoform.TPM.not_cross_norm` both have 28811 lines, which is the amount of lncRNAs we have + 1 extra line for the header. I'm not sure what they mean though...I guess kallisto does estimate transcript counts as opposed to gene counts and takes into consideration isoforms when doing so. In his [code](https://github.com/zbengt/oyster-lnc/blob/main/code/10-count-matrices-DESeq2-final.Rmd), Zach used the isoform counts matrix file to move forward with DESeq2 of the lncRNAs. I'm copying `Apoc_lncRNA_count_matrix.isoform.counts.matrix` onto my local computer into the Astrangia repo for further analysis. 
+
+
+
 
 
 

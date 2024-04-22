@@ -6942,7 +6942,49 @@ wc -l miranda_de_strict_parsed.txt
 
 Strict definitely resulted in less hits, which is probably good because I want the binding to be pretty stringent, given the strict seed binding that appears to be present in cnidarians. Yay!!!!!!! Copying `miranda_de_strict_parsed.txt` to my local computer. 
 
+### 20240421
 
+I'm going to now run miranda on all miRNAs and mRNAs. 
+
+In `/data/putnamlab/jillashey/Astrangia2021/smRNA/scripts`: `nano miranda_strict_all.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=500GB --cpus-per-task=24
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts   
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "starting miranda run with all genes and miRNAs with score cutoff >100, energy cutoff <-10, and strict binding invoked"$(date)
+
+module load Miniconda3/4.9.2
+conda activate /data/putnamlab/conda/miranda 
+
+miranda /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa /data/putnamlab/jillashey/Astrangia_Genome/apoc_3UTR.fasta -sc 100 -en -10 -strict -out /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all.tab
+
+conda deactivate
+
+echo "miranda run finished!"$(date)
+echo "counting number of putative interactions predicted" $(date)
+
+zgrep -c "Performing Scan" /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all.tab
+
+echo "Parsing output" $(date)
+grep -A 1 "Scores for this hit:" /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all.tab | sort | grep '>' > /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_parsed.txt
+
+echo "counting number of putative interactions predicted" $(date)
+wc -l /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_parsed.txt
+
+echo "miranda script complete" $(date)
+```
+
+Submitted batch job 312601. Job might pend for a while because it requires a lot of resources. 
 
 
 
