@@ -6984,11 +6984,51 @@ wc -l /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_p
 echo "miranda script complete" $(date)
 ```
 
-Submitted batch job 312601. Job might pend for a while because it requires a lot of resources. 
+Submitted batch job 312601. Job might pend for a while because it requires a lot of resources. Started running after about 13 hours. 
 
+### 20240422 
 
+Now that the job above is running, I'm going to run miranda with the miRNAs and the lncRNAs. lncRNAs may bind to miRNAs and "sponge" them up, essentially sequestering them so that they can't bind to their target mRNAs and degrade those mRNAs. 
 
+In `/data/putnamlab/jillashey/Astrangia2021/smRNA/scripts`: `nano miranda_strict_lncRNA.sh`
 
+```
+#!/bin/bash -i
+#SBATCH -t 200:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=500GB --cpus-per-task=24
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts   
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "starting miranda run with all lncRNAs and miRNAs with score cutoff >100, energy cutoff <-10, and strict binding invoked"$(date)
+
+module load Miniconda3/4.9.2
+conda activate /data/putnamlab/conda/miranda 
+
+miranda /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/all/mirna_results_04_02_2024_t_11_15_57/mature_all.fa /data/putnamlab/jillashey/Astrangia2021/lncRNA/output/CPC2/apoc_bedtools_lncRNAs.fasta -sc 100 -en -10 -strict -out /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_lncRNA.tab
+
+conda deactivate
+
+echo "miranda run finished!"$(date)
+echo "counting number of putative interactions predicted" $(date)
+
+zgrep -c "Performing Scan" /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_lncRNA.tab
+
+echo "Parsing output" $(date)
+grep -A 1 "Scores for this hit:" /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_lncRNA.tab | sort | grep '>' > /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_lncRNA_parsed.txt
+
+echo "counting number of putative interactions predicted" $(date)
+wc -l /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_lncRNA_parsed.txt
+
+echo "miranda script complete" $(date)
+```
+
+Submitted batch job 312886
 
 
 
