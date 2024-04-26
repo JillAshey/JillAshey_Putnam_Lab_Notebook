@@ -7030,6 +7030,29 @@ echo "miranda script complete" $(date)
 
 Submitted batch job 312886
 
+### 20240426
+
+Both miranda jobs have preemptively failed and restarted. Not sure why...Going back to what Kevin Bryan said to me regarding this in the [Apul genome](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-02-06-Apulchra-Genome-Assembly.md) assembly: "you didn’t specify -t $SLURM_CPUS_ON_NODE (and also #SBATCH --exclusive) to make use of all of the CPU cores on the node. You might want to consider re-submitting this job with those parameters. Because the nodes generally have 36 cores, it should be able to catch up to where it is now in a little over half a day, assuming perfect scaling." Looking at the [miranda manual](https://github.com/hacktrackgnulinux/miranda/blob/master/man/miranda.pdf), it doesn't look like there is any flag to specify cpus on node. Cancelled jobs `312601` and `312886`. I am going to redo the SLURM info in these scripts. I edited both `miranda_strict_all.sh` and `miranda_strict_lncRNA.sh` so that the slurm headers look like: 
+
+```
+#!/bin/bash -i
+#SBATCH -t 30-00:00:00
+#SBATCH --nodes=1 --ntasks-per-node=36
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --exclusive
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+```
+
+For `miranda_strict_all.sh `: Submitted batch job 313313. For `miranda_strict_lncRNA.sh`: Submitted batch job 313314. Both started running right away! 
+
+
+
 
 
 
