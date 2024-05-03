@@ -61,3 +61,6 @@ Protocol was followed according to this [post](https://github.com/JillAshey/Jill
 
 #### Gel 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20240502.JPG)
+
+
