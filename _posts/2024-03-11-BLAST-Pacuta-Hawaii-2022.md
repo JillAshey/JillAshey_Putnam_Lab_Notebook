@@ -273,3 +273,5 @@ Submitted batch job 309006. Failed with this error:
 ```
 Error: [blastp] internal_error: (Severe Error) Blast search error: Details: search failed. # Informational Message: [blastsrv4.REAL]: Error: CPU usage limit was exceeded, resulting in SIGXCPU (24).  
 ```
+
+Removed `-remote` flag. Submitted batch job 314563
