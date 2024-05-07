@@ -373,6 +373,297 @@ XP_058951070.1	XP_044181952.1	71.528	144	40	1	1	144	674	816	7.32e-62	210
 XP_058951065.1	XP_044181068.1	88.235	425	50	0	1	425	430	854	0.0	758
 ```
 
-The first column is the subject sequence IDs (the ones that I compiled)
+The first column is the subject sequence IDs (the ones that I compiled) and the second column is the query IDs (the species of interest). Select the second column from each file and remove any duplicates 
 
+```
+awk '{print $2}' apul_ago2_blastp.tab | sort | uniq > apul_ago2_genelist.txt
+```
+
+Use the gene list to subset the protein fasta file for the sequences of interest
+
+```
+grep -A 1 -f apul_ago2_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/GCF_013753865.1_Amil_v2.1.protein.faa | grep -v "^--$" > apul_ago2.fasta
+```
+
+I could write a for loop for this...but I am lazy and will just do it manually. 
+
+##### Ago2
+
+Apul 
+
+```
+awk '{print $2}' apul_ago2_blastp.tab | sort | uniq > apul_ago2_genelist.txt
+
+grep -A 1 -f apul_ago2_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/GCF_013753865.1_Amil_v2.1.protein.faa | grep -v "^--$" > apul_ago2.fasta
+```
+
+Peve
+
+```
+awk '{print $2}' peve_ago2_blastp.tab | sort | uniq > peve_ago2_genelist.txt
+
+grep -A 1 -f peve_ago2_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Porites_evermanni_v1.annot.pep.fa | grep -v "^--$" > peve_ago2.fasta
+```
+
+Ptuh 
+
+```
+awk '{print $2}' ptuh_ago2_blastp.tab | sort | uniq > ptuh_ago2_genelist.txt
+
+grep -A 1 -f ptuh_ago2_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Pocillopora_meandrina_HIv1.genes.pep.faa | grep -v "^--$" > ptuh_ago2.fasta
+```
+
+##### DGCR8
+
+Apul 
+
+```
+awk '{print $2}' apul_dgcr8_blastp.tab | sort | uniq > apul_dgcr8_genelist.txt
+
+grep -A 1 -f apul_dgcr8_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/GCF_013753865.1_Amil_v2.1.protein.faa | grep -v "^--$" > apul_dgcr8.fasta
+```
+
+Peve
+
+```
+awk '{print $2}' peve_dgcr8_blastp.tab | sort | uniq > peve_dgcr8_genelist.txt
+
+grep -A 1 -f peve_dgcr8_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Porites_evermanni_v1.annot.pep.fa | grep -v "^--$" > peve_dgcr8.fasta
+```
+
+Ptuh 
+
+```
+awk '{print $2}' ptuh_dgcr8_blastp.tab | sort | uniq > ptuh_dgcr8_genelist.txt
+
+grep -A 1 -f ptuh_dgcr8_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Pocillopora_meandrina_HIv1.genes.pep.faa | grep -v "^--$" > ptuh_dgcr8.fasta
+```
+
+##### Dicer
+
+Apul 
+
+```
+awk '{print $2}' apul_dicer_blastp.tab | sort | uniq > apul_dicer_genelist.txt
+
+grep -A 1 -f apul_dicer_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/GCF_013753865.1_Amil_v2.1.protein.faa | grep -v "^--$" > apul_dicer.fasta
+```
+
+Peve
+
+```
+awk '{print $2}' peve_dicer_blastp.tab | sort | uniq > peve_dicer_genelist.txt
+
+grep -A 1 -f peve_dicer_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Porites_evermanni_v1.annot.pep.fa | grep -v "^--$" > peve_dicer.fasta
+```
+
+Ptuh 
+
+```
+awk '{print $2}' ptuh_dicer_blastp.tab | sort | uniq > ptuh_dicer_genelist.txt
+
+grep -A 1 -f ptuh_dicer_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Pocillopora_meandrina_HIv1.genes.pep.faa | grep -v "^--$" > ptuh_dicer.fasta
+```
+
+##### DNMT1
+
+Apul 
+
+```
+awk '{print $2}' apul_dnmt1_blastp.tab | sort | uniq > apul_dnmt1_genelist.txt
+
+grep -A 1 -f apul_dnmt1_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/GCF_013753865.1_Amil_v2.1.protein.faa | grep -v "^--$" > apul_dnmt1.fasta
+```
+
+Peve
+
+```
+awk '{print $2}' peve_dnmt1_blastp.tab | sort | uniq > peve_dnmt1_genelist.txt
+
+grep -A 1 -f peve_dnmt1_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Porites_evermanni_v1.annot.pep.fa | grep -v "^--$" > peve_dnmt1.fasta
+```
+
+Ptuh 
+
+```
+awk '{print $2}' ptuh_dnmt1_blastp.tab | sort | uniq > ptuh_dnmt1_genelist.txt
+
+grep -A 1 -f ptuh_dnmt1_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Pocillopora_meandrina_HIv1.genes.pep.faa | grep -v "^--$" > ptuh_dnmt1.fasta
+```
+
+##### DNMT3A
+
+Apul 
+
+```
+awk '{print $2}' apul_dnmt3a_blastp.tab | sort | uniq > apul_dnmt3a_genelist.txt
+
+grep -A 1 -f apul_dnmt3a_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/GCF_013753865.1_Amil_v2.1.protein.faa | grep -v "^--$" > apul_dnmt3a.fasta
+```
+
+Peve
+
+```
+awk '{print $2}' peve_dnmt3a_blastp.tab | sort | uniq > peve_dnmt3a_genelist.txt
+
+grep -A 1 -f peve_dnmt3a_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Porites_evermanni_v1.annot.pep.fa | grep -v "^--$" > peve_dnmt3a.fasta
+```
+
+Ptuh 
+
+```
+awk '{print $2}' ptuh_dnmt3a_blastp.tab | sort | uniq > ptuh_dnmt3a_genelist.txt
+
+grep -A 1 -f ptuh_dnmt3a_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Pocillopora_meandrina_HIv1.genes.pep.faa | grep -v "^--$" > ptuh_dnmt3a.fasta
+```
+
+##### Drosha
+
+Apul 
+
+```
+awk '{print $2}' apul_drosha_blastp.tab | sort | uniq > apul_drosha_genelist.txt
+
+grep -A 1 -f apul_drosha_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/GCF_013753865.1_Amil_v2.1.protein.faa | grep -v "^--$" > apul_drosha.fasta
+```
+
+Peve
+
+```
+awk '{print $2}' peve_drosha_blastp.tab | sort | uniq > peve_drosha_genelist.txt
+
+grep -A 1 -f peve_drosha_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Porites_evermanni_v1.annot.pep.fa | grep -v "^--$" > peve_drosha.fasta
+```
+
+Ptuh 
+
+```
+awk '{print $2}' ptuh_drosha_blastp.tab | sort | uniq > ptuh_drosha_genelist.txt
+
+grep -A 1 -f ptuh_drosha_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Pocillopora_meandrina_HIv1.genes.pep.faa | grep -v "^--$" > ptuh_drosha.fasta
+```
+
+##### Pip5k1a
+
+Apul 
+
+```
+awk '{print $2}' apul_pip5k1a_blastp.tab | sort | uniq > apul_pip5k1a_genelist.txt
+
+grep -A 1 -f apul_pip5k1a_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/GCF_013753865.1_Amil_v2.1.protein.faa | grep -v "^--$" > apul_pip5k1a.fasta
+```
+
+Peve
+
+```
+awk '{print $2}' peve_pip5k1a_blastp.tab | sort | uniq > peve_pip5k1a_genelist.txt
+
+grep -A 1 -f peve_pip5k1a_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Porites_evermanni_v1.annot.pep.fa | grep -v "^--$" > peve_pip5k1a.fasta
+```
+
+Ptuh 
+
+```
+awk '{print $2}' ptuh_pip5k1a_blastp.tab | sort | uniq > ptuh_pip5k1a_genelist.txt
+
+grep -A 1 -f ptuh_pip5k1a_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Pocillopora_meandrina_HIv1.genes.pep.faa | grep -v "^--$" > ptuh_pip5k1a.fasta
+```
+
+##### Piwi
+
+Apul 
+
+```
+awk '{print $2}' apul_piwi_blastp.tab | sort | uniq > apul_piwi_genelist.txt
+
+grep -A 1 -f apul_piwi_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/GCF_013753865.1_Amil_v2.1.protein.faa | grep -v "^--$" > apul_piwi.fasta
+```
+
+Peve
+
+```
+awk '{print $2}' peve_piwi_blastp.tab | sort | uniq > peve_piwi_genelist.txt
+
+grep -A 1 -f peve_piwi_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Porites_evermanni_v1.annot.pep.fa | grep -v "^--$" > peve_piwi.fasta
+```
+
+Ptuh 
+
+```
+awk '{print $2}' ptuh_piwi_blastp.tab | sort | uniq > ptuh_piwi_genelist.txt
+
+grep -A 1 -f ptuh_piwi_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Pocillopora_meandrina_HIv1.genes.pep.faa | grep -v "^--$" > ptuh_piwi.fasta
+```
+
+##### RNase P
+
+Apul 
+
+```
+awk '{print $2}' apul_rnase_p_blastp.tab | sort | uniq > apul_rnase_p_genelist.txt
+
+grep -A 1 -f apul_rnase_p_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/GCF_013753865.1_Amil_v2.1.protein.faa | grep -v "^--$" > apul_rnase_p.fasta
+```
+
+Peve
+
+```
+awk '{print $2}' peve_rnase_p_blastp.tab | sort | uniq > peve_rnase_p_genelist.txt
+
+grep -A 1 -f peve_rnase_p_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Porites_evermanni_v1.annot.pep.fa | grep -v "^--$" > peve_rnase_p.fasta
+```
+
+Ptuh 
+
+```
+awk '{print $2}' ptuh_rnase_p_blastp.tab | sort | uniq > ptuh_rnase_p_genelist.txt
+
+grep -A 1 -f ptuh_rnase_p_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Pocillopora_meandrina_HIv1.genes.pep.faa | grep -v "^--$" > ptuh_rnase_p.fasta
+```
+
+##### Xpo5
+
+Apul 
+
+```
+awk '{print $2}' apul_xpo5_blastp.tab | sort | uniq > apul_xpo5_genelist.txt
+
+grep -A 1 -f apul_xpo5_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/GCF_013753865.1_Amil_v2.1.protein.faa | grep -v "^--$" > apul_xpo5.fasta
+```
+
+Peve
+
+```
+awk '{print $2}' peve_xpo5_blastp.tab | sort | uniq > peve_xpo5_genelist.txt
+
+grep -A 1 -f peve_xpo5_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Porites_evermanni_v1.annot.pep.fa | grep -v "^--$" > peve_xpo5.fasta
+```
+
+Ptuh 
+
+```
+awk '{print $2}' ptuh_xpo5_blastp.tab | sort | uniq > ptuh_xpo5_genelist.txt
+
+grep -A 1 -f ptuh_xpo5_genelist.txt /data/putnamlab/jillashey/e5/ortho/protein_seqs/Pocillopora_meandrina_HIv1.genes.pep.faa | grep -v "^--$" > ptuh_xpo5.fasta
+```
+
+Copy the fasta files onto my local computer. 
+
+I will use the following programs to analyze these data: 
+
+- [Muscle](https://www.ebi.ac.uk/jdispatcher/msa/muscle)
+- Jalview (application downloaded to my computer)
+
+Links for the muscle alignment to use w/ Jalview. Copy these links into the Jalview application.
+
+- Ago2: https://www.ebi.ac.uk/Tools/services/rest/muscle/result/muscle-I20240507-025347-0712-98646927-p1m/aln-clustalw
+- DGCR8: https://www.ebi.ac.uk/Tools/services/rest/muscle/result/muscle-I20240507-024813-0571-38010587-p1m/aln-clustalw
+- Dicer: https://www.ebi.ac.uk/Tools/services/rest/muscle/result/muscle-I20240507-025605-0874-10941366-p1m/aln-clustalw
+- DNMT1: https://www.ebi.ac.uk/Tools/services/rest/muscle/result/muscle-I20240507-025843-0531-38950325-p1m/aln-clustalw
+- DNMT3a: https://www.ebi.ac.uk/Tools/services/rest/muscle/result/muscle-I20240507-030001-0467-66490567-p1m/aln-clustalw
+- Drosha: https://www.ebi.ac.uk/Tools/services/rest/muscle/result/muscle-I20240507-030250-0520-91955590-p1m/aln-clustalw
+- Pip5k1a: https://www.ebi.ac.uk/Tools/services/rest/muscle/result/muscle-I20240507-030359-0442-62910879-p1m/aln-clustalw
+- Piwi: https://www.ebi.ac.uk/Tools/services/rest/muscle/result/muscle-I20240507-030503-0247-70454786-p1m/aln-clustalw
+- RNase P: https://www.ebi.ac.uk/Tools/services/rest/muscle/result/muscle-I20240507-030615-0015-90999376-p1m/aln-clustalw
+- Xpo5: https://www.ebi.ac.uk/Tools/services/rest/muscle/result/muscle-I20240507-030715-0512-87536698-p1m/aln-clustalw
 
