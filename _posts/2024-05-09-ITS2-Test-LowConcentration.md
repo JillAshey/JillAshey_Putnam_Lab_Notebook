@@ -11,7 +11,7 @@ projects: Mcap DT 2023; POC 2023 spawning
 
 This post details information on ITS2 amplification for the my ambient Mcap developmental timeseries samples from 2023 and for the POC spawning experimental samples from 2023. Mcap 2023 github repo is [here](https://github.com/JillAshey/Hawaii_Developmental_TimeSeries) and POC github is [here](https://github.com/hputnam/Poc_RAPID). 
 
-These samples had pretty low DNA concentrations (see DNA QC post hereXXXX for sample concentration info). In this test, I attempted to dilute 6 samples to the lowest concentration (0.104 ng/uL) and run the PCR amplification. 
+These samples had pretty low DNA concentrations (see DNA QC post [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-05-08-DNA-QC.md) for sample concentration info). In this test, I attempted to dilute 6 samples to the lowest concentration (0.104 ng/uL) and run the PCR amplification. 
 
 I followed Ariana's ITS2 [protocol](https://github.com/AHuffmyer/ASH_Putnam_Lab_Notebook/blob/master/_posts/2024-03-30-ITS2-amplification-protocol.md) with some modifications for testing some samples with low concentrations. 
 
@@ -129,17 +129,6 @@ This is a good stopping point if needed.
 
 Run a 2% gel at 80-100V and 100 amps for 1.5 hours. Use the 1 kb DNA ladder and 100 bp ladder to each row. 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20240509.JPG)
 
-
-
-
-
-Following the clean-up protocol, I ran a 2% gel for 90 minutes at 80 volts to check if the primer dimers were removed. I also used a 1kb ladder and a 100 bp ladder. 
-
-![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20240418.JPG)
-
-There still looks to be some faint primer dimer contamination but this is likely good enough to send for ITS2 sequencing!
-
-- Add 13.5 uL of master mix to the 11.5 uL of DNA sample
-- Vortex and spin down
-- Sampels are now ready for PCR
+Everything amplified with minimal primer dimer! There is some contamination in the NEG sample. When processing the rest of the samples, I will make new primer dilutions and use the new master mix. Now that I know the amplification can work with low DNA concentration, I will process the samples in triplicate.
