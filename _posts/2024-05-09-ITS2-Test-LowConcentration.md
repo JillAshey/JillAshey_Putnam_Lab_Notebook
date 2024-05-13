@@ -99,7 +99,7 @@ Master mix will be prepared to allow for triplicate reactions for each sample. R
 
 Master mix calculations for today: 
 
-|                       | Per rxn (uL) | Rxns | Total volume |
+|                       | Per rxn (uL) | Rxns | Total volume (uL) |
 | --------------------- | ------------ | ---- | ------------ |
 | 2x Phusion Master Mix | 12.5         | 9    | 112.5        |
 | F Primer (10um)       | 0.5          | 9    | 4.5          |
@@ -119,7 +119,7 @@ Conduct PCR to amplify the ITS2 region. Load all reaction tubes (including negat
 - 1 cycle at 95°C for 3 min
 - 35 cycles at 95°C for 30 sec, 52°C for 30 sec, and 72°C for 30 sec
 - 1 cycle at 72°C for 2 min
-Hold at 4°C
+- Hold at 4°C
 
 PCR will run for approx. 1.5 hours. Samples will stay at 4°C on the thermocycler until running a QC gel or store samples at 4°C in fridge overnight.
 
