@@ -15,21 +15,6 @@ These samples had pretty low DNA concentrations (see DNA QC post [here](https://
 
 I followed Ariana's ITS2 [protocol](https://github.com/AHuffmyer/ASH_Putnam_Lab_Notebook/blob/master/_posts/2024-03-30-ITS2-amplification-protocol.md) with some modifications for testing some samples with low concentrations. 
 
-### Samples 
-
-- M9
-- M51
-- M83
-- 6
-- 109
-- 112
-
-
-
-- Positive control (R55 from AH Mcap 2023 experiment)
-- Negative control (ultrapure h2o)
-Samples were thawed on ice for dilutions. 
-
 ### Equipment and materials 
 
 - 2X Phusion Mastermix
@@ -149,4 +134,22 @@ This is a good stopping point if needed.
 
 #### Gel QC for PCR product 
 
-Run a 2% gel at 80-100V and 100 amps for 1.5 hours. Use the 1 kb DNA ladder and 100 bp ladder to each row. Today, I used the large gel box with 100 spaces. For some reason, the voltage will not go past ~70 volts.  
+Run a 2% gel at 80-100V and 100 amps for 1.5 hours. Use the 1 kb DNA ladder and 100 bp ladder to each row. Today, I used the large gel box with 100 spaces. For some reason, the voltage will not go past ~70 volts. Since the gel was so large, I had to break it into separate images: 
+
+Top left 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_top_left_20240513.png)
+
+Top right 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_top_right_20240513.png)
+
+Bottom left 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_bottom_left_20240513.png)
+
+Bottom right 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_bottom_right_20240513.png)
+
+Everything amplified successfully! I poked holes in the bottom of the wells that had samples 107, 108, M52 and M8 so that just looks like a blob. I do have a decent amount of primer dimer in some of my samples. To remedy this issue, I will do a bead cleanup (example [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-04-18-ITS2-Bead-Cleanup-McapLarvae.md)). 
