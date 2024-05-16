@@ -133,4 +133,10 @@ Run a 2% gel at 80-100V and 100 amps for 2 hours. Use the 1 kb DNA ladder and 10
 
 Both gels are really faint, along with the ladders...I added ~3-4 uL of sample/ladder to each well. Maybe I didn't add enough volume to each well? 
 
+I reran the gels on 5/15 and they looked much better. 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_med_20240515.JPG)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_small_20240515.JPG)
+
+The bands to the left and right of the numbers are the same sample as the number, as each sample was run in triplicate. 
