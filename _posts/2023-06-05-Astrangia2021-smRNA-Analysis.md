@@ -7051,16 +7051,46 @@ Both miranda jobs have preemptively failed and restarted. Not sure why...Going b
 
 For `miranda_strict_all.sh `: Submitted batch job 313313. For `miranda_strict_lncRNA.sh`: Submitted batch job 313314. Both started running right away! 
 
+### 20240517
 
+Over the last few weeks, I downloaded the mRNA miranda results and identified correlations between differentially expressed mRNAs and miRNAs (see code [here](https://github.com/JillAshey/Astrangia_repo/blob/main/scripts/mirTarRnaSeq_Timepoint.Rmd)). I have now isolated 51 genes that are shared across 4 comparisons (TP0vTP5 amb, TP0vTP7amb, TP0vTP5 heat, and TP0vTP7 heat) (see csv of that list hereXXXXX). With this list, I want to subset those genes from the mRNA fasta and blast them against the protein db. 
 
+I also might run interproscan...idk yet. 
 
+```
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA
+mkdir blast 
+cd blast 
+```
 
+Copied in `sigcorr_subset.fasta`, which I made on my computer. In the scripts folder: `nano sigcorr_blast.sh`
 
+```
+#!/bin/bash 
+#SBATCH -t 30-00:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=125GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --exclusive
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/blast
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
 
+module load BLAST+/2.13.0-gompi-2022a
 
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/blast
 
+echo "Blasting Apoc genes of interest (significant correlation with miRNAs) against remote nt database" $(date)
 
+blastn -query sigcorr_subset.fasta -db nt -evalue 1E-40 -num_threads 10 -max_target_seqs 3 -max_hsps 3 -outfmt 6 -out sigcorr_subset_blast_results.txt 
 
+echo "Blast complete" $(date)
+```
+
+Submitted batch job 317026
 
 
 
@@ -7083,3 +7113,5 @@ good resource for miranda
 
 This could be a good R use for downstread miRNA:mRNA analysis: https://link.springer.com/article/10.1186/s12864-022-08558-w
 - https://bioconductor.org/packages/release/bioc/html/mirTarRnaSeq.html
+
+###
