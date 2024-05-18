@@ -7090,7 +7090,8 @@ blastn -query sigcorr_subset.fasta -db nt -evalue 1E-40 -num_threads 10 -max_tar
 echo "Blast complete" $(date)
 ```
 
-Submitted batch job 317026
+Submitted batch job 317026. Also going to submit a `blastx` job. Submitted batch job 317071
+
 
 
 
