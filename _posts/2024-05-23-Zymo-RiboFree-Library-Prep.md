@@ -28,7 +28,7 @@ The kit needs a minimum input of 10 of total RNA or a maximum input of 250 ng of
 | M7     | 27.2                      | 6.99     | 1.01                    | 8                          | 32     |
 | M11    | 67.6                      | 2.81     | 5.19                    | 8                          | 33     |
 | M26    | 197                       | 0.96     | 7.04                    | 8                          | 34     |
-| M37    | 34.9                      | 5.44     | 2.56                    | 8                          | 36     |
+| M37    | 34.9                      | 5.44     | 2.56                    | 8                          | 35     |
 
 Here's the RiboFree library prep workflow: 
 
@@ -53,7 +53,7 @@ Here's the RiboFree library prep workflow:
 
 Protocol was followed according to this [post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-01-12-Zymo-RiboFree-Library-Prep.md). The only difference is that the number of PCR library amplification cycles was changed to 15 from 11. 
 
-Sections 1, 2, and 3 were completed on 5/23/24. Section 4 and QC were completed on 5/24/24. 
+Sections 1, 2, and 3 were completed on 5/23/24. Section 4 was completed on 5/24/24. QC was completed on 5/27/24. 
 
 ### QC 
 
@@ -61,4 +61,30 @@ Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/bl
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/ribofree_library_visual_example.png)
 
-Here's how my samples turned out on 5/24/24. See full report here XXXXX
+Here's how my samples turned out on 5/27/24. See full report [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_Ribofree_2024-05-27.pdf). 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M6_20240527.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M10_20240527.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M24_20240527.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M36_20240527.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M47_20240527.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M62_20240527.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M73_20240527.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M86_20240527.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M7_20240527.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M11_20240527.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M26_20240527.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M37_20240527.png)
+
+Some of the peaks are pretty low, but most look good. 

@@ -3208,4 +3208,14 @@ cd /data/putnamlab/conda
 interactive
 ```
 
-Taking forever, job is not being allocated to any node. 
+Once in the interactive session, clone the github
+
+```
+git clone https://github.com/marcelauliano/MitoHiFi.git
+```
+
+Create a conda environment with the yml file inside `MitoHiFi/environment`
+
+```
+conda env create -n mitohifi_env -f MitoHiFi/environment/mitohifi_env.yml 
+```
