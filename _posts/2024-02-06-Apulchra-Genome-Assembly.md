@@ -3194,3 +3194,18 @@ conda env create -n mitohifi_env -f MitoHiFi/environment/mitohifi_env.yml
 Add MitoFinder and/or MITOS to the PATH and then activate your mitohifi_env conda environment.
 
 Hmm confused. come back to this. 
+
+### 20240527
+
+It's been a while. Coming back to installing mitohifi. I emailed Kevin Bryan about it on 4/30 and he said: 
+
+"For 2, it looks like you created the conda environment on the login node, instead of in an interactive session, so the compute nodes are not seeing it (remember that the /home directory on the login nodes is separate from the compute nodes for legacy reasons; I hope to fix this eventually)."
+
+So I need to create the conda environment in an interactive session. 
+
+```
+cd /data/putnamlab/conda
+interactive
+```
+
+Taking forever, job is not being allocated to any node. 
