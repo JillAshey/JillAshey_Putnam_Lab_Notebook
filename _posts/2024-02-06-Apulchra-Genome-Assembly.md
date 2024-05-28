@@ -3219,3 +3219,5 @@ Create a conda environment with the yml file inside `MitoHiFi/environment`
 ```
 conda env create -n mitohifi_env -f MitoHiFi/environment/mitohifi_env.yml 
 ```
+
+Was taking a while to load and then the connection to the server was broken since I was on/off my computer for most of the day doing library prep. Will retry tomorrow when I am on my computer all day 
