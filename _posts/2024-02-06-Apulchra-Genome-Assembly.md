@@ -3221,3 +3221,11 @@ conda env create -n mitohifi_env -f MitoHiFi/environment/mitohifi_env.yml
 ```
 
 Was taking a while to load and then the connection to the server was broken since I was on/off my computer for most of the day doing library prep. Will retry tomorrow when I am on my computer all day 
+
+### 20240604
+
+Back at it. Let's try to run this as a job so I dont have to sit here all day. 
+
+```
+
+```
