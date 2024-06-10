@@ -45,10 +45,33 @@ Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/bl
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/DT_mcap2023/miRNA_library_visual_example.png)
 
-Here's how my samples turned out on 6/4/24. See full report [here](XXXXXXX). 
+Here's how my samples turned out on 6/4/24. See full report [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_miRNA_2024-06-04.pdf).
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_overview_20240604.png)
 
-QC for these samples didn't look good at all. Little to no peaks and some had no concentrations at all. Those that did have concentrations were <1ng/uL. I'm guessing that they didn't amplify in the PCR step. 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M6_20240604.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M10_20240604.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M24_20240604.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M36_20240604.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M47_20240604.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M62_20240604.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M73_20240604.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M86_20240604.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M7_20240604.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M11_20240604.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M26_20240604.png) 
+
+Ran out of tape for M37. QC for these samples didn't look good at all. Little to no peaks and some had no concentrations at all. Those that did have concentrations were <1ng/uL. I'm guessing that they didn't amplify in the PCR step. 
 
 Today (6/5/24), I will redo the PCR amplification and cleaning steps on my libraries to see if I can amplify them at all. During the original PCR step, sample volume was 29 uL; 6 uL of primer and 35 uL of Taq PreMix was added for a total of 70 uL. 
 
@@ -62,4 +85,32 @@ To calculate how much primer and premix volume I will need to reamp:
 
 I am also going to use the Taq Premix that came with the first miRNA kit I got (I received this kit in January and used it to process samples in MArch). The premix has ~200 uL, which is enough for the reamp. I'm using the first premix because it definitely worked on my first round of samples. I also accidently stored the Taq PreMix that I used yesterday at -80C for a week instead of -20C. Maybe storage at -80C messed the premix up? 
 
-Redid sections 4, 5, and QC on 6/5/24. 
+Redid sections 4, 5, and QC on 6/5/24. Here's how my samples turned out on 6/5/24. See full report [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_miRNA_2024-06-05.pdf).
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_overview_20240605.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M6_20240605.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M10_20240605.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M24_20240605.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M36_20240605.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M47_20240605.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M62_20240605.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M73_20240605.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M86_20240605.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M7_20240605.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M11_20240605.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M26_20240605.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M37_20240605.png) 
+
+Much better!!!! Concentrations are all relatively higher and there are peaks in all samples. M6, M86, M7, M11, and M26 all have more than one peak, meaning I probably have to do a bead clean-up on the samples and then re-QC them. I also need to reach out to Zymo to ask if they can send me more Taq PreMix (if the one from the second kit was a dud). 
