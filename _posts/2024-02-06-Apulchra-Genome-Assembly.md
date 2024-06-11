@@ -3222,10 +3222,280 @@ conda env create -n mitohifi_env -f MitoHiFi/environment/mitohifi_env.yml
 
 Was taking a while to load and then the connection to the server was broken since I was on/off my computer for most of the day doing library prep. Will retry tomorrow when I am on my computer all day 
 
-### 20240604
+### 20240610
 
 Back at it. Let's try to run this as a job so I dont have to sit here all day. 
 
 ```
+cd /data/putnamlab/conda
+mkdir scripts 
+cd scripts 
+```
+
+In the scripts folder: `nano load_mitohifi.sh`
 
 ```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=125GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/conda/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+## Attempting to install mitohifi: https://github.com/marcelauliano/MitoHiFi 
+
+echo "Start" $(date)
+
+module load Miniconda3/4.9.2
+
+cd /data/putnamlab/conda/
+
+# Go into interactive mode 
+interactive
+
+# Clone github 
+git clone https://github.com/marcelauliano/MitoHiFi.git
+
+# Create conda env 
+conda env create -n mitohifi_env -f MitoHiFi/environment/mitohifi_env.yml 
+
+# Activate conda env 
+conda activate mitohifi_env
+
+# Attempt to run mitohifi
+python MitoHiFi/src/mitohifi.py -h
+
+# Deactivate conda env 
+conda deactivate 
+
+echo "End" $(date)
+```
+
+Submitted batch job 320286. Ran for about an hour and completed but I don't think it installed properly. From the `out` file: 
+
+```
+Preparing transaction: ...working... done
+Verifying transaction: ...working... failed
+End Mon Jun 10 08:41:25 EDT 2024
+```
+
+From the `error` file: 
+
+```
+CondaVerificationError: The package for pandas located at /home/jillashey/.conda/pkgs/pandas-1.3.5-py37he8f5f7f_0
+appears to be corrupted. The path 'lib/python3.7/site-packages/pandas/util/version/__init__.py'
+specified in the package manifest cannot be found.
+
+CondaVerificationError: The package for pandas located at /home/jillashey/.conda/pkgs/pandas-1.3.5-py37he8f5f7f_0
+appears to be corrupted. The path 'lib/python3.7/site-packages/pandas/util/version/__pycache__/__init__.cpython-37.pyc'
+specified in the package manifest cannot be found.
+```
+
+Bleh. 
+
+### 20240611
+
+Loaded env today (`conda activate mitohifi_env`) and ran `python MitoHiFi/src/mitohifi.py -h` and somehow it worked????
+
+```
+usage: MitoHiFi [-h] (-r <reads>.fasta | -c <contigs>.fasta) -f
+                <relatedMito>.fasta -g <relatedMito>.gbk -t <THREADS> [-d]
+                [-a {animal,plant,fungi}] [-p <PERC>] [-m <BLOOM FILTER>]
+                [--max-read-len MAX_READ_LEN] [--mitos]
+                [--circular-size CIRCULAR_SIZE]
+                [--circular-offset CIRCULAR_OFFSET] [-winSize WINSIZE]
+                [-covMap COVMAP] [-v] [-o <GENETIC CODE>]
+
+required arguments:
+  -r <reads>.fasta      -r: Pacbio Hifi Reads from your species
+  -c <contigs>.fasta    -c: Assembled fasta contigs/scaffolds to be searched
+                        to find mitogenome
+  -f <relatedMito>.fasta
+                        -f: Close-related Mitogenome is fasta format
+  -g <relatedMito>.gbk  -k: Close-related species Mitogenome in genebank
+                        format
+  -t <THREADS>          -t: Number of threads for (i) hifiasm and (ii) the
+                        blast search
+
+optional arguments:
+  -d                    -d: debug mode to output additional info on log
+  -a {animal,plant,fungi}
+                        -a: Choose between animal (default) or plant
+  -p <PERC>             -p: Percentage of query in the blast match with close-
+                        related mito
+  -m <BLOOM FILTER>     -m: Number of bits for HiFiasm bloom filter [it maps
+                        to -f in HiFiasm] (default = 0)
+  --max-read-len MAX_READ_LEN
+                        Maximum lenght of read relative to related mito
+                        (default = 1.0x related mito length)
+  --mitos               Use MITOS2 for annotation (opposed to default
+                        MitoFinder
+  --circular-size CIRCULAR_SIZE
+                        Size to consider when checking for circularization
+  --circular-offset CIRCULAR_OFFSET
+                        Offset from start and finish to consider when looking
+                        for circularization
+  -winSize WINSIZE      Size of windows to calculate coverage over the
+                        final_mitogenom
+  -covMap COVMAP        Minimum mapping quality to filter reads when building
+                        final coverage plot
+  -v, --version         show program's version number and exit
+  -o <GENETIC CODE>     -o: Organism genetic code following NCBI table (for
+                        mitogenome annotation): 1. The Standard Code 2. The
+                        Vertebrate MitochondrialCode 3. The Yeast
+                        Mitochondrial Code 4. The Mold,Protozoan, and
+                        Coelenterate Mitochondrial Code and the
+                        Mycoplasma/Spiroplasma Code 5. The Invertebrate
+                        Mitochondrial Code 6. The Ciliate, Dasycladacean and
+                        Hexamita Nuclear Code 9. The Echinoderm and Flatworm
+                        Mitochondrial Code 10. The Euplotid Nuclear Code 11.
+                        The Bacterial, Archaeal and Plant Plastid Code 12. The
+                        Alternative Yeast Nuclear Code 13. The Ascidian
+                        Mitochondrial Code 14. The Alternative Flatworm
+                        Mitochondrial Code 16. Chlorophycean Mitochondrial
+                        Code 21. Trematode Mitochondrial Code 22. Scenedesmus
+                        obliquus Mitochondrial Code 23. Thraustochytrium
+                        Mitochondrial Code 24. Pterobranchia Mitochondrial
+                        Code 25. Candidate Division SR1 and Gracilibacteria
+                        Code
+```
+
+Confused but not going to question it...alright! First, pull mito sequences from NCBI. I'm going to use Acropora millepora and Acropora digitifera. 
+
+```
+cd /data/putnamlab/jillashey/Apul_Genome/assembly
+mkdir mito
+cd mito
+mkdir ref_mito_genome/
+
+python /data/putnamlab/conda/MitoHiFi/src/findMitoReference.py --species "Acropora millepora" \
+--email jillashey@uri.edu \
+--outfolder ref_mito_genome/
+
+python /data/putnamlab/conda/MitoHiFi/src/findMitoReference.py --species "Acropora digitifera" \
+--email bdy8@miami.edu \
+--outfolder ref_mito_genome/
+```
+
+In the `ref_mito_genome` folder, Acropora millepora output is `NC_081453.1.fasta` and `NC_081453.1.gb` and Acropora digitifera is `NC_022830.1.fasta` and `NC_022830.1.gb`. Now we need to constract the mito genome using `mitohifi.py`. In the `/data/putnamlab/jillashey/Apul_Genome/assembly/scripts` folder: `nano mitohifi_amil.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Starting mito assembly with Amillepora refs" $(date)
+
+conda activate mitohifi_env
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/mito
+
+python /data/putnamlab/conda/MitoHiFi/src/mitohifi.py -r /data/putnamlab/jillashey/Apul_Genome/assembly/data/m84100_240128_024355_s2.hifi_reads.bc1029.fasta \
+-f /data/putnamlab/jillashey/Apul_Genome/assembly/mito/ref_mito_genome/NC_081453.1.fasta \
+-g /data/putnamlab/jillashey/Apul_Genome/assembly/mito/ref_mito_genome/NC_081453.1.gb \
+-t 8 \
+-o 5 #invertebrate mitochondrial code
+
+echo "Mito assembly complete!" $(date)
+```
+
+Submitted batch job 320590. Gives me this error: 
+
+```
+CommandNotFoundError: Your shell has not been properly configured to use 'conda activate'.
+To initialize your shell, run
+
+    $ conda init <SHELL_NAME>
+```
+
+Had this issue above. Try running in interactive mode? Job 320591. Okay still failing. Going to try to do the conda init. 
+
+```
+echo $SHELL
+/bin/bash
+conda init bash
+
+conda init bash
+no change     /opt/software/Miniconda3/4.9.2/condabin/conda
+no change     /opt/software/Miniconda3/4.9.2/bin/conda
+no change     /opt/software/Miniconda3/4.9.2/bin/conda-env
+no change     /opt/software/Miniconda3/4.9.2/bin/activate
+no change     /opt/software/Miniconda3/4.9.2/bin/deactivate
+no change     /opt/software/Miniconda3/4.9.2/etc/profile.d/conda.sh
+no change     /opt/software/Miniconda3/4.9.2/etc/fish/conf.d/conda.fish
+no change     /opt/software/Miniconda3/4.9.2/shell/condabin/Conda.psm1
+no change     /opt/software/Miniconda3/4.9.2/shell/condabin/conda-hook.ps1
+no change     /opt/software/Miniconda3/4.9.2/lib/python3.8/site-packages/xontrib/conda.xsh
+no change     /opt/software/Miniconda3/4.9.2/etc/profile.d/conda.csh
+no change     /home/jillashey/.bashrc
+No action taken.
+```
+
+Nothing happened. The shell seems to think everything is fine. Let's check out the bash files. 
+
+```
+nano ~/.bashrc
+
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+        . /etc/bashrc
+fi
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+# export SYSTEMD_PAGER=
+
+# User specific aliases and functions
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/software/Miniconda3/4.9.2/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/software/Miniconda3/4.9.2/etc/profile.d/conda.sh" ]; then
+        . "/opt/software/Miniconda3/4.9.2/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/software/Miniconda3/4.9.2/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+```
+
+Everything looks in order. Check conda installation path
+
+```
+ls -l /opt/software/Miniconda3/4.9.2/bin/conda
+-rwxr-xr-x. 1 bryank bryank 531 May 13  2021 /opt/software/Miniconda3/4.9.2/bin/conda
+
+echo $PATH 
+/opt/software/Miniconda3/4.9.2/bin:/opt/software/Miniconda3/4.9.2/condabin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/jillashey/.local/bin:/home/jillashey/bin
+```
+
+Tried running `conda init` in `/data/putnamlab/conda` and `/data/putnamlab/conda/MitoHifi` but no changes. When I activate the env when I am NOT in an interactive session, it does start to run which is confusing...
+
+I also need to blast the symbiont genome information. Based on the ITS2 data, the Acropora spp from the Manava site have mostly A1 and D1 symbionts, so I'll be using the [A1 genome](http://smic.reefgenomics.org/download/Smic.genome.scaffold.final.fa.gz) and the [D1 genome](https://marinegenomics.oist.jp/symbd/viewer/download?project_id=102). 
+
+![](https://raw.githubusercontent.com/urol-e5/timeseries/master/time_series_analysis/Figures/ITS2/species_site_panel.jpeg)
+
+
+
+
+
+
+
