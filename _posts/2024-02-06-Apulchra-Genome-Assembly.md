@@ -3487,11 +3487,13 @@ echo $PATH
 /opt/software/Miniconda3/4.9.2/bin:/opt/software/Miniconda3/4.9.2/condabin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/home/jillashey/.local/bin:/home/jillashey/bin
 ```
 
-Tried running `conda init` in `/data/putnamlab/conda` and `/data/putnamlab/conda/MitoHifi` but no changes. When I activate the env when I am NOT in an interactive session, it does start to run which is confusing...
+Tried running `conda init` in `/data/putnamlab/conda` and `/data/putnamlab/conda/MitoHifi` but no changes. When I activate the env when I am NOT in an interactive session, it does start to run which is confusing...Need to email Kevin Bryan. 
 
 I also need to blast the symbiont genome information. Based on the ITS2 data, the Acropora spp from the Manava site have mostly A1 and D1 symbionts, so I'll be using the [A1 genome](http://smic.reefgenomics.org/download/Smic.genome.scaffold.final.fa.gz) and the [D1 genome](https://marinegenomics.oist.jp/symbd/viewer/download?project_id=102). 
 
 ![](https://raw.githubusercontent.com/urol-e5/timeseries/master/time_series_analysis/Figures/ITS2/species_site_panel.jpeg)
+
+
 
 
 
