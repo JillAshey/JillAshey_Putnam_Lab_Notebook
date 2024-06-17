@@ -216,12 +216,107 @@ wc -l /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_parsed_apul
 echo "APUL miranda script complete" $(date)
 ```
 
-Submitted batch job 323536. While this is running, run `closest` in bedtools to find the closest gene to the 3' UTRs that I created above. In the scripts folder: `nano bed_close_3UTR.sh`
+Submitted batch job 323536. Ran in about 4 hours. Convert 3' UTR fasta to bed file. 
 
-first need to convert to fasta to bed and then closest 
+```
+awk -F'[:-]' '/^>/ {chromosome=substr($1, 2); start=$2; end=$3; print chromosome "\t" start "\t" end}' amil_3UTR_3kb.fasta > amil_3UTR_3kb.bed
+```
 
+Run `closest` in bedtools to find the closest gene to the 3' UTRs that I created above. In the scripts folder: `nano bed_close_3UTR.sh`
 
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/e5/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
 
+module load BEDTools/2.30.0-GCC-11.3.0
+
+cd /data/putnamlab/jillashey/genome/Amil_v2.01
+
+echo "Finding closest gene to 3'UTR seqs " $(date)
+
+sort -k1,1 -k2,2n -o amil_3UTR_3kb_sorted.bed amil_3UTR_3kb.bed
+sort -k1,1 -k4,4n amil_GFFannotation.gene_sorted.gff > sorted_amil_GFFannotation.gene_sorted.gff
+
+bedtools closest -a amil_3UTR_3kb.bed -b amil_GFFannotation.gene_sorted.gff > closest_genes_3UTR_3kb_apul.txt
+
+echo "Complete!" $(date)
+```
+
+Submitted batch job 323636. Got an error message but output file still produced. 
+
+```
+wc -l closest_genes_3UTR_3kb_apul.txt
+73144 closest_genes_3UTR_3kb_apul.txt
+```
+
+Make ID column
+
+```
+awk 'BEGIN{FS=OFS="\t"} {split($NF, id, ";"); split(id[1], id_value, "="); $NF=id_value[2]; print $0, id_value[1]}' closest_genes_3UTR_3kb_apul.txt > modified_closest_genes_3UTR_3kb_apul.txt
+
+wc -l modified_closest_genes_3UTR_3kb_apul.txt
+73144 modified_closest_genes_3UTR_3kb_apul.txt
+
+head modified_closest_genes_3UTR_3kb_apul.txt
+chr1	48020	48410	chr1	maker	gene	15503	48020	.	+	.	Amillepora00001	ID
+chr1	48020	48410	chr1	maker	gene	48411	49719	.	-	.	Amillepora00002	ID
+chr1	48020	48410	chr1	maker	gene	15503	48020	.	+	.	Amillepora00001	ID
+chr1	48020	48410	chr1	maker	gene	48411	49719	.	-	.	Amillepora00002	ID
+chr1	49719	51020	chr1	maker	gene	48411	49719	.	-	.	Amillepora00002	ID
+chr1	52175	53065	chr1	maker	gene	53066	54685	.	+	.	Amillepora00003	ID
+chr1	54685	55175	chr1	maker	gene	53066	54685	.	+	.	Amillepora00003	ID
+chr1	54685	55175	chr1	maker	gene	55176	69114	.	-	.	Amillepora00004	ID
+chr1	54685	55175	chr1	maker	gene	53066	54685	.	+	.	Amillepora00003	ID
+chr1	54685	55175	chr1	maker	gene	55176	69114	.	-	.	Amillepora00004	ID
+```
+
+Remove duplicate rows
+
+```
+awk '!seen[$0]++' modified_closest_genes_3UTR_3kb_apul.txt > uniq_modified_closest_genes_3UTR_3kb_apul.txt
+
+wc -l uniq_modified_closest_genes_3UTR_3kb_apul.txt 
+48791 uniq_modified_closest_genes_3UTR_3kb_apul.txt
+
+head uniq_modified_closest_genes_3UTR_3kb_apul.txt 
+chr1	48020	48410	chr1	maker	gene	15503	48020	.	+	.	Amillepora00001	ID
+chr1	48020	48410	chr1	maker	gene	48411	49719	.	-	.	Amillepora00002	ID
+chr1	49719	51020	chr1	maker	gene	48411	49719	.	-	.	Amillepora00002	ID
+chr1	52175	53065	chr1	maker	gene	53066	54685	.	+	.	Amillepora00003	ID
+chr1	54685	55175	chr1	maker	gene	53066	54685	.	+	.	Amillepora00003	ID
+chr1	54685	55175	chr1	maker	gene	55176	69114	.	-	.	Amillepora00004	ID
+chr1	73239	76239	chr1	maker	gene	69380	73239	.	+	.	Amillepora00005	ID
+chr1	84565	87495	chr1	maker	gene	77282	84565	.	+	.	Amillepora00006	ID
+chr1	84565	87495	chr1	maker	gene	87496	87568	.	-	.	Amillepora00007	ID
+chr1	92360	95360	chr1	maker	gene	95361	108461	.	-	.	Amillepora00008	ID
+```
+
+Make new column so that the new column represents the file headers in apoc_3UTR.fasta. Ie the new column should look like this: chr1:17663-20663. 
+
+```
+awk '{print $1":"$2"-"$3, $0}' uniq_modified_closest_genes_3UTR_3kb_apul.txt > uniq_modified_closest_genes_3UTR_3kb_apul_3UTRid.txt
+
+head uniq_modified_closest_genes_3UTR_3kb_apul_3UTRid.txt 
+chr1:48020-48410 chr1	48020	48410	chr1	maker	gene	15503	48020	.	+	.	Amillepora00001	ID
+chr1:48020-48410 chr1	48020	48410	chr1	maker	gene	48411	49719	.	-	.	Amillepora00002	ID
+chr1:49719-51020 chr1	49719	51020	chr1	maker	gene	48411	49719	.	-	.	Amillepora00002	ID
+chr1:52175-53065 chr1	52175	53065	chr1	maker	gene	53066	54685	.	+	.	Amillepora00003	ID
+chr1:54685-55175 chr1	54685	55175	chr1	maker	gene	53066	54685	.	+	.	Amillepora00003	ID
+chr1:54685-55175 chr1	54685	55175	chr1	maker	gene	55176	69114	.	-	.	Amillepora00004	ID
+chr1:73239-76239 chr1	73239	76239	chr1	maker	gene	69380	73239	.	+	.	Amillepora00005	ID
+chr1:84565-87495 chr1	84565	87495	chr1	maker	gene	77282	84565	.	+	.	Amillepora00006	ID
+chr1:84565-87495 chr1	84565	87495	chr1	maker	gene	87496	87568	.	-	.	Amillepora00007	ID
+chr1:92360-95360 chr1	92360	95360	chr1	maker	gene	95361	108461	.	-	.	Amillepora00008	ID
+```
 
 ### Peve
 

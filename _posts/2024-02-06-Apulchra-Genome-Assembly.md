@@ -3493,11 +3493,88 @@ I also need to blast the symbiont genome information. Based on the ITS2 data, th
 
 ![](https://raw.githubusercontent.com/urol-e5/timeseries/master/time_series_analysis/Figures/ITS2/species_site_panel.jpeg)
 
+### 20240617
+
+Going to blast to sym genomes now. First download them: 
+
+```
+cd /data/putnamlab/jillashey/Apul_Genome/dbs
+wget http://smic.reefgenomics.org/download/Smic.genome.scaffold.final.fa.gz
+wget https://marinegenomics.oist.jp/symbd/download/102_symbd_genome_scaffold.fa.gz
+```
+
+In the assembly scripts folder: `nano blastn_sym.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 30-00:00:00
+#SBATCH --nodes=1 --ntasks-per-node=36
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --exclusive
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BLAST+/2.13.0-gompi-2022a
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Build A1 seq db" $(date)
+
+makeblastdb -in /data/putnamlab/jillashey/Apul_Genome/dbs/Smic.genome.scaffold.final.fa -dbtype nucl -out /data/putnamlab/jillashey/Apul_Genome/dbs/A1_db
+
+echo "Build D1 seq db" $(date)
+
+makeblastdb -in /data/putnamlab/jillashey/Apul_Genome/dbs/102_symbd_genome_scaffold.fa -dbtype nucl -out /data/putnamlab/jillashey/Apul_Genome/dbs/D1_db
+
+echo "Blasting hifi reads against symbiont A1 genome to look for contaminants" $(date)
+
+blastn -query m84100_240128_024355_s2.hifi_reads.bc1029.fasta -db /data/putnamlab/jillashey/Apul_Genome/dbs/A1_db -outfmt 6 -evalue 1e-4 -perc_identity 90 -out sym_A1_contaminant_hits_rr.txt
+
+echo "A1 blast complete! Now blasting hifi reads against symbiont D1 genome to look for contaminants" $(date)
+
+blastn -query m84100_240128_024355_s2.hifi_reads.bc1029.fasta -db /data/putnamlab/jillashey/Apul_Genome/dbs/D1_db -outfmt 6 -evalue 1e-4 -perc_identity 90 -out sym_D1_contaminant_hits_rr.txt
+
+echo "D1 blast complete!"$(date)
+```
+
+Submitted batch job 323705
 
 
 
 
 
+
+
+
+
+
+
+
+
+#### Working on funannotate scripts ahead of time
+
+[Funannotate documentation](https://funannotate.readthedocs.io/en/latest/index.html)
+
+To get the assembly ready to be annotated, the following can be done: 
+
+- Clean assembly - removing repetitive contigs. In `funannotate`, the shortest contigs/scaffolds are aligned to the rest of the assembly to determine if it is repetitive
+
+```
+funannotate clean -i INPUT_FASTA -o CLEAN_FASTA
+```
+
+- Sorting/renaming fasta headers - NCBI has a character limit of 16 for fasta submission. This script will sort the assembly by length and renames the fasta headers 
+
+```
+funannotate sort -i CLEAN_FASTA -o CLEAN_SORTED_FASTA
+```
+
+- RepeatMasking assembly (required) - do we use repeat masker or repeat modeler? 
 
 
 
