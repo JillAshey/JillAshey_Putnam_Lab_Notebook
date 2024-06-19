@@ -3542,7 +3542,35 @@ blastn -query m84100_240128_024355_s2.hifi_reads.bc1029.fasta -db /data/putnamla
 echo "D1 blast complete!"$(date)
 ```
 
-Submitted batch job 323705
+Submitted batch job 323705. Ran in about 1.5 days. 
+
+### 20240619
+
+Cat the sym blast results together and remove anything that has a bit score <1000. 
+
+```
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+cat sym_A1_contaminant_hits_rr.txt sym_D1_contaminant_hits_rr.txt > sym_contaminant_hits_rr.txt
+awk '$12 > 1000 {print $0}' sym_contaminant_hits_rr.txt > contaminant_hits_sym_passfilter_rr.txt
+
+wc -l contaminant_hits_sym_passfilter_rr.txt 
+12 contaminant_hits_sym_passfilter_rr.txt
+```
+
+Pretty clean when bit scores <1000 are removed. Copy this data onto my computer and remove the contaminants in the [R script](https://github.com/hputnam/Apulchra_genome/blob/main/scripts/genome_analysis.Rmd). 
+
+For the mito blast hits, remove anything that has a bit score <1000. 
+
+```
+awk '$12 > 1000 {print $0}' mito_hits_rr.txt > contaminant_hits_mito_blast_passfilter_rr.txt
+
+wc -l contaminant_hits_mito_blast_passfilter_rr.txt
+7056 contaminant_hits_mito_blast_passfilter_rr.txt
+```
+
+Still need to get mito hifi to work. 
+
 
 
 
