@@ -3560,20 +3560,110 @@ wc -l contaminant_hits_sym_passfilter_rr.txt
 
 Pretty clean when bit scores <1000 are removed. Copy this data onto my computer and remove the contaminants in the [R script](https://github.com/hputnam/Apulchra_genome/blob/main/scripts/genome_analysis.Rmd). 
 
-For the mito blast hits, remove anything that has a bit score <1000. 
-
-```
-awk '$12 > 1000 {print $0}' mito_hits_rr.txt > contaminant_hits_mito_blast_passfilter_rr.txt
-
-wc -l contaminant_hits_mito_blast_passfilter_rr.txt
-7056 contaminant_hits_mito_blast_passfilter_rr.txt
-```
-
 Still need to get mito hifi to work. 
 
+### 20240621 
 
+TRINITY DID IT!!!!!! She is my hero!!!!! She used a docker singularity install and was able to run it. Here are the output files and folders:
 
+```
+cd /data/putnamlab/tconn/mito
 
+-rw-r--r--. 1 trinity.conn  19K Jun 21 13:58 final_mitogenome.fasta
+-rw-r--r--. 1 trinity.conn  33K Jun 21 13:58 final_mitogenome.gb
+-rw-r--r--. 1 trinity.conn  275 Jun 21 13:58 contigs_stats.tsv
+-rw-r--r--. 1 trinity.conn 1004 Jun 21 13:58 shared_genes.tsv
+-rw-r--r--. 1 trinity.conn  48K Jun 21 13:58 final_mitogenome.annotation.png
+-rw-r--r--. 1 trinity.conn  48K Jun 21 13:58 contigs_annotations.png
+-rw-r--r--. 1 trinity.conn  37K Jun 21 13:58 all_potential_contigs.fa
+-rw-r--r--. 1 trinity.conn  20K Jun 21 13:58 coverage_plot.png
+-rw-r--r--. 1 trinity.conn  20K Jun 21 13:59 final_mitogenome.coverage.png
+drwxr-xr-x. 4 trinity.conn 4.0K Jun 21 13:59 potential_contigs
+drwxr-xr-x. 2 trinity.conn 4.0K Jun 21 13:59 contigs_circularization
+drwxr-xr-x. 2 trinity.conn 4.0K Jun 21 13:59 final_mitogenome_choice
+drwxr-xr-x. 2 trinity.conn 4.0K Jun 21 13:59 reads_mapping_and_assembly
+drwxr-xr-x. 2 trinity.conn 4.0K Jun 21 13:59 contigs_filtering
+drwxr-xr-x. 2 trinity.conn 4.0K Jun 21 13:59 coverage_mapping
+drwxr-xr-x. 2 trinity.conn 4.0K Jun 21 17:55 MitoHifi_out
+```
+
+Let's look at the output files (explanation of output files is [here](https://github.com/marcelauliano/MitoHiFi) on the mitohifi github. The `final_mitogenome.fasta` is the final mitochondria circularized and rotated to start at tRNA-Phe and is 18480 bp long for our genome; the `final_mitogenome.gb` is the final mitochondria annotated in GenBank format. 
+
+```
+head final_mitogenome.fasta
+>ptg000003l_rc_rotated
+CAAACATTAGGACAATAAGACCTGACTTCATCCAAGTGACAAACCACTGGGTTAAATCTG
+TTTTATGTTTAATACACAAATTGACGACGGCCATGCAATACCTGTCAATGAAGGATTCAA
+GTTTGGGTAAGGTCTCTCGCGGACTATCGAATTAAACGACACGCTCCTCTAATTAAAACA
+GTGAACAGCCAAGTTTTTTGAATTTTAACCTTGCGGTCGTACTACTCAAGCGGAAAATTT
+CTGACTTTTTAGGATTGCTTCACATCTTTTTCATTATTTACAGTATAGACTACCAGGGTC
+CCTAATCCTGTTTGCTCCCCATACTCTCGTGTTTTAGCCATCACACTATAATCTCAAAAA
+TAAATAGTCTTCACGTCTAAAGTTCTTTTTTCTATTTACACATTCCACCGCTACAAAAAA
+ATTCCATTTACCTTCTTAAATTATAAAACCCTTTTTAATTAAAACGGCCTATCACACCCT
+TTACGCTTTTGCCCACAAAACTAGCCCTTAAGTTTCACCGCGTCTGCTGGCACTTAATTT
+```
+
+The final `final_mitogenome.coverage.png` shows the sequencing coverage throughout the final mitogenome
+
+![](https://raw.githubusercontent.com/hputnam/Apulchra_genome/main/output/assembly/mito/final_mitogenome.coverage.png)
+
+The final `final_mitogenome.annotation.png` shows the predicted genes throughout the final mitogenome
+
+![](https://raw.githubusercontent.com/hputnam/Apulchra_genome/main/output/assembly/mito/final_mitogenome.annotation.png)
+
+The `contigs_stats.tsv` file contains the statistics of your assembled mitos such as the number of genes, size, whether it was circularized or not, if the sequence has frameshifts, etc. 
+
+```
+less contig_stats.tsv 
+
+# Related mitogenome is 18479 bp long and has 17 genes
+contig_id       frameshifts_found       annotation_file length(bp)      number_of_genes was_circular
+final_mitogenome        No frameshift found     final_mitogenome.gb     18480   24      True
+ptg000003l      No frameshift found     final_mitogenome.gb     18480   24      True
+```
+
+The `shared_genes.tsv` shows the comparison of annotation between close-related mitogenome and all potential contigs assembled.
+
+```
+less shared_genes.tsv
+
+contig_id       shared_genes    unique_to_contig        unique_to_relatedMito
+final_mitogenome        {'ATP6': [1, 1], 'ATP8': [1, 1], 'COX1': [1, 1], 'COX2': [1, 1], 'COX3': [1, 1], 'CYTB': [1, 1], 'ND1': [1, 1], 'ND2': [1, 1], 'ND3': [1, 1], 'ND4': [1, 1], 'ND4L': [1, 1], 'ND5': [1, 1], 'ND6': [1, 1], 'tRNA-Met': [1, 1], 'tRNA-Trp': [1, 1]}      {'rrnL': [1, 0], 'tRNA-Arg': [1, 0], 'tRNA-Asp': [1, 0], 'tRNA-Gln': [1, 0], 'tRNA-Glu': [1, 0], 'tRNA-Gly': [1, 0], 'tRNA-His': [1, 0], 'tRNA-Pro': [1, 0], 'tRNA-Ser': [1, 0]}        {'l-rRNA': [0, 1], 's-rRNA': [0, 1]}
+ptg000003l      {'ATP6': [1, 1], 'ATP8': [1, 1], 'COX1': [1, 1], 'COX2': [1, 1], 'COX3': [1, 1], 'CYTB': [1, 1], 'ND1': [1, 1], 'ND2': [1, 1], 'ND3': [1, 1], 'ND4': [1, 1], 'ND4L': [1, 1], 'ND5': [1, 1], 'ND6': [1, 1], 'tRNA-Met': [1, 1], 'tRNA-Trp': [1, 1]}      {'rrnL': [1, 0], 'tRNA-Arg': [1, 0], 'tRNA-Asp': [1, 0], 'tRNA-Gln': [1, 0], 'tRNA-Glu': [1, 0], 'tRNA-Gly': [1, 0], 'tRNA-His': [1, 0], 'tRNA-Pro': [1, 0], 'tRNA-Ser': [1, 0]}        {'l-rRNA': [0, 1], 's-rRNA': [0, 1]}
+```
+
+I uploaded all of these files onto the Apul genome github in a [mito assembly folder](https://github.com/hputnam/Apulchra_genome/tree/main/output/assembly/mito). With the completed mito assembly, I can now blast the Apul mito fasta against the hifi reads. In the `/data/putnamlab/jillashey/Apul_Genome/assembly/scripts` folder: `nano blastn_mito.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=36
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --exclusive
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BLAST+/2.13.0-gompi-2022a
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Build Apul mito genome db" $(date)
+
+makeblastdb -in /data/putnamlab/tconn/mito/final_mitogenome.fasta -dbtype nucl -out /data/putnamlab/jillashey/Apul_Genome/dbs/mito_db
+
+echo "Blasting hifi reads against mito genome to look for contaminants" $(date)
+
+blastn -query m84100_240128_024355_s2.hifi_reads.bc1029.fasta -db /data/putnamlab/jillashey/Apul_Genome/dbs/mito_db -outfmt 6 -evalue 1e-4 -perc_identity 90 -out mito_contaminant_hits_rr.txt
+
+echo "Mito blast complete!"$(date)
+```
+
+Submitted batch job 324454. Once this is done running, I can purge all the potential contaminants!
 
 
 
