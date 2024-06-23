@@ -3663,10 +3663,34 @@ blastn -query m84100_240128_024355_s2.hifi_reads.bc1029.fasta -db /data/putnamla
 echo "Mito blast complete!"$(date)
 ```
 
-Submitted batch job 324454. Once this is done running, I can purge all the potential contaminants!
+Submitted batch job 324454. Once this is done running, I can purge all the potential contaminants! Ran in about 2.5 hours. Remove all hits <1000. 
 
+```
+awk '$12 > 1000 {print $0}' mito_contaminant_hits_rr.txt > contaminant_hits_mito_passfilter_rr.txt
 
+wc -l contaminant_hits_mito_passfilter_rr.txt 
+1921 contaminant_hits_mito_passfilter_rr.txt
+```
 
+Copy onto computer and run the
+
+Copy the file `all_contam_rem_good_hifi_read_list.txt` that was generated from the [R code](https://github.com/hputnam/Apulchra_genome/blob/main/scripts/genome_analysis.Rmd) mentioned above. This specific file was written starting on line 290. It contains the reads that have passed contamination filtering. I copied this file into `/data/putnamlab/jillashey/Apul_Genome/assembly/data`.
+
+```
+wc -l all_contam_rem_good_hifi_read_list.txt
+5896466 all_contam_rem_good_hifi_read_list.txt
+```
+
+Remove the length information from the file 
+
+```
+awk '{$2=""; print $0}' all_contam_rem_good_hifi_read_list.txt > output_file.txt
+
+wc -l output_file.txt 
+5896466 output_file.txt
+```
+
+Run the `subseq.sh` script in `/data/putnamlab/jillashey/Apul_Genome/assembly/scripts` to subset the raw hifi fasta file to remove the contaminants identified above. Submitted batch job 324463
 
 
 
