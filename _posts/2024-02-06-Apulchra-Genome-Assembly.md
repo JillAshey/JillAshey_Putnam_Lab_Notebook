@@ -3562,7 +3562,7 @@ Pretty clean when bit scores <1000 are removed. Copy this data onto my computer 
 
 Still need to get mito hifi to work. 
 
-### 20240621 
+### 20240622
 
 TRINITY DID IT!!!!!! She is my hero!!!!! She used a docker singularity install and was able to run it. Here are the output files and folders:
 
@@ -3672,9 +3672,7 @@ wc -l contaminant_hits_mito_passfilter_rr.txt
 1921 contaminant_hits_mito_passfilter_rr.txt
 ```
 
-Copy onto computer and run the
-
-Copy the file `all_contam_rem_good_hifi_read_list.txt` that was generated from the [R code](https://github.com/hputnam/Apulchra_genome/blob/main/scripts/genome_analysis.Rmd) mentioned above. This specific file was written starting on line 290. It contains the reads that have passed contamination filtering. I copied this file into `/data/putnamlab/jillashey/Apul_Genome/assembly/data`.
+Copy `contaminant_hits_mito_passfilter_rr.txt ` onto computer and identify the reads that are contaminants. This will produce the file `all_contam_rem_good_hifi_read_list.txt`, which represents the raw hifi reads with the ones marked as contaminants removed. Copy the file `all_contam_rem_good_hifi_read_list.txt` that was generated from the [R script](https://github.com/hputnam/Apulchra_genome/blob/main/scripts/genome_analysis.Rmd). This specific file was written starting on line 290. It contains the reads that have passed contamination filtering. I copied this file into `/data/putnamlab/jillashey/Apul_Genome/assembly/data`.
 
 ```
 wc -l all_contam_rem_good_hifi_read_list.txt
@@ -3692,11 +3690,42 @@ wc -l output_file.txt
 
 Run the `subseq.sh` script in `/data/putnamlab/jillashey/Apul_Genome/assembly/scripts` to subset the raw hifi fasta file to remove the contaminants identified above. Submitted batch job 324463
 
+### 20240623
 
+Script above ran in about 22 minutes and the resulting output file is `/data/putnamlab/jillashey/Apul_Genome/assembly/data/hifi_rr_allcontam_rem.fasta`. This file represents the raw hifi reads with eukaryotic, mitochondrial, symbiont, viral and prokaryotic contaminant reads removed. Out of 5898386 raw hifi reads, there were only 1922 that were identified as contamination. This is only 0.03258519% of the raw reads, which is pretty amazing! 
 
+Now that we have clean reads, assembly can begin! In my crazy code above, I ran a couple of different iterations of hifiasm changing the `-s` option, which sets a similary threshold for duplicate haplotigs that should be purged; the default is 0.55. The iterations that I ran (0.3, 0.55, and 0.8) all worked well to resolve haplotypes with the heterozygosity. Therefore, I stuck with the default 0.55 option. I'm also using `-primary` to output a primary and alternate assembly, instead of an assembly and two haplotype assemblies, as we have no real way of knowing if the haplotypes produced are real or not. 
 
+In the scripts folder, modify `hifiasm.sh`. 
 
+```
+#!/bin/bash -i
+#SBATCH -t 30-00:00:00
+#SBATCH --nodes=1 --ntasks-per-node=36
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --exclusive
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
 
+conda activate /data/putnamlab/conda/hifiasm
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Starting assembly with hifiasm" $(date)
+
+hifiasm -o apul.hifiasm.s55_pa hifi_rr_allcontam_rem.fasta --primary -s 0.55 -t 36 2> apul_hifiasm_allcontam_rem_s55_pa.log
+
+echo "Assembly with hifiasm complete!" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 324472
 
 #### Working on funannotate scripts ahead of time
 
