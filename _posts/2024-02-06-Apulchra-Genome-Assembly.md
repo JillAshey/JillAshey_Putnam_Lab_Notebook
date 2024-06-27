@@ -3934,7 +3934,46 @@ echo "busco complete for hifiasm-assembled primary fasta with -s 0.55" $(date)
 #echo "busco complete for hifiasm-assembled alternate fasta with -s 0.55" $(date)
 ```
 
-Only going to do the primary because was getting erros before in the input file formats. The busco for alternate assembly is commented out. 
+Only going to do the primary because was getting erros before in the input file formats. The busco for alternate assembly is commented out. Submitted batch job 327033. Ran successfully in about 30 mins! Here are the results for the primary assembly: 
+
+```
+# BUSCO version is: 5.2.2 
+# The lineage dataset is: metazoa_odb10 (Creation date: 2024-01-08, number of genomes: 65, number of BUSCOs: 954)
+# Summarized benchmarking in BUSCO notation for file /data/putnamlab/jillashey/Apul_Genome/assembly/data/apul.hifiasm.s55_pa.p_ctg.fa
+# BUSCO was run in mode: genome
+# Gene predictor used: metaeuk
+
+        ***** Results: *****
+
+        C:93.3%[S:92.0%,D:1.3%],F:3.1%,M:3.6%,n:954        
+        890     Complete BUSCOs (C)                        
+        878     Complete and single-copy BUSCOs (S)        
+        12      Complete and duplicated BUSCOs (D)         
+        30      Fragmented BUSCOs (F)                      
+        34      Missing BUSCOs (M)                         
+        954     Total BUSCO groups searched                
+
+Dependencies and versions:
+        hmmsearch: 3.3
+        metaeuk: GITDIR-NOTFOUND
+```
+
+93.3% completeness, which is the same as my initial/iterative runs. 92% of single copy BUSCOs, which is great for the assembly. 
+
+Quast also finished running in about 6 mins. It created a lot of output files: 
+
+```
+2024-06-27 09:00:57
+RESULTS:
+  Text versions of total report are saved to /data/putnamlab/jillashey/Apul_Genome/assembly/output/quast/report.txt, report.tsv, and report.tex
+  Text versions of transposed total report are saved to /data/putnamlab/jillashey/Apul_Genome/assembly/output/quast/transposed_report.txt, transposed_report.tsv, and transposed_report.tex
+  HTML version (interactive tables and plots) is saved to /data/putnamlab/jillashey/Apul_Genome/assembly/output/quast/report.html
+  PDF version (tables and plots) is saved to /data/putnamlab/jillashey/Apul_Genome/assembly/output/quast/report.pdf
+  Icarus (contig browser) is saved to /data/putnamlab/jillashey/Apul_Genome/assembly/output/quast/icarus.html
+  Log is saved to /data/putnamlab/jillashey/Apul_Genome/assembly/output/quast/quast.log
+```
+
+Downloaded `icarus.html`, `report.html`, `report.pdf`, and `report.txt` to `/Users/jillashey/Desktop/PutnamLab/Repositories/Apulchra_genome/output/assembly/primary` on my personal computer. 
 
 
 
