@@ -3727,6 +3727,122 @@ conda deactivate
 
 Submitted batch job 324472
 
+### 20240626
+
+Took about 3 days to run. Yay output!! The primary assembly file is `apul.hifiasm.s55_pa.p_ctg.gfa` and the alternate assembly file is `apul.hifiasm.s55_pa.a_ctg.gfa`. Let's QC! 
+
+Run busco for the primary and alternate assembly. In the scripts folder: `nano busco_qc.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Convert from gfa to fasta for downstream use" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+###### PRIMARY ASSEMBLY w/ -s 0.55
+
+awk '/^S/{print ">"$2;print $3}' apul.hifiasm.s55_pa.p_ctg.gfa > apul.hifiasm.s55_pa.p_ctg.fa
+
+echo "Begin busco on hifiasm-assembled primary fasta with -s 0.55" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/Apul_Genome/assembly/data/apul.hifiasm.s55_pa.p_ctg.fa" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${Apul_Genome/assembly/data}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apul.primary.busco -m genome
+
+echo "busco complete for hifiasm-assembled primary fasta with -s 0.55" $(date)
+
+###### ALTERNATE ASSEMBLY w/ -s 0.55
+
+awk '/^S/{print ">"$2;print $3}' apul.hifiasm.s55_pa.a_ctg.gfa > apul.hifiasm.s55_pa.a_ctg.fa
+
+echo "Begin busco on hifiasm-assembled alternate fasta with -s 0.55" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/Apul_Genome/assembly/data/apul.hifiasm.s55_pa.a_ctg.fa" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${Apul_Genome/assembly/data}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apul.alternate.busco -m genome
+
+echo "busco complete for hifiasm-assembled alternate fasta with -s 0.55" $(date)
+```
+
+Submitted batch job 326643. NEED TO TROUBLESHOOT, KEEPS FAILING
+
+
+
+
+. In the scripts folder: `nano quast_qc.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+module purge
+module load Python/2.7.18-GCCcore-10.2.0
+module load QUAST/5.0.2-foss-2020b-Python-2.7.18
+# previously used QUAST/5.2.0-foss-2021b but it failed and produced module conflict errors
+
+echo "Begin quast of primary and alternate assemblies w/ reference" $(date)
+
+quast -t 10 --eukaryote \
+
+
+
+
+
+
+apul.hifiasm.intial.bp.p_ctg.fa \
+apul.hifiasm.intial.bp.hap1.p_ctg.fa \
+apul.hifiasm.intial.bp.hap2.p_ctg.fa \
+/data/putnamlab/jillashey/genome/Amil_v2.01/Amil.v2.01.chrs.fasta \
+-o /data/putnamlab/jillashey/Apul_Genome/assembly/output/quast
+
+echo "Quast complete (initial run); all QC complete!" $(date)
+```
+
+NEED TO ADD MULTIPLE GENOMES 
+
+
+
+
+
+
+
+
 #### Working on funannotate scripts ahead of time
 
 [Funannotate documentation](https://funannotate.readthedocs.io/en/latest/index.html)
