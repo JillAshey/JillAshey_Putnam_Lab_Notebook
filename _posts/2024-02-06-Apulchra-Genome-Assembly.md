@@ -3729,7 +3729,29 @@ Submitted batch job 324472
 
 ### 20240626
 
-Took about 3 days to run. Yay output!! The primary assembly file is `apul.hifiasm.s55_pa.p_ctg.gfa` and the alternate assembly file is `apul.hifiasm.s55_pa.a_ctg.gfa`. Let's QC! 
+Took about 3 days to run. Yay output!! The primary assembly file is `apul.hifiasm.s55_pa.p_ctg.gfa` and the alternate assembly file is `apul.hifiasm.s55_pa.a_ctg.gfa`. Let's QC! Convert gfa to fa
+
+```
+## PRIMARY 
+awk '/^S/{print ">"$2"\n"$3}' apul.hifiasm.s55_pa.p_ctg.gfa | fold > apul.hifiasm.s55_pa.p_ctg.fa
+
+zgrep -c ">" apul.hifiasm.s55_pa.p_ctg.fa
+187
+
+## ALTERNATE 
+awk '/^S/{print ">"$2"\n"$3}' apul.hifiasm.s55_pa.a_ctg.gfa | fold > apul.hifiasm.s55_pa.a_ctg.fa
+
+zgrep -c ">" apul.hifiasm.s55_pa.a_ctg.fa
+3548
+```
+
+
+
+
+
+
+
+
 
 Run busco for the primary and alternate assembly. In the scripts folder: `nano busco_qc.sh`
 
@@ -3789,12 +3811,33 @@ busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l
 echo "busco complete for hifiasm-assembled alternate fasta with -s 0.55" $(date)
 ```
 
-Submitted batch job 326643. NEED TO TROUBLESHOOT, KEEPS FAILING
+Submitted batch job 327004. Got this error: 
 
+```
+Use --offline to prevent permission denied issues from downloads
 
+2024-06-27 08:00:19 ERROR:      The input file does not contain nucleotide sequences.
+2024-06-27 08:00:19 ERROR:      BUSCO analysis failed !
+2024-06-27 08:00:19 ERROR:      Check the logs, read the user guide (https://busco.ezlab.org/busco_userguide.html), and check the BUSCO issue board on https://gitlab.com/ezlab/busco/issues
+```
 
+Convert gfa to fa
 
-. In the scripts folder: `nano quast_qc.sh`
+```
+## PRIMARY 
+awk '/^S/{print ">"$2"\n"$3}' apul.hifiasm.s55_pa.p_ctg.gfa | fold > apul.hifiasm.s55_pa.p_ctg.fa
+
+zgrep -c ">" apul.hifiasm.s55_pa.p_ctg.fa
+187
+
+## ALTERNATE 
+awk '/^S/{print ">"$2"\n"$3}' apul.hifiasm.s55_pa.a_ctg.gfa | fold > apul.hifiasm.s55_pa.a_ctg.fa
+
+zgrep -c ">" apul.hifiasm.s55_pa.a_ctg.fa
+3548
+```
+
+In the scripts folder: `nano quast_qc.sh`
 
 ```
 #!/bin/bash 
@@ -3819,24 +3862,79 @@ module load QUAST/5.0.2-foss-2020b-Python-2.7.18
 echo "Begin quast of primary and alternate assemblies w/ reference" $(date)
 
 quast -t 10 --eukaryote \
-
-
-
-
-
-
-apul.hifiasm.intial.bp.p_ctg.fa \
-apul.hifiasm.intial.bp.hap1.p_ctg.fa \
-apul.hifiasm.intial.bp.hap2.p_ctg.fa \
+apul.hifiasm.s55_pa.p_ctg.fa \
+apul.hifiasm.s55_pa.a_ctg.fa \
+/data/putnamlab/jillashey/genome/Ofav_Young_et_al_2024/Orbicella_faveolata_gen_17.scaffolds.fa \
 /data/putnamlab/jillashey/genome/Amil_v2.01/Amil.v2.01.chrs.fasta \
+/data/putnamlab/jillashey/genome/Aten/GCA_014633955.1_Aten_1.0_genomic.fna \
+/data/putnamlab/jillashey/genome/Ahya/GCA_014634145.1_Ahya_1.0_genomic.fna \
+/data/putnamlab/jillashey/genome/Ayon/GCA_014634225.1_Ayon_1.0_genomic.fna \
+/data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta \
+/data/putnamlab/jillashey/genome/Pacuta/V2/Pocillopora_acuta_HIv2.assembly.fasta \
+/data/putnamlab/jillashey/genome/Peve/Porites_evermanni_v1.fa \
+/data/putnamlab/jillashey/genome/Ofav/GCF_002042975.1_ofav_dov_v1_genomic.fna \
+/data/putnamlab/jillashey/genome/Pcomp/Porites_compressa_contigs.fasta \
+/data/putnamlab/jillashey/genome/Plutea/plut_final_2.1.fasta \
 -o /data/putnamlab/jillashey/Apul_Genome/assembly/output/quast
 
-echo "Quast complete (initial run); all QC complete!" $(date)
+echo "Quast complete; all QC complete!" $(date)
 ```
 
-NEED TO ADD MULTIPLE GENOMES 
+Run busco for the primary and alternate assembly. In the scripts folder: `nano busco_qc.sh`
 
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
 
+echo "Convert from gfa to fasta for downstream use" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+###### PRIMARY ASSEMBLY w/ -s 0.55
+
+echo "Begin busco on hifiasm-assembled primary fasta with -s 0.55" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/Apul_Genome/assembly/data/apul.hifiasm.s55_pa.p_ctg.fa" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${Apul_Genome/assembly/data}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apul.primary.busco -m genome
+
+echo "busco complete for hifiasm-assembled primary fasta with -s 0.55" $(date)
+
+###### ALTERNATE ASSEMBLY w/ -s 0.55
+
+#echo "Begin busco on hifiasm-assembled alternate fasta with -s 0.55" $(date)
+
+#labbase=/data/putnamlab
+#busco_shared="${labbase}/shared/busco"
+#[ -z "$query" ] && query="${labbase}/jillashey/Apul_Genome/assembly/data/apul.hifiasm.s55_pa.a_ctg.fa" # set this to the query (genome/transcriptome) you are running
+#[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+#source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+#cd "${labbase}/${Apul_Genome/assembly/data}"
+#busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apul.alternate.busco -m genome
+
+#echo "busco complete for hifiasm-assembled alternate fasta with -s 0.55" $(date)
+```
+
+Only going to do the primary because was getting erros before in the input file formats. The busco for alternate assembly is commented out. 
 
 
 
