@@ -3745,14 +3745,6 @@ zgrep -c ">" apul.hifiasm.s55_pa.a_ctg.fa
 3548
 ```
 
-
-
-
-
-
-
-
-
 Run busco for the primary and alternate assembly. In the scripts folder: `nano busco_qc.sh`
 
 ```
@@ -3975,6 +3967,209 @@ RESULTS:
 
 Downloaded `icarus.html`, `report.html`, `report.pdf`, and `report.txt` to `/Users/jillashey/Desktop/PutnamLab/Repositories/Apulchra_genome/output/assembly/primary` on my personal computer. 
 
+### 20240630 
+
+The [pipeline](https://github.com/benyoung93/orbicella_faveolata_pacbio_genome_transcriptome/blob/main/ofav_genome_pipeline.Rmd) from Young et al. 2024 used [ragtag](https://github.com/malonge/RagTag) and [ntlinks](https://github.com/bcgsc/ntLink) to scaffold the assembly. Now I need to do the same. I used hifiasm to assembly the long reads into contigs (approx 168 contigs in the primary assembly). Next, I need to assembly the contigs into scaffolds. 
+
+- Contigs = set of partially overlapping reads 
+- Scffold = set of contigs ordered and oriented to position information. The scaffolds also incorporate empty spaces or gaps. 
+
+![](https://mycocosm.jgi.doe.gov/help/screenshots/contigscaff2.gif)
+
+Young et al. 2024 ended up going with the ntlinks to assemble the scaffolds. The ragtag program uses old reference genomes, so Young et al. used the old Orbicella genome assembly and I would have to use one of the old Acropora assemblies. ntlinks uses the long read information along with the newly assembled contigs. I think I will go with ntlink because it is a tool for de novo genome assembly and long read data can be used with it. The ntlink software has options to run multiple iterations/rounds of ntlink to achieve the highest possible contiguity without sacrificing assembly correctness. From the Basic Protocol 3 from the [ntlinks paper](https://currentprotocols.onlinelibrary.wiley.com/doi/10.1002/cpz1.733): "Using the in-code round capability of ntLink allows a user to maximize the contiguity of the final assembly without needing to manually run ntLink multiple times. To avoid re-mapping the reads at each round, ntLink lifts over the mapping coordinates from the input draft assembly to the output post-ntLink scaffolds, which can then be used for the next round of ntLink. The same process can be repeated as many times as needed, thus enabling multiple rounds of ntLink to be powered by a single instance of long-read mapping." Therefore, I need to turn the scaffolds into contigs. Install [ntlinks](https://github.com/bcgsc/ntLink) on Andromeda. 
+
+```
+cd /data/putnamlab/conda
+module load Miniconda3/4.9.2
+conda create --prefix /data/putnamlab/conda/ntlink
+conda activate /data/putnamlab/conda/ntlink
+conda install -c bioconda -c conda-forge ntlink
+```
+
+In the `/data/putnamlab/jillashey/Apul_Genome/assembly/scripts` folder: `nano ntlinks_5rounds.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 30-00:00:00
+#SBATCH --nodes=1 --ntasks-per-node=36
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH --exclusive
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load Miniconda3/4.9.2
+
+conda activate /data/putnamlab/conda/ntlink
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Starting scaffolding of hifiasm primary assembly with ntlinks (rounds = 5)" $(date)
+
+ntLink_rounds run_rounds_gaps \
+t=36 \
+g=100 \
+rounds=5 \
+gap_fill \
+target=apul.hifiasm.s55_pa.p_ctg.fa \
+reads=hifi_rr_allcontam_rem.fasta \
+out_prefix=apul_ntlink_s55
+
+echo "Scaffolding of hifiasm primary assembly with ntlinks (rounds = 5) complete!" $(date)
+```
+
+Submitted batch job 328341
+
+### 20240701
+
+ntlink ran in about 4 hours and produced a LOT of output files which I'm not sure what they all mean: 
+
+```
+-rw-r--r--. 1 jillashey  11G Jun 30 20:55 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.verbose_mapping.tsv
+-rw-r--r--. 1 jillashey 8.6K Jun 30 20:58 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.trimmed_scafs.agp
+-rw-r--r--. 1 jillashey 495M Jun 30 21:14 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa
+-rw-r--r--. 1 jillashey 8.7K Jun 30 21:14 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa.agp
+lrwxrwxrwx. 1 jillashey   72 Jun 30 21:14 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.scaffolds.fa -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa
+lrwxrwxrwx. 1 jillashey   72 Jun 30 21:14 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.gap_fill.fa -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa
+lrwxrwxrwx. 1 jillashey   76 Jun 30 21:14 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.gap_fill.fa.agp -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa.agp
+lrwxrwxrwx. 1 jillashey   63 Jun 30 21:14 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.gap_fill.fa.verbose_mapping.tsv -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.verbose_mapping.tsv
+-rw-r--r--. 1 jillashey  11G Jun 30 21:33 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.gap_fill.fa.k32.w100.z1000.verbose_mapping.tsv
+-rw-r--r--. 1 jillashey 8.3K Jun 30 21:49 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.gap_fill.fa.k32.w100.z1000.trimmed_scafs.agp
+-rw-r--r--. 1 jillashey 495M Jun 30 22:02 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa
+-rw-r--r--. 1 jillashey 8.4K Jun 30 22:02 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa.agp
+lrwxrwxrwx. 1 jillashey  106 Jun 30 22:02 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.fa -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa
+lrwxrwxrwx. 1 jillashey  106 Jun 30 22:02 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.gap_fill.fa -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa
+lrwxrwxrwx. 1 jillashey  110 Jun 30 22:02 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.gap_fill.fa.agp -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa.agp
+lrwxrwxrwx. 1 jillashey   97 Jun 30 22:02 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.gap_fill.fa.verbose_mapping.tsv -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.gap_fill.fa.k32.w100.z1000.verbose_mapping.tsv
+-rw-r--r--. 1 jillashey  11G Jun 30 22:20 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.verbose_mapping.tsv
+-rw-r--r--. 1 jillashey 7.7K Jun 30 22:37 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.trimmed_scafs.agp
+-rw-r--r--. 1 jillashey 495M Jun 30 22:50 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa
+-rw-r--r--. 1 jillashey 7.7K Jun 30 22:50 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa.agp
+lrwxrwxrwx. 1 jillashey  113 Jun 30 22:50 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.fa -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa
+lrwxrwxrwx. 1 jillashey  113 Jun 30 22:50 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.gap_fill.fa -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa
+lrwxrwxrwx. 1 jillashey  117 Jun 30 22:50 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.gap_fill.fa.agp -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa.agp
+lrwxrwxrwx. 1 jillashey  104 Jun 30 22:50 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.gap_fill.fa.verbose_mapping.tsv -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.verbose_mapping.tsv
+-rw-r--r--. 1 jillashey  11G Jun 30 23:08 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.verbose_mapping.tsv
+-rw-r--r--. 1 jillashey 7.7K Jun 30 23:23 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.trimmed_scafs.agp
+-rw-r--r--. 1 jillashey 495M Jun 30 23:37 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa
+-rw-r--r--. 1 jillashey 7.7K Jun 30 23:37 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa.agp
+lrwxrwxrwx. 1 jillashey  120 Jun 30 23:37 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.fa -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa
+lrwxrwxrwx. 1 jillashey  120 Jun 30 23:37 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.gap_fill.fa -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa
+lrwxrwxrwx. 1 jillashey  124 Jun 30 23:37 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.agp -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa.agp
+lrwxrwxrwx. 1 jillashey  111 Jun 30 23:37 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.verbose_mapping.tsv -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.verbose_mapping.tsv
+-rw-r--r--. 1 jillashey  11G Jun 30 23:55 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.verbose_mapping.tsv
+-rw-r--r--. 1 jillashey 7.7K Jul  1 00:11 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.trimmed_scafs.agp
+-rw-r--r--. 1 jillashey 495M Jul  1 00:24 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa
+-rw-r--r--. 1 jillashey 7.7K Jul  1 00:24 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa.agp
+lrwxrwxrwx. 1 jillashey  127 Jul  1 00:24 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.fa -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa
+lrwxrwxrwx. 1 jillashey  127 Jul  1 00:24 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.ntLink.gap_fill.fa -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa
+lrwxrwxrwx. 1 jillashey  131 Jul  1 00:24 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.agp -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.ntLink.scaffolds.gap_fill.fa.agp
+lrwxrwxrwx. 1 jillashey  118 Jul  1 00:24 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.verbose_mapping.tsv -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.gap_fill.fa.k32.w100.z1000.verbose_mapping.tsv
+lrwxrwxrwx. 1 jillashey   90 Jul  1 00:24 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.gap_fill.5rounds.fa -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.ntLink.ntLink.ntLink.ntLink.gap_fill.fa
+lrwxrwxrwx. 1 jillashey   70 Jul  1 00:24 apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.fa -> apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.gap_fill.5rounds.fa
+```
+
+I think the files are representing the iterations of ntlink that was run. For example, files with one `ntLink` in the file name are from the first iteration, files with two `ntLink` in the file name are from the second iteration, etc. In the output file, it also gave me a lot of info. It gave me a lot of info on the specific code/parameters for each iteration and then provided me with the final file: `Done ntLink rounds!  Final scaffolds found in apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.fa`. I now need to run QC on the scaffolded assembly. 
+
+In the scripts folder: `nano busco_ntlink_qc.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Convert from gfa to fasta for downstream use" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+echo "Begin busco on scaffolded assembly" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/Apul_Genome/assembly/data/apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.fa" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${Apul_Genome/assembly/data}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apul.ntlink.busco -m genome
+
+echo "busco complete for scaffolded assembly" $(date)
+```
+
+Submitted batch job 328382. Failed, need to rerun 
+
+In the scripts folder: `nano quast_ntlink_qc.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+module purge
+module load Python/2.7.18-GCCcore-10.2.0
+module load QUAST/5.0.2-foss-2020b-Python-2.7.18
+# previously used QUAST/5.2.0-foss-2021b but it failed and produced module conflict errors
+
+echo "Begin quast of scaffolded assemblies w/ references" $(date)
+
+quast -t 10 --eukaryote \
+apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.fa \
+apul.hifiasm.s55_pa.p_ctg.fa \
+apul.hifiasm.s55_pa.a_ctg.fa \
+/data/putnamlab/jillashey/genome/Ofav_Young_et_al_2024/Orbicella_faveolata_gen_17.scaffolds.fa \
+/data/putnamlab/jillashey/genome/Amil_v2.01/Amil.v2.01.chrs.fasta \
+/data/putnamlab/jillashey/genome/Aten/GCA_014633955.1_Aten_1.0_genomic.fna \
+/data/putnamlab/jillashey/genome/Ahya/GCA_014634145.1_Ahya_1.0_genomic.fna \
+/data/putnamlab/jillashey/genome/Ayon/GCA_014634225.1_Ayon_1.0_genomic.fna \
+/data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta \
+/data/putnamlab/jillashey/genome/Pacuta/V2/Pocillopora_acuta_HIv2.assembly.fasta \
+/data/putnamlab/jillashey/genome/Peve/Porites_evermanni_v1.fa \
+/data/putnamlab/jillashey/genome/Ofav/GCF_002042975.1_ofav_dov_v1_genomic.fna \
+/data/putnamlab/jillashey/genome/Pcomp/Porites_compressa_contigs.fasta \
+/data/putnamlab/jillashey/genome/Plutea/plut_final_2.1.fasta \
+-o /data/putnamlab/jillashey/Apul_Genome/assembly/output/quast
+
+echo "Quast complete; all QC complete!" $(date)
+```
+
+Submitted batch job 328389. Move results into new directory: 
+
+```
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/output/quast
+mkdir ntlink
+mv *report* ntlink/
+mv basic_stats/ ntlink/
+mv icarus* ntlink/
+mv quast.log ntlink/
+```
+
+Downloaded `icarus.html`, `report.html`, `report.pdf`, and `report.txt` to `/Users/jillashey/Desktop/PutnamLab/Repositories/Apulchra_genome/output/assembly/ntlink` on my personal computer. The quast 
+
+
 
 
 
@@ -3999,6 +4194,8 @@ funannotate sort -i CLEAN_FASTA -o CLEAN_SORTED_FASTA
 ```
 
 - RepeatMasking assembly (required) - do we use repeat masker or repeat modeler? 
+	- We probably use masker and modeler! This [article](https://darencard.net/blog/2022-07-09-genome-repeat-annotation/) explained the difference really well (installation information [here](https://darencard.net/blog/2022-10-13-install-repeat-modeler-masker/)). First, repeat modeler is used to identify de novo repeats in the assembly; then, repeat masker is used to soft or hard mask the repeats. 
+
 
 
 
