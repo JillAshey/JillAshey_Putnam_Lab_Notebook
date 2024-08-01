@@ -4226,6 +4226,44 @@ So my next steps are:
 - Install jasmine (see [info](https://github.com/PacificBiosciences/pbbioconda?tab=readme-ov-file) here)
 - Run jasmine! 
 
+After looking briefly on the internet, it looks like there aren't a ton of tools to convert fasta files to bam files. But the original data came as a bam file (`m84100_240128_024355_s2.hifi_reads.bc1029.bam`). It is totally unfiltered and unassembled. Let's try to run that? At least run the `ccs-kinetics-bystrandify`. 
+
+Make a new methylation directory 
+
+```
+cd /data/putnamlab/jillashey/Apul_Genome
+mkdir methylation
+cd methylation
+mkdir scripts data output 
+```
+
+In the scripts folder: `nano ccs-kinetics.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/methylation/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+conda activate /data/putnamlab/conda/pbtk
+
+echo "Adding kinetics information to hifi reads" $(date)
+
+ccs-kinetics-bystrandify /data/putnamlab/jillashey/Apul_Genome/assembly/data/m84100_240128_024355_s2.hifi_reads.bc1029.bam /data/putnamlab/jillashey/Apul_Genome/methylation/data/apul_pb_raw_kinetics.bam
+
+echo "Kinetics complete!" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 333762
 
 
 
