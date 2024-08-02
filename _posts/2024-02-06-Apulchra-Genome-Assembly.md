@@ -4256,15 +4256,59 @@ conda activate /data/putnamlab/conda/pbtk
 
 echo "Adding kinetics information to hifi reads" $(date)
 
-ccs-kinetics-bystrandify /data/putnamlab/jillashey/Apul_Genome/assembly/data/m84100_240128_024355_s2.hifi_reads.bc1029.bam /data/putnamlab/jillashey/Apul_Genome/methylation/data/apul_pb_raw_kinetics.bam
+ccs-kinetics-bystrandify /data/putnamlab/jillashey/Apul_Genome/assembly/data/m84100_240128_024355_s2.hifi_reads.bc1029.bam /data/putnamlab/jillashey/Apul_Genome/methylation/data/apul_hifi_raw_kinetics.bam
 
 echo "Kinetics complete!" $(date)
 
 conda deactivate
 ```
 
-Submitted batch job 333762
+Submitted batch job 333762. Pended for an hour, then ran in 5 mins. 
 
+### 20240802
 
+Time to install jasmine! 
 
+```
+cd/data/putnamlab/conda
+module load Miniconda3/4.9.2
+conda create --prefix /data/putnamlab/conda/jasmine
+conda install -c bioconda jasmine
+```
 
+This takes a couple of minutes but once its installed, jasmine can be run. In the `/data/putnamlab/jillashey/Apul_Genome/methylation/scripts` folder, `nano jasmine.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/methylation/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+conda activate /data/putnamlab/conda/jasmine
+
+echo "Running jasmine" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/methylation/data/
+
+jasmine apul_hifi_raw_kinetics.bam apul_hifi_raw_kinetics_5mc.bam
+
+echo "Jasmine complete!" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 333785. Failed immediately with this error: 
+
+```
+ERROR StatusLogger No log4j2 configuration file found. Using default configuration: logging only errors to the console.
+Exception in thread "main" java.lang.NullPointerException
+        at uio.amg.zhong.jasmine.JASMINE.findXMLfile(JASMINE.java:494)
+        at uio.amg.zhong.jasmine.JASMINE.main(JASMINE.java:40)
+```
