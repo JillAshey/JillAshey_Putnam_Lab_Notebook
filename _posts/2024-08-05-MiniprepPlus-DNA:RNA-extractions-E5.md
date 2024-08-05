@@ -28,6 +28,10 @@ The samples run today were clipped from snap frozen fragments by Zoe and I on [8
 - ACR-173, TP1 (Jan)
 - POC-52, TP1 (Jan)
 
+This photo is post bead-beating: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/samples_20240805.JPG)
+
 Kristina typically labelled her tubes with just a number but I labelled tubes with the colony ID and timepoint.  
 
 ### Materials 
@@ -75,4 +79,6 @@ Qubit looks great! All samples now have enough RNA for both RNA-seq and small RN
 
 I ran a 1% gel at 80 volts for 1 hour. 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20240805.JPG)
 
+The gel doesn't really look like anything...tried to look at it a few different ways. Maybe I didn't add the dye properly? Not sure, but Zoe is going to re-run the gel for these samples tomorrow. 
