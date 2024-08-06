@@ -82,3 +82,5 @@ I ran a 1% gel at 80 volts for 1 hour.
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20240805.JPG)
 
 The gel doesn't really look like anything...tried to look at it a few different ways. Maybe I didn't add the dye properly? Not sure, but Zoe is going to re-run the gel for these samples tomorrow. 
+
+Zoe reran the gel and got the same thing (will add gel picture). 
