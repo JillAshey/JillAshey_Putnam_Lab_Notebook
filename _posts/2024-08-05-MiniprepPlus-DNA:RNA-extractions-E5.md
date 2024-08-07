@@ -83,4 +83,4 @@ I ran a 1% gel at 80 volts for 1 hour.
 
 The gel doesn't really look like anything...tried to look at it a few different ways. Maybe I didn't add the dye properly? Not sure, but Zoe is going to re-run the gel for these samples tomorrow. 
 
-Zoe reran the gel and got the same thing (will add gel picture). 
+Zoe reran the gel and got the same thing (see gel image [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/gel_20240806.png) - not loading on my github at the moment). There is RNA in the extracted samples but it seems pretty degraded. The degraded RNA may be due to the frozen fragments being unfrozen/frozen multiple times or just sitting too long? Not sure. 
