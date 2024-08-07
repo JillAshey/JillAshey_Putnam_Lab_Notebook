@@ -60,3 +60,5 @@ Here's what my samples looked like on 8/7/24. See full results [here](https://gi
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_487_20240807.png)
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_489_20240807.png)
+
+Got a little bit of amplification for most of the samples but concentrations are low. 393 did not amplify at all. 385 and 401 have concentrations of 1.69 and 3.82 ng/ul, respectively, which might be okay for sequencing. The Porites samples (421, 487, 489) all had concentrations >1 ng/ul, not sure if that is enough for sequencing. I could try to redo the samples but with a higher number of PCR cycles. I am hesitant to do that though, as that may bias these samples or create a large batch effect. 
