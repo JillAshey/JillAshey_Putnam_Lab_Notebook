@@ -30,6 +30,7 @@ There are 3 species for this project (*Acropora pulchra*, *Pocillopora tuahinien
 | 487    | Porites evermanni        | POR-71    | 20211122        | [https://github.com/Kterpis/Putnam_Lab_Notebook/blob/master/_posts/2021-11-22-20211122-RNA-DNA-extractions-from-E5-project.md](https://github.com/Kterpis/Putnam_Lab_Notebook/blob/master/_posts/2021-11-22-20211122-RNA-DNA-extractions-from-E5-project.md) | 2.31        | 10.8                      | 9.2       | 20                   | 34     |
 | 489    | Porites evermanni        | POR-79    | 20211129        | [https://github.com/Kterpis/Putnam_Lab_Notebook/blob/master/_posts/2021-11-29-20211129-RNA-DNA-extractions-from-E5-project.md](https://github.com/Kterpis/Putnam_Lab_Notebook/blob/master/_posts/2021-11-29-20211129-RNA-DNA-extractions-from-E5-project.md) | 3.72        | 6.7                       | 13.3      | 20                   | 35     |
 | 491    | Porites evermanni        | POR-73    | 20211101        | [https://kterpis.github.io/Putnam_Lab_Notebook/20211101-RNA-DNA-extractions-from-E5-project/](https://kterpis.github.io/Putnam_Lab_Notebook/20211101-RNA-DNA-extractions-from-E5-project/)                                                                   | 2.11        | 11.8                      | 8.2       | 20                   | 36     |
+
 Here's the Pico Methyl-Seq library prep workflow: 
 
 ![](https://raw.githubusercontent.com/meschedl/MESPutnam_Open_Lab_Notebook/master/images/PMS-workflow.png) 
@@ -65,6 +66,8 @@ Once buffers are prepared for a kit, they do not need to be prepared again.
 - Calculate master mix volumes before library prepping (see spreadsheet [here](https://docs.google.com/spreadsheets/d/181TkQAdRiK4hujx4Gp0ZyYXXA8b9TpUmqMsMnZkHjtU/edit#gid=0))
 - Allow Kapa beads to equilibrate to room temperature >30 mins before use
 - Resuspend magnetic particles immediately before each use by gently inverting until homogenous
+
+### Protocol 
 
 #### Section 1: Bisulfite Conversion of DNA 
 
