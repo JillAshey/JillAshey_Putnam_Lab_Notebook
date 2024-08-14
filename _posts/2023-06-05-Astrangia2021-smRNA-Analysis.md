@@ -7089,13 +7089,186 @@ blastn -query sigcorr_subset.fasta -db nt -evalue 1E-40 -num_threads 10 -max_tar
 
 echo "Blast complete" $(date)
 ```
+```
 
 Submitted batch job 317026. Also going to submit a `blastx` job. Submitted batch job 317071
 
+### 20240812
+
+Zoe found this great tool called [GeneExt](https://github.com/sebepedroslab/GeneExt/tree/main), which is used to adjust/extend genes so that the 3'UTRs are annotated based on the mapping of reads, helping with overall mapping in scRNA and tag-seq. I'm going to use it to find the 3'UTRs for my genes! Cnidarian miRNAs bind to the 3'UTR of genes and in the code above, I estimated that the 3'UTRs are 3kb before the gene. However, this was just an estimate and I want to use GeneExt to find the 3'UTRs in a quantified way. I'm using Zoe's [code](https://github.com/zdellaert/mutli-sp-snRNA/blob/main/3UTR-Effects-TagSeq.md#geneext). 
+
+First, convert gff3 to gtf using [gffread](https://github.com/gpertea/gffread). In the `/data/putnamlab/jillashey/Astrangia2021/smRNA/scripts` scripts folder: `nano gffread.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --mem=250GB
+#SBATCH --account=putnamlab
+#SBATCH --export=NONE
+#SBATCH --error="%x_error.%j" #if your job fails, the error report will be put in this file
+#SBATCH --output="%x_output.%j" #once your job is completed, any final job report comments will be put in this file
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+
+# load modules needed
+module load gffread/0.12.7-GCCcore-11.2.0
+
+cd /data/putnamlab/jillashey/Astrangia_Genome/
+
+# Combined code, want to see if these are any different
+gffread -E apoculata_v2.0.gff3 -T -o apoculata_v2.0.gtf
+```
+
+Submitted batch job 334287. Ran super fast. Checked gtf file, looks good. Next, combine 20 bam files together from the mRNA mapping step. 
+
+In the `/data/putnamlab/jillashey/Astrangia2021/mRNA/scripts` folder, `nano merge_bam.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=125GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/mRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load SAMtools/1.9-foss-2018b
+
+cd /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/align
+
+#use samtools merge to merge all the files
+samtools merge AST_merge.bam *.bam
+```
+
+Submitted batch job 334289. While this is running, append `apoculata_v2.0_modified.gtf` in `/data/putnamlab/jillashey/Astrangia_Genome` so that the transcript_ids have a -T at the end. The gene and transcript ids in the gtf must be different for GeneExt. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia_Genome
+
+sed 's/transcript_id "\([^"]*\)"/transcript_id "\1-T"/g' apoculata_v2.0.gtf > apoculata_v2.0_modified.gtf
+```
+
+Zoe already loaded the GeneExt program into her directory here: `/data/putnamlab/zdellaert/snRNA/programs/GeneExt` but I couldn't get it to activate so I'm going to try to install it here `/data/putnamlab/conda`.
+
+```
+cd /data/putnamlab/conda
+mkdir GeneExt
+cd GeneExt
+git clone https://github.com/sebepedroslab/GeneExt.git
+interactive 
+module load Miniconda3/4.9.2
+conda env create -n geneext -f environment.yaml
+```
+
+Probably going to run for a while. Once this is installed, I can run GeneExt! 
+
+### 20240813
+
+Installation for GeneExt ran for most of the day yesterday, then quit. Updating it now: 
+
+```
+cd /data/putnamlab/conda/GeneExt/
+interactive -c 10
+module load Miniconda3/4.9.2
+conda env update -n geneext -f environment.yaml
+```
+
+This ran for about an hour but successfully updated. Let's try to run the test data to make sure the program works. 
+
+```
+exit # exit previous interactive mode 
+interactive -c 10
+conda activate geneext
+
+# test run
+python geneext.py -g test_data/annotation.gtf -b test_data/alignments.bam -o result.gtf --peak_perc 0
+```
+
+Output:
+
+```
+      ____                 _____      _   
+     / ___| ___ _ __   ___| ____|_  _| |_ 
+    | |  _ / _ \ '_ \ / _ \  _| \ \/ / __|
+    | |_| |  __/ | | |  __/ |___ >  <| |_ 
+     \____|\___|_| |_|\___|_____/_/\_\__|
+     
+          ______    ___    ______    
+    -----[______]==[___]==[______]===>----
+
+    Gene model adjustment for improved single-cell RNA-seq data counting
+
+
+╭──────────────────╮
+│ Preflight checks │
+╰──────────────────╯
+Genome annotation warning: Could not find "gene" features in test_data/annotation.gtf! Trying to fix ...
+╭───────────╮
+│ Execution │
+╰───────────╯
+Running macs2 ... 
+########## macs2 FAILED ##############
+return code:  1 
+Output:  Traceback (most recent call last):
+  File "/home/jillashey/.conda/envs/geneext/bin/macs2", line 653, in <module>
+    main()
+  File "/home/jillashey/.conda/envs/geneext/bin/macs2", line 49, in main
+    from MACS2.callpeak_cmd import run
+  File "/home/jillashey/.conda/envs/geneext/lib/python3.9/site-packages/MACS2/callpeak_cmd.py", line 23, in <module>
+    from MACS2.OptValidator import opt_validate
+  File "/home/jillashey/.conda/envs/geneext/lib/python3.9/site-packages/MACS2/OptValidator.py", line 20, in <module>
+    from MACS2.IO.Parser import BEDParser, ELANDResultParser, ELANDMultiParser, \
+  File "__init__.pxd", line 206, in init MACS2.IO.Parser
+ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject
+
+Traceback (most recent call last):
+  File "/glfs/brick01/gv0/putnamlab/conda/GeneExt/geneext.py", line 703, in <module>
+    helper.run_macs2(tempdir+'/' + 'plus.bam','plus',tempdir,verbose = verbose)
+  File "/glfs/brick01/gv0/putnamlab/conda/GeneExt/geneext/helper.py", line 79, in run_macs2
+    ps.check_returncode()
+  File "/home/jillashey/.conda/envs/geneext/lib/python3.9/subprocess.py", line 460, in check_returncode
+    raise CalledProcessError(self.returncode, self.args, self.stdout,
+subprocess.CalledProcessError: Command '('macs2', 'callpeak', '-t', 'tmp/plus.bam', '-f', 'BAM', '--keep-dup', '20', '-q', '0.01', '--shift', '1', '--extsize', '100', '--broad', '--nomodel', '--min-length', '30', '-n', 'plus', '--outdir', 'tmp')' returned non-zero exit status 1.
+```
+
+Something went wrong. 
 
 
 
 
+
+In the XXXXX folder, `nano GeneExt.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=20
+#SBATCH --export=NONE
+#SBATCH --mem=200GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia_Genome
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+conda activate /data/putnamlab/conda/GeneExt
+
+cd /data/putnamlab/jillashey/Astrangia_Genome
+
+python /data/putnamlab/conda/GeneExt/geneext.py -g apoculata_v2.0_modified.gtf -b /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/align/AST_merge.bam -o Apoc_GeneExt.gtf -j 20 -v 3 --clip_strand both
+
+```
+
+
+
+
+
+### Look into these: 
 
 Understanding mirdeep2 output -- I understand the mirdeep2 output but I do not understand the known miRNA output info. On the summary table that is outputted with the csv/html, it says XXXX # of known miRNAs were detected. However, In the `/data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1560/dir_prepare_signature1705975309` folder, there is a file (`mature_vs_precursors.arf`) that has info about known sequences which I am confused by. It looks like these are known miRNAs that were identified in the Astrangia genome, as they are given genomic coordinates. I may need to go through these files and make sure I am not missing anything. For instance, when I look up `chromosome_7_11677` (genomic coordinates for known miRNA ola-miR-100) in that file, it provides me with 80 other matches that have the same genomic coordinates and are the same as miR-100. I may need to go through these files for each sample to make sure that I am not missing any known info. 
 
@@ -7114,5 +7287,3 @@ good resource for miranda
 
 This could be a good R use for downstread miRNA:mRNA analysis: https://link.springer.com/article/10.1186/s12864-022-08558-w
 - https://bioconductor.org/packages/release/bioc/html/mirTarRnaSeq.html
-
-###
