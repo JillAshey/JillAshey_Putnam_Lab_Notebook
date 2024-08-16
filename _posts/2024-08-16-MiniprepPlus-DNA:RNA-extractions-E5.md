@@ -24,6 +24,7 @@ The samples run today were re-extractions from the e5 deep dive samples. We had 
 
 This photo is before I removed shield from the sample tubes: 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/samples_20240816.JPG)
 
 ### Materials 
 
@@ -65,7 +66,9 @@ All samples look good for DNA and RNA concentrations except for 491. It had a lo
 
 #### Gel 
 
-I ran a 1.5% gel at 100 volts for 1 hour. 
+I ran a 1.5% gel at 100 volts for 1 hour. Samples are in the same order as the Qubit. 
 
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20240816.jpg)
 
+There is DNA there, some degradation. No DNA for 491. No RNA showed up, which was weird. Could be degradation or gel loading issues. 
 
