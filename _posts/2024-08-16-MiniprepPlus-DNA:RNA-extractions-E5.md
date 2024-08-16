@@ -66,7 +66,7 @@ All samples look good for DNA and RNA concentrations except for 491. It had a lo
 
 #### Gel 
 
-I ran a 1.5% gel at 100 volts for 1 hour. Samples are in the same order as the Qubit. 
+I ran a 1.5% gel at 100 volts for 1 hour. Samples are in the same order as the Qubit with an empty well in between the ladder and the samples. 
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/gel_20240816.jpg)
 
