@@ -7237,6 +7237,95 @@ subprocess.CalledProcessError: Command '('macs2', 'callpeak', '-t', 'tmp/plus.ba
 
 Something went wrong. 
 
+### 20240819
+
+GeneExt is being weird when installing so I'm going to delete what I have so far and restart. BLEH. 
+
+```
+interactive
+module load Miniconda3/4.9.2
+cd /data/putnamlab/conda
+rm -r GeneExt/
+git clone https://github.com/sebepedroslab/GeneExt.git
+cd GeneExt/
+conda env create -n geneext -f environment.yaml
+```
+
+This took much faster than last time...Let's try to run the test data?
+
+```
+exit # need to exit interactive mode after I create the env 
+interactive
+conda activate geneext
+
+# test run
+python geneext.py -g test_data/annotation.gtf -b test_data/alignments.bam -o result.gtf --peak_perc 0
+```
+
+Got same error as above. I hate myself. Going to email Kevin Bryan. Okay while I go insane with this, I want to run [ShortStack](https://github.com/MikeAxtell/ShortStack) on my AST data. We ended up using this program for the [e5 deep dive ncRNA](https://github.com/urol-e5/deep-dive) paper, it was recommended by Javi, who has used it in the past. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA
+mkdir shortstack
+``` 
+
+Kevin Bryan already installed short stack on Andromeda (thank god). Trimmed reads are in `/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar`. Sam merged R1 and R2 before running. I am going to just run on R1 for a first pass. In the scripts folder: `nano shortstack_test.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Running short stack on mature trimmed miRNAs (R1) from AST project"
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
+
+# Load modules 
+module load ShortStack/4.0.2-foss-2022a  
+
+# Run short stack
+ShortStack \
+--genomefile /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta \
+--readfile AST-1065_R1_001.fastq.gz_1.fastq \
+AST-1147_R1_001.fastq.gz_1.fastq \
+AST-1412_R1_001.fastq.gz_1.fastq \
+AST-1560_R1_001.fastq.gz_1.fastq \
+AST-1567_R1_001.fastq.gz_1.fastq \
+AST-1617_R1_001.fastq.gz_1.fastq \
+AST-1722_R1_001.fastq.gz_1.fastq \
+AST-2000_R1_001.fastq.gz_1.fastq \
+AST-2007_R1_001.fastq.gz_1.fastq \
+AST-2302_R1_001.fastq.gz_1.fastq \
+AST-2360_R1_001.fastq.gz_1.fastq \
+AST-2398_R1_001.fastq.gz_1.fastq \
+AST-2404_R1_001.fastq.gz_1.fastq \
+AST-2412_R1_001.fastq.gz_1.fastq \
+AST-2512_R1_001.fastq.gz_1.fastq \
+AST-2523_R1_001.fastq.gz_1.fastq \
+AST-2563_R1_001.fastq.gz_1.fastq \
+AST-2729_R1_001.fastq.gz_1.fastq \
+AST-2755_R1_001.fastq.gz_1.fastq \
+--known_miRNAs /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa \
+--outdir /data/putnamlab/jillashey/Astrangia2021/smRNA/shortstack \
+--threads 10 \
+--dn_mirna
+
+echo "Short stack run complete"
+```
+
+Submitted batch job 334980. Failed with this error: `Required executable wigToBigWig : Not found!`. Confused by this...apparently [wigToBigWig](https://www.encodeproject.org/software/wigtobigwig/) is a type of file format. Not sure what to do with this info...Going to email Kevin Bryan!
+
+
+
+
 
 
 
