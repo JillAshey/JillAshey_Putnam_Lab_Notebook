@@ -171,11 +171,32 @@ Porites_evermani_scaffold_108	ShortStack	siRNA24_locus	306073	306496	53	-	.	ID=C
 Porites_evermani_scaffold_108	ShortStack	siRNA24_locus	306073	306496	53	-	.	ID=Cluster_2199;DicerCall=24;MIRNA=N	Porites_evermani_scaffold_108	Gmove	CDS	306249	306300	.	-	.	Parent=Peve_00001444
 ```
 
+If I subtract the 5th column (end of miRNA feature) by the 13th column (beginning of genomic feature), this will tell me if there is overlap in the two features. If the number is positive, it means there is overlap. If it is negative, it means there is no overlap. I did not run bed intersect because I attempted that with Ptuh in code below and it did not give me any meaningful output.
 
+```
+awk '{ $(NF+1) = $13 - $5 }1' OFS='\t' filtered_Peve_output.bed > filtered_Peve_output_overlap.bed
 
+head filtered_Peve_output_overlap.bed
+Porites_evermani_scaffold_1	ShortStack	MIRNA_hairpin	1404250	1404342	9574	-	.	ID=Cluster_29;DicerCall=N;MIRNA=Y	Porites_evermani_scaffold_1	Gmove	mRNA	1380413	1416448	1270.53	-	.	ID=Peve_00000077;Name=Peve_00000077;start=1;stop=1;cds_size=1851	-23929
+Porites_evermani_scaffold_1	ShortStack	mature_miRNA	1404272	1404293	3403	-	.	ID=Cluster_29.mature;Parent=Cluster_29	Porites_evermani_scaffold_1	Gmove	mRNA	1380413	1416448	1270.53	-	.	ID=Peve_00000077;Name=Peve_00000077;start=1;stop=1;cds_size=1851	-23880
+Porites_evermani_scaffold_1	ShortStack	miRNA-star	1404301	1404322	23	-	.	ID=Cluster_29.star;Parent=Cluster_29	Porites_evermani_scaffold_1	Gmove	mRNA	1380413	1416448	1270.53	-	.	ID=Peve_00000077;Name=Peve_00000077;start=1;stop=1;cds_size=1851	-23909
+Porites_evermani_scaffold_10	ShortStack	siRNA21_locus	565492	565912	76	+	.	ID=Cluster_353;DicerCall=21;MIRNA=N	Porites_evermani_scaffold_10	Gmove	mRNA	562195	564790	948	+	.	ID=Peve_00000127;Name=Peve_00000127;start=1;stop=1;cds_size=474	-3717
+Porites_evermani_scaffold_10	ShortStack	siRNA21_locus	565492	565912	76	+	.	ID=Cluster_353;DicerCall=21;MIRNA=N	Porites_evermani_scaffold_10	Gmove	UTR	564704	564790	.	+	.	Parent=Peve_0000012-1208
+Porites_evermani_scaffold_1005	ShortStack	siRNA23_locus	126975	127397	168	+	.	ID=Cluster_9183;DicerCall=23;MIRNA=N	Porites_evermani_scaffold_1005	Gmove	mRNA	114473	133413	606	+	.	ID=Peve_00000326;Name=Peve_00000326;start=0;stop=1;cds_size=606	-12924
+Porites_evermani_scaffold_1060	ShortStack	siRNA22_locus	77378	77799	99	+	.	ID=Cluster_9583;DicerCall=22;MIRNA=N	Porites_evermani_scaffold_1060	Gmove	mRNA	64377	75861	817.5	+	.	ID=Peve_00001166;Name=Peve_00001166;start=1;stop=1;cds_size=1275	-13422
+Porites_evermani_scaffold_1060	ShortStack	siRNA22_locus	77378	77799	99	+	.	ID=Cluster_9583;DicerCall=22;MIRNA=N	Porites_evermani_scaffold_1060	Gmove	CDS	75822	75861	.	+	.	Parent=Peve_00001166	-1977
+Porites_evermani_scaffold_108	ShortStack	siRNA24_locus	306073	306496	53	-	.	ID=Cluster_2199;DicerCall=24;MIRNA=N	Porites_evermani_scaffold_108	Gmove	mRNA	278980	311091	2217.57	-	.	ID=Peve_00001444;Name=Peve_00001444;start=1;stop=1;cds_size=4026	-27516
+Porites_evermani_scaffold_108	ShortStack	siRNA24_locus	306073	306496	53	-	.	ID=Cluster_2199;DicerCall=24;MIRNA=N	Porites_evermani_scaffold_108	Gmove	CDS	306249	306300	.	-	.	Parent=Peve_00001444	-247
+```
 
+Count number of positive and negative numbers
 
+```
+awk '{if ($NF < 0) neg++; else if ($NF > 0) pos++} END {print "Positive count:", pos; print "Negative count:", neg}' filtered_Peve_output_overlap.bed
 
+Positive count: 100
+Negative count: 349
+```
 
 ### Ptuh miRNA
 
@@ -290,6 +311,19 @@ Negative count: 306
 ```
 
 Negative = no overlap though I should check my math with someone to make sure I'm not dumb. 
+
+For the miRNA data for all species, make a new miRNA directory and move everything there. 
+
+```
+cd /data/putnamlab/jillashey/e5/ncRNA_gff
+mkdir miRNA
+mv * miRNA/
+```
+
+Also renaming the output files with miRNA at the beginning of the file name. 
+
+
+
 
 Questions to answer now that I have this data: 
 
