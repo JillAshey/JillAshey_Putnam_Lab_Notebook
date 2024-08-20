@@ -114,3 +114,5 @@ Redid sections 4, 5, and QC on 6/5/24. Here's how my samples turned out on 6/5/2
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/tapestation/DNA_TS_M37_20240605.png) 
 
 Much better!!!! Concentrations are all relatively higher and there are peaks in all samples. M6, M86, M7, M11, and M26 all have more than one peak, meaning I probably have to do a bead clean-up on the samples and then re-QC them. I also need to reach out to Zymo to ask if they can send me more Taq PreMix (if the one from the second kit was a dud). 
+
+I did end up doing 
