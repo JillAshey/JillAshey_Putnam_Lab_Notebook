@@ -85,35 +85,6 @@ NC_058066.1	ShortStack	MIRNA_hairpin	12757125	12757218	8293	-	.	ID=Cluster_316;D
 NC_058066.1	ShortStack	MIRNA_hairpin	12757125	12757218	8293	-	.	ID=Cluster_316;DicerCall=23;MIRNA=Y	NC_058066.1	Gnomon	mRNA	12755159	12764546	.	-	.	ID=rna-XM_029339755.2;Parent=gene-LOC114961148;Dbxref=GeneID:114961148,Genbank:XM_029339755.2;Name=XM_029339755.2;experiment=COORDINATES: polyA evidence [ECO:0006239];gbkey=mRNA;gene=LOC114961148;model_evidence=Supporting evidence includes similarity to: 7 mRNAs%2C 8 Proteins%2C and 100%25 coverage of the annotated genomic feature by RNAseq alignments%2C including 87 samples with support for all annotated introns;product=zinc finger MYND domain-containing protein 19-like;transcript_id=XM_029339755.2
 ```
 
-If I subtract the 5th column (end of miRNA feature) by the 13th column (beginning of genomic feature), this will tell me if there is overlap in the two features. If the number is positive, it means there is overlap. If it is negative, it means there is no overlap. I did not run bed intersect because I attempted that with Ptuh in code below and it did not give me any meaningful output. 
-
-```
-awk '{ $(NF+1) = $13 - $5 }1' OFS='\t' filtered_Apul_output.bed > filtered_Apul_output_overlap.bed
-
-head filtered_Apul_output_overlap.bed 
-NC_058066.1	ShortStack	siRNA24_locus	5224792	5225215	1264	+	.	ID=Cluster_184;DicerCall=24;MIRNA=N	NC_058066.1	RefSeq	region	1	39361238	.	+	.	ID=NC_058066.1:1..39361238;Dbxref=taxon:45264;Name=1;chromosome=1;collection-date=2017;country=Indonesia;gbkey=Src;genome=chromosome;isolate=JS-1;isolation-source=Whole	tissue;mol_type=genomic	DNA;tissue-type=Adult	tissue	-5225214
-NC_058066.1	ShortStack	siRNA24_locus	5224792	5225215	1264	+	.	ID=Cluster_184;DicerCall=24;MIRNA=N	NC_058066.1	Gnomon	gene	5153290	5231353	.	-	.	ID=gene-LOC114950433;Dbxref=GeneID:114950433;Name=LOC114950433;gbkey=Gene;gene=LOC114950433;gene_biotype=protein_coding	-71925
-NC_058066.1	ShortStack	siRNA24_locus	5224792	5225215	1264	+	.	ID=Cluster_184;DicerCall=24;MIRNA=N	NC_058066.1	Gnomon	mRNA	5153290	5231353	.	-	.	ID=rna-XM_044310280.1;Parent=gene-LOC114950433;Dbxref=GeneID:114950433,Genbank:XM_044310280.1;Name=XM_044310280.1;experiment=COORDINATES:	polyA	evidence	[ECO:0006239];gbkey=mRNA;gene=LOC114950433;model_evidence=Supporting	evidence	includes	similarity	to:	15	mRNAs%2C	31	Proteins%2C	and	99%25	coverage	of	the	annotated	genomic	feature	by	RNAseq	alignments;product=uncharacterized	LOC114950433;transcript_id=XM_044310280.1	-71925
-NC_058066.1	ShortStack	siRNA21_locus	7563377	7563797	118	+	.	ID=Cluster_225;DicerCall=21;MIRNA=N	NC_058066.1	RefSeq	region	1	39361238	.	+	.	ID=NC_058066.1:1..39361238;Dbxref=taxon:45264;Name=1;chromosome=1;collection-date=2017;country=Indonesia;gbkey=Src;genome=chromosome;isolate=JS-1;isolation-source=Whole	tissue;mol_type=genomic	DNA;tissue-type=Adult	tissue	-7563796
-NC_058066.1	ShortStack	siRNA21_locus	7563377	7563797	118	+	.	ID=Cluster_225;DicerCall=21;MIRNA=N	NC_058066.1	Gnomon	gene	7523354	7569602	.	-	.	ID=gene-LOC114970982;Dbxref=GeneID:114970982;Name=LOC114970982;gbkey=Gene;gene=LOC114970982;gene_biotype=protein_coding	-40443
-NC_058066.1	ShortStack	siRNA21_locus	7563377	7563797	118	+	.	ID=Cluster_225;DicerCall=21;MIRNA=N	NC_058066.1	Gnomon	mRNA	7523354	7569602	.	-	.	ID=rna-XM_044320669.1;Parent=gene-LOC114970982;Dbxref=GeneID:114970982,Genbank:XM_044320669.1;Name=XM_044320669.1;Note=The	sequence	of	the	model	RefSeq	transcript	was	modified	relative	to	this	genomic	sequence	to	represent	the	inferred	CDS:	inserted	base	in	1	codon;exception=unclassified	transcription	discrepancy;gbkey=mRNA;gene=LOC114970982;model_evidence=Supporting	evidence	includes	similarity	to:	6	Proteins%2C	and	98%25	coverage	of	theannotated	genomic	feature	by	RNAseq	alignments%2C	including	1	sample	with	support	for	all	annotated	introns;product=uncharacterized	LOC114970982;transcript_id=XM_044320669.1	-40443
-NC_058066.1	ShortStack	siRNA22_locus	8905068	8905484	102	-	.	ID=Cluster_251;DicerCall=22;MIRNA=N	NC_058066.1	RefSeq	region	1	39361238	.	+	.	ID=NC_058066.1:1..39361238;Dbxref=taxon:45264;Name=1;chromosome=1;collection-date=2017;country=Indonesia;gbkey=Src;genome=chromosome;isolate=JS-1;isolation-source=Whole	tissue;mol_type=genomic	DNA;tissue-type=Adult	tissue	-8905483
-NC_058066.1	ShortStack	MIRNA_hairpin	12757125	12757218	8293	-	.	ID=Cluster_316;DicerCall=23;MIRNA=Y	NC_058066.1	RefSeq	region	1	39361238	.	+	.	ID=NC_058066.1:1..39361238;Dbxref=taxon:45264;Name=1;chromosome=1;collection-date=2017;country=Indonesia;gbkey=Src;genome=chromosome;isolate=JS-1;isolation-source=Whole	tissue;mol_type=genomic	DNA;tissue-type=Adult	tissue	-12757217
-NC_058066.1	ShortStack	MIRNA_hairpin	12757125	12757218	8293	-	.	ID=Cluster_316;DicerCall=23;MIRNA=Y	NC_058066.1	Gnomon	gene	12755159	12764546	.	-	.	ID=gene-LOC114961148;Dbxref=GeneID:114961148;Name=LOC114961148;gbkey=Gene;gene=LOC114961148;gene_biotype=protein_coding	-2059
-NC_058066.1	ShortStack	MIRNA_hairpin	12757125	12757218	8293	-	.	ID=Cluster_316;DicerCall=23;MIRNA=Y	NC_058066.1	Gnomon	mRNA	12755159	12764546	.	-	.	ID=rna-XM_029339755.2;Parent=gene-LOC114961148;Dbxref=GeneID:114961148,Genbank:XM_029339755.2;Name=XM_029339755.2;experiment=COORDINATES:	polyA	evidence	[ECO:0006239];gbkey=mRNA;gene=LOC114961148;model_evidence=Supporting	evidence	includes	similarity	to:	7	mRNAs%2C	8	Proteins%2C	and	100%25	coverage	of	the	annotated	genomic	feature	by	RNAseq	alignments%2C	including	87	samples	with	support	for	all	annotated	introns;product=zinc	finger	MYNdomain-containing	protein	19-like;transcript_id=XM_029339755.2	-2059
-```
-
-Count number of positive and negative numbers
-
-```
-awk '{if ($NF < 0) neg++; else if ($NF > 0) pos++} END {print "Positive count:", pos; print "Negative count:", neg}' filtered_Apul_output_overlap.bed
-
-Positive count: 
-Negative count: 755
-```
-
-Negative = no overlap though I should check my math with someone to make sure I'm not dumb. But looks like no overlap between the miRNA features and the genomic features. 
-
 ### Peve miRNA
 
 Sort Peve genome gff file
@@ -169,33 +140,6 @@ Porites_evermani_scaffold_1060	ShortStack	siRNA22_locus	77378	77799	99	+	.	ID=Cl
 Porites_evermani_scaffold_1060	ShortStack	siRNA22_locus	77378	77799	99	+	.	ID=Cluster_9583;DicerCall=22;MIRNA=N	Porites_evermani_scaffold_1060	Gmove	CDS	75822	75861	.	+	.	Parent=Peve_00001166
 Porites_evermani_scaffold_108	ShortStack	siRNA24_locus	306073	306496	53	-	.	ID=Cluster_2199;DicerCall=24;MIRNA=N	Porites_evermani_scaffold_108	Gmove	mRNA	278980	311091	2217.57	-	.	ID=Peve_00001444;Name=Peve_00001444;start=1;stop=1;cds_size=4026
 Porites_evermani_scaffold_108	ShortStack	siRNA24_locus	306073	306496	53	-	.	ID=Cluster_2199;DicerCall=24;MIRNA=N	Porites_evermani_scaffold_108	Gmove	CDS	306249	306300	.	-	.	Parent=Peve_00001444
-```
-
-If I subtract the 5th column (end of miRNA feature) by the 13th column (beginning of genomic feature), this will tell me if there is overlap in the two features. If the number is positive, it means there is overlap. If it is negative, it means there is no overlap. I did not run bed intersect because I attempted that with Ptuh in code below and it did not give me any meaningful output.
-
-```
-awk '{ $(NF+1) = $13 - $5 }1' OFS='\t' filtered_Peve_output.bed > filtered_Peve_output_overlap.bed
-
-head filtered_Peve_output_overlap.bed
-Porites_evermani_scaffold_1	ShortStack	MIRNA_hairpin	1404250	1404342	9574	-	.	ID=Cluster_29;DicerCall=N;MIRNA=Y	Porites_evermani_scaffold_1	Gmove	mRNA	1380413	1416448	1270.53	-	.	ID=Peve_00000077;Name=Peve_00000077;start=1;stop=1;cds_size=1851	-23929
-Porites_evermani_scaffold_1	ShortStack	mature_miRNA	1404272	1404293	3403	-	.	ID=Cluster_29.mature;Parent=Cluster_29	Porites_evermani_scaffold_1	Gmove	mRNA	1380413	1416448	1270.53	-	.	ID=Peve_00000077;Name=Peve_00000077;start=1;stop=1;cds_size=1851	-23880
-Porites_evermani_scaffold_1	ShortStack	miRNA-star	1404301	1404322	23	-	.	ID=Cluster_29.star;Parent=Cluster_29	Porites_evermani_scaffold_1	Gmove	mRNA	1380413	1416448	1270.53	-	.	ID=Peve_00000077;Name=Peve_00000077;start=1;stop=1;cds_size=1851	-23909
-Porites_evermani_scaffold_10	ShortStack	siRNA21_locus	565492	565912	76	+	.	ID=Cluster_353;DicerCall=21;MIRNA=N	Porites_evermani_scaffold_10	Gmove	mRNA	562195	564790	948	+	.	ID=Peve_00000127;Name=Peve_00000127;start=1;stop=1;cds_size=474	-3717
-Porites_evermani_scaffold_10	ShortStack	siRNA21_locus	565492	565912	76	+	.	ID=Cluster_353;DicerCall=21;MIRNA=N	Porites_evermani_scaffold_10	Gmove	UTR	564704	564790	.	+	.	Parent=Peve_0000012-1208
-Porites_evermani_scaffold_1005	ShortStack	siRNA23_locus	126975	127397	168	+	.	ID=Cluster_9183;DicerCall=23;MIRNA=N	Porites_evermani_scaffold_1005	Gmove	mRNA	114473	133413	606	+	.	ID=Peve_00000326;Name=Peve_00000326;start=0;stop=1;cds_size=606	-12924
-Porites_evermani_scaffold_1060	ShortStack	siRNA22_locus	77378	77799	99	+	.	ID=Cluster_9583;DicerCall=22;MIRNA=N	Porites_evermani_scaffold_1060	Gmove	mRNA	64377	75861	817.5	+	.	ID=Peve_00001166;Name=Peve_00001166;start=1;stop=1;cds_size=1275	-13422
-Porites_evermani_scaffold_1060	ShortStack	siRNA22_locus	77378	77799	99	+	.	ID=Cluster_9583;DicerCall=22;MIRNA=N	Porites_evermani_scaffold_1060	Gmove	CDS	75822	75861	.	+	.	Parent=Peve_00001166	-1977
-Porites_evermani_scaffold_108	ShortStack	siRNA24_locus	306073	306496	53	-	.	ID=Cluster_2199;DicerCall=24;MIRNA=N	Porites_evermani_scaffold_108	Gmove	mRNA	278980	311091	2217.57	-	.	ID=Peve_00001444;Name=Peve_00001444;start=1;stop=1;cds_size=4026	-27516
-Porites_evermani_scaffold_108	ShortStack	siRNA24_locus	306073	306496	53	-	.	ID=Cluster_2199;DicerCall=24;MIRNA=N	Porites_evermani_scaffold_108	Gmove	CDS	306249	306300	.	-	.	Parent=Peve_00001444	-247
-```
-
-Count number of positive and negative numbers
-
-```
-awk '{if ($NF < 0) neg++; else if ($NF > 0) pos++} END {print "Positive count:", pos; print "Negative count:", neg}' filtered_Peve_output_overlap.bed
-
-Positive count: 100
-Negative count: 349
 ```
 
 ### Ptuh miRNA
@@ -258,60 +202,6 @@ Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	MIRNA_hairpin	2872019	2872110	
 Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	mature_miRNA	2872041	2872061	110	+	.	ID=Cluster_34.mature;Parent=Cluster_34	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	transcript	2868586	2871318	.	+	.	ID=Pocillopora_meandrina_HIv1___TS.g25957.t1
 ```
 
-Do any features overlap?
-
-```
-bedtools intersect -a Ptuh_Results_sorted.gff3 -b /data/putnamlab/jillashey/genome/Pmea/Pocillopora_meandrina_HIv1.genes_sorted.gff3 > Ptuh_overlaps.bed
-
-awk 'BEGIN {OFS="\t"} $3 != "Unknown_sRNA_locus"' Ptuh_overlaps.bed > filtered_Ptuh_overlaps.bed
-
-wc -l filtered_Ptuh_overlaps.bed
-174 filtered_Ptuh_overlaps.bed
-
-head filtered_Ptuh_overlaps.bed
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	MIRNA_hairpin	818027	818120	12096	+	.	ID=Cluster_19;DicerCall=23;MIRNA=Y
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	mature_miRNA	818049	818070	3240	+	.	ID=Cluster_19.mature;Parent=Cluster_19
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	miRNA-star	818079	818100	9	+	.	ID=Cluster_19.star;Parent=Cluster_19
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	siRNA24_locus	5624826	5625249	125	+	.	ID=Cluster_73;DicerCall=24;MIRNA=N
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	siRNA24_locus	7205683	7206107	1021	+	.	ID=Cluster_100;DicerCall=24;MIRNA=N
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	siRNA22_locus	13015507	13015928	82	+	.	ID=Cluster_275;DicerCall=22;MIRNA=N
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	siRNA22_locus	16197870	16198683	17179	+	.	ID=Cluster_306;DicerCall=22;MIRNA=N
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	MIRNA_hairpin	20372416	20372510	522228	-	.	ID=Cluster_356;DicerCall=22;MIRNA=Y
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	miRNA-star	20372436	20372456	19166	-	.	ID=Cluster_356.star;Parent=Cluster_356
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	mature_miRNA	20372469	20372490	769	-	.	ID=Cluster_356.mature;Parent=Cluster_356
-```
-
-This doesn't tell me if the files are overlapping...it looks exactly like the results gff file. Does this indicate that most of the features have some kind of overlap??
-
-If I subtract the 5th column (end of miRNA feature) by the 13th column (beginning of genomic feature), this will tell me if there is overlap in the two features. If the number is positive, it means there is overlap. If it is negative, it means there is no overlap. 
-
-```
-awk '{ $(NF+1) = $13 - $5 }1' OFS='\t' filtered_Ptuh_output.bed > filtered_Ptuh_output_overlap.bed
-
-head filtered_Ptuh_output_overlap.bed
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	siRNA22_locus	173728	174150	1257	+	.	ID=Cluster_4;DicerCall=22;MIRNA=Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	CDS	174509	175333	.	-	0	Parent=Pocillopora_meandrina_HIv1___RNAseq.g20918.t1	359
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	siRNA22_locus	173728	174150	1257	+	.	ID=Cluster_4;DicerCall=22;MIRNA=Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	exon	174509	175333	.	-	0	Parent=Pocillopora_meandrina_HIv1___RNAseq.g20918.t1	359
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	siRNA22_locus	173728	174150	1257	+	.	ID=Cluster_4;DicerCall=22;MIRNA=Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	transcript	174509	176444	.	-	.	ID=Pocillopora_meandrina_HIv1___RNAseq.g20918.t1	359
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	MIRNA_hairpin	818027	818120	12096	+	.	ID=Cluster_19;DicerCall=23;MIRNA=Y	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	transcript	816355	820160	.	+	.	ID=Pocillopora_meandrina_HIv1___RNAseq.g21001.t1	-1765
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	mature_miRNA	818049	818070	3240	+	.	ID=Cluster_19.mature;Parent=Cluster_19	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	transcript	816355	820160	.	+	.	ID=Pocillopora_meandrina_HIv1___RNAseq.g21001.t1	-1715
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	miRNA-star	818079	818100	9	+	.	ID=Cluster_19.star;Parent=Cluster_19	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	transcript	816355	820160	.	+	.	ID=Pocillopora_meandrina_HIv1___RNAseq.g21001.t1	-1745
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	MIRNA_hairpin	2872019	2872110	177	+	.	ID=Cluster_34;DicerCall=21;MIRNA=Y	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	transcript	2868586	2871318	.	+	.	ID=Pocillopora_meandrina_HIv1___TS.g25957.t1	-3524
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	MIRNA_hairpin	2872019	2872110	177	+	.	ID=Cluster_34;DicerCall=21;MIRNA=Y	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	CDS	2870522	2871318	.	+	2	Parent=Pocillopora_meandrina_HIv1___TS.g25957.t1	-1588
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	MIRNA_hairpin	2872019	2872110	177	+	.	ID=Cluster_34;DicerCall=21;MIRNA=Y	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	exon	2870522	2871318	.	+	2	Parent=Pocillopora_meandrina_HIv1___TS.g25957.t1	-1588
-Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	mature_miRNA	2872041	2872061	110	+	.	ID=Cluster_34.mature;Parent=Cluster_34	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	transcript	2868586	2871318	.	+	.	ID=Pocillopora_meandrina_HIv1___TS.g25957.t1	-3475
-```
-
-Count number of positive and negative numbers
-
-```
-awk '{if ($NF < 0) neg++; else if ($NF > 0) pos++} END {print "Positive count:", pos; print "Negative count:", neg}' filtered_Ptuh_output_overlap.bed
-
-Positive count: 99
-Negative count: 306
-```
-
-Negative = no overlap though I should check my math with someone to make sure I'm not dumb. 
-
 For the miRNA data for all species, make a new miRNA directory and move everything there. 
 
 ```
@@ -321,11 +211,3 @@ mv * miRNA/
 ```
 
 Also renaming the output files with miRNA at the beginning of the file name. 
-
-
-
-
-Questions to answer now that I have this data: 
-
-- Which miRNA features are overlapping with their closest genomic feature? 
-- On average, how far away are miRNAs from their closest genomic feature? 
