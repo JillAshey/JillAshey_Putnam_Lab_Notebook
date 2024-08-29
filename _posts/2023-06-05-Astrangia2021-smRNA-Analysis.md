@@ -7323,6 +7323,31 @@ echo "Short stack run complete"
 
 Submitted batch job 334980. Failed with this error: `Required executable wigToBigWig : Not found!`. Confused by this...apparently [wigToBigWig](https://www.encodeproject.org/software/wigtobigwig/) is a type of file format. Not sure what to do with this info...Going to email Kevin Bryan!
 
+### 20240829 
+
+Kevin Bryan got back to me and said to add the module `Kent_tools/442-GCC-11.3.0` to find `wigToBigWig` for the short stack code. Submitted batch job 336294. Running successfully! 
+
+I also emailed him about the issues installing gene ext and he said "it looks like you have two different genext environments loaded there since some paths refer to /home/jillashey/.conda/envs/geneext and others to /glfs/brick01/gv0/putnamlab/conda/GeneExt, so I think that’s what’s causing the issue. You might want to delete both and recreate the second one to ensure it has all the dependencies." I deleted gene ext in `/home/jillashey/.conda/envs/` directory. Went to `/glfs/brick01/gv0/putnamlab/conda/` and deleted gene ext. Because it takes a while for gene ext to install, I'm going to run the `get_geneext.sh` script. Submitted batch job 336304
+
+
+
+
+
+
+
+
+
+
+ Let's see if it works now. 
+
+```
+interactive
+module load Miniconda3/4.9.2
+cd /data/putnamlab/conda
+git clone https://github.com/sebepedroslab/GeneExt.git
+cd GeneExt/
+conda env create -n geneext -f environment.yaml
+```
 
 
 

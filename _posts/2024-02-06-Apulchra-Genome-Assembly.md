@@ -4312,3 +4312,255 @@ Exception in thread "main" java.lang.NullPointerException
         at uio.amg.zhong.jasmine.JASMINE.findXMLfile(JASMINE.java:494)
         at uio.amg.zhong.jasmine.JASMINE.main(JASMINE.java:40)
 ```
+
+### 20240829
+
+Hollie and I met earlier this week and we briefly discussed methylation for Apul. I said that some of the [MethBat](https://github.com/PacificBiosciences/MethBat/blob/main/docs/user_guide.md) tools required information about known CpG locations. She recommended I try [emboss fuzznuc](https://emboss.sourceforge.net/apps/cvs/emboss/apps/fuzznuc.html), which searches for specific patterns in nucleotide sequences (such as CGs). Why do we care about CGs? [CpG sites](https://en.wikipedia.org/wiki/CpG_site) occur when a cytosine is followed by a guanine in a linear sequence.  Cytosines in CpG motifs can be methylated. So in order to find methylation, we need to find the CpG sites. 
+
+The Roberts lab has used the fuzznuc program before to identidy CG motifs; Sam's [notebook](https://github.com/RobertsLab/sams-notebook/blob/9fe3eace54c1e632fc0aa644bf4f46971b554afb/posts/2019/2019-08-21-Data-Wrangling---Create-a-CpG-GFF-from-Pgenerosa_v074-using-EMBOSS-fuzznuc-on-Swoose/index.qmd#L7) has an example of how to use fuzznuc, and this [page](https://github.com/RobertsLab/project-oyster-oa/blob/d0ec0ed733414b7d5e1e2eb489fa75c03bc3335a/code/Haws/04-DSS.Rmd#L349) has instances where the output file from fuzznuc was used in analysis. Emboss is already installed on Andromeda yay. In the `/data/putnamlab/jillashey/Apul_Genome/methylation/scripts` folder: `nano fuzznuc.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/methylation/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+# Load module 
+module load EMBOSS/6.6.0-foss-2018b
+
+echo "Running fuzznuc on assembled Apul genome" $(date)
+
+# Run fuzznuc 
+fuzznuc \
+-sequence /data/putnamlab/jillashey/Apul_Genome/assembly/data/apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.fa \
+-pattern CG \
+-outfile /data/putnamlab/jillashey/Apul_Genome/methylation/output/CGmotif_fuzznuc_Apul.gff \
+-rformat gff 
+
+echo "Fuzznuc complete" $(date)
+```
+
+Submitted batch job 336307. Ran very fast. Let's look at the output. 
+
+```
+wc -l CGmotif_fuzznuc_Apul.gff 
+16011621 CGmotif_fuzznuc_Apul.gff
+
+head CGmotif_fuzznuc_Apul.gff 
+##gff-version 3
+##sequence-region ntLink_7 1 182921
+#!Date 2024-08-29
+#!Type DNA
+#!Source-version EMBOSS 6.6.0.0
+ntLink_7	fuzznuc	nucleotide_motif	47	48	2	+	.	ID=ntLink_7.1;note=*pat pattern:CG
+ntLink_7	fuzznuc	nucleotide_motif	50	51	2	+	.	ID=ntLink_7.2;note=*pat pattern:CG
+ntLink_7	fuzznuc	nucleotide_motif	97	98	2	+	.	ID=ntLink_7.3;note=*pat pattern:CG
+ntLink_7	fuzznuc	nucleotide_motif	99	100	2	+	.	ID=ntLink_7.4;note=*pat pattern:CG
+ntLink_7	fuzznuc	nucleotide_motif	124	125	2	+	.	ID=ntLink_7.5;note=*pat pattern:CG
+
+tail CGmotif_fuzznuc_Apul.gff 
+ptg000187l	fuzznuc	nucleotide_motif	16594	16595	2	+	.	ID=ptg000187l.326;note=*pat pattern:CG
+ptg000187l	fuzznuc	nucleotide_motif	16672	16673	2	+	.	ID=ptg000187l.327;note=*pat pattern:CG
+ptg000187l	fuzznuc	nucleotide_motif	16891	16892	2	+	.	ID=ptg000187l.328;note=*pat pattern:CG
+ptg000187l	fuzznuc	nucleotide_motif	16923	16924	2	+	.	ID=ptg000187l.329;note=*pat pattern:CG
+ptg000187l	fuzznuc	nucleotide_motif	17048	17049	2	+	.	ID=ptg000187l.330;note=*pat pattern:CG
+ptg000187l	fuzznuc	nucleotide_motif	17120	17121	2	+	.	ID=ptg000187l.331;note=*pat pattern:CG
+ptg000187l	fuzznuc	nucleotide_motif	17701	17702	2	+	.	ID=ptg000187l.332;note=*pat pattern:CG
+ptg000187l	fuzznuc	nucleotide_motif	17753	17754	2	+	.	ID=ptg000187l.333;note=*pat pattern:CG
+ptg000187l	fuzznuc	nucleotide_motif	17765	17766	2	+	.	ID=ptg000187l.334;note=*pat pattern:CG
+ptg000187l	fuzznuc	nucleotide_motif	17890	17891	2	+	.	ID=ptg000187l.335;note=*pat pattern:CG
+```
+
+Lot of instances of CGs in the genome. Calculate how many per chromosome. 
+
+```
+awk '{print $1}' CGmotif_fuzznuc_Apul.gff | sort | uniq -c
+    174 #!Date
+    174 ##gff-version
+   2660 ntLink_0
+   5528 ntLink_1
+  18990 ntLink_2
+   4230 ntLink_3
+  16135 ntLink_4
+ 718456 ntLink_6
+   6379 ntLink_7
+1131794 ntLink_8
+ 673167 ptg000001l
+ 487373 ptg000002l
+ 481523 ptg000004l
+  41081 ptg000005l
+  72434 ptg000006l
+ 384667 ptg000007l
+1210027 ptg000008l
+ 576662 ptg000009l
+  71786 ptg000010l
+ 431224 ptg000011l
+ 612568 ptg000012l
+ 471803 ptg000015l
+ 399662 ptg000016l
+ 402360 ptg000017l
+ 514573 ptg000018l
+ 184959 ptg000019l
+ 546594 ptg000020l
+ 660490 ptg000021l
+ 300528 ptg000022l
+1411649 ptg000023l
+ 371263 ptg000024l
+ 651898 ptg000025l
+ 463202 ptg000026l
+ 477238 ptg000027l
+  20084 ptg000028l
+  54282 ptg000029c
+ 104517 ptg000030l
+ 487040 ptg000031l
+  87528 ptg000033l
+ 107979 ptg000034l
+ 294044 ptg000035l
+ 206362 ptg000036l
+   8351 ptg000037l
+   9522 ptg000038l
+  32088 ptg000039l
+  12627 ptg000040l
+   3994 ptg000043l
+   1557 ptg000045l
+   1134 ptg000046l
+ 379058 ptg000047l
+   2221 ptg000048l
+  70943 ptg000049l
+    822 ptg000050l
+  11322 ptg000051l
+   1607 ptg000052l
+   2012 ptg000053l
+    976 ptg000054l
+   1523 ptg000055l
+   1606 ptg000056l
+   1168 ptg000057l
+  55399 ptg000059l
+   3128 ptg000060c
+   6757 ptg000061l
+    962 ptg000063l
+   4760 ptg000064l
+   1381 ptg000065l
+   2038 ptg000066l
+   5588 ptg000067l
+  12558 ptg000069l
+   5742 ptg000070l
+  31307 ptg000072c
+  31474 ptg000073l
+    107 ptg000074l
+   1752 ptg000075l
+  10527 ptg000076l
+   1221 ptg000077l
+    701 ptg000078l
+    866 ptg000079l
+   1273 ptg000080l
+   5641 ptg000081l
+   2028 ptg000082l
+   3914 ptg000083l
+   3283 ptg000085l
+   2711 ptg000086l
+   2651 ptg000087l
+   2899 ptg000088l
+   1270 ptg000089l
+   1474 ptg000090l
+    797 ptg000092l
+   1080 ptg000093l
+   1040 ptg000094l
+   1193 ptg000095l
+   1674 ptg000096l
+   1586 ptg000097l
+   1601 ptg000098l
+   1385 ptg000099l
+   1524 ptg000100l
+    866 ptg000101l
+   1850 ptg000102l
+   2880 ptg000105l
+   1386 ptg000106l
+   2113 ptg000107l
+   2548 ptg000108l
+   1351 ptg000109l
+   1268 ptg000112l
+   1804 ptg000113l
+   1450 ptg000114l
+   1189 ptg000115l
+   1357 ptg000116l
+    817 ptg000117l
+    969 ptg000118l
+    605 ptg000119l
+    866 ptg000120l
+   1330 ptg000121l
+   1436 ptg000122l
+   1308 ptg000123l
+   1708 ptg000124l
+    637 ptg000125l
+    947 ptg000126l
+   1023 ptg000127l
+   1626 ptg000128l
+   1220 ptg000129l
+   1187 ptg000130l
+    812 ptg000131l
+    855 ptg000132l
+   1153 ptg000133l
+   3997 ptg000134l
+    112 ptg000135l
+    477 ptg000136l
+   1906 ptg000137l
+   2694 ptg000138l
+    432 ptg000139l
+    802 ptg000140l
+   2269 ptg000141l
+    423 ptg000142l
+    609 ptg000144l
+    504 ptg000145l
+   1177 ptg000146l
+   1059 ptg000147l
+   1177 ptg000148l
+   2720 ptg000149l
+   4343 ptg000151l
+    716 ptg000152l
+    877 ptg000153l
+   1155 ptg000154l
+    948 ptg000155l
+    462 ptg000158l
+    494 ptg000159l
+   1126 ptg000160l
+    408 ptg000161l
+    311 ptg000162l
+    388 ptg000163l
+    151 ptg000164l
+    782 ptg000165l
+    360 ptg000166l
+    519 ptg000167l
+    392 ptg000168l
+    535 ptg000169l
+    468 ptg000170l
+    504 ptg000171l
+   1376 ptg000172l
+    697 ptg000173l
+    568 ptg000174l
+    525 ptg000175l
+   1460 ptg000176l
+   1564 ptg000177l
+    554 ptg000178l
+   1129 ptg000179l
+    220 ptg000180l
+   1048 ptg000181l
+    746 ptg000182l
+    892 ptg000183l
+   1494 ptg000184l
+   1252 ptg000185l
+    471 ptg000186l
+    335 ptg000187l
+    174 ##sequence-region
+    174 #!Source-version
+    174 #!Type
+```
+
+How long is each chromosome???
