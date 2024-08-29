@@ -37,7 +37,7 @@ Here's the Pico Methyl-Seq library prep workflow:
 
 ### Materials 
 
-- [Zymo-Seq RiboFree library kit](https://www.zymoresearch.com/products/zymo-seq-ribofree-total-rna-library-kit)
+- [Zymo Pico Methyl Seq Library Prep](https://www.zymoresearch.com/products/pico-methyl-seq-library-prep-kit)
 - PCR tubes 
 - Thermocycler 
 - Heating block 

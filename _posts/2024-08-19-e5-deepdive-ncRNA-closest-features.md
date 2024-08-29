@@ -85,6 +85,35 @@ NC_058066.1	ShortStack	MIRNA_hairpin	12757125	12757218	8293	-	.	ID=Cluster_316;D
 NC_058066.1	ShortStack	MIRNA_hairpin	12757125	12757218	8293	-	.	ID=Cluster_316;DicerCall=23;MIRNA=Y	NC_058066.1	Gnomon	mRNA	12755159	12764546	.	-	.	ID=rna-XM_029339755.2;Parent=gene-LOC114961148;Dbxref=GeneID:114961148,Genbank:XM_029339755.2;Name=XM_029339755.2;experiment=COORDINATES: polyA evidence [ECO:0006239];gbkey=mRNA;gene=LOC114961148;model_evidence=Supporting evidence includes similarity to: 7 mRNAs%2C 8 Proteins%2C and 100%25 coverage of the annotated genomic feature by RNAseq alignments%2C including 87 samples with support for all annotated introns;product=zinc finger MYND domain-containing protein 19-like;transcript_id=XM_029339755.2
 ```
 
+Some of the closest features to the miRNAs are "regions", which seems to be large sections of chromosomes or chromosomes themselves. Because I only care about which mRNAs are closest to the miRNA features, I'm going to subset the gff by mRNA. 
+
+```
+cd /data/putnamlab/jillashey/genome/Amil_v2.01
+
+awk '$3 == "mRNA"' GCF_013753865.1_Amil_v2.1_genomic_sorted.gff > GCF_013753865.1_Amil_v2.1_genomic_sorted_mRNA.gff
+```
+
+Run bed closest 
+
+```
+cd /data/putnamlab/jillashey/e5/ncRNA_gff/miRNA
+
+interactive 
+module load BEDTools/2.30.0-GCC-11.3.0
+bedtools closest -a Apul_Results_sorted.gff3 -b /data/putnamlab/jillashey/genome/Amil_v2.01/GCF_013753865.1_Amil_v2.1_genomic_sorted_mRNA.gff > Apul_output_mRNA_only.bed
+
+wc -l Apul_output.bed 
+24039 Apul_output_mRNA_only.bed
+```
+
+Remove the unknown siRNA loci
+
+```
+awk 'BEGIN {OFS="\t"} $3 != "Unknown_sRNA_locus"' Apul_output_mRNA_only.bed > filtered_Apul_output_mRNA_only.bed
+```
+
+
+
 ### Peve miRNA
 
 Sort Peve genome gff file
