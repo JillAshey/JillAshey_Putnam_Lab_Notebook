@@ -7327,8 +7327,145 @@ Submitted batch job 334980. Failed with this error: `Required executable wigToBi
 
 Kevin Bryan got back to me and said to add the module `Kent_tools/442-GCC-11.3.0` to find `wigToBigWig` for the short stack code. Submitted batch job 336294. Running successfully! 
 
-I also emailed him about the issues installing gene ext and he said "it looks like you have two different genext environments loaded there since some paths refer to /home/jillashey/.conda/envs/geneext and others to /glfs/brick01/gv0/putnamlab/conda/GeneExt, so I think that’s what’s causing the issue. You might want to delete both and recreate the second one to ensure it has all the dependencies." I deleted gene ext in `/home/jillashey/.conda/envs/` directory. Went to `/glfs/brick01/gv0/putnamlab/conda/` and deleted gene ext. Because it takes a while for gene ext to install, I'm going to run the `get_geneext.sh` script. Submitted batch job 336304
+I also emailed him about the issues installing gene ext and he said "it looks like you have two different genext environments loaded there since some paths refer to /home/jillashey/.conda/envs/geneext and others to /glfs/brick01/gv0/putnamlab/conda/GeneExt, so I think that’s what’s causing the issue. You might want to delete both and recreate the second one to ensure it has all the dependencies." I deleted gene ext in `/home/jillashey/.conda/envs/` directory. Went to `/glfs/brick01/gv0/putnamlab/conda/` and deleted gene ext. Because it takes a while for gene ext to install, I'm going to run the `get_geneext.sh` script. Submitted batch job 336304.
 
+### 20240830
+
+Gene ext installed but once again, got the same error message even though I thought I deleted it from all other locations. Here's the error once again: 
+
+```
+########## macs2 FAILED ##############
+return code:  1 
+Output:  Traceback (most recent call last):
+  File "/home/jillashey/.conda/envs/geneext/bin/macs2", line 653, in <module>
+    main()
+  File "/home/jillashey/.conda/envs/geneext/bin/macs2", line 49, in main
+    from MACS2.callpeak_cmd import run
+  File "/home/jillashey/.conda/envs/geneext/lib/python3.9/site-packages/MACS2/callpeak_cmd.py", line 23, in <module>
+    from MACS2.OptValidator import opt_validate
+  File "/home/jillashey/.conda/envs/geneext/lib/python3.9/site-packages/MACS2/OptValidator.py", line 20, in <module>
+    from MACS2.IO.Parser import BEDParser, ELANDResultParser, ELANDMultiParser, \
+  File "__init__.pxd", line 206, in init MACS2.IO.Parser
+ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject
+```
+
+Maybe it's something in here: `/home/jillashey/.conda/pkgs` but there are so many folders and tools in there that I am not sure which one to delete. But shortstack did run! Look at the out file in the scripts folder (`slurm-336294.out`): 
+
+```
+Found a total of 51 MIRNA loci
+
+
+Writing final files
+
+Non-MIRNA loci by DicerCall:
+N 9093
+23 48
+22 38
+21 16
+24 12
+
+Creating visualizations of microRNA loci with strucVis
+<<< WARNING >>>
+Do not rely on these results alone to annotate new MIRNA loci!
+The false positive rate for de novo MIRNA identification is low, but NOT ZERO
+Insepct each mirna locus, especially the strucVis output, and see
+https://doi.org/10.1105/tpc.17.00851 , https://doi.org/10.1093/nar/gky1141
+
+Thu 29 Aug 2024 19:06:45 -0400 EDT
+Run Completed!
+Short stack run complete
+```
+
+The out file found 51 putative miRNAs. 
+
+Look at shortstack results (using e5 deep dive shortstack [code](https://github.com/urol-e5/deep-dive/blob/main/F-Pmea/code/13.2.1-Pmea-sRNAseq-ShortStack-31bp-fastp-merged-cnidarian_miRBase.md) as a reference). 
+
+```
+echo "Number of potential loci:"
+awk '(NR>1)' Results.txt | wc -l
+
+Nummber of potential loci:
+    9258
+```
+
+Column 20 in the `Results.txt` file identifies if a cluster is an miRNA or not (Y or N). 51 loci are characterized as miRNA and 9207 loci are not characterized as miRNAs. Column 21 in the `Results.txt` file identifies if a cluster aligned to a known miRNA or not (Y or N). 37 loci aligned to a known miRNA and 9222 loci did not. However, there are only 5 valid miRNAs that match up with known miRNAs
+
+```
+column: line 3 is too long, output will be truncated
+chromosome_6:21902734-21902826                                                                                                                                                                                                                                                                                                                                                               Y  nve-miR-9425_MIMAT0035384_Nematostella_vectensis_miR-9425;miR-9425_Nematostella_vectensis_Moran_et_al._2014_NA
+chromosome_7:2303817-2303911                                                                                                                                                                                                                                                                                                                                                                 Y  sca-nve-F-miR-2036_Scolanthus_callimorphus_Praher_et_al._2021_Transcriptome-level;eca-nve-F-miR-2036_Edwardsiella_carnea_Praher_et_al._2021_Transcriptome-level
+0-5p;ccr-miR-100_MIMAT0026195_Cyprinus_carpio_miR-100;pmi-miR-100-5p_MIMAT0032156_Patiria_miniata_miR-100-5p;cpi-miR-100-5p_MIMAT0037714_Chrysemys_picta_miR-100-5p;chi-miR-100-5p_MIMAT0035897_Capra_hircus_miR-100-5p;dma-miR-100_MIMAT0049252_Daubentonia_madagascariensis_miR-100;sbo-miR-100_MIMAT0049501_Saimiri_boliviensis_miR-100;ola-miR-100_MIMAT0022614_Oryzias_latipes_miR-100
+chromosome_8:4117884-4117974                                                                                                                                                                                                                                                                                                                                                                 Y  Adi-Mir-2030_5p_Acropora_digitifera_Gajigan_&_Conaco_2017_nve-miR-2030-5p;_nve-miR-2030-5p;_spi-miR-temp-40;ami-nve-F-miR-2030-5p_Acropora_millepora_Praher_et_al._2021_NA;adi-nve-F-miR-2030_Acropora_digitifera__Praher_et_al._2021_NA;spi-mir-temp-40_Stylophora_pistillata_Liew_et_al._2014_Close_match_of_nve-miR-2030;eca-nve-F-miR-2030_Edwardsiella_carnea_Praher_et_al._2021_Transcriptome-level;miR-2030_Nematostella_vectensis_Moran_et_al._2014_NA
+chromosome_14:8601339-8601434                                                                                                                                                                                                                                                                                                                                                                Y  apa-mir-2037_Exaiptasia_pallida_Baumgarten_et_al._2017_miR-2037;_Nve;_Spis;spi-mir-temp-20_Stylophora_pistillata_Liew_et_al._2014_NA;eca-nve-F-miR-2037_Edwardsiella_carnea_Praher_et_al._2021_Transcriptome-level;spi-nve-F-miR-2037_Stylophora_pistillata_Praher_et_al._2021_NA;sca-nve-F-miR-2037-3p_Scolanthus_callimorphus_Praher_et_al._2021_Transcriptome-level;ami-nve-F-miR-2037-3p_Acropora_millepora_Praher_et_al._2021_NA;mse-nve-F-miR-2037-3p_Metridium_senile_Praher_et_al._2021_Transcriptome-level;avi-miR-temp-2037_Anemonia_viridis_Urbarova_et_al._2018_NA
+``` 
+
+Sam White found a [bug](https://github.com/MikeAxtell/ShortStack/issues/153#issuecomment-2122897486) in the shortstack code that was making the Results.gff3 starting coordinates 1 greater than those listed in the FastA description lines. For example: 
+
+```
+grep "Cluster_1155.mature" Results.gff3 mir.fasta 
+Results.gff3:chromosome_5	ShortStack	mature_miRNA	8149619	8149640	822	-	.	ID=Cluster_1155.mature;Parent=Cluster_1155
+mir.fasta:>Cluster_1155.mature::chromosome_5:8149618-8149640(-)
+```
+
+The `Results.gff3` file has `Cluster_1155` starting at position 8149619, while `mir.fasta` has it starting at position 8149618. This is an issue because the shortstack fasta headers and gff information need to match or there will be downstream issues. I will need to clean up the fasta with Sam's [code](https://github.com/urol-e5/deep-dive/blob/main/F-Pmea/code/13.2.1.1-Pmea-sRNAseq-ShortStack-FastA-extraction.md). 
+
+### 20240901
+
+Attempting gene ext installation again.
+
+```
+cd /data/putnamlab/conda
+git clone https://github.com/sebepedroslab/GeneExt.git
+interactive 
+module load Miniconda3/4.9.2
+cd GeneExt
+conda env create --prefix /data/putnamlab/conda/GeneExt/geneext -f environment.yaml
+python geneext.py -g test_data/annotation.gtf -b test_data/alignments.bam -o result.gtf --peak_perc 0
+      ____                 _____      _   
+     / ___| ___ _ __   ___| ____|_  _| |_ 
+    | |  _ / _ \ '_ \ / _ \  _| \ \/ / __|
+    | |_| |  __/ | | |  __/ |___ >  <| |_ 
+     \____|\___|_| |_|\___|_____/_/\_\__|
+     
+          ______    ___    ______    
+    -----[______]==[___]==[______]===>----
+
+    Gene model adjustment for improved single-cell RNA-seq data counting
+
+
+╭──────────────────╮
+│ Preflight checks │
+╰──────────────────╯
+Genome annotation warning: Could not find "gene" features in test_data/annotation.gtf! Trying to fix ...
+╭───────────╮
+│ Execution │
+╰───────────╯
+Running macs2 ... 
+########## macs2 FAILED ##############
+return code:  1 
+Output:  Traceback (most recent call last):
+  File "/data/putnamlab/conda/GeneExt/geneext/bin/macs2", line 653, in <module>
+    main()
+  File "/data/putnamlab/conda/GeneExt/geneext/bin/macs2", line 49, in main
+    from MACS2.callpeak_cmd import run
+  File "/data/putnamlab/conda/GeneExt/geneext/lib/python3.9/site-packages/MACS2/callpeak_cmd.py", line 23, in <module>
+    from MACS2.OptValidator import opt_validate
+  File "/data/putnamlab/conda/GeneExt/geneext/lib/python3.9/site-packages/MACS2/OptValidator.py", line 20, in <module>
+    from MACS2.IO.Parser import BEDParser, ELANDResultParser, ELANDMultiParser, \
+  File "__init__.pxd", line 206, in init MACS2.IO.Parser
+ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject
+
+Traceback (most recent call last):
+  File "/glfs/brick01/gv0/putnamlab/conda/GeneExt/geneext.py", line 703, in <module>
+    helper.run_macs2(tempdir+'/' + 'plus.bam','plus',tempdir,verbose = verbose)
+  File "/glfs/brick01/gv0/putnamlab/conda/GeneExt/geneext/helper.py", line 79, in run_macs2
+    ps.check_returncode()
+  File "/data/putnamlab/conda/GeneExt/geneext/lib/python3.9/subprocess.py", line 460, in check_returncode
+    raise CalledProcessError(self.returncode, self.args, self.stdout,
+subprocess.CalledProcessError: Command '('macs2', 'callpeak', '-t', 'tmp/plus.bam', '-f', 'BAM', '--keep-dup', '20', '-q', '0.01', '--shift', '1', '--extsize', '100', '--broad', '--nomodel', '--min-length', '30', '-n', 'plus', '--outdir', 'tmp')' returned non-zero exit status 1.
+```
+
+Still getting same error but now it seems to be in the correct location. 
 
 
 

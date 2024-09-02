@@ -53,6 +53,15 @@ I'm using the following samples for tests. These are samples that are the same s
 - Weigh mass of airbrushed fragment and record difference in weight
 - Ship to UW on dry ice directly to facility (this will be done on Tuesday 9/3)
 
+Here's the info for the test samples: 
+
+| Colony_ID | Species                  | Timepoint | DateAirbrushed | Weight_PreAirbrush_g | Weight_PostAirbrush_g | Weight_Difference_g | HomogenateVolume_mL |
+| --------- | ------------------------ | --------- | -------------- | -------------------- | --------------------- | ------------------- | ------------------- |
+| POC-68    | Pocillopora tuahiniensis | TP1       | 20240829       | 7.4847               | 6.337                 | 1.1477              | 15                  |
+| POR-70    | Porites evermanni        | TP2       | 20240829       | 0.6733               | 0.3881                | 0.2852              | 12                  |
+| ACR-140   | Acropora pulchra         | TP2       | 20240829       | 0.6726               | 0.5975                | 0.0751              | 9                   |
+| ACR-165   | Acropora pulchra         | TP1       | 20240829       | 1.2964               | 1.0039                | 0.2925              | 12                  |
+
 Here's what the fragments looked like post-airbrushing: 
 
 ![](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/metabolomics1_test_samples_20240829.JPG?raw=true)

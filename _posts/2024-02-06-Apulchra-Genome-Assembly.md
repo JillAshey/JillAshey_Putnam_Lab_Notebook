@@ -4378,10 +4378,10 @@ ptg000187l	fuzznuc	nucleotide_motif	17765	17766	2	+	.	ID=ptg000187l.334;note=*pa
 ptg000187l	fuzznuc	nucleotide_motif	17890	17891	2	+	.	ID=ptg000187l.335;note=*pat pattern:CG
 ```
 
-Lot of instances of CGs in the genome. Calculate how many per chromosome. 
+Lot of instances of CGs in the genome. Calculate how many CG motifs per chromosome. 
 
 ```
-awk '{print $1}' CGmotif_fuzznuc_Apul.gff | sort | uniq -c
+awk '{print $1}' CGmotif_fuzznuc_Apul.gff | sort | uniq -c > CpG_chrom_counts.txt
     174 #!Date
     174 ##gff-version
    2660 ntLink_0
@@ -4563,4 +4563,5 @@ awk '{print $1}' CGmotif_fuzznuc_Apul.gff | sort | uniq -c
     174 #!Type
 ```
 
-How long is each chromosome???
+
+
