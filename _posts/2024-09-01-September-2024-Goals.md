@@ -42,7 +42,26 @@ September 2024 goals and daily notebook entries.
 - Writing some NSF PRFB ideas 
 - Apul genome methylation initial analysis 
 - DESeq2 with shortstack miRNA output 
+- Started UNCW cover letter 
 
 ### 20240902
 
 - Separations for metabolomics samples 
+- Edits to Pacuta 2022 intro 
+- UNCW cover letter 
+- Mote cover letter 
+- Created shipping label for test metabolomics samples tomorrow 
+
+### 20240903
+
+- Shipped test metabolomics samples 
+- New grad student tour 
+- Shipped corals
+- Talked w Zoe re cover letters  
+- BES retreat 
+
+### 20240904
+
+- Resubmitted Bermuda TER 
+- Looking over e5 timeseries RNA QC 
+- Closed some deep dive e5 github issues 
