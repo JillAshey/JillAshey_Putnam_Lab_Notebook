@@ -17,6 +17,7 @@ September 2024 goals and daily notebook entries.
 3. Post doc fellowship apps 
 4. e5 ncRNA submission 
 5. Pacuta manuscript submission 
+6. 
 
 ### Sample processing
 
@@ -33,6 +34,8 @@ September 2024 goals and daily notebook entries.
 ### Field work / travel 
 
 1. Figure out travel for cbass workshop 
+2. Apply for travel $$$ for cbass workshop 
+3. Apply for travel $$$ for sicb 
 
 ## Daily log 
 
@@ -65,3 +68,12 @@ September 2024 goals and daily notebook entries.
 - Resubmitted Bermuda TER 
 - Looking over e5 timeseries RNA QC 
 - Closed some deep dive e5 github issues 
+- Updated EHS refresher training
+- Finished UNCW cover letter 
+
+### 20240905
+
+- Picked up science saturday shirts 
+- Random science saturday stuff 
+- Nanodropped DNA samples and WGBS libraries 
+- Wrote up nanodrop post 
