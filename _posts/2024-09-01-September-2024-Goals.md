@@ -17,7 +17,6 @@ September 2024 goals and daily notebook entries.
 3. Post doc fellowship apps 
 4. e5 ncRNA submission 
 5. Pacuta manuscript submission 
-6. 
 
 ### Sample processing
 
@@ -77,3 +76,19 @@ September 2024 goals and daily notebook entries.
 - Random science saturday stuff 
 - Nanodropped DNA samples and WGBS libraries 
 - Wrote up nanodrop post 
+- Submitted UNCW app!!!!!!
+- Worked on JEB travel app 
+
+### 20240906
+
+- submitted time sheet 
+- JEB travel app 
+- e5 meeting 
+
+
+to do for e5 
+
+- think about deep dive methylation stuff 
+- closest gene to lncRNA / pirna cluster
+- go enrichment for closest gene to ncRNAs 
+- 

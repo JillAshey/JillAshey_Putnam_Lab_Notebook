@@ -19,12 +19,21 @@ In this post, I will be assessing what genomic features are closest to the ncRNA
 - [Ptuh miRNA fasta](https://github.com/urol-e5/deep-dive/blob/main/F-Pmea/output/13.2.1-Pmea-sRNAseq-ShortStack-31bp-fastp-merged-cnidarian_miRBase/ShortStack_out/mir.fasta); [Ptuh miRNA gff](https://github.com/urol-e5/deep-dive/blob/main/F-Pmea/output/13.2.1-Pmea-sRNAseq-ShortStack-31bp-fastp-merged-cnidarian_miRBase/ShortStack_out/Results.gff3)
 - [Peve miRNA fasta](https://github.com/urol-e5/deep-dive/blob/main/E-Peve/output/08.2-Peve-sRNAseq-ShortStack-31bp-fastp-merged/ShortStack_out/mir.fasta); [Peve miRNA gff](https://github.com/urol-e5/deep-dive/blob/main/E-Peve/output/08.2-Peve-sRNAseq-ShortStack-31bp-fastp-merged/ShortStack_out/Results.gff3)
 
+##### Important piRNA files
+
+- [Apul piRNA bed](https://github.com/urol-e5/deep-dive/blob/main/D-Apul/output/18-Apul-piRNA/0_piRNA_pipeline_proTRAC/proTRAC_results_APUL/APUL.merged.clusters.bed)
+- [Peve piRNA bed](https://github.com/urol-e5/deep-dive/blob/main/E-Peve/output/18-Peve-piRNA/0_piRNA_pipeline_proTRAC/proTRAC_results_PEVE/PEVE.merged.clusters.bed)
+- [Ptuh piRNA bed](https://github.com/urol-e5/deep-dive/blob/main/F-Pmea/output/18-Pmea-piRNA/0_piRNA_pipeline_proTRAC/proTRAC_results_PMEA/PMEA.merged.clusters.bed)
+
+##### Important lncRNA files
+
 Because I don't own the deep dive repo, I copied all needed files onto my local computer and then put them on Andromeda. I also added the species prefix to each file. 
 
 ```
 cd /data/putnamlab/jillashey/e5
 mkdir ncRNA_gff
 cd ncRNA_gff
+mkdir miRNA piRNA lncRNA
 ```
 
 ### Apul miRNA
@@ -40,7 +49,7 @@ sort -k1,1 -k4,4n GCF_013753865.1_Amil_v2.1_genomic.gff > GCF_013753865.1_Amil_v
 Sort miRNA gff file and run bed closest.
 
 ```
-cd /data/putnamlab/jillashey/e5/ncRNA_gff
+cd /data/putnamlab/jillashey/e5/ncRNA_gff/miRNA
 
 sort -k1,1 -k4,4n Apul_Results.gff3 > Apul_Results_sorted.gff3
 
@@ -112,7 +121,32 @@ Remove the unknown siRNA loci
 awk 'BEGIN {OFS="\t"} $3 != "Unknown_sRNA_locus"' Apul_output_mRNA_only.bed > filtered_Apul_output_mRNA_only.bed
 ```
 
+### Apul piRNA
 
+The gff file is already sorted above and the piRNA bed file is also already sorted. Run bed closest 
+
+```
+cd /data/putnamlab/jillashey/e5/ncRNA_gff/piRNA
+
+interactive 
+module load BEDTools/2.30.0-GCC-11.3.0
+bedtools closest -a APUL.merged.clusters.bed -b /data/putnamlab/jillashey/genome/Amil_v2.01/GCF_013753865.1_Amil_v2.1_genomic_sorted_mRNA.gff > Apul_piRNA_output_mRNA_only.bed
+
+wc -l Apul_piRNA_output_mRNA_only.bed
+143 Apul_piRNA_output_mRNA_only.bed
+
+head Apul_piRNA_output_mRNA_only.bed
+NC_058066.1	17726050	17734960	NC_058066.1	Gnomon	mRNA	17729627	17732829	.	+	.	ID=rna-XM_029347425.2;Parent=gene-LOC114967414;Dbxref=GeneID:114967414,Genbank:XM_029347425.2;Name=XM_029347425.2;gbkey=mRNA;gene=LOC114967414;model_evidence=Supporting evidence includes similarity to: 8 mRNAs%2C and 100%25 coverage of the annotated genomic feature by RNAseq alignments;product=zinc finger protein 862-like;transcript_id=XM_029347425.2
+NC_058066.1	27441463	27447983	NC_058066.1	Gnomon	mRNA	27462364	27464454	.	+	.	ID=rna-XM_029327730.2;Parent=gene-LOC114951564;Dbxref=GeneID:114951564,Genbank:XM_029327730.2;Name=XM_029327730.2;gbkey=mRNA;gene=LOC114951564;model_evidence=Supporting evidence includes similarity to: 3 Proteins;product=zinc finger protein 862-like;transcript_id=XM_029327730.2
+NC_058066.1	28121256	28125982	NC_058066.1	Gnomon	mRNA	28126954	28127481	.	+	.	ID=rna-XM_044328014.1;Parent=gene-LOC122964458;Dbxref=GeneID:122964458,Genbank:XM_044328014.1;Name=XM_044328014.1;gbkey=mRNA;gene=LOC122964458;model_evidence=Supporting evidence includes similarity to: 100%25 coverage of the annotated genomic feature by RNAseq alignments;product=uncharacterized protein K02A2.6-like;transcript_id=XM_044328014.1
+NC_058066.1	28290198	28297001	NC_058066.1	Gnomon	mRNA	28275708	28276278	.	+	.	ID=rna-XM_029347200.2;Parent=gene-LOC114967202;Dbxref=GeneID:114967202,Genbank:XM_029347200.2;Name=XM_029347200.2;gbkey=mRNA;gene=LOC114967202;model_evidence=Supporting evidence includes similarity to: 1 mRNA%2C and 16%25 coverage of the annotated genomic feature by RNAseq alignments;product=piggyBac transposable element-derived protein 4-like;transcript_id=XM_029347200.2
+NC_058066.1	28445323	28452636	NC_058066.1	Gnomon	mRNA	28444999	28446236	.	+	.	ID=rna-XM_029353270.2;Parent=gene-LOC114972849;Dbxref=GeneID:114972849,Genbank:XM_029353270.2;Name=XM_029353270.2;gbkey=mRNA;gene=LOC114972849;model_evidence=Supporting evidence includes similarity to: 67%25 coverage of the annotated genomic feature by RNAseq alignments;product=uncharacterized LOC114972849;transcript_id=XM_029353270.2
+NC_058066.1	28445323	28452636	NC_058066.1	Gnomon	mRNA	28446503	28451426	.	-	.	ID=rna-XM_044328060.1;Parent=gene-LOC114972848;Dbxref=GeneID:114972848,Genbank:XM_044328060.1;Name=XM_044328060.1;gbkey=mRNA;gene=LOC114972848;model_evidence=Supporting evidence includes similarity to: 2 mRNAs%2C 1 Protein%2C and 100%25 coverage of the annotated genomic feature by RNAseq alignments%2C including 2 samples with support for all annotated introns;product=uncharacterized LOC114972848;transcript_id=XM_044328060.1
+NC_058066.1	29297022	29310880	NC_058066.1	Gnomon	mRNA	29313159	29314285	.	+	.	ID=rna-XM_044317430.1;Parent=gene-LOC114972063;Dbxref=GeneID:114972063,Genbank:XM_044317430.1;Name=XM_044317430.1;experiment=COORDINATES: polyA evidence [ECO:0006239];gbkey=mRNA;gene=LOC114972063;model_evidence=Supporting evidence includes similarity to: 1 Protein%2C and 84%25 coverage of the annotated genomic feature by RNAseq alignments;product=uncharacterized LOC114972063;transcript_id=XM_044317430.1
+NC_058067.1	14128407	14136847	NC_058067.1	Gnomon	mRNA	14118443	14130434	.	+	.	ID=rna-XM_044316573.1;Parent=gene-LOC122956872;Dbxref=GeneID:122956872,Genbank:XM_044316573.1;Name=XM_044316573.1;gbkey=mRNA;gene=LOC122956872;model_evidence=Supporting evidence includes similarity to: 3 mRNAs%2C 3 ESTs%2C 1 Protein%2C and 99%25 coverage of the annotated genomic feature by RNAseq alignments%2C including 35 samples with support for all annotated introns;product=uncharacterized LOC122956872;transcript_id=XM_044316573.1
+NC_058067.1	14155111	14163931	NC_058067.1	Gnomon	mRNA	14157497	14159293	.	+	.	ID=rna-XM_044316312.1;Parent=gene-LOC122956629;Dbxref=GeneID:122956629,Genbank:XM_044316312.1;Name=XM_044316312.1;gbkey=mRNA;gene=LOC122956629;model_evidence=Supporting evidence includes similarity to: 4 Proteins;product=uncharacterized protein K02A2.6-like;transcript_id=XM_044316312.1
+NC_058067.1	30302082	30308566	NC_058067.1	Gnomon	mRNA	30314470	30317762	.	+	.	ID=rna-XM_044317247.1;Parent=gene-LOC114948565;Dbxref=GeneID:114948565,Genbank:XM_044317247.1;Name=XM_044317247.1;gbkey=mRNA;gene=LOC114948565;model_evidence=Supporting evidence includes similarity to: 7 mRNAs%2C and 100%25 coverage of the annotated genomic feature by RNAseq alignments;product=uncharacterized LOC114948565;transcript_id=XM_044317247.1
+```
 
 ### Peve miRNA
 
@@ -126,7 +160,7 @@ sort -k1,1 -k4,4n Porites_evermanni_v1.annot.gff > Porites_evermanni_v1.annot_so
 Sort miRNA gff file and run `bed closest`. 
 
 ```
-cd /data/putnamlab/jillashey/e5/ncRNA_gff
+cd /data/putnamlab/jillashey/e5/ncRNA_gff/miRNA
 
 sort -k1,1 -k4,4n Peve_Results.gff3 > Peve_Results_sorted.gff3
 
@@ -171,6 +205,36 @@ Porites_evermani_scaffold_108	ShortStack	siRNA24_locus	306073	306496	53	-	.	ID=C
 Porites_evermani_scaffold_108	ShortStack	siRNA24_locus	306073	306496	53	-	.	ID=Cluster_2199;DicerCall=24;MIRNA=N	Porites_evermani_scaffold_108	Gmove	CDS	306249	306300	.	-	.	Parent=Peve_00001444
 ```
 
+### Peve piRNA
+
+The gff file is already sorted above. Sort piRNA bed file and run bed closest 
+
+```
+cd /data/putnamlab/jillashey/e5/ncRNA_gff/piRNA
+
+interactive 
+module load BEDTools/2.30.0-GCC-11.3.0
+
+bedtools sort -i PEVE.merged.clusters.bed > PEVE.merged.clusters_sorted.bed
+
+bedtools closest -a PEVE.merged.clusters_sorted.bed -b /data/putnamlab/jillashey/genome/Peve/Porites_evermanni_v1.annot_sorted.gff > Peve_piRNA_output.bed
+
+wc -l Peve_piRNA_output.bed
+475 Peve_piRNA_output.bed
+
+head Peve_piRNA_output.bed
+Porites_evermani_scaffold_100	452587	464012	Porites_evermani_scaffold_100	Gmove	CDS	467740	467796	.	+	.	Parent=Peve_00000202
+Porites_evermani_scaffold_100	452587	464012	Porites_evermani_scaffold_100	Gmove	mRNA	467740	468875	273	+	.	ID=Peve_00000202;Name=Peve_00000202;start=1;stop=1;cds_size=273
+Porites_evermani_scaffold_1011	75258	81284	Porites_evermani_scaffold_1011	Gmove	mRNA	42046	82245	666.253	-	.	ID=Peve_00000418;Name=Peve_00000418;start=1;stop=1;cds_size=924
+Porites_evermani_scaffold_1011	75258	81284	Porites_evermani_scaffold_1011	Gmove	CDS	78877	78941	.	+	.	Parent=Peve_00000424
+Porites_evermani_scaffold_1011	75258	81284	Porites_evermani_scaffold_1011	Gmove	mRNA	78877	80087	1125	+	.	ID=Peve_00000424;Name=Peve_00000424;start=0;stop=1;cds_size=1125
+Porites_evermani_scaffold_1011	75258	81284	Porites_evermani_scaffold_1011	Gmove	CDS	79012	79034	.	+	.	Parent=Peve_00000424
+Porites_evermani_scaffold_1011	75258	81284	Porites_evermani_scaffold_1011	Gmove	CDS	79051	80087	.	+	.	Parent=Peve_00000424
+Porites_evermani_scaffold_1024	29005	37949	Porites_evermani_scaffold_1024	Gmove	mRNA	28469	29122	195	-	.	ID=Peve_00000604;Name=Peve_00000604;start=0;stop=1;cds_size=195
+Porites_evermani_scaffold_1024	29005	37949	Porites_evermani_scaffold_1024	Gmove	CDS	29089	29122	.	-	.	Parent=Peve_00000604
+Porites_evermani_scaffold_1024	29005	37949	Porites_evermani_scaffold_1024	Gmove	CDS	30636	30770	.	-	.	Parent=Peve_00000611
+```
+
 ### Ptuh miRNA
 
 Sort Ptuh genome gff file; in this project, we used the Pmea genome. 
@@ -183,7 +247,7 @@ sort -k1,1 -k4,4n Pocillopora_meandrina_HIv1.genes.gff3 > Pocillopora_meandrina_
 Sort miRNA gff file and run `bed closest`. 
 
 ```
-cd /data/putnamlab/jillashey/e5/ncRNA_gff
+cd /data/putnamlab/jillashey/e5/ncRNA_gff/miRNA
 
 sort -k1,1 -k4,4n Ptuh_Results.gff3 > Ptuh_Results_sorted.gff3
 
@@ -231,12 +295,35 @@ Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	MIRNA_hairpin	2872019	2872110	
 Pocillopora_meandrina_HIv1___Sc0000000	ShortStack	mature_miRNA	2872041	2872061	110	+	.	ID=Cluster_34.mature;Parent=Cluster_34	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	transcript	2868586	2871318	.	+	.	ID=Pocillopora_meandrina_HIv1___TS.g25957.t1
 ```
 
-For the miRNA data for all species, make a new miRNA directory and move everything there. 
-
-```
-cd /data/putnamlab/jillashey/e5/ncRNA_gff
-mkdir miRNA
-mv * miRNA/
-```
-
 Also renaming the output files with miRNA at the beginning of the file name. 
+
+### Ptuh piRNA
+
+The gff file is already sorted above and the piRNA bed file is also sorted. Run bed closest 
+
+```
+cd /data/putnamlab/jillashey/e5/ncRNA_gff/piRNA
+
+interactive 
+module load BEDTools/2.30.0-GCC-11.3.0
+
+bedtools closest -a PMEA.merged.clusters.bed -b /data/putnamlab/jillashey/genome/Pmea/Pocillopora_meandrina_HIv1.genes_sorted.gff3 > Ptuh_piRNA_output.bed
+
+wc -l Ptuh_piRNA_output.bed
+647 Ptuh_piRNA_output.bed
+
+head Ptuh_piRNA_output.bed
+head Ptuh_piRNA_output.bed
+Pocillopora_meandrina_HIv1___Sc0000000	10376955	10381586	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	CDS	10377338	10377849	Parent=Pocillopora_meandrina_HIv1___RNAseq.g21904.t1
+Pocillopora_meandrina_HIv1___Sc0000000	10376955	10381586	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	exon	10377338	10377849	Parent=Pocillopora_meandrina_HIv1___RNAseq.g21904.t1
+Pocillopora_meandrina_HIv1___Sc0000000	10376955	10381586	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	transcript	10377338	10381414	.	-	.	ID=Pocillopora_meandrina_HIv1___RNAseq.g21904.t1
+Pocillopora_meandrina_HIv1___Sc0000000	10376955	10381586	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	CDS	10380139	10381414	Parent=Pocillopora_meandrina_HIv1___RNAseq.g21904.t1
+Pocillopora_meandrina_HIv1___Sc0000000	10376955	10381586	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	exon	10380139	10381414	Parent=Pocillopora_meandrina_HIv1___RNAseq.g21904.t1
+Pocillopora_meandrina_HIv1___Sc0000001	7491180	7496937	Pocillopora_meandrina_HIv1___Sc0000001	AUGUSTUS	CDS	7491795	7493045	.	+	0	Parent=Pocillopora_meandrina_HIv1___RNAseq.g19232.t1
+Pocillopora_meandrina_HIv1___Sc0000001	7491180	7496937	Pocillopora_meandrina_HIv1___Sc0000001	AUGUSTUS	exon	7491795	7493045	.	+	0	Parent=Pocillopora_meandrina_HIv1___RNAseq.g19232.t1
+Pocillopora_meandrina_HIv1___Sc0000001	7491180	7496937	Pocillopora_meandrina_HIv1___Sc0000001	AUGUSTUS	transcript	7491795	7493045	.	+	.	ID=Pocillopora_meandrina_HIv1___RNAseq.g19232.t1
+Pocillopora_meandrina_HIv1___Sc0000001	7491180	7496937	Pocillopora_meandrina_HIv1___Sc0000001	AUGUSTUS	CDS	7494081	7495580	.	-	0	Parent=Pocillopora_meandrina_HIv1___RNAseq.g19233.t1
+Pocillopora_meandrina_HIv1___Sc0000001	7491180	7496937	Pocillopora_meandrina_HIv1___Sc0000001	AUGUSTUS	exon	7494081	7495580	.	-	0	Parent=Pocillopora_meandrina_HIv1___RNAseq.g19233.t1
+```
+
+
