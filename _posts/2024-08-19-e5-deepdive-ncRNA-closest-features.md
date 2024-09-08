@@ -27,6 +27,12 @@ In this post, I will be assessing what genomic features are closest to the ncRNA
 
 ##### Important lncRNA files
 
+
+
+
+
+
+
 Because I don't own the deep dive repo, I copied all needed files onto my local computer and then put them on Andromeda. I also added the species prefix to each file. 
 
 ```

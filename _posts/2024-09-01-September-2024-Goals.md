@@ -84,6 +84,18 @@ September 2024 goals and daily notebook entries.
 - submitted time sheet 
 - JEB travel app 
 - e5 meeting 
+- piRNA closest 
+- steven meeting 
+
+### 20240907
+
+- Science saturday 
+
+### 20240908 
+
+- Metabolomics separations + shipping prep 
+- A few edits to Pacuta paper intro 
+- JEB travel app 
 
 
 to do for e5 
