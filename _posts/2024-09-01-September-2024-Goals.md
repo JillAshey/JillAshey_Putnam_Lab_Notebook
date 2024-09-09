@@ -23,6 +23,7 @@ September 2024 goals and daily notebook entries.
 1. Re-amp 6 WGBS e5 deep dive samples
 2. Phys stuff for AST and Mcap DT 
 3. Find and send DNA for e5 samples 
+4. Metabolomics test samples for e5 time series 
 
 ### Data analysis
 
@@ -97,10 +98,14 @@ September 2024 goals and daily notebook entries.
 - A few edits to Pacuta paper intro 
 - JEB travel app 
 
+### 20240909
+
+- Shipped metabolomics samples 
+
+
 
 to do for e5 
 
 - think about deep dive methylation stuff 
 - closest gene to lncRNA / pirna cluster
 - go enrichment for closest gene to ncRNAs 
-- 
