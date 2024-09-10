@@ -108,11 +108,12 @@ September 2024 goals and daily notebook entries.
 ### 20240910 
 
 - Trinity meeting 
-
-/data/putnamlab/tconn/repeats/apul_softmasked/apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.fa.masked
+	- Location of soft-masked genome: `/data/putnamlab/tconn/repeats/apul_softmasked/apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.fa.masked`
+- Looking into pacbio methylation analysis 
+- Writing a little bit for apul genome paper 
 
 to do for e5 
 
-- think about deep dive methylation stuff 
+- think about deep dive methylation stuff - do we sequence? 
 - closest gene to lncRNA / pirna cluster
 - go enrichment for closest gene to ncRNAs 
