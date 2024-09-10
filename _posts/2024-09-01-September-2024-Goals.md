@@ -27,7 +27,7 @@ September 2024 goals and daily notebook entries.
 
 ### Data analysis
 
-1. 3'UTR for AST 2021 and rerun miRanda with that info 
+1. 3'UTR for AST 2021 (GENE EXT) and rerun miRanda with that info 
 2. Apul methylation w/ pacbio tools 
 3. Compiling all phys stuff for AST 2021 
 
@@ -101,8 +101,15 @@ September 2024 goals and daily notebook entries.
 ### 20240909
 
 - Shipped metabolomics samples 
+- Lab meeting 
+- Organizing go stuff for ncRNA closest gene 
+- Storage inventory 
 
+### 20240910 
 
+- Trinity meeting 
+
+/data/putnamlab/tconn/repeats/apul_softmasked/apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.fa.masked
 
 to do for e5 
 

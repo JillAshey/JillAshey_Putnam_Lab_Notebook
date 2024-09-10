@@ -4563,5 +4563,7 @@ awk '{print $1}' CGmotif_fuzznuc_Apul.gff | sort | uniq -c > CpG_chrom_counts.tx
     174 #!Type
 ```
 
+### 20240910 
 
+Met with Trinity this morning! She has completed the repeat masker/modeling part and is now working on the structural and functional annotation. We discussed submitting the assembled genome to NCBI, which I am going to look into. When I was making the submission on GenBank, one of the submission questions was "do you want to submit motif/modification information" since its PacBio sequencing. I looked at NCBI's [page](https://www.ncbi.nlm.nih.gov/genbank/basemodificationfiles/) on this and they mentioned an analysis workflow (RS_Modification_and_Motif_Analysis) that will identify motifs and modifications but I couldn't find much info about it on the pacbio [website](https://www.pacb.com/products-and-services/analytical-software/epigenetics/). I emailed the pacbio people to see where I should start my methylation analysis. I was also looking at the [Apul PacBio summary report](https://github.com/hputnam/Apulchra_genome/blob/main/DNA_Seq_Info/20240129_Project_6693786_Acropora_pulchra_PacBio_Seq_Summary.pdf) and it has some information on methylation as well which I have never noticed. 
 
