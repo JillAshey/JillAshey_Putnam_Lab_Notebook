@@ -114,6 +114,16 @@ September 2024 goals and daily notebook entries.
 - Sent JEB info to Hollie 
 - GO enrichment code 
 - Therapy 
+- Booked maldives flights
+
+### 20240911
+
+- Writing accountability - dissertation proposal + sent to Hollie 
+- GO enrichment for genes closest to ncRNAs in genomes e5 
+
+
+
+
 
 to do for e5 
 
