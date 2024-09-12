@@ -27,11 +27,9 @@ In this post, I will be assessing what genomic features are closest to the ncRNA
 
 ##### Important lncRNA files
 
-
-
-
-
-
+- [Apul lncRNA bed](https://github.com/urol-e5/deep-dive/blob/main/D-Apul/output/05.33-lncRNA-discovery/Apul_lncRNA.bed); [Apul lncRNA fasta](https://github.com/urol-e5/deep-dive/blob/main/D-Apul/output/05.33-lncRNA-discovery/Apul_lncRNA.fasta)
+- [Peve lncRNA bed](https://github.com/urol-e5/deep-dive/blob/main/E-Peve/output/Peve_lncRNA.bed); [Peve lncRNA fasta](https://github.com/urol-e5/deep-dive/blob/main/E-Peve/output/Peve_lncRNA.fasta)
+- [Ptuh lncRNA bed](https://github.com/urol-e5/deep-dive/blob/main/F-Pmea/output/02-lncRNA-discovery/Pmea_lncRNA.bed); [Ptuh lncRNA fasta](https://github.com/urol-e5/deep-dive/blob/main/F-Pmea/output/02-lncRNA-discovery/Pmea_lncRNA.fasta)
 
 Because I don't own the deep dive repo, I copied all needed files onto my local computer and then put them on Andromeda. I also added the species prefix to each file. 
 
@@ -41,6 +39,8 @@ mkdir ncRNA_gff
 cd ncRNA_gff
 mkdir miRNA piRNA lncRNA
 ```
+
+## Acropora pulchra 
 
 ### Apul miRNA
 
@@ -152,6 +152,46 @@ NC_058066.1	29297022	29310880	NC_058066.1	Gnomon	mRNA	29313159	29314285	.	+	.	ID
 NC_058067.1	14128407	14136847	NC_058067.1	Gnomon	mRNA	14118443	14130434	.	+	.	ID=rna-XM_044316573.1;Parent=gene-LOC122956872;Dbxref=GeneID:122956872,Genbank:XM_044316573.1;Name=XM_044316573.1;gbkey=mRNA;gene=LOC122956872;model_evidence=Supporting evidence includes similarity to: 3 mRNAs%2C 3 ESTs%2C 1 Protein%2C and 99%25 coverage of the annotated genomic feature by RNAseq alignments%2C including 35 samples with support for all annotated introns;product=uncharacterized LOC122956872;transcript_id=XM_044316573.1
 NC_058067.1	14155111	14163931	NC_058067.1	Gnomon	mRNA	14157497	14159293	.	+	.	ID=rna-XM_044316312.1;Parent=gene-LOC122956629;Dbxref=GeneID:122956629,Genbank:XM_044316312.1;Name=XM_044316312.1;gbkey=mRNA;gene=LOC122956629;model_evidence=Supporting evidence includes similarity to: 4 Proteins;product=uncharacterized protein K02A2.6-like;transcript_id=XM_044316312.1
 NC_058067.1	30302082	30308566	NC_058067.1	Gnomon	mRNA	30314470	30317762	.	+	.	ID=rna-XM_044317247.1;Parent=gene-LOC114948565;Dbxref=GeneID:114948565,Genbank:XM_044317247.1;Name=XM_044317247.1;gbkey=mRNA;gene=LOC114948565;model_evidence=Supporting evidence includes similarity to: 7 mRNAs%2C and 100%25 coverage of the annotated genomic feature by RNAseq alignments;product=uncharacterized LOC114948565;transcript_id=XM_044317247.1
+```
+
+### Apul lncRNA
+
+The gff file is already sorted above. Sort lncRNa bed file. 
+
+```
+cd /data/putnamlab/jillashey/e5/ncRNA_gff/lncRNA
+sort -k1,1 -k2,2n -k3,3n Apul_lncRNA.bed > Apul_lncRNA_sorted.bed
+```
+
+There were some issues with negative numbers being present in the starting coordinate position in some of the bed files. When I look at the fasta files for these specific lncRNAs, it says that the start position is 0. I'm going to change any instances of negative numbers to a 0
+
+```
+awk '{if ($2 < 0) $2 = 0; print $1 "\t" $2 "\t" $3}' Apul_lncRNA_sorted.bed > Apul_lncRNA_sorted_fixed.bed
+```
+
+Run bed closest
+
+```
+interactive 
+module load BEDTools/2.30.0-GCC-11.3.0
+
+bedtools closest -a Apul_lncRNA_sorted_fixed.bed -b /data/putnamlab/jillashey/genome/Amil_v2.01/GCF_013753865.1_Amil_v2.1_genomic_sorted_mRNA.gff > Apul_lncRNA_output_mRNA_only.bed
+
+wc -l Apul_lncRNA_output_mRNA_only.bed
+18475 Apul_lncRNA_output_mRNA_only.bed
+
+head Apul_lncRNA_output_mRNA_only.bed
+head Apul_lncRNA_output_mRNA_only.bed
+NC_058066.1	393116	393357	NC_058066.1	Gnomon	mRNA	393884	399722	.	+	.	ID=rna-XM_029329017.2;Parent=gene-LOC114952935;Dbxref=GeneID:114952935,Genbank:XM_029329017.2;Name=XM_029329017.2;experiment=COORDINATES: polyA evidence [ECO:0006239];gbkey=mRNA;gene=LOC114952935;model_evidence=Supporting evidence includes similarity to: 2 mRNAs%2C 3 Proteins%2C and 100%25 coverage of the annotated genomic feature by RNAseq alignments%2C including 61 samples with support for all annotated introns;product=uncharacterized LOC114952935;transcript_id=XM_029329017.2
+NC_058066.1	468617	469943	NC_058066.1	Gnomon	mRNA	470084	472938	.	+	.	ID=rna-XM_029329050.2;Parent=gene-LOC114952957;Dbxref=GeneID:114952957,Genbank:XM_029329050.2;Name=XM_029329050.2;experiment=COORDINATES: polyA evidence [ECO:0006239];gbkey=mRNA;gene=LOC114952957;model_evidence=Supporting evidence includes similarity to: 1 mRNA%2C 23 Proteins%2C and 100%25 coverage of the annotated genomic feature by RNAseq alignments;product=trace amine-associated receptor 1-like;transcript_id=XM_029329050.2
+NC_058066.1	574074	574816	NC_058066.1	Gnomon	mRNA	566968	573222	.	-	.	ID=rna-XM_029328984.2;Parent=gene-LOC114952908;Dbxref=GeneID:114952908,Genbank:XM_029328984.2;Name=XM_029328984.2;experiment=COORDINATES: polyA evidence [ECO:0006239];gbkey=mRNA;gene=LOC114952908;model_evidence=Supporting evidence includes similarity to: 3 mRNAs%2C 2 ESTs%2C 8 Proteins%2C and 100%25 coverage of the annotated genomic feature by RNAseq alignments%2C including 88 samples with support for all annotated introns;product=titin-like%2C transcript variant X1;transcript_id=XM_029328984.2
+NC_058066.1	574074	574816	NC_058066.1	Gnomon	mRNA	566968	573222	.	-	.	ID=rna-XM_044317851.1;Parent=gene-LOC114952908;Dbxref=GeneID:114952908,Genbank:XM_044317851.1;Name=XM_044317851.1;experiment=COORDINATES: polyA evidence [ECO:0006239];gbkey=mRNA;gene=LOC114952908;model_evidence=Supporting evidence includes similarity to: 1 EST%2C 7 Proteins%2C and 100%25 coverage of the annotated genomic feature by RNAseq alignments%2C including 51 samples with support for all annotated introns;product=titin-like%2C transcript variant X2;transcript_id=XM_044317851.1
+NC_058066.1	852086	852315	NC_058066.1	Gnomon	mRNA	814602	850828	.	-	.	ID=rna-XM_029328850.2;Parent=gene-LOC114952824;Dbxref=GeneID:114952824,Genbank:XM_029328850.2;Name=XM_029328850.2;experiment=COORDINATES: polyA evidence [ECO:0006239];gbkey=mRNA;gene=LOC114952824;model_evidence=Supporting evidence includes similarity to: 16 mRNAs%2C 1 EST%2C 9 Proteins%2C and 100%25 coverage of the annotated genomic feature by RNAseq alignments%2C including 48 samples with support for all annotated introns;product=ubiquitin carboxyl-terminal hydrolase 24-like;transcript_id=XM_029328850.2
+NC_058066.1	853114	853820	NC_058066.1	Gnomon	mRNA	854617	868846	.	+	.	ID=rna-XM_029328890.2;Parent=gene-LOC114952850;Dbxref=GeneID:114952850,Genbank:XM_029328890.2;Name=XM_029328890.2;Note=The sequence of the model RefSeq transcript was modified relative to this genomic sequence to represent the inferred CDS: deleted 1 base in 1 codon;exception=unclassified transcription discrepancy;experiment=COORDINATES: polyA evidence [ECO:0006239];gbkey=mRNA;gene=LOC114952850;model_evidence=Supporting evidence includes similarity to: 1 mRNA%2C 2 ESTs%2C 20 Proteins%2C and 99%25 coverage of the annotated genomic feature by RNAseq alignments%2C including 84 samples with support for all annotated introns;product=endoplasmic reticulum metallopeptidase 1-like;transcript_id=XM_029328890.2
+NC_058066.1	946276	946580	NC_058066.1	Gnomon	mRNA	947261	949367	.	+	.	ID=rna-XM_029329051.2;Parent=gene-LOC114952958;Dbxref=GeneID:114952958,Genbank:XM_029329051.2;Name=XM_029329051.2;experiment=COORDINATES: polyA evidence [ECO:0006239];gbkey=mRNA;gene=LOC114952958;model_evidence=Supporting evidence includes similarity to: 8 mRNAs%2C 5 Proteins%2C and 100%25 coverage of the annotated genomic feature by RNAseq alignments%2C including 16 samples with support for all annotated introns;product=dynein light chain Tctex-type 5-B-like;transcript_id=XM_029329051.2
+NC_058066.1	1132235	1134678	NC_058066.1	Gnomon	mRNA	1088762	1114844	.	+	.	ID=rna-XM_044318173.1;Parent=gene-LOC114952875;Dbxref=GeneID:114952875,Genbank:XM_044318173.1;Name=XM_044318173.1;experiment=COORDINATES: polyA evidence [ECO:0006239];gbkey=mRNA;gene=LOC114952875;model_evidence=Supporting evidence includes similarity to: 6 mRNAs%2C 2 ESTs%2C 10 Proteins%2C and 99%25 coverage of the annotated genomic feature by RNAseq alignments;product=transient receptor potential cation channel subfamily A member 1-like;transcript_id=XM_044318173.1
+NC_058066.1	1135314	1144814	NC_058066.1	Gnomon	mRNA	1088762	1114844	.	+	.	ID=rna-XM_044318173.1;Parent=gene-LOC114952875;Dbxref=GeneID:114952875,Genbank:XM_044318173.1;Name=XM_044318173.1;experiment=COORDINATES: polyA evidence [ECO:0006239];gbkey=mRNA;gene=LOC114952875;model_evidence=Supporting evidence includes similarity to: 6 mRNAs%2C 2 ESTs%2C 10 Proteins%2C and 99%25 coverage of the annotated genomic feature by RNAseq alignments;product=transient receptor potential cation channel subfamily A member 1-like;transcript_id=XM_044318173.1
+NC_058066.1	1144882	1148491	NC_058066.1	Gnomon	mRNA	1088762	1114844	.	+	.	ID=rna-XM_044318173.1;Parent=gene-LOC114952875;Dbxref=GeneID:114952875,Genbank:XM_044318173.1;Name=XM_044318173.1;experiment=COORDINATES: polyA evidence [ECO:0006239];gbkey=mRNA;gene=LOC114952875;model_evidence=Supporting evidence includes similarity to: 6 mRNAs%2C 2 ESTs%2C 10 Proteins%2C and 99%25 coverage of the annotated genomic feature by RNAseq alignments;product=transient receptor potential cation channel subfamily A member 1-like;transcript_id=XM_044318173.1
 ```
 
 ### Peve miRNA
@@ -332,4 +372,7 @@ Pocillopora_meandrina_HIv1___Sc0000001	7491180	7496937	Pocillopora_meandrina_HIv
 Pocillopora_meandrina_HIv1___Sc0000001	7491180	7496937	Pocillopora_meandrina_HIv1___Sc0000001	AUGUSTUS	exon	7494081	7495580	.	-	0	Parent=Pocillopora_meandrina_HIv1___RNAseq.g19233.t1
 ```
 
+### Ptuh lncRNA
+
+The gff file is already sorted above. Sort the bed file 
 

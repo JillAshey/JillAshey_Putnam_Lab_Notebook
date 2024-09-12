@@ -121,7 +121,9 @@ September 2024 goals and daily notebook entries.
 - Writing accountability - dissertation proposal + sent to Hollie 
 - GO enrichment for genes closest to ncRNAs in genomes e5 - made plots, updated manuscript 
 
+### 20240912
 
+- Go enrichment figures + writing
 
 
 

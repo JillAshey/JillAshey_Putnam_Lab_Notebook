@@ -7467,7 +7467,9 @@ subprocess.CalledProcessError: Command '('macs2', 'callpeak', '-t', 'tmp/plus.ba
 
 Still getting same error but now it seems to be in the correct location. 
 
+### 20240912
 
+Kevin Wong is also running into the same error when installing Gene Ext on Umiami server. Zoe did install Gene Ext successfully in June on Andromeda and Unity. Tried activating conda env in her folder on Andromeda: `/data/putnamlab/zdellaert/snRNA/programs/GeneExt` but do not have permissions. Asked her to run `chmod o+rwx /data/putnamlab/zdellaert/snRNA/programs/GeneEx`
 
 
 
