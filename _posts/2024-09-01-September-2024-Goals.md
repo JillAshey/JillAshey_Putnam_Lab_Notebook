@@ -124,6 +124,10 @@ September 2024 goals and daily notebook entries.
 ### 20240912
 
 - Go enrichment figures + writing
+- lncRNA bed closest + go enrichment + figures
+- Attempted to run gene ext in Zoe's directory, failed 
+- Results writing for e5 ncRNA paper 
+- Cleaning up methods + intro for e5 ncRNA paper 
 
 
 

@@ -194,6 +194,8 @@ NC_058066.1	1135314	1144814	NC_058066.1	Gnomon	mRNA	1088762	1114844	.	+	.	ID=rna
 NC_058066.1	1144882	1148491	NC_058066.1	Gnomon	mRNA	1088762	1114844	.	+	.	ID=rna-XM_044318173.1;Parent=gene-LOC114952875;Dbxref=GeneID:114952875,Genbank:XM_044318173.1;Name=XM_044318173.1;experiment=COORDINATES: polyA evidence [ECO:0006239];gbkey=mRNA;gene=LOC114952875;model_evidence=Supporting evidence includes similarity to: 6 mRNAs%2C 2 ESTs%2C 10 Proteins%2C and 99%25 coverage of the annotated genomic feature by RNAseq alignments;product=transient receptor potential cation channel subfamily A member 1-like;transcript_id=XM_044318173.1
 ```
 
+## Porites evermanni
+
 ### Peve miRNA
 
 Sort Peve genome gff file
@@ -279,6 +281,47 @@ Porites_evermani_scaffold_1011	75258	81284	Porites_evermani_scaffold_1011	Gmove	
 Porites_evermani_scaffold_1024	29005	37949	Porites_evermani_scaffold_1024	Gmove	mRNA	28469	29122	195	-	.	ID=Peve_00000604;Name=Peve_00000604;start=0;stop=1;cds_size=195
 Porites_evermani_scaffold_1024	29005	37949	Porites_evermani_scaffold_1024	Gmove	CDS	29089	29122	.	-	.	Parent=Peve_00000604
 Porites_evermani_scaffold_1024	29005	37949	Porites_evermani_scaffold_1024	Gmove	CDS	30636	30770	.	-	.	Parent=Peve_00000611
+```
+
+### Peve lncRNA
+
+The gff file is already sorted above. Sort lncRNa bed file.
+
+```
+cd /data/putnamlab/jillashey/e5/ncRNA_gff/lncRNA
+sort -k1,1 -k2,2n -k3,3n Peve_lncRNA.bed > Peve_lncRNA_sorted.bed
+```
+
+There were some issues with negative numbers being present in the starting coordinate position in some of the bed files. When I look at the fasta files for these specific lncRNAs, it says that the start position is 0. I'm going to change any instances of negative numbers to a 0
+
+```
+awk '{if ($2 < 0) $2 = 0; print $1 "\t" $2 "\t" $3}' Peve_lncRNA_sorted.bed > Peve_lncRNA_sorted_fixed.bed
+```
+
+Run bed closest 
+
+```
+interactive 
+module load BEDTools/2.30.0-GCC-11.3.0
+
+bedtools closest -a Peve_lncRNA_sorted_fixed.bed -b /data/putnamlab/jillashey/genome/Peve/Porites_evermanni_v1.annot_sorted.gff > Peve_lncRNA_output.bed
+
+wc -l Peve_lncRNA_output.bed
+14288 Peve_lncRNA_output.bed
+
+wc -l Peve_lncRNA_output.bed
+14288 Peve_lncRNA_output.bed
+(base) [jillashey@n065 lncRNA]$ head Peve_lncRNA_output.bed
+Porites_evermani_scaffold_1	372244	372449	Porites_evermani_scaffold_1	Gmove	mRNA	358046	370091	825.429	+	ID=Peve_00000118;Name=Peve_00000118;start=1;stop=1;cds_size=963
+Porites_evermani_scaffold_1	372244	372449	Porites_evermani_scaffold_1	Gmove	CDS	370050	370091	.	+	Parent=Peve_00000118
+Porites_evermani_scaffold_1	422642	423512	Porites_evermani_scaffold_1	Gmove	CDS	424479	425361	.	-	Parent=Peve_00000002
+Porites_evermani_scaffold_1	422642	423512	Porites_evermani_scaffold_1	Gmove	mRNA	424479	429034	2439.63	-	ID=Peve_00000002;Name=Peve_00000002;start=1;stop=1;cds_size=2019
+Porites_evermani_scaffold_1	683877	684280	Porites_evermani_scaffold_1	Gmove	CDS	685640	686293	.	+	Parent=Peve_00000028
+Porites_evermani_scaffold_1	683877	684280	Porites_evermani_scaffold_1	Gmove	mRNA	685640	686293	65.4	+	ID=Peve_00000028;Name=Peve_00000028;start=1;stop=1;cds_size=654
+Porites_evermani_scaffold_1	1084866	1089422	Porites_evermani_scaffold_1	Gmove	CDS	1093419	1095324	.	+	Parent=Peve_00000059
+Porites_evermani_scaffold_1	1084866	1089422	Porites_evermani_scaffold_1	Gmove	mRNA	1093419	1096995	10488	+	ID=Peve_00000059;Name=Peve_00000059;start=1;stop=1;cds_size=2622
+Porites_evermani_scaffold_1	1202043	1202328	Porites_evermani_scaffold_1	Gmove	CDS	1206473	1206925	.	+	Parent=Peve_00000063
+Porites_evermani_scaffold_1	1202043	1202328	Porites_evermani_scaffold_1	Gmove	mRNA	1206473	1206925	45.3	+	ID=Peve_00000063;Name=Peve_00000063;start=1;stop=0;cds_size=453
 ```
 
 ### Ptuh miRNA
@@ -376,3 +419,37 @@ Pocillopora_meandrina_HIv1___Sc0000001	7491180	7496937	Pocillopora_meandrina_HIv
 
 The gff file is already sorted above. Sort the bed file 
 
+```
+cd /data/putnamlab/jillashey/e5/ncRNA_gff/lncRNA
+sort -k1,1 -k2,2n -k3,3n Pmea_lncRNA.bed > Pmea_lncRNA_sorted.bed
+```
+
+There were some issues with negative numbers being present in the starting coordinate position in some of the bed files. When I look at the fasta files for these specific lncRNAs, it says that the start position is 0. I'm going to change any instances of negative numbers to a 0
+
+```
+awk '{if ($2 < 0) $2 = 0; print $1 "\t" $2 "\t" $3}' Pmea_lncRNA_sorted.bed > Pmea_lncRNA_sorted_fixed.bed
+```
+
+Run bed closest 
+
+```
+interactive 
+module load BEDTools/2.30.0-GCC-11.3.0
+
+bedtools closest -a Pmea_lncRNA_sorted_fixed.bed -b /data/putnamlab/jillashey/genome/Pmea/Pocillopora_meandrina_HIv1.genes_sorted.gff3 > Pmea_lncRNA_output.bed
+
+wc -l Pmea_lncRNA_output.bed
+40367 Pmea_lncRNA_output.bed
+
+head Pmea_lncRNA_output.bed
+Pocillopora_meandrina_HIv1___Sc0000000	122573	123665	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	CDS	124026	124169	.	+	0	Parent=Pocillopora_meandrina_HIv1___RNAseq.g20912.t1
+Pocillopora_meandrina_HIv1___Sc0000000	122573	123665	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	exon	124026	124169	.	+	0	Parent=Pocillopora_meandrina_HIv1___RNAseq.g20912.t1
+Pocillopora_meandrina_HIv1___Sc0000000	122573	123665	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	transcript124026	129612	.	+	.	ID=Pocillopora_meandrina_HIv1___RNAseq.g20912.t1
+Pocillopora_meandrina_HIv1___Sc0000000	164390	165433	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	CDS	165477	165611	.	-	0	Parent=Pocillopora_meandrina_HIv1___RNAseq.g20917.t1
+Pocillopora_meandrina_HIv1___Sc0000000	164390	165433	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	exon	165477	165611	.	-	0	Parent=Pocillopora_meandrina_HIv1___RNAseq.g20917.t1
+Pocillopora_meandrina_HIv1___Sc0000000	164390	165433	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	transcript165477	165840	.	-	.	ID=Pocillopora_meandrina_HIv1___RNAseq.g20917.t1
+Pocillopora_meandrina_HIv1___Sc0000000	164761	165433	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	CDS	165477	165611	.	-	0	Parent=Pocillopora_meandrina_HIv1___RNAseq.g20917.t1
+Pocillopora_meandrina_HIv1___Sc0000000	164761	165433	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	exon	165477	165611	.	-	0	Parent=Pocillopora_meandrina_HIv1___RNAseq.g20917.t1
+Pocillopora_meandrina_HIv1___Sc0000000	164761	165433	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	transcript165477	165840	.	-	.	ID=Pocillopora_meandrina_HIv1___RNAseq.g20917.t1
+Pocillopora_meandrina_HIv1___Sc0000000	182909	183240	Pocillopora_meandrina_HIv1___Sc0000000	AUGUSTUS	CDS	186383	188139	.	-	2	Parent=Pocillopora_meandrina_HIv1___RNAseq.g20919.t1 
+```
