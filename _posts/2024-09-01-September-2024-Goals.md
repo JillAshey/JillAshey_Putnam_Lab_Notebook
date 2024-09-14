@@ -129,7 +129,13 @@ September 2024 goals and daily notebook entries.
 - Results writing for e5 ncRNA paper 
 - Cleaning up methods + intro for e5 ncRNA paper 
 
+### 20240913
 
+- IDP writing 
+- e5 ncRNA writing 
+- Remaking plots for e5 ncRNA
+- posts for reefbites
+- Talking w/ Danielle re her last chapter 
 
 to do for e5 
 
