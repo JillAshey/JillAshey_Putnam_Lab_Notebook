@@ -142,6 +142,7 @@ September 2024 goals and daily notebook entries.
 - e5 writing 
 - IDP 
 - Coding for acute thermal stress HI 2022
+- Mote cover letter 
 
 
 to do for e5 
