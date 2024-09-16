@@ -137,9 +137,14 @@ September 2024 goals and daily notebook entries.
 - posts for reefbites
 - Talking w/ Danielle re her last chapter 
 
+### 20240915
+
+- e5 writing 
+- IDP 
+- Coding for acute thermal stress HI 2022
+
+
 to do for e5 
 
-- think about deep dive methylation stuff - do we sequence? 
-- closest gene to lncRNA / pirna cluster
-- go enrichment for closest gene to ncRNAs 
+- think about deep dive methylation stuff - do we sequence? try PCR adapter cleanup and re-extracting with less input 
 - Apul genome submission to NCBI 
