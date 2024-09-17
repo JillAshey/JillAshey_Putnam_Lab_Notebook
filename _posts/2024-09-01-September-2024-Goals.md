@@ -144,6 +144,14 @@ September 2024 goals and daily notebook entries.
 - Coding for acute thermal stress HI 2022
 - Mote cover letter 
 
+### 20240916
+
+- JEB app 
+- Looking at e5 molecular sample stuff 
+- Genohub w/ Zoe 
+- SICB travel w/ Zoe 
+- Lab meeting 
+
 
 to do for e5 
 
