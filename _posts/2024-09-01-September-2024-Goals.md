@@ -152,6 +152,12 @@ September 2024 goals and daily notebook entries.
 - SICB travel w/ Zoe 
 - Lab meeting 
 
+### 20240917 
+
+- Mote app 
+- Finished uploading assembled genome to NCBI
+
+
 
 to do for e5 
 
