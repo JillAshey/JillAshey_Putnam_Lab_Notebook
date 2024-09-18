@@ -161,9 +161,16 @@ September 2024 goals and daily notebook entries.
 - Titration for QT 
 - Updating e5 ncRNA fig 1
 
+### 20240918
+
+- Writing accountability - e5 ncRNA discussion 
+- Pacuta paper cleaning up results section 
+- Tried to run jasmine on raw hifi reads, failed
+- Made table for Pacuta paper 
+- JEB app 
+- Helping with various lab things 
 
 
 to do for e5 
 
 - think about deep dive methylation stuff - do we sequence? try PCR adapter cleanup and re-extracting with less input 
-- Apul genome submission to NCBI 

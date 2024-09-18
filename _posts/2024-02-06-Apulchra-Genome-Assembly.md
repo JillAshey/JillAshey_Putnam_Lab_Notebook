@@ -4572,3 +4572,86 @@ Met with Trinity this morning! She has completed the repeat masker/modeling part
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/Apul_CpG_Methylation_Reads_histo.png)
 
 I emailed PacBio to ask where to start with all these things. 
+
+### 20240918
+
+Maybe the raw hifi reads already have the kinetics info in them that is needed for [jasmine](https://github.com/pacificbiosciences/jasmine/). Before I tried to convert the original bam file to one with kinetics but now I'm going to try running just the raw hifi bam through jasmine. 
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/methylation/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+conda activate /data/putnamlab/conda/jasmine
+
+echo "Running jasmine" $(date)
+
+jasmine /data/putnamlab/jillashey/Apul_Genome/assembly/data/m84100_240128_024355_s2.hifi_reads.bc1029.bam /data/putnamlab/jillashey/Apul_Genome/methylation/data/apul_hifi_5mc.bam
+
+echo "Jasmine complete!" $(date)
+
+conda deactivate
+``` 
+
+Submitted batch job 338453. Failed with same error as before: 
+
+```
+bash: cannot set terminal process group (-1): Function not implemented
+bash: no job control in this shell
+ERROR StatusLogger No log4j2 configuration file found. Using default configuration: logging only errors to the console.
+Exception in thread "main" java.lang.NullPointerException
+        at uio.amg.zhong.jasmine.JASMINE.findXMLfile(JASMINE.java:494)
+        at uio.amg.zhong.jasmine.JASMINE.main(JASMINE.java:40)
+```
+
+Got email back from PacBio people: 
+
+"For your record, we have opened case 00233359 for this inquiry.
+
+First, I think the information on the NCBI page is not going to be as relevant in this particular instance. The base modification files that are referenced on that page are outputs from the Microbial Genome Analysis workflow and they emphasize 6mA and 4mC motifs which are the most common modifications in bacterial genomes.
+
+For methylation analyses in eukaryotes, our key tools are focused on analysis of 5mC in CpG sites. 5mC methylation probabilities in CpG sites are called using our tools primrose or jasmine and are encoded in the hifi_reads.bam file as the MM and ML tags. We have two tools for the analyses of these data pb CpGtools and methbat.
+
+pb cpgtools is the older of the two tools and uses either a trained machine learning model or a pileup model to summarize methylation probabilities across sites to provide evidence of hyper- or hypo-methylation. Pbcpgtools can also be used to summarize 5mC calls for individual samples, which can then be used to build cohort profiles for methbat.
+
+Methbat is the newer of the two tools and is technically still an "in development", but it has four workflows that are supported, which are summarized here on the user guide page. Which workflow you want to use is going to depend your experimental design and what you would like to test.
+
+If you would be up for sending me some information on your dataset and what you are interested testing for, I would be very happy to weigh in on which workflow might be most useful."
+
+I sent him some info about the data that I have, what I am trying to do and what code I have tried so far. Going to download the [example datasets](https://downloads.pacbcloud.com/public/Sequel-II-CpG-training/) from the PacBio websites to try to run jasmine in interactive mode. Going to submit as a job. 
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/methylation/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+conda activate /data/putnamlab/conda/jasmine
+
+echo "Running jasmine" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/methylation/data/test
+
+jasmine m64168_200820_000733.subreads.bam test_jasmine.bam
+
+echo "Jasmine complete!" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 338456. Hmm got the same error as above...so maybe an installation error?
