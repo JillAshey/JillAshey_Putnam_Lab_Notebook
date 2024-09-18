@@ -156,6 +156,10 @@ September 2024 goals and daily notebook entries.
 
 - Mote app 
 - Finished uploading assembled genome to NCBI
+- Therapy 
+- e5 ncRNA paper writing 
+- Titration for QT 
+- Updating e5 ncRNA fig 1
 
 
 
