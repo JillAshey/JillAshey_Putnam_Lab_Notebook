@@ -15,7 +15,7 @@ September 2024 goals and daily notebook entries.
 1. Dissertation proposal submission to grad school
 2. IDP + plan outline
 3. Post doc fellowship apps 
-4. e5 ncRNA submission 
+4. e5 ncRNA complete draft  
 5. Pacuta manuscript submission 
 
 ### Sample processing
@@ -169,6 +169,17 @@ September 2024 goals and daily notebook entries.
 - Made table for Pacuta paper 
 - JEB app 
 - Helping with various lab things 
+
+### 20240919 
+
+- Writing meeting 
+- Pacuta paper intro 
+- PACUTA LARVAE!!!!!
+- NSF PRFB webinar 
+- DT MCAP seq data received!!!
+- QCed Mcap seq data 
+- Jackie meeting 
+
 
 
 to do for e5 
