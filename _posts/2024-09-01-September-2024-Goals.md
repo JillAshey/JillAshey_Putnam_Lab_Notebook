@@ -180,7 +180,22 @@ September 2024 goals and daily notebook entries.
 - QCed Mcap seq data 
 - Jackie meeting 
 
+### 20240920 
 
+- Looking at e5 ncRNA stuff 
+- DIBP 
+- e5 meeting 
+- Worked on e5 ncRNA paper 
+- Changed water out for larvae in plates 1+2 and added substrate for larvae in plates 3+4
+- Colloquium 
+
+### 20240921
+
+- Water change for larvae 
+
+### 20240922
+
+- Water change for larvae 
 
 to do for e5 
 
