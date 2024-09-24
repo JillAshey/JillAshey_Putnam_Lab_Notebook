@@ -197,6 +197,14 @@ September 2024 goals and daily notebook entries.
 
 - Water change for larvae 
 
+### 20240923
+
+- Re-Qubit for e5 DNA 
+- Aquarium room stuff 
+- Looking at e5 DNA timeseries stuff 
+- Lab meeting 
+- Remaking e5 figs 
+
 to do for e5 
 
 - think about deep dive methylation stuff - do we sequence? try PCR adapter cleanup and re-extracting with less input 
