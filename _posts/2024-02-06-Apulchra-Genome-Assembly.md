@@ -4655,3 +4655,133 @@ conda deactivate
 ```
 
 Submitted batch job 338456. Hmm got the same error as above...so maybe an installation error?
+
+### 20240924 
+
+PacBio responded with very helpful info about methylation analysis. They recommended that I: 
+
+- Align sequences to reference genome with [pbmm2](https://github.com/PacificBiosciences/pbmm2), a minimap2 SMRT wrapper specifically for PacBio data. 
+- Use the aligned bam file as input for [pb-CpG-tools](https://github.com/PacificBiosciences/pb-CpG-tools?tab=readme-ov-file) which generates site methylation probabilities for hifi reads 
+- Use pb-CpG-tools output as input for [MethBat](https://github.com/PacificBiosciences/MethBat/tree/main)
+
+I do not need to run ccs-bystrandify or jasmine because the 5mC calling takes place on the instrument, so MM and ML tags should already be included with the data. Let's install pbmm2 via [PacBio conda instructions](https://github.com/PacificBiosciences/pbbioconda?tab=readme-ov-file). 
+
+```
+cd /data/putnamlab/conda
+module load Miniconda3/4.9.2
+conda create --prefix /data/putnamlab/conda/pbmm2
+
+conda activate /data/putnamlab/conda/pbmm2
+conda install -c bioconda pbmm2
+conda deactivate 
+```
+
+The pbmm2 documentation says to align the bam file to the reference genome. But I just created the reference genome from these reads...I guess I will use the new reference genome? I am going to used the unmasked version that is in my folder. In the `/data/putnamlab/jillashey/Apul_Genome/assembly/scripts` folder: `nano pbmm2_index.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+conda activate /data/putnamlab/conda/pbmm2
+
+echo "Indexing reference genome" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+pbmm2 index apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.fa apul_ref_out.mmi --preset CCS
+
+echo "Index of ref genome complete" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 339851. Took about 15 seconds yay. Now let's align the raw bam file to the index. I could align either a fasta or bam file to the reference. I'm going to start with the raw bam file. This file does not have any contaminants removed or is assembled in any way. `nano pbmm2_align.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/assembly/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+conda activate /data/putnamlab/conda/pbmm2
+
+echo "Aligning raw bam" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/assembly/data
+
+pbmm2 align apul_ref_out.mmi m84100_240128_024355_s2.hifi_reads.bc1029.bam out.aligned.bam --sort --preset HIFI
+
+echo "Alignment complete" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 339861. Currently pending because it needs resources. While I wait, I'm going to install the other pacbio packages for methylation analysis. For the [pb-CpG-tools](https://github.com/PacificBiosciences/pb-CpG-tools?tab=readme-ov-file), I need to download the release from github and unpack. 
+
+```
+cd /data/putnamlab/conda
+
+wget https://github.com/PacificBiosciences/pb-CpG-tools/releases/download/v2.3.2/pb-CpG-tools-v2.3.2-x86_64-unknown-linux-gnu.tar.gz
+tar -xzf pb-CpG-tools-v2.3.2-x86_64-unknown-linux-gnu.tar.gz
+
+# Run help option to test binary and see latest usage details:
+pb-CpG-tools-v2.3.2-x86_64-unknown-linux-gnu/bin/aligned_bam_to_cpg_scores --help
+```
+
+Great, that was super easy. Install [MethBat](https://github.com/PacificBiosciences/MethBat/blob/main/docs/install.md) with conda 
+
+```
+cd /data/putnamlab/conda
+module load Miniconda3/4.9.2
+conda create --prefix /data/putnamlab/conda/methbat
+
+conda activate /data/putnamlab/conda/methbat
+conda install -c bioconda methbat
+conda deactivate 
+```
+
+Success! And alignment is currently running. Ran in about 4 hours. Run pb-CpG-tools to assess methylation site probabilities at CpG sites. In the `/data/putnamlab/jillashey/Apul_Genome/methylation/scripts` folder: `nano pb_cpg_probs.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/methylation/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Using aligned bam to generate cpg probabilities" $(date)
+
+cd /data/putnamlab/jillashey/Apul_Genome/methylation/data
+
+/data/putnamlab/conda/pb-CpG-tools-v2.3.2-x86_64-unknown-linux-gnu/bin/aligned_bam_to_cpg_scores \
+  --bam /data/putnamlab/jillashey/Apul_Genome/assembly/data/out.aligned.bam \
+  --output-prefix Apul.pbmm2 \
+  --model /data/putnamlab/conda/pb-CpG-tools-v2.3.2-x86_64-unknown-linux-gnu/models/pileup_calling_model.v1.tflite \
+  --threads 10
+
+echo "cpg probability prediction complete!" $(date)
+```
+
+Submitted batch job 339998

@@ -205,6 +205,26 @@ September 2024 goals and daily notebook entries.
 - Lab meeting 
 - Remaking e5 figs 
 
+### 20240923
+
+- Remaking e5 figs 
+- Emails + admin stuff 
+- Submitted Mote app
+- Looking at PacBio methylation info + downloading bunch of pb tools to andromeda 
+- Aligning pacbio bam to reference for meth analysis 
+
+
+to do tomorrow 9/25
+
+- Email refs to let them know re mote app
+- Find shield tubes 
+- Read chloe app
+- QC mcap data 
+- extractions? 
+
+
+
+
 to do for e5 
 
 - think about deep dive methylation stuff - do we sequence? try PCR adapter cleanup and re-extracting with less input 
