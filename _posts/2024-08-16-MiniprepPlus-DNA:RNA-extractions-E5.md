@@ -4,7 +4,7 @@ title: MiniPrep Plus DNA/RNA extractions
 date: '2024-08-05'
 categories:
 tags: [DNA, RNA, Extractions, Protocols]
-projects: Mcap developmental time series 
+projects: e5
 ---
 
 # Extractions for e5 time series 

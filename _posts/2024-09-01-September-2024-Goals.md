@@ -220,11 +220,16 @@ September 2024 goals and daily notebook entries.
 - Read Chloe GRFP app 
 - Looking at cpg-tools output for Apul
 
+### 20240926
+
+- QC DNA 
+- Methods and results for Apul methylation
+
+
 
 to do tomorrow 9/26
 
 - QC mcap data 
-- QC DNA 
 
 
 
