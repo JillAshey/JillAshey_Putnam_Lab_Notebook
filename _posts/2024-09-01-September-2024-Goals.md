@@ -224,6 +224,7 @@ September 2024 goals and daily notebook entries.
 
 - QC DNA 
 - Methods and results for Apul methylation
+- Notebook post for extractions 
 
 
 
