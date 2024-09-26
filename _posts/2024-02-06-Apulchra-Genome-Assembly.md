@@ -4785,3 +4785,49 @@ echo "cpg probability prediction complete!" $(date)
 ```
 
 Submitted batch job 339998
+
+### 20240925
+
+The [pb-CpG-tools](https://github.com/PacificBiosciences/pb-CpG-tools?tab=readme-ov-file) has information on the output. Let's look at the beginning of the bed file: 
+
+```
+head Apul.pbmm2.combined.bed 
+ntLink_7	3388	3389	15.0	Total	4	0	4	0.0
+ntLink_7	3395	3396	8.5	Total	4	0	4	0.0
+ntLink_7	3431	3432	3.7	Total	5	0	5	0.0
+ntLink_7	3467	3468	4.8	Total	5	0	5	0.0
+ntLink_7	3507	3508	4.6	Total	5	0	5	0.0
+ntLink_7	3512	3513	5.4	Total	5	0	5	0.0
+ntLink_7	3536	3537	3.9	Total	5	0	5	0.0
+ntLink_7	3546	3547	4.8	Total	5	0	5	0.0
+ntLink_7	3552	3553	7.5	Total	5	0	5	0.0
+ntLink_7	3607	3608	4.8	Total	5	0	5	0.0
+
+tail Apul.pbmm2.combined.bed 
+ptg000187l	16593	16594	73.4	Total	49	36	13	73.5
+ptg000187l	16671	16672	93.8	Total	46	44	2	95.7
+ptg000187l	16890	16891	92.0	Total	42	39	3	92.9
+ptg000187l	16922	16923	89.6	Total	40	36	4	90.0
+ptg000187l	17047	17048	76.1	Total	32	25	7	78.1
+ptg000187l	17119	17120	95.4	Total	31	30	1	96.8
+ptg000187l	17700	17701	94.5	Total	15	15	0	100.0
+ptg000187l	17752	17753	89.9	Total	14	13	1	92.9
+ptg000187l	17764	17765	91.4	Total	14	13	1	92.9
+ptg000187l	17889	17890	79.8	Total	10	8	2	80.0
+```
+
+Columns
+
+1. Reference name - contig name from reference genome (I used the genome that I assembled)
+2. Start coordinate
+3. End coordinate 
+4. Modification score - modification probability score or the likelihood that the cytosine in the CpG site is methylated. Higher score = higher likelihood of methylation at that site 
+5. Haplotype - total, probabilities combined across all reads 
+6. Coverage - number of reads covering CpG site 
+7. Estimated modified site count - number of CpG sites estimated to be methylated 
+8. Estimated unmodified site count - number of CpG sites estimated to be unmethylated 
+9. Discretized modification probability - ratio of modified to unmodified sites, indicating the confidence that the site is methylated (ie modified) or unmethylated 
+
+We are interested in the modification score, which ranges from 0 to 100, with 0 being unmethylated and 100 being fully methylated. Scores that range from 20-90 are considered partially methylated and may be areas of active gene expression or transcriptional plasticity. 
+
+THIS IS SO COOL!!!!!!
