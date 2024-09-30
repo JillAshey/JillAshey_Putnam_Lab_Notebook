@@ -561,4 +561,76 @@ b28bdacd246571e26e248c858c07721d  88_RNAseq_S48_R1_001.fastq.gz
 f458050f088dcfda08219a4773f21092  8_small_RNA_S3_R2_001.fastq.gz
 ```
 
+### 20240926 
 
+nano fastqc_RNAseq_raw.sh
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/scripts            
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+echo "Start fastqc" $(date)
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/data/raw
+
+for file in *fastq.gz
+do 
+fastqc $file
+done
+
+echo "Fastqc complete, start multiqc" $(date)
+
+multiqc *
+
+echo "multiqc complete!" $(date)
+```
+
+Submitted batch job 340171
+
+nano fastqc_smallRNAseq_raw.sh
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts            
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+echo "Start fastqc" $(date)
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw
+
+for file in *fastq.gz
+do 
+fastqc $file
+done
+
+echo "Fastqc complete, start multiqc" $(date)
+
+multiqc *
+
+echo "multiqc complete!" $(date)
+```
+
+Submitted batch job 340170

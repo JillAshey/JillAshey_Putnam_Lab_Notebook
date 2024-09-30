@@ -225,15 +225,47 @@ September 2024 goals and daily notebook entries.
 - QC DNA 
 - Methods and results for Apul methylation
 - Notebook post for extractions 
-
-
-
-to do tomorrow 9/26
-
+- PacBio methylation meeting 
 - QC mcap data 
 
+### 20240930 
 
+- Aquarium room stuff 
+- Lab meeting 
+- Looked at Mcap QC 
+- Prep for e5 writing retreat 
+- Apul methylation + gene intersect 
+- Outline for lab meeting next week 
 
-to do for e5 
+## September reflection
 
-- think about deep dive methylation stuff - do we sequence? try PCR adapter cleanup and re-extracting with less input 
+How did I do with my goals for this month? 
+
+### Writing and manuscripts 
+
+1. Dissertation proposal submission to grad school - nope, on Hollie's desk
+2. IDP + plan outline - yes kinda. No plan outline but have some rough dates
+3. Post doc fellowship apps - no lol. Probably wont apply this cycle because I am overwhelmed
+4. e5 ncRNA complete draft - kinda? Basically there 
+5. Pacuta manuscript submission - nope but getting close 
+
+### Data analysis
+
+1. 3'UTR for AST 2021 (GENE EXT) and rerun miRanda with that info - nope. tried to install but lots of fails. May just have zoe run it 
+2. Apul methylation w/ pacbio tools - yes!!! 
+3. Compiling all phys stuff for AST 2021 - nope
+
+### Sample processing
+
+1. Re-amp 6 WGBS e5 deep dive samples - kinda. I have done some troubleshooting but will figure out how to move forward next week
+2. Phys stuff for AST and Mcap DT - nope
+3. Find and send DNA for e5 samples - kinda? Did some re-extractions on POR samples, now need to decide how to move forward 
+4. Metabolomics test samples for e5 time series - yes 
+
+### Field work / travel 
+
+1. Figure out travel for cbass workshop - yes, flights booked 
+2. Apply for travel $$$ for cbass workshop - application in the works
+3. Apply for travel $$$ for sicb - yes 
+
+I got a lot of writing done this month! Several manuscripts are close to submission. I'm also happy that the methylation for the Apul genome is complete. 

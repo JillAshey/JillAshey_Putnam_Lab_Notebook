@@ -4831,3 +4831,79 @@ Columns
 We are interested in the modification score, which ranges from 0 to 100, with 0 being unmethylated and 100 being fully methylated. Scores that range from 20-90 are considered partially methylated and may be areas of active gene expression or transcriptional plasticity. 
 
 THIS IS SO COOL!!!!!!
+
+### 20240930 
+
+I am now interested in the overlap of the CpGs with genomic features. Trinity provided me with the path that I can use for the Apul gff: `/data/putnamlab/tconn/predict_results/Acropora_pulchra.gff3`. Going to use bedtools intersect to find intersections of genes and CpGs. 
+
+```
+cd /data/putnamlab/tconn/predict_results
+
+head Acropora_pulchra.gff3 
+##gff-version 3
+ntLink_0	funannotate	gene	1105	7056	.	+	.	ID=FUN_000001;
+ntLink_0	funannotate	mRNA	1105	7056	.	+	.	ID=FUN_000001-T1;Parent=FUN_000001;product=hypothetical protein;
+ntLink_0	funannotate	exon	1105	1188	.	+	.	ID=FUN_000001-T1.exon1;Parent=FUN_000001-T1;
+ntLink_0	funannotate	exon	1861	1941	.	+	.	ID=FUN_000001-T1.exon2;Parent=FUN_000001-T1;
+ntLink_0	funannotate	exon	2762	2839	.	+	.	ID=FUN_000001-T1.exon3;Parent=FUN_000001-T1;
+ntLink_0	funannotate	exon	5044	7056	.	+	.	ID=FUN_000001-T1.exon4;Parent=FUN_000001-T1;
+ntLink_0	funannotate	CDS	1105	1188	.	+	0	ID=FUN_000001-T1.cds;Parent=FUN_000001-T1;
+ntLink_0	funannotate	CDS	1861	1941	.	+	0	ID=FUN_000001-T1.cds;Parent=FUN_000001-T1;
+ntLink_0	funannotate	CDS	2762	2839	.	+	0	ID=FUN_000001-T1.cds;Parent=FUN_000001-T1;
+```
+
+Look for intersects in methylation data and gff
+
+```
+cd /data/putnamlab/jillashey/Apul_Genome/methylation/data
+
+interactive
+module load BEDTools/2.30.0-GCC-11.3.0
+
+bedtools intersect -a Apul.pbmm2.combined.bed -b /data/putnamlab/tconn/predict_results/Acropora_pulchra.gff3 -wa -wb > Apul_methylation_genome_intersect.bed
+
+head Apul_methylation_genome_intersect.bed 
+ntLink_7	3388	3389	15.0	Total	4	0	4	0.0	ntLink_7	funannotate	gene	79	4679	.	+	.	ID=FUN_002303;
+ntLink_7	3388	3389	15.0	Total	4	0	4	0.0	ntLink_7	funannotate	mRNA	79	4679	.	+	.	ID=FUN_002303-T1;Parent=FUN_002303;product=hypothetical protein;
+ntLink_7	3395	3396	8.5	Total	4	0	4	0.0	ntLink_7	funannotate	gene	79	4679	.	+	.	ID=FUN_002303;
+ntLink_7	3395	3396	8.5	Total	4	0	4	0.0	ntLink_7	funannotate	mRNA	79	4679	.	+	.	ID=FUN_002303-T1;Parent=FUN_002303;product=hypothetical protein;
+ntLink_7	3431	3432	3.7	Total	5	0	5	0.0	ntLink_7	funannotate	gene	79	4679	.	+	.	ID=FUN_002303;
+ntLink_7	3431	3432	3.7	Total	5	0	5	0.0	ntLink_7	funannotate	mRNA	79	4679	.	+	.	ID=FUN_002303-T1;Parent=FUN_002303;product=hypothetical protein;
+ntLink_7	3467	3468	4.8	Total	5	0	5	0.0	ntLink_7	funannotate	gene	79	4679	.	+	.	ID=FUN_002303;
+ntLink_7	3467	3468	4.8	Total	5	0	5	0.0	ntLink_7	funannotate	mRNA	79	4679	.	+	.	ID=FUN_002303-T1;Parent=FUN_002303;product=hypothetical protein;
+ntLink_7	3507	3508	4.6	Total	5	0	5	0.0	ntLink_7	funannotate	gene	79	4679	.	+	.	ID=FUN_002303;
+ntLink_7	3507	3508	4.6	Total	5	0	5	0.0	ntLink_7	funannotate	mRNA	79	4679	.	+	.	ID=FUN_002303-T1;Parent=FUN_002303;product=hypothetical protein;
+
+wc -l Apul_methylation_genome_intersect.bed 
+15564554 Apul_methylation_genome_intersect.bed
+```
+
+Select genes only 
+
+```
+grep -w "gene" Apul_methylation_genome_intersect.bed > Apul_methylation_gene_only_intersect.bed
+
+wc -l Apul_methylation_gene_only_intersect.bed 
+6246019 Apul_methylation_gene_only_intersect.bed
+```
+
+Count number of genes in genome 
+
+```
+cd /data/putnamlab/tconn/predict_results
+
+awk '$3 == "gene"' Acropora_pulchra.gff3 | wc -l
+44371
+
+cut -f 3 Acropora_pulchra.gff3 | sort | uniq
+CDS
+exon
+gene
+mRNA
+tRNA
+```
+
+
+
+
+for reference: https://github.com/hputnam/Meth_Compare?tab=readme-ov-file
