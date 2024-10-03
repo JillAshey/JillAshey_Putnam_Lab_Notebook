@@ -20,6 +20,20 @@ cd mirna_seqs
 
 ### Apul
 
+Since the Apul genome is assembled and the annotation is finishing up, the rest of e5 data analysis will proceed with the Apul genome instead of the Amil genome. Therefore, I need to identify the 3'UTR ends because that is what miranda requires to run. 
+
+
+
+
+
+
+
+
+
+
+
+REDO WITH APULCHRA GENOME 
+
 To run miranda, I need to identify the 3' UTR ends. 
 
 First, identify counts of each feature from gff file 
@@ -115,7 +129,9 @@ sortBed -faidx amil.Chromosome_names.txt -i amil_GFFannotation.contig.gff > amil
 echo "Sorting complete!" $(date)
 ```
 
-Submitted batch job 323530. Ran super fast! Now use bedtools `flank` and `subtract`. Flank will extract the 3' UTRs and subtract will remove any 3' UTR regions that overlap with known genes in the genome. Javi used 2kb and 3kb as his cutoffs (ie he extracted the flanks that were 2000 and 3000 bp around his gene of interest). In his actual analysis, he used 3kb. I'm going to use 3kb for now, but may have to redo with a different number. In the e5 scripts folder: `nano flank_sub_bed.sh`
+Submitted batch job 323530. Ran super fast! Now use bedtools `flank` and `subtract`. Flank will extract the 3' UTRs and subtract will remove any 3' UTR regions that overlap with known genes in the genome. Javi used 2kb and 3kb as his cutoffs (ie he extracted the flanks that were 2000 and 3000 bp around his gene of interest). In his actual analysis, he used 3kb. In [Trigg et al. 2021](https://onlinelibrary.wiley.com/doi/10.1111/1755-0998.13542), they used 1kb for 'flank regions'. I initially ran with 3kb, but going to redo with 1kb.
+
+In the e5 scripts folder: `nano flank_sub_bed.sh`
 
 ```
 #!/bin/bash 
@@ -134,25 +150,25 @@ module load BEDTools/2.30.0-GCC-11.3.0
 
 cd /data/putnamlab/jillashey/genome/Amil_v2.01
 
-echo "Extracting 3kb 3' UTRs" $(date)
+echo "Extracting 1kb 3' UTRs" $(date)
 
-bedtools flank -i amil_GFFannotation.gene_sorted.gff -g amil.Chromosome_lenghts.txt -l 0 -r 3000 -s | awk '{gsub("gene","3prime_UTR",$3); print $0 }' | awk '{if($5-$4 > 3)print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' | tr ' ' '\t' > amil.GFFannotation.3UTR_3kb.gff
+bedtools flank -i amil_GFFannotation.gene_sorted.gff -g amil.Chromosome_lenghts.txt -l 0 -r 1000 -s | awk '{gsub("gene","3prime_UTR",$3); print $0 }' | awk '{if($5-$4 > 3)print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' | tr ' ' '\t' > amil.GFFannotation.3UTR_1kb.gff
 
 echo "Subtract portions of UTRs that overlap nearby genes" $(date)
 
-bedtools subtract -a amil.GFFannotation.3UTR_3kb.gff -b amil_GFFannotation.gene_sorted.gff > amil.GFFannotation.3UTR_3kb_corrected.gff 
+bedtools subtract -a amil.GFFannotation.3UTR_1kb.gff -b amil_GFFannotation.gene_sorted.gff > amil.GFFannotation.3UTR_1kb_corrected.gff 
 
 echo "3' UTRs identified!" $(date)
 ```
 
-Submitted batch job 323531. Again, ran super fast. 
+Submitted batch job 340832. Again, ran super fast. 
 
 ```
-wc -l amil.GFFannotation.3UTR_3kb_corrected.gff
-48393 amil.GFFannotation.3UTR_3kb_corrected.gff
+wc -l amil.GFFannotation.3UTR_1kb_corrected.gff
+38239 amil.GFFannotation.3UTR_1kb_corrected.gff
 ```
 
-About 48,000 3' UTRs. Using bedtools, obtain a fasta file for the 3' UTRs. In the e5 scripts folder: `nano bed_getfasta_3UTR.sh`
+About 38,000 3' UTRs. Using bedtools, obtain a fasta file for the 3' UTRs. In the e5 scripts folder: `nano bed_getfasta_3UTR.sh`
 
 ```
 #!/bin/bash 
@@ -393,24 +409,24 @@ sortBed -faidx peve.Chromosome_names.txt -i peve_GFFannotation.UTR.gff > peve_GF
 
 echo "Sorting complete!" $(date)
 
-echo "Extracting 3kb 3' UTRs" $(date)
+echo "Extracting 1kb 3' UTRs" $(date)
 
-bedtools flank -i peve_GFFannotation.mRNA_sorted.gff -g peve.Chromosome_lenghts.txt -l 0 -r 3000 -s | awk '{gsub("gene","3prime_UTR",$3); print $0 }' | awk '{if($5-$4 > 3)print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' | tr ' ' '\t' > peve.GFFannotation.3UTR_3kb.gff
+bedtools flank -i peve_GFFannotation.mRNA_sorted.gff -g peve.Chromosome_lenghts.txt -l 0 -r 1000 -s | awk '{gsub("gene","3prime_UTR",$3); print $0 }' | awk '{if($5-$4 > 3)print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' | tr ' ' '\t' > peve.GFFannotation.3UTR_1kb.gff
 
 echo "Subtract portions of UTRs that overlap nearby genes" $(date)
 
-bedtools subtract -a peve.GFFannotation.3UTR_3kb.gff -b peve_GFFannotation.mRNA_sorted.gff > peve.GFFannotation.3UTR_3kb_corrected.gff 
+bedtools subtract -a peve.GFFannotation.3UTR_1kb.gff -b peve_GFFannotation.mRNA_sorted.gff > peve.GFFannotation.3UTR_1kb_corrected.gff 
 
 echo "3' UTRs identified!" $(date)
 
 echo "Extracting 3' UTR sequences" $(date)
 
-bedtools getfasta -fi Porites_evermanni_v1.fa -bed peve.GFFannotation.3UTR_3kb_corrected.gff -fo peve_3UTR_3kb.fasta -fullHeader
+bedtools getfasta -fi Porites_evermanni_v1.fa -bed peve.GFFannotation.3UTR_1kb_corrected.gff -fo peve_3UTR_1kb.fasta -fullHeader
 
 echo "Sequence extraction complete!" $(date)
 ```
 
-Submitted batch job 323539. Done! Now run miranda for the Peve data. In the scripts folder: `nano miranda_strict_all_peve.sh`
+Submitted batch job 340834. Done! Now run miranda for the Peve data. In the scripts folder: `nano miranda_strict_all_1kb_peve.sh`
 
 ```
 #!/bin/bash -i
@@ -430,24 +446,24 @@ echo "PEVE starting miranda run with all genes and miRNAs with score cutoff >100
 module load Miniconda3/4.9.2
 conda activate /data/putnamlab/conda/miranda 
 
-miranda /data/putnamlab/jillashey/e5/mirna_seqs/Peve_results_mature_named.fasta /data/putnamlab/jillashey/genome/Peve/peve_3UTR_3kb.fasta -sc 100 -en -10 -strict -out /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_peve.tab
+miranda /data/putnamlab/jillashey/e5/mirna_seqs/Peve_results_mature_named.fasta /data/putnamlab/jillashey/genome/Peve/peve_3UTR_1kb.fasta -sc 100 -en -10 -strict -out /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_peve.tab
 
 conda deactivate
 
 echo "miranda run finished!"$(date)
 echo "counting number of putative interactions predicted" $(date)
 
-zgrep -c "Performing Scan" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_peve.tab
+zgrep -c "Performing Scan" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_peve.tab
 
 echo "Parsing output" $(date)
-grep -A 1 "Scores for this hit:" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_peve.tab | sort | grep '>' > /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_parsed_peve.txt
+grep -A 1 "Scores for this hit:" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_peve.tab | sort | grep '>' > /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_parsed_peve.txt
 
 echo "counting number of putative interactions predicted" $(date)
-wc -l /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_parsed_peve.txt
+wc -l /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_parsed_peve.txt
 
 echo "PEVE miranda script complete" $(date)
 ```
 
-Submitted batch job 323540
+Submitted batch job 340835
 
 
