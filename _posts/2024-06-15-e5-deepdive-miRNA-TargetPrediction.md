@@ -22,81 +22,44 @@ cd mirna_seqs
 
 Since the Apul genome is assembled and the annotation is finishing up, the rest of e5 data analysis will proceed with the Apul genome instead of the Amil genome. Therefore, I need to identify the 3'UTR ends because that is what miranda requires to run. 
 
-
-
-
-
-
-
-
-
-
-
-REDO WITH APULCHRA GENOME 
-
-To run miranda, I need to identify the 3' UTR ends. 
-
-First, identify counts of each feature from gff file 
+Identify the counts of each feature from the gff file 
 
 ```
-GFF_FILE="/data/putnamlab/jillashey/genome/Amil_v2.01/Amil.all.maker.noseq.gff"
-genome="/data/putnamlab/jillashey/genome/Amil_v2.01/Amil.v2.01.chrs.fasta"
+cd /data/putnamlab/jillashey/e5/refs
 
-grep -v '^#' ${GFF_FILE} | cut -s -f 3 | sort | uniq -c | sort -rn > all_features.txt
+GFF_FILE="/data/putnamlab/tconn/predict_results/Acropora_pulchra.gff3"
+genome="/data/putnamlab/REFS/Apul/apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.masked.fa"
 
-1572090 match_part
- 558048 match
- 201232 exon
- 176923 CDS
-  88262 expressed_sequence_match
-  84724 protein_match
-  38247 gene
-  28188 mRNA
-  19507 three_prime_UTR
-  15776 five_prime_UTR
-  10059 tRNA
-    854 contig
+grep -v '^#' ${GFF_FILE} | cut -s -f 3 | sort | uniq -c | sort -rn > all_features_apul.txt
+
+ 209537 exon
+ 201613 CDS
+  44371 gene
+  36447 mRNA
+   7924 tRNA
 ```
 
-There are a decent amount of three prime UTRs annotated in the Amil gff. Calculate the length of the 3' UTRs. 
+No UTRs annotated. This is expected, as Trinity is still finishing up the Apul genome annotation. Extract gene as a feature types and generate individual gff for the gene feature. The mRNA feature will be used to as a spatial reference to create 3'UTRs. Gene will not be used because the genes also code for tRNAs. 
 
 ```
-awk '$3 == "three_prime_UTR" {print $0, $5 - $4 + 1}' OFS="\t" Amil.all.maker.noseq.gff > three_prime_UTR_lengths.txt
-
-awk '{sum += $NF} END {if (NR > 0) print sum / NR}' three_prime_UTR_lengths.txt
+grep $'\tmRNA\t' ${GFF_FILE} > apul_GFFannotation.mRNA.gff
 ```
 
-Average length of 3' UTRs is 424.277. Extract feature types and generate individual gffs for each feature. 
-
+Extract scaffold lengths
 ```
-grep $'\texon\t' ${GFF_FILE} > amil_GFFannotation.exon.gff
-grep $'\tCDS\t' ${GFF_FILE} > amil_GFFannotation.CDS.gff
-grep $'\t expressed_sequence_match\t' ${GFF_FILE} > amil_GFFannotation.expressed_sequence_match.gff
-grep $'\tprotein_match\t' ${GFF_FILE} > amil_GFFannotation.protein_match.gff
-grep $'\tgene\t' ${GFF_FILE} > amil_GFFannotation.gene.gff
-grep $'\tmRNA\t' ${GFF_FILE} > amil_GFFannotation.mRNA.gff
-grep $'\tthree_prime_UTR\t' ${GFF_FILE} > amil_GFFannotation.three_prime_UTR.gff
-grep $'\tfive_prime_UTR\t' ${GFF_FILE} > amil_GFFannotation.five_prime_UTR.gff
-grep $'\ttRNA\t' ${GFF_FILE} > amil_GFFannotation.tRNA.gff
-grep $'\tcontig\t' ${GFF_FILE} > amil_GFFannotation.contig.gff
-```
+cat is ${genome} | awk '$0 ~ ">" {if (NR > 1) {print c;} c=0;printf substr($0,2,100) "\t"; } $0 !~ ">" {c+=length($0);} END { print c; }' > apul.Chromosome_lenghts.txt
 
-Extract chromosome lengths 
-
-```
-cat is ${genome} | awk '$0 ~ ">" {if (NR > 1) {print c;} c=0;printf substr($0,2,100) "\t"; } $0 !~ ">" {c+=length($0);} END { print c; }' > amil.Chromosome_lenghts.txt
-
-wc -l amil.Chromosome_lenghts.txt 
-854 amil.Chromosome_lenghts.txt
+wc -l apul.Chromosome_lenghts.txt 
+174 apul.Chromosome_lenghts.txt
 ```
 
 Extract scaffold names 
 
 ```
-awk -F" " '{print $1}' amil.Chromosome_lenghts.txt > amil.Chromosome_names.txt
+awk -F" " '{print $1}' apul.Chromosome_lenghts.txt > apul.Chromosome_names.txt
 ```
 
-Sort gffs by chromosome name. In the the e5 scripts folder: `nano bed_sort.sh`
+The following script will sort the mRNA gff, extract 1kb down the 3' end of mRNA, subtract portions of the 1kb flank (representing the 3'UTR) from any overlapping mRNA, and make fasta file of the 3'UTRs. In the e5 scripts folder: `nano bed_apul.sh`
 
 ```
 #!/bin/bash 
@@ -113,92 +76,42 @@ Sort gffs by chromosome name. In the the e5 scripts folder: `nano bed_sort.sh`
 
 module load BEDTools/2.30.0-GCC-11.3.0
 
-cd /data/putnamlab/jillashey/genome/Amil_v2.01
+cd /data/putnamlab/jillashey/e5/refs
 
 echo "Sorting gffs by chromosome" $(date)
 
-sortBed -faidx amil.Chromosome_names.txt -i amil_GFFannotation.exon.gff > amil_GFFannotation.exon_sorted.gff
-sortBed -faidx amil.Chromosome_names.txt -i amil_GFFannotation.CDS.gff > amil_GFFannotation.CDS_sorted.gff
-sortBed -faidx amil.Chromosome_names.txt -i amil_GFFannotation.gene.gff > amil_GFFannotation.gene_sorted.gff
-sortBed -faidx amil.Chromosome_names.txt -i amil_GFFannotation.mRNA.gff > amil_GFFannotation.mRNA_sorted.gff
-sortBed -faidx amil.Chromosome_names.txt -i amil_GFFannotation.three_prime_UTR.gff > amil_GFFannotation.three_prime_UTR_sorted.gff
-sortBed -faidx amil.Chromosome_names.txt -i amil_GFFannotation.five_prime_UTR.gff > amil_GFFannotation.five_prime_UTR_sorted.gff
-sortBed -faidx amil.Chromosome_names.txt -i amil_GFFannotation.tRNA.gff > amil_GFFannotation.tRNA_sorted.gff
-sortBed -faidx amil.Chromosome_names.txt -i amil_GFFannotation.contig.gff > amil_GFFannotation.contig_sorted.gff
+sortBed -faidx apul.Chromosome_names.txt -i apul_GFFannotation.mRNA.gff > apul_GFFannotation.mRNA_sorted.gff
 
 echo "Sorting complete!" $(date)
-```
-
-Submitted batch job 323530. Ran super fast! Now use bedtools `flank` and `subtract`. Flank will extract the 3' UTRs and subtract will remove any 3' UTR regions that overlap with known genes in the genome. Javi used 2kb and 3kb as his cutoffs (ie he extracted the flanks that were 2000 and 3000 bp around his gene of interest). In his actual analysis, he used 3kb. In [Trigg et al. 2021](https://onlinelibrary.wiley.com/doi/10.1111/1755-0998.13542), they used 1kb for 'flank regions'. I initially ran with 3kb, but going to redo with 1kb.
-
-In the e5 scripts folder: `nano flank_sub_bed.sh`
-
-```
-#!/bin/bash 
-#SBATCH -t 24:00:00
-#SBATCH --nodes=1 --ntasks-per-node=5
-#SBATCH --export=NONE
-#SBATCH --mem=250GB
-#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
-#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
-#SBATCH --account=putnamlab
-#SBATCH -D /data/putnamlab/jillashey/e5/scripts
-#SBATCH -o slurm-%j.out
-#SBATCH -e slurm-%j.error
-
-module load BEDTools/2.30.0-GCC-11.3.0
-
-cd /data/putnamlab/jillashey/genome/Amil_v2.01
 
 echo "Extracting 1kb 3' UTRs" $(date)
 
-bedtools flank -i amil_GFFannotation.gene_sorted.gff -g amil.Chromosome_lenghts.txt -l 0 -r 1000 -s | awk '{gsub("gene","3prime_UTR",$3); print $0 }' | awk '{if($5-$4 > 3)print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' | tr ' ' '\t' > amil.GFFannotation.3UTR_1kb.gff
+bedtools flank -i apul_GFFannotation.mRNA_sorted.gff -g apul.Chromosome_lenghts.txt -l 0 -r 1000 -s | awk '{gsub("gene","3prime_UTR",$3); print $0 }' | awk '{if($5-$4 > 3)print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' | tr ' ' '\t' > apul.GFFannotation.3UTR_1kb.gff
 
 echo "Subtract portions of UTRs that overlap nearby genes" $(date)
 
-bedtools subtract -a amil.GFFannotation.3UTR_1kb.gff -b amil_GFFannotation.gene_sorted.gff > amil.GFFannotation.3UTR_1kb_corrected.gff 
-
+bedtools subtract -a apul.GFFannotation.3UTR_1kb.gff -b apul_GFFannotation.mRNA_sorted.gff > apul.GFFannotation.3UTR_1kb_corrected.gff 
 echo "3' UTRs identified!" $(date)
-```
-
-Submitted batch job 340832. Again, ran super fast. 
-
-```
-wc -l amil.GFFannotation.3UTR_1kb_corrected.gff
-38239 amil.GFFannotation.3UTR_1kb_corrected.gff
-```
-
-About 38,000 3' UTRs. Using bedtools, obtain a fasta file for the 3' UTRs. In the e5 scripts folder: `nano bed_getfasta_3UTR.sh`
-
-```
-#!/bin/bash 
-#SBATCH -t 24:00:00
-#SBATCH --nodes=1 --ntasks-per-node=5
-#SBATCH --export=NONE
-#SBATCH --mem=250GB
-#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
-#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
-#SBATCH --account=putnamlab
-#SBATCH -D /data/putnamlab/jillashey/e5/scripts
-#SBATCH -o slurm-%j.out
-#SBATCH -e slurm-%j.error
-
-module load BEDTools/2.30.0-GCC-11.3.0
-
-cd /data/putnamlab/jillashey/genome/Amil_v2.01
 
 echo "Extracting 3' UTR sequences" $(date)
 
-bedtools getfasta -fi Amil.v2.01.chrs.fasta -bed amil.GFFannotation.3UTR_3kb_corrected.gff -fo amil_3UTR_3kb.fasta -fullHeader
+bedtools getfasta -fi /data/putnamlab/REFS/Apul/apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.masked.fa -bed apul.GFFannotation.3UTR_1kb_corrected.gff -fo apul_3UTR_1kb.fasta -fullHeader
 
 echo "Sequence extraction complete!" $(date)
 ```
 
-Submitted batch job 323533. Ran fast. Now miranda can be run! In the scripts folder: `nano miranda_strict_all_apul.sh`
+Submitted batch job 341153. Ran very fast. 
+
+```
+zgrep -c ">" apul_3UTR_1kb.fasta 
+37359
+```
+
+Time to run miranda for Apul. In the e5 scripts folder: `nano miranda_strict_all_1kb_apul.sh`
 
 ```
 #!/bin/bash -i
-#SBATCH -t 200:00:00
+#SBATCH -t 48:00:00
 #SBATCH --nodes=1 --ntasks-per-node=10
 #SBATCH --export=NONE
 #SBATCH --mem=500GB
@@ -209,130 +122,37 @@ Submitted batch job 323533. Ran fast. Now miranda can be run! In the scripts fol
 #SBATCH -o slurm-%j.out
 #SBATCH -e slurm-%j.error
 
-echo "APUL starting miranda run with all genes and miRNAs with score cutoff >100, energy cutoff <-10, and strict binding invoked"$(date)
+echo "Apul starting miranda run with all genes and miRNAs with score cutoff >100, energy cutoff <-10, and strict binding invoked"$(date)
 
 module load Miniconda3/4.9.2
 conda activate /data/putnamlab/conda/miranda 
 
-miranda /data/putnamlab/jillashey/e5/mirna_seqs/Apul_results_mature_named.fasta /data/putnamlab/jillashey/genome/Amil_v2.01/amil_3UTR_3kb.fasta -sc 100 -en -10 -strict -out /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_apul.tab
+miranda /data/putnamlab/jillashey/e5/mirna_seqs/Apul_results_mature_named.fasta /data/putnamlab/jillashey/e5/refs/apul_3UTR_1kb.fasta -sc 100 -en -10 -strict -out /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_apul.tab
 
 conda deactivate
 
 echo "miranda run finished!"$(date)
 echo "counting number of putative interactions predicted" $(date)
 
-zgrep -c "Performing Scan" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_apul.tab
+zgrep -c "Performing Scan" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_apul.tab
 
 echo "Parsing output" $(date)
-grep -A 1 "Scores for this hit:" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_apul.tab | sort | grep '>' > /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_parsed_apul.txt
+grep -A 1 "Scores for this hit:" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_apul.tab | sort | grep '>' > /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_parsed_apul.txt
 
 echo "counting number of putative interactions predicted" $(date)
-wc -l /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_parsed_apul.txt
+wc -l /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_parsed_apul.txt
 
-echo "APUL miranda script complete" $(date)
+echo "Apul miranda script complete" $(date)
 ```
 
-Submitted batch job 323536. Ran in about 4 hours. Convert 3' UTR fasta to bed file. 
+Submitted batch job 341156. Started running immediately. 
 
-```
-awk -F'[:-]' '/^>/ {chromosome=substr($1, 2); start=$2; end=$3; print chromosome "\t" start "\t" end}' amil_3UTR_3kb.fasta > amil_3UTR_3kb.bed
-```
 
-Run `closest` in bedtools to find the closest gene to the 3' UTRs that I created above. In the scripts folder: `nano bed_close_3UTR.sh`
 
-```
-#!/bin/bash 
-#SBATCH -t 24:00:00
-#SBATCH --nodes=1 --ntasks-per-node=1
-#SBATCH --export=NONE
-#SBATCH --mem=250GB
-#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
-#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
-#SBATCH --account=putnamlab
-#SBATCH -D /data/putnamlab/jillashey/e5/scripts
-#SBATCH -o slurm-%j.out
-#SBATCH -e slurm-%j.error
 
-module load BEDTools/2.30.0-GCC-11.3.0
 
-cd /data/putnamlab/jillashey/genome/Amil_v2.01
 
-echo "Finding closest gene to 3'UTR seqs " $(date)
 
-sort -k1,1 -k2,2n -o amil_3UTR_3kb_sorted.bed amil_3UTR_3kb.bed
-sort -k1,1 -k4,4n amil_GFFannotation.gene_sorted.gff > sorted_amil_GFFannotation.gene_sorted.gff
-
-bedtools closest -a amil_3UTR_3kb.bed -b amil_GFFannotation.gene_sorted.gff > closest_genes_3UTR_3kb_apul.txt
-
-echo "Complete!" $(date)
-```
-
-Submitted batch job 323636. Got an error message but output file still produced. 
-
-```
-wc -l closest_genes_3UTR_3kb_apul.txt
-73144 closest_genes_3UTR_3kb_apul.txt
-```
-
-Make ID column
-
-```
-awk 'BEGIN{FS=OFS="\t"} {split($NF, id, ";"); split(id[1], id_value, "="); $NF=id_value[2]; print $0, id_value[1]}' closest_genes_3UTR_3kb_apul.txt > modified_closest_genes_3UTR_3kb_apul.txt
-
-wc -l modified_closest_genes_3UTR_3kb_apul.txt
-73144 modified_closest_genes_3UTR_3kb_apul.txt
-
-head modified_closest_genes_3UTR_3kb_apul.txt
-chr1	48020	48410	chr1	maker	gene	15503	48020	.	+	.	Amillepora00001	ID
-chr1	48020	48410	chr1	maker	gene	48411	49719	.	-	.	Amillepora00002	ID
-chr1	48020	48410	chr1	maker	gene	15503	48020	.	+	.	Amillepora00001	ID
-chr1	48020	48410	chr1	maker	gene	48411	49719	.	-	.	Amillepora00002	ID
-chr1	49719	51020	chr1	maker	gene	48411	49719	.	-	.	Amillepora00002	ID
-chr1	52175	53065	chr1	maker	gene	53066	54685	.	+	.	Amillepora00003	ID
-chr1	54685	55175	chr1	maker	gene	53066	54685	.	+	.	Amillepora00003	ID
-chr1	54685	55175	chr1	maker	gene	55176	69114	.	-	.	Amillepora00004	ID
-chr1	54685	55175	chr1	maker	gene	53066	54685	.	+	.	Amillepora00003	ID
-chr1	54685	55175	chr1	maker	gene	55176	69114	.	-	.	Amillepora00004	ID
-```
-
-Remove duplicate rows
-
-```
-awk '!seen[$0]++' modified_closest_genes_3UTR_3kb_apul.txt > uniq_modified_closest_genes_3UTR_3kb_apul.txt
-
-wc -l uniq_modified_closest_genes_3UTR_3kb_apul.txt 
-48791 uniq_modified_closest_genes_3UTR_3kb_apul.txt
-
-head uniq_modified_closest_genes_3UTR_3kb_apul.txt 
-chr1	48020	48410	chr1	maker	gene	15503	48020	.	+	.	Amillepora00001	ID
-chr1	48020	48410	chr1	maker	gene	48411	49719	.	-	.	Amillepora00002	ID
-chr1	49719	51020	chr1	maker	gene	48411	49719	.	-	.	Amillepora00002	ID
-chr1	52175	53065	chr1	maker	gene	53066	54685	.	+	.	Amillepora00003	ID
-chr1	54685	55175	chr1	maker	gene	53066	54685	.	+	.	Amillepora00003	ID
-chr1	54685	55175	chr1	maker	gene	55176	69114	.	-	.	Amillepora00004	ID
-chr1	73239	76239	chr1	maker	gene	69380	73239	.	+	.	Amillepora00005	ID
-chr1	84565	87495	chr1	maker	gene	77282	84565	.	+	.	Amillepora00006	ID
-chr1	84565	87495	chr1	maker	gene	87496	87568	.	-	.	Amillepora00007	ID
-chr1	92360	95360	chr1	maker	gene	95361	108461	.	-	.	Amillepora00008	ID
-```
-
-Make new column so that the new column represents the file headers in apoc_3UTR.fasta. Ie the new column should look like this: chr1:17663-20663. 
-
-```
-awk '{print $1":"$2"-"$3, $0}' uniq_modified_closest_genes_3UTR_3kb_apul.txt > uniq_modified_closest_genes_3UTR_3kb_apul_3UTRid.txt
-
-head uniq_modified_closest_genes_3UTR_3kb_apul_3UTRid.txt 
-chr1:48020-48410 chr1	48020	48410	chr1	maker	gene	15503	48020	.	+	.	Amillepora00001	ID
-chr1:48020-48410 chr1	48020	48410	chr1	maker	gene	48411	49719	.	-	.	Amillepora00002	ID
-chr1:49719-51020 chr1	49719	51020	chr1	maker	gene	48411	49719	.	-	.	Amillepora00002	ID
-chr1:52175-53065 chr1	52175	53065	chr1	maker	gene	53066	54685	.	+	.	Amillepora00003	ID
-chr1:54685-55175 chr1	54685	55175	chr1	maker	gene	53066	54685	.	+	.	Amillepora00003	ID
-chr1:54685-55175 chr1	54685	55175	chr1	maker	gene	55176	69114	.	-	.	Amillepora00004	ID
-chr1:73239-76239 chr1	73239	76239	chr1	maker	gene	69380	73239	.	+	.	Amillepora00005	ID
-chr1:84565-87495 chr1	84565	87495	chr1	maker	gene	77282	84565	.	+	.	Amillepora00006	ID
-chr1:84565-87495 chr1	84565	87495	chr1	maker	gene	87496	87568	.	-	.	Amillepora00007	ID
-chr1:92360-95360 chr1	92360	95360	chr1	maker	gene	95361	108461	.	-	.	Amillepora00008	ID
-```
 
 ### Peve
 
@@ -367,7 +187,7 @@ grep $'\tmRNA\t' ${GFF_FILE} > peve_GFFannotation.mRNA.gff
 grep $'\tUTR\t' ${GFF_FILE} > peve_GFFannotation.UTR.gff
 ```
 
-Extract chromosome lengths 
+Extract scaffold lengths 
 
 ```
 cat is ${genome} | awk '$0 ~ ">" {if (NR > 1) {print c;} c=0;printf substr($0,2,100) "\t"; } $0 !~ ">" {c+=length($0);} END { print c; }' > peve.Chromosome_lenghts.txt
@@ -464,6 +284,23 @@ wc -l /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_parsed_
 echo "PEVE miranda script complete" $(date)
 ```
 
-Submitted batch job 340835
+Submitted batch job 340835. Ran in about 1.5 hours. 
+
+```
+head miranda_strict_all_1kb_parsed_peve.txt
+>peve-mir-100	Porites_evermani_scaffold_1005:62085-63085	144.00	-16.87	2 17	1 16	15	66.67%	73.33%
+>peve-mir-100	Porites_evermani_scaffold_100:97079-98079	140.00	-16.46	2 9	376 395	7	100.00%	100.00%
+>peve-mir-100	Porites_evermani_scaffold_101:185725-186725	142.00	-14.24	2 11	850 869	9	88.89%	88.89%
+>peve-mir-100	Porites_evermani_scaffold_1027:48934-49934	140.00	-17.00	2 9	543 562	7	100.00%	100.00%
+>peve-mir-100	Porites_evermani_scaffold_104:288813-289813	146.00	-19.73	2 19	931 947	17	70.59%	76.47%
+>peve-mir-100	Porites_evermani_scaffold_1047:141562-142562	142.00	-16.36	2 11	148 167	9	88.89%	88.89%
+>peve-mir-100	Porites_evermani_scaffold_1050:86266-86716	145.00	-16.55	2 10	333 352	8	100.00%	100.00%
+>peve-mir-100	Porites_evermani_scaffold_106:362578-363578	144.00	-17.12	2 15	221 239	13	76.92%	84.62%
+>peve-mir-100	Porites_evermani_scaffold_1066:63731-64731	150.00	-17.45	2 18	600 617	16	75.00%	81.25%
+>peve-mir-100	Porites_evermani_scaffold_1082:85736-86736	155.00	-21.77	2 16	964 983	14	78.57%	85.71%
+
+wc -l miranda_strict_all_1kb_parsed_peve.txt
+97782 miranda_strict_all_1kb_parsed_peve.txt
+``` 
 
 
