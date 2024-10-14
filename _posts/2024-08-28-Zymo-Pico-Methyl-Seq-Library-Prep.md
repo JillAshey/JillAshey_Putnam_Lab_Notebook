@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Pico Methyl-Seq library prep
-date: '2024-06-13'
+date: '2024-08-28'
 categories:
 tags: [DNA, Library prep, Protocols, WGBS]
 projects: e5
