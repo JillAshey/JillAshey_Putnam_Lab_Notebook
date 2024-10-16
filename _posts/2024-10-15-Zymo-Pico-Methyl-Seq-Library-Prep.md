@@ -7,7 +7,7 @@ tags: [DNA, Library prep, Protocols, WGBS]
 projects: e5
 ---
 
-# Pico Methy-Seq Library Prep test for E5 samples
+# Pico Methy-Seq Library Prep for E5 samples
 
 This post details the info about the WGBS library prep steps for the e5 deep dive samples collected in Moorea in 2020. The github for that project is linked [here](https://github.com/urol-e5/deep-dive). I'm using the [Zymo Pico Methyl Seq Library Prep](https://www.zymoresearch.com/products/pico-methyl-seq-library-prep-kit) for library prep (we have several kits with 25 preps). See Zymo's protocol [here](https://files.zymoresearch.com/protocols/_d5455_d5456_picomethylseq.pdf). 
 
