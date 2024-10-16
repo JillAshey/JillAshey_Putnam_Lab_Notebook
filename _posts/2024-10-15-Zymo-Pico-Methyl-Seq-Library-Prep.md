@@ -13,7 +13,7 @@ This post details the info about the WGBS library prep steps for the e5 deep div
 
 I prepped the 15 deep dive E5 samples in June 2024 (see [notebook post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-06-13-Zymo-Pico-Methyl-Seq-Library-Prep.md)) but 6 samples failed to amplify (3 *Pocillopora tuahiniensis* and 3 *Porites evermanni*). I re-tried the 6 samples that failed in August 2024 (see [notebook post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-08-07-Zymo-Pico-Methyl-Seq-Library-Prep.md)) but these failed as well. I got slight peaks for the POC samples but concentrations were low (<1ng/ul). I re-tried again with these samples in late August 2024 (see [notebook post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-08-28-Zymo-Pico-Methyl-Seq-Library-Prep.md)) but these failed once again, depsite increasing the number of cycles for POC samples and decreasing the DNA input amount for POR samples. 
 
-Going to retry one more time with these samples. For POC samples, I will increase the DNA input amount slightly (35-50ng) and increase the number of cycles to 15. For the POR samples, I will use the cleaned samples (see [notebook post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-10-14-Zymo-Cleanup-DNA-E5.md)) and keep the number of cycles the same (10). I am also running one of Zoe's samples from her LCM experiment. 
+Going to retry one more time with these samples. For POC samples, I will increase the DNA input amount slightly (35-50ng) and increase the number of cycles to 15. For the POR samples, I will use the cleaned samples (see [notebook post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-10-14-Zymo-Cleanup-DNA-E5.md)) and keep the number of cycles the same (10). I'm using extractions done by myself (9/25 date) and Kristina (2021 dates). I am also running one of Zoe's samples from her LCM experiment. 
 
 | Number | Species                  | Timepoint | Collection Date | Site  | colony_id | Extraction Date | Extraction notebook post                                                                                                                                                                                                                                     | DNA (ng/uL)     | Volume eluted (uL) | Total DNA (ng)  | Starting volume (uL) | Volume for DNA (uL) | Tris (uL) | DNA input amount (ng) |
 | ------ | ------------------------ | --------- | --------------- | ----- | --------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------- | ------------------ | --------------- | -------------------- | ------------------- | --------- | --------------------- |
@@ -36,9 +36,10 @@ Here's the Pico Methyl-Seq library prep workflow:
 
 I followed this [protocol](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-06-13-Zymo-Pico-Methyl-Seq-Library-Prep.md) with a few modifications: 
 
-- Section XXXXX
-
-
+- Section 1 - incubation with warmed DNA elubtion buffer shortened from 5 to 3 minutes. Emma reported that she typically got less out of the column if she did the full 5 minutes.
+- Section 3 - Incubation with warmed DNA elubtion buffer shortened from 5 to 2.5 minutes.
+- Section 4 - number of cycles for POC was 15; number of cycles for POR was 10.
+- Section 5 - incubation with warmed DNA elubtion buffer shortened from 5 to 2.5 minutes.
 
 ### QC
 
