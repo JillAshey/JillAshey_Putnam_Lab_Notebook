@@ -1,3 +1,11 @@
+
+Options for 3' UTR prediction 
+
+- Gene Ext (see [github](https://github.com/sebepedroslab/GeneExt))
+- Calling 1000 bases ahead of gene the UTR and making sure no gene overlap occurs 
+- Looking at other cnidarian species for 3' UTR lengths 
+
+
 On my local computer, make fasta file with the given miRNA names. 
 
 ```

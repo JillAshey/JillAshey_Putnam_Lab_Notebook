@@ -39,7 +39,7 @@ I have been doing the pico prep for 15 e5 deep dive samples and I want to sum up
 - [10/15/24](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-10-15-Zymo-Pico-Methyl-Seq-Library-Prep.md)
 	- Input amount: 50-60 ng for POC, 2-20 ng for POR
 	- Number of PCR cycles (Section 4): 15 for POC, 9 for POR
-	- Modifications: Different input amount for both species, changed number of cycles for POC. For POR, used extractions done by myself (on 9/25/24) and Kristina (in 2021)
+	- Modifications: Different input amount for both species, changed number of cycles for POC. For POR, used extractions done by myself (on 9/25/24) and Kristina (in 2021). Also cleaned the POR DNA before using a Zymo PCR adapter clean-up kit (see [post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-10-14-Zymo-Cleanup-DNA-E5.md))
 	- Successful libraries: none
 	- Failed libraries: 385 (POC), 393 (POC), 401 (POC), 421 (POR), 487 (POR), 489 (POR)
 	- [Tapestation results](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_Pico-2024-08-28.pdf)
