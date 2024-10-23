@@ -7472,12 +7472,7 @@ Still getting same error but now it seems to be in the correct location.
 Kevin Wong is also running into the same error when installing Gene Ext on Umiami server. Zoe did install Gene Ext successfully in June on Andromeda and Unity. Tried activating conda env in her folder on Andromeda: `/data/putnamlab/zdellaert/snRNA/programs/GeneExt` but do not have permissions. Asked her to run `chmod o+rwx /data/putnamlab/zdellaert/snRNA/programs/GeneEx`
 
 
-
-
-
-
-
- Let's see if it works now. 
+Let's see if it works now. 
 
 ```
 interactive
@@ -7488,7 +7483,16 @@ cd GeneExt/
 conda env create -n geneext -f environment.yaml
 ```
 
+### 20241023
 
+Hello world. Stuff still didnt work but Kevin got it to work on the UMiami server!!! He had to update numpy and pandas versions. See his post [here](https://github.com/kevinhwong1/KevinHWong_Notebook/blob/master/_posts/2024-09-10-Geneextend-on-scRNAseq-data.md). 
+
+Going to remove GeneExt and try to reinstall by updating the python package versions. 
+
+```
+module load Miniconda3/4.9.2
+conda activate /data/putnamlab/conda/GeneExt
+```
 
 
 

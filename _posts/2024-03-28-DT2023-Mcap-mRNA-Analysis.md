@@ -634,3 +634,64 @@ echo "multiqc complete!" $(date)
 ```
 
 Submitted batch job 340170
+
+
+### 20241023 
+
+Now that I have all my data and have QCed the data, I am going to trim. For the RNAseq data, there are definitely some batch effects between the sequencing runs. May need to remove the samples that were sequenced earlier (March 2024) downstream. 
+
+Trim using fastp. 
+
+```
+#!/bin/bash
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/scripts            
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+# Load modules 
+module load fastp/0.19.7-foss-2018b
+module load FastQC/0.11.8-Java-1.8
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/data/raw/
+
+echo "Count number of reads in each file" $(date)
+
+zgrep -c "@LH00" *.gz > raw_read_count.txt
+
+echo "Start read trimming with fastp, followed by QC" $(date)
+
+# Make an array of sequences to trim 
+array1=($(ls *R1_001.fastq.gz))
+
+# fastp and fastqc loop 
+for i in ${array1[@]}; do
+    fastp --in1 ${i} \
+        --in2 $(echo ${i}|sed s/_R1/_R2/)\
+        --out1 /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/data/trim/trim.${i} \
+        --out2 /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/data/trim/trim.$(echo ${i}|sed s/_R1/_R2/) \
+        --detect_adapter_for_pe \
+        --qualified_quality_phred 30 \
+        --unqualified_percent_limit 10 \
+        --length_required 100 \
+        --cut_right cut_right_window_size 5 cut_right_mean_quality 20 \
+	 fastqc /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/fastqc/trim/trim.${i} \
+    fastqc /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/fastqc/trim/trim.$(echo ${i}|sed s/_R1/_R2/)
+done
+
+echo "Read trimming of adapters and QC complete. Starting multiqc" $(date)
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/fastqc/trim
+multiqc *
+
+echo "MultiQC complete" $(date)
+```
+
+Submitted batch job 344847
