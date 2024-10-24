@@ -30,6 +30,8 @@ Sequences were received from sequencer today! Make a new directory in my own fol
 cd /data/putnamlab/jillashey
 mkdir DT_Mcap_2023
 cd DT_Mcap_2023
+mkdir mRNA
+cd mRNA
 mkdir data scripts output
 cd data 
 mkdir raw trim 
@@ -97,8 +99,6 @@ echo "MultiQC complete" $(date)
 ```
 
 Submitted batch job 310216
-
-### 20240328
 
 For whatever reason, the QC portion of the script didn't run, so I'm going to run a QC trim script. In the scripts folder: `nano fastqc_trim.sh`
 
@@ -388,10 +388,7 @@ wc -l Mcap_gene_count_matrix.csv
 
 Copy the matrices onto my local computer. Woohoo! 
 
-
-
-
-
+### 20240919
 
 QC for Mcap DT 2023 data that came back from sequencer 9/19/24
 
@@ -597,7 +594,7 @@ multiqc *
 echo "multiqc complete!" $(date)
 ```
 
-Submitted batch job 340171
+Submitted batch job 340171. Raw QC for RNAseq data [here](https://github.com/JillAshey/DevelopmentalTimeseries/blob/main/data/Molecular/mRNA/multiqc_report_RNA_raw.html). 
 
 nano fastqc_smallRNAseq_raw.sh
 
@@ -640,7 +637,7 @@ Submitted batch job 340170
 
 Now that I have all my data and have QCed the data, I am going to trim. For the RNAseq data, there are definitely some batch effects between the sequencing runs. May need to remove the samples that were sequenced earlier (March 2024) downstream. 
 
-Trim using fastp. 
+Trim using fastp. In the scripts folder: `nano XXX`
 
 ```
 #!/bin/bash
@@ -692,6 +689,279 @@ cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/fastqc/trim
 multiqc *
 
 echo "MultiQC complete" $(date)
+
+echo "Count number of reads in each file" $(date)
+
+zgrep -c "@LH00" *.gz > trim_read_count.txt
 ```
 
-Submitted batch job 344847
+Submitted batch job 344847. QC looks good! Adapter content gone and phred score high across bases. Trimmed QC for RNAseq data [here](https://github.com/JillAshey/DevelopmentalTimeseries/blob/main/data/Molecular/mRNA/multiqc_report_RNA_trim.html). 
+
+Align to Mcap V3 genome. In the scripts folder: `nano align.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/scripts            
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+# load modules needed
+module load HISAT2/2.2.1-foss-2019b #Alignment to reference genome: HISAT2
+module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/data/trim/
+
+echo "Building genome reference" $(date)
+
+# index the reference genome for Mcap output index to working directory
+hisat2-build -f /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta Mcap_ref
+echo "Referece genome indexed. Starting alingment" $(date)
+
+# This script exports alignments as bam files
+# sorts the bam file because Stringtie takes a sorted file for input (--dta)
+# removes the sam file because it is no longer needed
+
+array=($(ls *_R1_001.fastq.gz)) # call the clean sequences - make an array to align
+
+for i in ${array[@]}; do
+        sample_name=`echo $i| awk -F [.] '{print $2}'`
+        hisat2 -p 8 --rna-strandness RF --dta -x Mcap_ref -1 ${i} -2 $(echo ${i}|sed s/_R1/_R2/) -S ${sample_name}.sam
+        samtools sort -@ 8 -o ${sample_name}.bam ${sample_name}.sam
+                echo "${i} bam-ified!"
+        rm ${sample_name}.sam
+done
+
+echo "Alignment complete!" $(date)
+echo "View mapping percentages " $(date)
+
+for i in *.bam; do
+     echo "${i}" >> mapped_reads_counts_Mcap.txt
+     samtools flagstat ${i} | grep "mapped (" >> mapped_reads_counts_Mcap.txt
+ done
+``` 
+
+Submitted batch job 344964. Mapping percentages: 
+
+```
+10_RNAseq_S28_R1_001.bam
+4239251 + 0 mapped (42.36% : N/A)
+11_RNAseq_S29_R1_001.bam
+5991800 + 0 mapped (33.98% : N/A)
+13_S31_R1_001.bam
+17304441 + 0 mapped (45.92% : N/A)
+14_RNAseq_S30_R1_001.bam
+8085710 + 0 mapped (45.42% : N/A)
+23_S32_R1_001.bam
+39709953 + 0 mapped (68.10% : N/A)
+24_RNAseq_S31_R1_001.bam
+13563672 + 0 mapped (62.72% : N/A)
+26_RNAseq_S32_R1_001.bam
+14010844 + 0 mapped (61.96% : N/A)
+28_RNAseq_S33_R1_001.bam
+11577688 + 0 mapped (64.26% : N/A)
+35_S33_R1_001.bam
+27912360 + 0 mapped (66.19% : N/A)
+36_RNAseq_S34_R1_001.bam
+15565022 + 0 mapped (64.14% : N/A)
+37_RNAseq_S35_R1_001.bam
+16439270 + 0 mapped (66.31% : N/A)
+39_RNAseq_S36_R1_001.bam
+15933330 + 0 mapped (70.04% : N/A)
+47_RNAseq_S37_R1_001.bam
+20838605 + 0 mapped (81.81% : N/A)
+48_RNAseq_S38_R1_001.bam
+20274902 + 0 mapped (80.73% : N/A)
+51_RNAseq_S39_R1_001.bam
+19029047 + 0 mapped (72.68% : N/A)
+52_S34_R1_001.bam
+45865662 + 0 mapped (74.17% : N/A)
+60_S35_R1_001.bam
+46178975 + 0 mapped (73.88% : N/A)
+61_RNAseq_S40_R1_001.bam
+12591636 + 0 mapped (63.30% : N/A)
+62_RNAseq_S41_R1_001.bam
+14910190 + 0 mapped (67.58% : N/A)
+63_RNAseq_S42_R1_001.bam
+20914310 + 0 mapped (79.37% : N/A)
+6_RNAseq_S25_R1_001.bam
+11665744 + 0 mapped (62.94% : N/A)
+72_S36_R1_001.bam
+36113020 + 0 mapped (76.53% : N/A)
+73_RNAseq_S43_R1_001.bam
+13295206 + 0 mapped (73.43% : N/A)
+74_RNAseq_S44_R1_001.bam
+13728145 + 0 mapped (68.90% : N/A)
+75_RNAseq_S45_R1_001.bam
+8505675 + 0 mapped (68.58% : N/A)
+7_RNAseq_S26_R1_001.bam
+11945532 + 0 mapped (58.78% : N/A)
+85_S37_R1_001.bam
+32246414 + 0 mapped (79.69% : N/A)
+86_RNAseq_S46_R1_001.bam
+15919552 + 0 mapped (75.01% : N/A)
+87_RNAseq_S47_R1_001.bam
+11527670 + 0 mapped (68.50% : N/A)
+88_RNAseq_S48_R1_001.bam
+13406820 + 0 mapped (71.74% : N/A)
+8_RNAseq_S27_R1_001.bam
+10389582 + 0 mapped (58.35% : N/A)
+9_S30_R1_001.bam
+26154642 + 0 mapped (56.50% : N/A)
+```
+
+Most samples ranged from 56-80% mapping, which is good. A couple of samples (10, 11, 13, 14) has <50% mapping. This is not unexpected, as these samples were all 4 hpf, which is a period of maternal/zygotic turnover and duplication. 4 hpf is also the timepoint where I messed up the sampling protocol and added too much salt water (with larvae) to shield. While there was RNA in the samples, the RNA appeared relatively degraded on the gel (see 13 in gel picture [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-02-10-MiniprepPlus-DNA%3ARNA-extractions-McapLarvae-DT.md)). 
+
+Move the bam files + mapped percentages text file to the hisat2 output folder. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/data/trim
+mv *bam ../../output/hisat2/
+mv mapped_reads_counts_Mcap.txt ../../output/hisat2/
+```
+
+Assemble reads using stringtie using the updated gff from AH (see code [here](https://github.com/AHuffmyer/larval_symbiont_TPC/blob/main/scripts/bioinformatics/fix_gff_format.Rmd)). In the scripts folder: `nano assemble.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/scripts             
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load StringTie/2.2.1-GCC-11.2.0
+
+echo "Assembling transcripts using stringtie" $(date)
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/hisat2
+
+array1=($(ls *.bam)) #Make an array of sequences to assemble
+
+for i in ${array1[@]}; do
+    stringtie -p 8 -e -B -G /data/putnamlab/ashuffmyer/mcap-2023-rnaseq/references/Montipora_capitata_HIv3.genes_fixed.gff3 -A ${i}.gene_abund.tab -o ${i}.gtf ${i}
+done
+
+echo "Assembly for each sample complete " $(date)
+```
+
+Submitted batch job 344979. Move the gtf and tab files to the stringtie output folder.
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/hisat2
+mv *gtf ../stringtie/
+mv *tab ../stringtie/
+cd ../stringtie 
+```
+
+Make a list of gtfs 
+
+```
+ls *.gtf > gtf_list.txt
+```
+
+Merge gtfs into a single gtf with stringtie
+
+```
+interactive 
+module load StringTie/2.1.4-GCC-9.3.0
+
+stringtie --merge -e -p 8 -G /data/putnamlab/ashuffmyer/mcap-2023-rnaseq/references/Montipora_capitata_HIv3.genes_fixed.gff3 -o Mcap_merged.gtf gtf_list.txt #Merge GTFs 
+
+wc -l Mcap_merged.gtf 
+310417 Mcap_merged.gtf
+```
+
+Assess accuracy of merged assembly with gffcompare 
+
+```
+module purge
+module load GffCompare/0.12.1-GCCcore-8.3.0
+
+gffcompare -r /data/putnamlab/ashuffmyer/mcap-2023-rnaseq/references/Montipora_capitata_HIv3.genes_fixed.gff3 -G -o merged Mcap_merged.gtf #Compute the accuracy 
+  54384 reference transcripts loaded.
+  2 duplicate reference transcripts discarded.
+  54384 query transfrags loaded.
+```
+
+Look at merge stats 
+
+```
+less merged.stats
+
+# gffcompare v0.12.1 | Command line was:
+#gffcompare -r /data/putnamlab/ashuffmyer/mcap-2023-rnaseq/references/Montipora_capitata_HIv3.genes_fixed.gff3 -G -o merged Mcap_merged.gtf
+#
+
+#= Summary for dataset: Mcap_merged.gtf 
+#     Query mRNAs :   54384 in   54185 loci  (36023 multi-exon transcripts)
+#            (141 multi-transcript loci, ~1.0 transcripts per locus)
+# Reference mRNAs :   54382 in   54185 loci  (36023 multi-exon)
+# Super-loci w/ reference transcripts:    54185
+#-----------------| Sensitivity | Precision  |
+        Base level:   100.0     |   100.0    |
+        Exon level:    99.9     |    99.9    |
+      Intron level:   100.0     |   100.0    |
+Intron chain level:   100.0     |   100.0    |
+  Transcript level:    99.9     |    99.9    |
+       Locus level:   100.0     |   100.0    |
+
+     Matching intron chains:   36023
+       Matching transcripts:   54309
+              Matching loci:   54173
+
+          Missed exons:       0/256029  (  0.0%)
+           Novel exons:       0/256026  (  0.0%)
+        Missed introns:       0/201643  (  0.0%)
+         Novel introns:       0/201643  (  0.0%)
+           Missed loci:       0/54185   (  0.0%)
+            Novel loci:       0/54185   (  0.0%)
+
+ Total union super-loci across all input datasets: 54185 
+54384 out of 54384 consensus transcripts written in merged.annotated.gtf (0 discarded as redundant)
+
+head merged.tracking 
+TCONS_00000001	XLOC_000001	Montipora_capitata_HIv3___RNAseq.g4584.t1|Montipora_capitata_HIv3___RNAseq.g4584.t1	=	q1:MSTRG.4|Montipora_capitata_HIv3___RNAseq.g4584.t1|13|0.000000|0.000000|1.125630|1854
+TCONS_00000002	XLOC_000002	Montipora_capitata_HIv3___RNAseq.g4586.t1|Montipora_capitata_HIv3___RNAseq.g4586.t1	=	q1:MSTRG.30|Montipora_capitata_HIv3___RNAseq.g4586.t1|22|0.000000|0.000000|0.144260|2124
+TCONS_00000003	XLOC_000003	Montipora_capitata_HIv3___TS.g26272.t1|Montipora_capitata_HIv3___TS.g26272.t1	=	q1:MSTRG.30|Montipora_capitata_HIv3___TS.g26272.t1|1|0.000000|0.000000|0.073721|589
+TCONS_00000004	XLOC_000004	Montipora_capitata_HIv3___TS.g26273.t1|Montipora_capitata_HIv3___TS.g26273.t1	=	q1:MSTRG.5|Montipora_capitata_HIv3___TS.g26273.t1|1|0.000000|0.000000|0.042288|612
+TCONS_00000005	XLOC_000005	Montipora_capitata_HIv3___RNAseq.g4588.t1|Montipora_capitata_HIv3___RNAseq.g4588.t1	=	q1:MSTRG.6|Montipora_capitata_HIv3___RNAseq.g4588.t1|1|0.000000|0.000000|0.016101|1101
+TCONS_00000006	XLOC_000006	Montipora_capitata_HIv3___RNAseq.g4589.t1|Montipora_capitata_HIv3___RNAseq.g4589.t1	=	q1:MSTRG.7|Montipora_capitata_HIv3___RNAseq.g4589.t1|92|0.000000|0.000000|0.033519|10527
+TCONS_00000007	XLOC_000007	Montipora_capitata_HIv3___TS.g26276.t1|Montipora_capitata_HIv3___TS.g26276.t1	=	q1:MSTRG.8|Montipora_capitata_HIv3___TS.g26276.t1|1|0.000000|0.000000|0.191457|261
+TCONS_00000008	XLOC_000008	Montipora_capitata_HIv3___TS.g26277.t1|Montipora_capitata_HIv3___TS.g26277.t1	=	q1:MSTRG.9|Montipora_capitata_HIv3___TS.g26277.t1|1|0.000000|0.000000|0.085318|273
+TCONS_00000009	XLOC_000009	Montipora_capitata_HIv3___RNAseq.g4592.t1|Montipora_capitata_HIv3___RNAseq.g4592.t1	=	q1:MSTRG.12|Montipora_capitata_HIv3___RNAseq.g4592.t1|2|0.000000|0.000000|1.483990|267
+TCONS_00000010	XLOC_000010	Montipora_capitata_HIv3___TS.g26284.t1|Montipora_capitata_HIv3___TS.g26284.t1	=	q1:MSTRG.19|Montipora_capitata_HIv3___TS.g26284.t1|6|0.000000|0.000000|0.017805|945
+```
+
+Looking at the gffcompare [documentation](https://ccb.jhu.edu/software/stringtie/gffcompare.shtml), the tracking file matches up transcripts between samples. Includes the MSTRG ID? Interesting. Is this file matching up the MSTRG to the gene ids? 
+
+Make gtf list text file for gene count matrix creation 
+
+```
+for filename in *bam.gtf; do echo $filename $PWD/$filename; done > listGTF.txt
+```
+
+Download the prepDE.py script from [here](https://github.com/gpertea/stringtie/blob/master/prepDE.py) and put it in the scripts folder (I already had it in here). Load python and compile the gene count matrix
+
+```
+module purge
+module load Python/2.7.18-GCCcore-9.3.0
+
+python /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/scripts/prepDE.py -g Mcap_gene_count_matrix.csv -i listGTF.txt
+
+wc -l Mcap_gene_count_matrix.csv 
+54385 Mcap_gene_count_matrix.csv
+```
+
+Copy to local computer. Hooray! 
