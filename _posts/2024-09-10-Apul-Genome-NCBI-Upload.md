@@ -124,3 +124,26 @@ BioProject: Processed
 BioSample: Processed 
 - Successfully loaded 
 - SAMN43800006: Acropora_pulchra_JA (TaxID: 140239)
+
+On 10/25/24, I received an email from NCBI saying that they have received my submission and assigned it an accession number. The submission has passed initial QC checks and will now be manually reviewed by the indexing staff. Once that is complete, the genome will be released immediately. 
+
+From NCBI:
+
+```
+We have assigned the following accession number to your submission:
+
+SUBID           BioProject      BioSample       Accession       Organism
+SUB14718394     PRJNA1162071    SAMN43800006    JBIQNU000000000 Acropora pulchra JA
+
+Please cite the accession number JBIQNU000000000 like this:
+
+This Whole Genome Shotgun project has been deposited at DDBJ/ENA/GenBank
+under the accession JBIQNU000000000. The version described
+in this paper is version JBIQNU010000000.
+
+While you can cite the BioProject, we recommend you include the WGS
+accession(s) to refer to the specific WGS assembly, especially for
+BioProjects that include more than one genome assembly.  Note that we
+prefer not to change the BioProject/BioSample links after the WGS assembly
+is released.
+```
