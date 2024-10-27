@@ -97,5 +97,64 @@ echo "Gene Ext complete, deactivate env" $(date)
 conda deactivate
 ```
 
-Submitted batch job 25762636
+Submitted batch job 25762636. I got output but not what I thought...There is not gtf file in the output folder, only a log file (`Apul_GeneExt.gtf.GeneExt.log`. The log file has this info at the end: 
+
+```
+FUN_044369-T1
+FUN_044370-T1
+1 transcripts found.
+FUN_044370-T1
+FUN_044371-T1
+1 transcripts found.
+FUN_044371-T1
+Fix done, annotation with gene features: tmp/genome.fixed.gtf
+Added gene feature names. New file name: tmp/genome.fixed.gtf
+```
+
+Maybe it needed the gene features added before it could extend the genes? In the tmp folder:
+
+```
+wc -l genome.fixed.gtf 
+298279 genome.fixed.gtf
+
+head genome.fixed.gtf 
+ntLink_0        funannotate     gene    1105    7056    .       +       .       gene_id "FUN_000001"
+ntLink_0        funannotate     transcript      1105    7056    .       +       .       transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0        funannotate     exon    1105    1188    .       +       .       transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0        funannotate     exon    1861    1941    .       +       .       transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0        funannotate     exon    2762    2839    .       +       .       transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0        funannotate     exon    5044    7056    .       +       .       transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0        funannotate     gene    10215   15286   .       +       .       gene_id "FUN_000002"
+ntLink_0        funannotate     transcript      10215   15286   .       +       .       transcript_id "FUN_000002-T1"; gene_id "FUN_000002";
+ntLink_0        funannotate     exon    13074   14383   .       +       .       transcript_id "FUN_000002-T1"; gene_id "FUN_000002";
+ntLink_0        funannotate     exon    14722   14900   .       +       .       transcript_id "FUN_000002-T1"; gene_id "FUN_000002";
+```
+
+Compared to the actual gtf: 
+
+```
+wc -l Apulchra-genome.gtf 
+455521 Apulchra-genome.gtf
+
+head Apulchra-genome.gtf 
+ntLink_0        funannotate     transcript      1105    7056    .       +       .       transcript_id "FUN_000001-T1"; gene_id "FUN_000001"
+ntLink_0        funannotate     exon    1105    1188    .       +       .       transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0        funannotate     exon    1861    1941    .       +       .       transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0        funannotate     exon    2762    2839    .       +       .       transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0        funannotate     exon    5044    7056    .       +       .       transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0        funannotate     CDS     1105    1188    .       +       0       transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0        funannotate     CDS     1861    1941    .       +       0       transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0        funannotate     CDS     2762    2839    .       +       0       transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0        funannotate     CDS     5044    7056    .       +       0       transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0        funannotate     transcript      10215   15286   .       +       .       transcript_id "FUN_000002-T1"; gene_id "FUN_000002"
+```
+
+It looks like gene ext added gene rows and removed CDSs from the file? Am I supposed to use this gtf to run gene ext? Maybe. Going to move it from the tmp directory into the data directory in case gene ext deletes the tmp directory. 
+
+```
+mv genome.fixed.gtf ../../data/
+```
+
+Edit the `Gene_Ext.sh` script so that the `-g` option is directed to the fixed gtf. Submitted batch job 25767632
+
 

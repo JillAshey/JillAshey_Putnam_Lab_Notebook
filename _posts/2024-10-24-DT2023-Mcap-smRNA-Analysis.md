@@ -336,7 +336,77 @@ done
 
 Submitted batch job 345073. Ran in 1.5 hours, and then ran multiQC on the output. Also looked at the individual QC htmls. Most samples have good phred scores and a peak where the miRNAs should be in terms of length. But there is a lot of weirdness... a lot of overrepresented sequences that might be adapters? And still a decent amount of adapter content. I'm not sure what I should be trimming and i am stressed haha. I need to look into this further and think about what I'm really trimming. also evaluate tools to use...maybe email some ppl???? Also the files say 31bp but they are not. 
 
+### 20241027 
 
+Even though the QC looks horrible, I want to run short stack on this data to see what it looks like. In the scripts folder: `nano shortstack.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Running short stack on mature trimmed miRNAs (R1) from Mcap DT project"
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim
+
+# Load modules 
+module load ShortStack/4.0.2-foss-2022a  
+module load Kent_tools/442-GCC-11.3.0
+
+# Run short stack
+ShortStack \
+--genomefile /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta \
+--readfile trim.fastp.31bp.10_small_RNA_S4_R1_001.fastq.gz \
+trim.fastp.31bp.11_small_RNA_S5_R1_001.fastq.gz \
+trim.fastp.31bp.13_S76_R1_001.fastq.gz \
+trim.fastp.31bp.14_small_RNA_S6_R1_001.fastq.gz \
+trim.fastp.31bp.23_S77_R1_001.fastq.gz \
+trim.fastp.31bp.24_small_RNA_S7_R1_001.fastq.gz \
+trim.fastp.31bp.26_small_RNA_S8_R1_001.fastq.gz \
+trim.fastp.31bp.28_small_RNA_S9_R1_001.fastq.gz \
+trim.fastp.31bp.35_S78_R1_001.fastq.gz \
+trim.fastp.31bp.36_small_RNA_S10_R1_001.fastq.gz \
+trim.fastp.31bp.37_small_RNA_S11_R1_001.fastq.gz \
+trim.fastp.31bp.39_small_RNA_S12_R1_001.fastq.gz \
+trim.fastp.31bp.47_small_RNA_S13_R1_001.fastq.gz \
+trim.fastp.31bp.48_small_RNA_S14_R1_001.fastq.gz \
+trim.fastp.31bp.51_small_RNA_S15_R1_001.fastq.gz \
+trim.fastp.31bp.52_S79_R1_001.fastq.gz \
+trim.fastp.31bp.60_S80_R1_001.fastq.gz \
+trim.fastp.31bp.61_small_RNA_S16_R1_001.fastq.gz \
+trim.fastp.31bp.62_small_RNA_S17_R1_001.fastq.gz \
+trim.fastp.31bp.63_small_RNA_S18_R1_001.fastq.gz \
+trim.fastp.31bp.6_small_RNA_S1_R1_001.fastq.gz \
+trim.fastp.31bp.72_S81_R1_001.fastq.gz \
+trim.fastp.31bp.73_small_RNA_S19_R1_001.fastq.gz \
+trim.fastp.31bp.74_small_RNA_S20_R1_001.fastq.gz \
+trim.fastp.31bp.75_small_RNA_S21_R1_001.fastq.gz \
+trim.fastp.31bp.7_small_RNA_S2_R1_001.fastq.gz \
+trim.fastp.31bp.85_S82_R1_001.fastq.gz \
+trim.fastp.31bp.86_small_RNA_S22_R1_001.fastq.gz \
+trim.fastp.31bp.87_small_RNA_S23_R1_001.fastq.gz \
+trim.fastp.31bp.88_small_RNA_S24_R1_001.fastq.gz \
+trim.fastp.31bp.8_small_RNA_S3_R1_001.fastq.gz \
+trim.fastp.31bp.9_S75_R1_001.fastq.gz \
+--known_miRNAs /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa \
+--outdir /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/shortstack \
+--threads 10 \
+--dn_mirna
+
+echo "Short stack complete!"
+```
+
+Submitted batch job 345205. 
+
+code to extract fasta info from shortstack: https://github.com/urol-e5/deep-dive/blob/main/F-Pmea/code/13.2.1.1-Pmea-sRNAseq-ShortStack-FastA-extraction.md 
 
 
 
