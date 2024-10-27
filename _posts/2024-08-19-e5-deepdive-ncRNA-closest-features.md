@@ -7,7 +7,7 @@ tags: [Bioinformatics]
 projects: e5 deep dive
 ---
 
-## e5 deep dive - investigating ncRNA protein machinery in 3 species of corals 
+## e5 deep dive - looking at closest genes to ncRNAs 
 
 The e5 deep dive project is examining ncRNA dynamics in 3 species of coral from Moorea, French Polynesia. The github for the project is [here](https://github.com/urol-e5/deep-dive). 
 

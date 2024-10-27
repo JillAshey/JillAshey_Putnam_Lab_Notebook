@@ -7032,7 +7032,7 @@ Submitted batch job 312886
 
 ### 20240426
 
-Both miranda jobs have preemptively failed and restarted. Not sure why...Going back to what Kevin Bryan said to me regarding this in the [Apul genome](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-02-06-Apulchra-Genome-Assembly.md) assembly: "you didn’t specify -t $SLURM_CPUS_ON_NODE (and also #SBATCH --exclusive) to make use of all of the CPU cores on the node. You might want to consider re-submitting this job with those parameters. Because the nodes generally have 36 cores, it should be able to catch up to where it is now in a little over half a day, assuming perfect scaling." Looking at the [miranda manual](https://github.com/hacktrackgnulinux/miranda/blob/master/man/miranda.pdf), it doesn't look like there is any flag to specify cpus on node. Cancelled jobs `312601` and `312886`. I am going to redo the SLURM info in these scripts. I edited both `miranda_strict_all.sh` and `miranda_strict_lncRNA.sh` so that the slurm headers look like: 
+Both miranda jobs have preemptively failed and restarted. Not sure why...Going back to what Kevin Bryan said to me regarding this in the [Apul genome](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-02-06-Apulchra-Genome-Assembly.md) assembly: "you didn’t specify -t SLURM_CPUS_ON_NODE (and also #SBATCH --exclusive) to make use of all of the CPU cores on the node. You might want to consider re-submitting this job with those parameters. Because the nodes generally have 36 cores, it should be able to catch up to where it is now in a little over half a day, assuming perfect scaling." Looking at the [miranda manual](https://github.com/hacktrackgnulinux/miranda/blob/master/man/miranda.pdf), it doesn't look like there is any flag to specify cpus on node. Cancelled jobs `312601` and `312886`. I am going to redo the SLURM info in these scripts. I edited both `miranda_strict_all.sh` and `miranda_strict_lncRNA.sh` so that the slurm headers look like: 
 
 ```
 #!/bin/bash -i
@@ -7049,7 +7049,7 @@ Both miranda jobs have preemptively failed and restarted. Not sure why...Going b
 #SBATCH -e slurm-%j.error
 ```
 
-For `miranda_strict_all.sh `: Submitted batch job 313313. For `miranda_strict_lncRNA.sh`: Submitted batch job 313314. Both started running right away! 
+For `miranda_strict_all.sh`: Submitted batch job 313313. For `miranda_strict_lncRNA.sh`: Submitted batch job 313314. Both started running right away! 
 
 ### 20240517
 
@@ -7088,7 +7088,6 @@ echo "Blasting Apoc genes of interest (significant correlation with miRNAs) agai
 blastn -query sigcorr_subset.fasta -db nt -evalue 1E-40 -num_threads 10 -max_target_seqs 3 -max_hsps 3 -outfmt 6 -out sigcorr_subset_blast_results.txt 
 
 echo "Blast complete" $(date)
-```
 ```
 
 Submitted batch job 317026. Also going to submit a `blastx` job. Submitted batch job 317071
