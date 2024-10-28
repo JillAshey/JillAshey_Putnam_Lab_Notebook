@@ -406,7 +406,43 @@ echo "Short stack complete!"
 
 Submitted batch job 345205. 
 
+### 20241028
+
+Shortstack finished running overnight but doesn't seem to have worked well. Getting this at the end of the error file:
+
+```
+Traceback (most recent call last):
+  File "/opt/software/ShortStack/4.0.2-foss-2022a/ShortStack", line 3592, in <module>
+    mir_qdata = mirna(args, merged_bam, fai, pmir_bedfile, read_count)
+  File "/opt/software/ShortStack/4.0.2-foss-2022a/ShortStack", line 2259, in mirna
+    dn_q_bedlines, dn_locus_bedlines = zip(*denovo_mloci1)
+ValueError: not enough values to unpack (expected 2, got 0)
+```
+
+Also getting this in the error file for the samples: 
+
+```
+# reads processed: 18875806
+# reads with at least one alignment: 999 (0.01%)
+# reads that failed to align: 18874807 (99.99%)
+Reported 2699 alignments
+[bam_sort_core] merging from 0 files and 10 in-memory blocks...
+# reads processed: 11804203
+# reads with at least one alignment: 1216 (0.01%)
+# reads that failed to align: 11802987 (99.99%)
+Reported 2981 alignments
+[bam_sort_core] merging from 0 files and 10 in-memory blocks...
+# reads processed: 24558419
+# reads with at least one alignment: 50 (0.00%)
+# reads that failed to align: 24558369 (100.00%)
+Reported 803 alignments
+```
+
+Vast majority of reads are not aligning which makes sense because I gave it very long reads (>150bp). This is probably why it failed. No results files or miRNA fasta files were generated either. Need to revisit trimming
+
+
+
+
+
 code to extract fasta info from shortstack: https://github.com/urol-e5/deep-dive/blob/main/F-Pmea/code/13.2.1.1-Pmea-sRNAseq-ShortStack-FastA-extraction.md 
-
-
 

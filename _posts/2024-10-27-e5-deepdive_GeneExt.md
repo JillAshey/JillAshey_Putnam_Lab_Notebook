@@ -155,6 +155,72 @@ It looks like gene ext added gene rows and removed CDSs from the file? Am I supp
 mv genome.fixed.gtf ../../data/
 ```
 
-Edit the `Gene_Ext.sh` script so that the `-g` option is directed to the fixed gtf. Submitted batch job 25767632
+Edit the `Gene_Ext.sh` script so that the `-g` option is directed to the fixed gtf. Submitted batch job 25767632. Success! Downloaded the output file (`Apul_GeneExt.gtf`) to my computer. This is what the file looks like: 
 
+```
+ntLink_7	funannotate	gene	79	5033	.	+	.	gene_id "FUN_002303";
+ntLink_7	GeneExt	transcript	79	5033	.	+	.	transcript_id "GeneExt~FUN_002303-T1"; gene_id "FUN_002303"; three_prime_ext "354";
+ntLink_7	GeneExt	exon	79	179	.	+	.	transcript_id "GeneExt~FUN_002303-T1"; gene_id "FUN_002303";
+ntLink_7	GeneExt	exon	1098	1312	.	+	.	transcript_id "GeneExt~FUN_002303-T1"; gene_id "FUN_002303";
+ntLink_7	GeneExt	exon	2302	2608	.	+	.	transcript_id "GeneExt~FUN_002303-T1"; gene_id "FUN_002303";
+ntLink_7	GeneExt	exon	3242	3337	.	+	.	transcript_id "GeneExt~FUN_002303-T1"; gene_id "FUN_002303";
+ntLink_7	GeneExt	exon	3545	3678	.	+	.	transcript_id "GeneExt~FUN_002303-T1"; gene_id "FUN_002303";
+ntLink_7	GeneExt	exon	4187	5033	.	+	.	transcript_id "GeneExt~FUN_002303-T1"; gene_id "FUN_002303"; three_prime_ext "354";
+ntLink_7	funannotate	gene	12385	16904	.	-	.	gene_id "FUN_002304";
+ntLink_7	funannotate	transcript	12385	16904	.	-	.	transcript_id "FUN_002304-T1"; gene_id "FUN_002304";
+ntLink_7	funannotate	exon	12385	13137	.	-	.	transcript_id "FUN_002304-T1"; gene_id "FUN_002304";
+ntLink_7	funannotate	exon	13624	14387	.	-	.	transcript_id "FUN_002304-T1"; gene_id "FUN_002304";
+ntLink_7	funannotate	exon	16898	16904	.	-	.	transcript_id "FUN_002304-T1"; gene_id "FUN_002304";
+ntLink_7	funannotate	gene	18480	24541	.	+	.	gene_id "FUN_002305";
+ntLink_7	GeneExt	transcript	18480	24541	.	+	.	transcript_id "GeneExt~FUN_002305-T1"; gene_id "FUN_002305"; three_prime_ext "354";
+ntLink_7	GeneExt	exon	18480	19242	.	+	.	transcript_id "GeneExt~FUN_002305-T1"; gene_id "FUN_002305";
+ntLink_7	GeneExt	exon	19586	19686	.	+	.	transcript_id "GeneExt~FUN_002305-T1"; gene_id "FUN_002305";
+```
+
+Not all genes got a 3' UTR extension from gene ext. From the log file: 
+
+```
+╭───────────╮
+│ All done! │
+╰───────────╯
+Extended 8177/44371 genes
+Median extension length: 1010.0 bp
+Running:
+	Rscript geneext/plot_extensions.R tmp/extensions.tsv /project/pi_hputnam_uri_edu/jillashey/e5_deepdive/output/Apul_GeneExt.gtf.extension_length.pdf
+Running:
+	Rscript geneext/peak_density.R tmp/genic_peaks.bed tmp/allpeaks_noov.bed /project/pi_hputnam_uri_edu/jillashey/e5_deepdive/output/Apul_GeneExt.gtf.peak_coverage.pdf 25 
+Removing tmp/plus.bam
+Removing tmp/minus.bam
+Removing tmp/_peaks_tmp
+Removing tmp/_genes_tmp
+Removing tmp/_peaks_tmp_sorted
+Removing tmp/_genes_tmp_sorted
+Removing tmp/_genes_peaks_closest
+```
+
+Median extension length is around 1000bp, which is what I estimated before when I was extending the genes by 1kb. Only 8177 out of 44371 genes were extended (~18%). Look at the difference in one of the genes (FUN_002322) in the `genome.fixed.gtf` and `Apul_GeneExt.gtf`:
+
+```
+# genome.fixed.gtf 
+ntLink_7	funannotate	gene	155009	160717	.	+	.	gene_id "FUN_002322"
+ntLink_7	funannotate	transcript	155009	160717	.	+	.	transcript_id "FUN_002322-T1"; gene_id "FUN_002322";
+ntLink_7	funannotate	exon	155009	155771	.	+	.	transcript_id "FUN_002322-T1"; gene_id "FUN_002322";
+ntLink_7	funannotate	exon	156115	156215	.	+	.	transcript_id "FUN_002322-T1"; gene_id "FUN_002322";
+ntLink_7	funannotate	exon	157136	157350	.	+	.	transcript_id "FUN_002322-T1"; gene_id "FUN_002322";
+ntLink_7	funannotate	exon	158340	158646	.	+	.	transcript_id "FUN_002322-T1"; gene_id "FUN_002322";
+ntLink_7	funannotate	exon	159280	159375	.	+	.	transcript_id "FUN_002322-T1"; gene_id "FUN_002322";
+ntLink_7	funannotate	exon	159583	159716	.	+	.	transcript_id "FUN_002322-T1"; gene_id "FUN_002322";
+ntLink_7	funannotate	exon	160225	160717	.	+	.	transcript_id "FUN_002322-T1"; gene_id "FUN_002322";
+
+# Apul_GeneExt.gtf
+ntLink_7	funannotate	gene	155009	161071	.	+	.	gene_id "FUN_002322";
+ntLink_7	GeneExt	transcript	155009	161071	.	+	.	transcript_id "GeneExt~FUN_002322-T1"; gene_id "FUN_002322"; three_prime_ext "354";
+ntLink_7	GeneExt	exon	155009	155771	.	+	.	transcript_id "GeneExt~FUN_002322-T1"; gene_id "FUN_002322";
+ntLink_7	GeneExt	exon	156115	156215	.	+	.	transcript_id "GeneExt~FUN_002322-T1"; gene_id "FUN_002322";
+ntLink_7	GeneExt	exon	157136	157350	.	+	.	transcript_id "GeneExt~FUN_002322-T1"; gene_id "FUN_002322";
+ntLink_7	GeneExt	exon	158340	158646	.	+	.	transcript_id "GeneExt~FUN_002322-T1"; gene_id "FUN_002322";
+ntLink_7	GeneExt	exon	159280	159375	.	+	.	transcript_id "GeneExt~FUN_002322-T1"; gene_id "FUN_002322";
+ntLink_7	GeneExt	exon	159583	159716	.	+	.	transcript_id "GeneExt~FUN_002322-T1"; gene_id "FUN_002322";
+ntLink_7	GeneExt	exon	160225	161071	.	+	.	transcript_id "GeneExt~FUN_002322-T1"; gene_id "FUN_002322"; three_prime_ext "354";
+```
 
