@@ -535,13 +535,206 @@ wc -l /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_3UTRs_parse
 echo "Apul miranda script complete" $(date)
 ```
 
-Submitted batch job 345245
+Submitted batch job 345245. Ran in about an hour. 
+
+```
+counting number of putative interactions predicted Mon Oct 28 13:11:27 EDT 2024
+1991808
+Parsing output Mon Oct 28 13:11:32 EDT 2024
+counting number of putative interactions predicted Mon Oct 28 13:11:34 EDT 2024
+99345 /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_3UTRs_parsed_Apul.txt
+```
+
+I am looking at some of the coral miRNA papers and they all mention a consecutive 8 bp "seed" region of the miRNA that directly binds with 8 bp of the mRNA. Even though I added the `-strict` flag, there only seems to be 7bp consectively if that makes sense. Example: 
+
+```
+Read Sequence:ntLink_8:4298823-4300537 (1714 nt)
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Performing Scan: apul-mir-novel-2 vs ntLink_8:4298823-4300537
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+   Forward:     Score: 167.000000  Q:2 to 21  R:105 to 129 Align Len (20) (80.00%) (80.00%)
+
+   Query:    3' ugagAAGUAAAUAGA-UGAGCAAUu 5'
+                    || |  ||||| |||||||| 
+   Ref:      5' taaaTTAAAGTATCTGACTCGTTAt 3'
+
+   Energy:  -15.730000 kCal/Mol
+
+Scores for this hit:
+>apul-mir-novel-2       ntLink_8:4298823-4300537        167.00  -15.73  2 21    105 129 20      80.00%  80.00%
+
+Score for this Scan:
+Seq1,Seq2,Tot Score,Tot Energy,Max Score,Max Energy,Strand,Len1,Len2,Positions
+>>apul-mir-novel-2      ntLink_8:4298823-4300537        167.00  -15.73  167.00  -15.73  77      24      1714     105
+Complete
+
+Read Sequence:ntLink_8:8821127-8822825 (1698 nt)
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Performing Scan: apul-mir-novel-2 vs ntLink_8:8821127-8822825
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+   Forward:     Score: 152.000000  Q:2 to 15  R:10 to 32 Align Len (13) (84.62%) (92.31%)
+
+   Query:    3' ugagaaguaaAUAGAUGAGCAAUu 5'
+                          |||:| ||||||| 
+   Ref:      5' agattaagagTATTT-CTCGTTAg 3'
+
+   Energy:  -13.480000 kCal/Mol
+
+Scores for this hit:
+>apul-mir-novel-2       ntLink_8:8821127-8822825        152.00  -13.48  2 15    10 32   13      84.62%  92.31%
+
+Score for this Scan:
+Seq1,Seq2,Tot Score,Tot Energy,Max Score,Max Energy,Strand,Len1,Len2,Positions
+>>apul-mir-novel-2      ntLink_8:8821127-8822825        152.00  -13.48  152.00  -13.48  158     24      1698     10
+Complete
+```
+
+Going to rerun and set the `-scale` flag to 8. In the (paltry) [miranda information](https://www.animalgenome.org/bioinfo/resources/manuals/miranda.html) online, this flag does the following: Set the scaling parameter to scale. This scaling is applied to match / mismatch scores in the  critical 10bp  region  of  the  5' end of the microRNA. Many known examples of miRNA:Target duplexes are  highly complementary in this region. This parameter can be thought of as a contrast function  to  more  effectively detect alignments of this type. The default is 4 and I'm going to set it to 8. Submitted batch job 345472. Took about 10 hrs to run. 
+
+```
+counting number of putative interactions predicted Tue Oct 29 04:06:29 EDT 2024
+1991808
+Parsing output Tue Oct 29 04:06:36 EDT 2024
+counting number of putative interactions predicted Tue Oct 29 04:06:37 EDT 2024
+99403 /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_3UTRs_8seed_parsed_Apul.txt
+```
+
+Interesting that the number of putative interactions actually increased from the previous run (99345 vs 99403). Look at the parsed files: 
+
+```
+head miranda_strict_all_3UTRs_parsed_Apul.txt 
+>apul-mir-100	ntLink_6:10255357-10256357	145.00	-15.40	2 19	264 286	20	65.00%	70.00%
+>apul-mir-100	ntLink_6:10563192-10564192	153.00	-20.42	2 14	791 810	12	83.33%	91.67%
+>apul-mir-100	ntLink_6:10617301-10618424	145.00	-15.84	2 16	679 697	14	78.57%	78.57%
+>apul-mir-100	ntLink_6:10672091-10673508	161.00	-23.97	2 16	951 969	14	92.86%	92.86%
+>apul-mir-100	ntLink_6:11090988-11091647	146.00	-15.95	2 11	545 564	9	88.89%	100.00%
+>apul-mir-100	ntLink_6:11405289-11406669	149.00	-16.68	2 16	1000 1018	14	78.57%	85.71%
+>apul-mir-100	ntLink_6:1142082-1142891	142.00	-16.61	2 11	9 28	9	88.89%	88.89%
+>apul-mir-100	ntLink_6:11697492-11698492	154.00	-18.81	2 15	540 559	13	84.62%	84.62%
+>apul-mir-100	ntLink_6:12100733-12101733	154.00	-15.72	2 15	563 582	13	84.62%	84.62%
+>apul-mir-100	ntLink_6:12100733-12101733	157.00	-23.22	2 16	467 485	14	85.71%	92.86%
+
+head miranda_strict_all_3UTRs_8seed_parsed_Apul.txt
+>apul-mir-100	ntLink_6:10255357-10256357	285.00	-15.40	2 19	264 286	20	65.00%	70.00%
+>apul-mir-100	ntLink_6:10563192-10564192	293.00	-20.42	2 14	791 810	12	83.33%	91.67%
+>apul-mir-100	ntLink_6:10617301-10618424	285.00	-15.84	2 16	679 697	14	78.57%	78.57%
+>apul-mir-100	ntLink_6:10672091-10673508	301.00	-23.97	2 16	951 969	14	92.86%	92.86%
+>apul-mir-100	ntLink_6:11090988-11091647	286.00	-15.95	2 11	545 564	9	88.89%	100.00%
+>apul-mir-100	ntLink_6:11405289-11406669	289.00	-16.68	2 16	1000 1018	14	78.57%	85.71%
+>apul-mir-100	ntLink_6:1142082-1142891	282.00	-16.61	2 11	9 28	9	88.89%	88.89%
+>apul-mir-100	ntLink_6:11697492-11698492	294.00	-18.81	2 15	540 559	13	84.62%	84.62%
+>apul-mir-100	ntLink_6:12100733-12101733	294.00	-15.72	2 15	563 582	13	84.62%	84.62%
+>apul-mir-100	ntLink_6:12100733-12101733	297.00	-23.22	2 16	467 485	14	85.71%	92.86%
+```
+
+The interactions appear to be the same except the score is much higher, maybe overly inflated? Are the scans the same? 
+
+```
+# from original run
+Read Sequence:ntLink_8:8646169-8647749 (1580 nt)
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Performing Scan: apul-mir-novel-2 vs ntLink_8:8646169-8647749
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+   Forward:     Score: 152.000000  Q:2 to 15  R:386 to 408 Align Len (13) (84.62%) (92.31%)
+
+   Query:    3' ugagaaguaaAUAGAUGAGCAAUu 5'
+                          |||:| ||||||| 
+   Ref:      5' agattaagagTATTT-CTCGTTAg 3'
+
+   Energy:  -13.480000 kCal/Mol
+
+Scores for this hit:
+>apul-mir-novel-2       ntLink_8:8646169-8647749        152.00  -13.48  2 15    386 408 13      84.62%  92.31%
+
+Score for this Scan:
+Seq1,Seq2,Tot Score,Tot Energy,Max Score,Max Energy,Strand,Len1,Len2,Positions
+>>apul-mir-novel-2      ntLink_8:8646169-8647749        152.00  -13.48  152.00  -13.48  156     24      1580     386
+Complete
+
+# from scale 8 run 
+Read Sequence:ntLink_8:8646169-8647749 (1580 nt)
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+Performing Scan: apul-mir-novel-2 vs ntLink_8:8646169-8647749
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+   Forward:     Score: 292.000000  Q:2 to 15  R:386 to 408 Align Len (13) (84.62%) (92.31%)
+
+   Query:    3' ugagaaguaaAUAGAUGAGCAAUu 5'
+                          |||:| ||||||| 
+   Ref:      5' agattaagagTATTT-CTCGTTAg 3'
+
+   Energy:  -13.480000 kCal/Mol
+
+Scores for this hit:
+>apul-mir-novel-2       ntLink_8:8646169-8647749        292.00  -13.48  2 15    386 408 13      84.62%  92.31%
+
+Score for this Scan:
+Seq1,Seq2,Tot Score,Tot Energy,Max Score,Max Energy,Strand,Len1,Len2,Positions
+>>apul-mir-novel-2      ntLink_8:8646169-8647749        292.00  -13.48  292.00  -13.48  156     24      1580     386
+Complete
+```
+
+The only difference is the score so I think I am inflating the calculations somehow, would need to look at source code. After looking at other papers that have used miranda, they typically employ strict binding, energy <-10, default scale (4), and 140-150 score (see example from human flu hozt response to virus [here](https://www.frontiersin.org/journals/molecular-biosciences/articles/10.3389/fmolb.2022.866072/full)). [Gajigan & Conaco (2017)](https://onlinelibrary.wiley.com/doi/10.1111/mec.14130) used miranda on an Acropora spp as well and they used strict seed binding and energy <-10. They further narrowed targets with exact seed match (is seed match mean 6, 7, 8bp?) and an A in position 1 (of miRNA or mRNA?); they cited a mammalian paper here for these choices specifically (Agarwal, Bell, Nam & Bartel 2015). They also used `fasta` to check the targets for more extensive complementarity and scored the alignments as described in Moran et al. 2014 (classic nematostella miRNA paper). Moran et al. 2014 did the following: "mapped sequences with FASTA v36 (Pearson and Lipman 1988) using the parameters -n -H -Q -f -16 -r +15/-10 -g -10 -w 100 -W 25 -E 100000 -i -U and scored the alignments using a weighted sum of the number of mismatches (scoremismatch = 1, scoreG:U = 0.5) with mismatches for guide RNA nucleotides g2–g13 counting double (scoremismatch = 2, scoreG:U = 1)." Moran et al. got this scoring method from [Fahlgren et al. 2007](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0000219#s3), who did the following: "miRNA targets were computationally predicted as described [34]. Briefly, potential targets from FASTA searches (+15/−10 match/mismatch scoring ratio, -16 gap penalty and a RNA scoring matrix) were scored using a position-dependent, mispair penalty system [34]. Penalties were assessed for mismatches, bulges, and gaps (+1 per position) and G∶U pairs (+0.5 per position). Penalties were doubled if the mismatch, bulge, gap, or G∶U pair occurred at positions 2 to 13 relative to the 5′ end of the miRNA. Only one single-nt bulge or single-nt gap was allowed. Based on a reference set of validated miRNA targets, only predicted targets with scores of four or less were considered reasonable." Need to look more into this scoring. 
+
+I am going to run miranda once more with the following flags: `-en -10 -strict`. The score (140), scale (4), gap-open penalty (-4), and gap-extend pentaly (-9) will be kept as the defaults. Submitted batch job 345844
 
 
 
 
 
+things to ask e5 ppl: 
 
+- do we want to run gene ext or estimate the 3'UTR as 1000bp right flank? if yes, i need bam files from Peve and Pmea 
 
+redo the 1kb stuff 
 
+I want to check to see how similar the results would be between the 1kb estimate and the gene ext + 1kb estimate. Use this [post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-06-15-e5-deepdive-miRNA-TargetPrediction.md) as reference. 
+
+```
+cd /data/putnamlab/jillashey/e5/refs/Apul
+
+grep $'\tgene\t' genome.fixed.gtf > Apul_gene.gtf
+wc -l Apul_gene.gtf 
+44371 Apul_gene.gtf
+```
+
+Sort by chromosome 
+
+```
+module load BEDTools/2.30.0-GCC-11.3.0
+
+sortBed -faidx apul.Chromosome_names.txt -i Apul_gene.gtf > Apul_gene_sorted.gtf
+```
+
+Extract 1kb 3'UTRs and keep associated gene info
+
+```
+bedtools flank -i Apul_gene_sorted.gtf -g apul.Chromosome_lenghts.txt -l 0 -r 1000 -s | \
+awk 'BEGIN{OFS="\t"} {
+    gsub("gene","3prime_UTR",$3);
+    if($5-$4 > 3) {
+        gene_id = $NF;
+        sub(/;$/, "", gene_id);
+        print $1, $2, $3, $4, $5, $6, $7, $8, gene_id;
+    }
+}' > Apul_3UTR_1kb.gtf
+
+```
+
+Subtract overlaps of other genes
+
+```
+bedtools subtract -a Apul_3UTR_1kb.gtf -b Apul_gene_sorted.gtf > Apul_3UTR_1kb_corrected.gtf
+```
+
+Extract 3'UTR seqs from genome fasta 
+
+```
+bedtools getfasta -fi /data/putnamlab/REFS/Apul/apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.masked.fa -bed Apul_3UTR_1kb_corrected.gtf -fo Apul_3UTR_1kb.fasta -fullHeader
+```
+
+Run miranda - edit `miranda_strict_all_1kb_apul.sh` in scripts folder so that input 3'UTR fasta is `/data/putnamlab/jillashey/e5/refs/Apul/Apul_3UTR_1kb.fasta`. Submitted batch job 345851
 
