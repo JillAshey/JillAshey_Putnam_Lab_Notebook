@@ -155,6 +155,125 @@ echo "Apul miranda script complete" $(date)
 
 Submitted batch job 341156. Started running immediately. 
 
+#### using the Amil genome ?
+
+Identify counts of each feature from gff 
+
+```
+cd /data/putnamlab/jillashey/genome/Amil_v2.01
+
+grep -v '^#' GCF_013753865.1_Amil_v2.1_genomic.gff | cut -s -f 3 | sort | uniq -c | sort -rn > all_features_apul_amil.txt
+
+390533 exon
+ 317969 CDS
+  41860 mRNA
+  36904 gene
+  22387 cDNA_match
+   6128 lnc_RNA
+   5871 pseudogene
+   2066 transcript
+   1413 tRNA
+    854 region
+    283 rRNA
+    170 snRNA
+     62 snoRNA
+      1 guide_RNA
+```
+
+Generate gff for genes
+
+```
+grep $'\tgene\t' GCF_013753865.1_Amil_v2.1_genomic.gff > Amil_gene.gtf
+```
+
+Extract scaffold lengths. 
+
+```
+sed 's/^\(>[^ ]*\).*/\1/' GCF_013753865.1_Amil_v2.1_genomic.fna > GCF_013753865.1_Amil_v2.1_genomic_modified.fna
+
+
+cat is GCF_013753865.1_Amil_v2.1_genomic_modified.fna | awk '$0 ~ ">" {if (NR > 1) {print c;} c=0;printf substr($0,2,100) "\t"; } $0 !~ ">" {c+=length($0);} END { print c; }' > Amil_Chromosome_lengths.txt
+```
+
+Extract scaffold names
+
+```
+awk -F" " '{print $1}' Amil_Chromosome_lengths.txt > Amil_Chromosome_names.txt
+```
+
+Create 1kb 3'UTR in gff
+
+```
+interactive
+
+module load BEDTools/2.30.0-GCC-11.3.0
+
+bedtools flank -i Amil_gene.gtf -g Amil_Chromosome_lengths.txt -l 0 -r 1000 -s | awk '{gsub("gene","3prime_UTR",$3); print $0 }' | awk '{if($5-$4 > 3)print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' | tr ' ' '\t' > Amil_3UTR_1kb.gtf
+```
+
+Subtract portions of 3'UTR that overlap nearby genes
+
+```
+bedtools subtract -a Amil_3UTR_1kb.gtf -b Amil_gene.gtf > Amil_3UTR_1kb_corrected.gtf
+```
+
+Extract 3'UTR sequences from genome 
+
+```
+awk '{print $1 "\t" $4-1 "\t" $5 "\t" $9 "\t" "." "\t" $7}' Amil_3UTR_1kb_corrected.gtf | sed 's/"//g' > Amil_3UTR_1kb_corrected.bed
+
+bedtools getfasta -fi GCF_013753865.1_Amil_v2.1_genomic_modified.fna -bed Amil_3UTR_1kb_corrected.bed -fo Amil_3UTR_1kb.fasta -name
+```
+
+Run miranda for Apul data using Amil genome. In the scripts folder: `nano miranda_strict_all_1kb_amil_apul.sh`
+
+
+```
+#!/bin/bash -i
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/e5/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Apul using Amil genome starting miranda run with all genes and miRNAs with energy cutoff <-20 and strict binding invoked"$(date)
+
+module load Miniconda3/4.9.2
+conda activate /data/putnamlab/conda/miranda 
+
+miranda /data/putnamlab/jillashey/e5/mirna_seqs/Apul_results_mature_named.fasta /data/putnamlab/jillashey/genome/Amil_v2.01/Amil_3UTR_1kb.fasta -en -20 -strict -out /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_amil_apul.tab
+
+conda deactivate
+
+echo "miranda run finished!"$(date)
+echo "counting number of putative interactions predicted" $(date)
+
+zgrep -c "Performing Scan" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_amil_apul.tab
+
+echo "Parsing output" $(date)
+grep -A 1 "Scores for this hit:" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_amil_apul.tab | sort | grep '>' > /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_parsed_amil_apul.txt
+
+echo "counting number of putative interactions predicted" $(date)
+wc -l /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_parsed_amil_apul.txt
+
+echo "Apul using Amil genome miranda script complete" $(date)
+```
+
+Submitted batch job 346077. Results: 
+
+```
+counting number of putative interactions predicted Wed Oct 30 16:54:24 EDT 2024
+1227134
+Parsing output Wed Oct 30 16:54:29 EDT 2024
+counting number of putative interactions predicted Wed Oct 30 16:54:30 EDT 2024
+4144 /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_parsed_amil_apul.txt
+```
+
 ### Peve
 
 To run miranda, I need to identify the 3' UTR ends. 
