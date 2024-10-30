@@ -681,16 +681,6 @@ The only difference is the score so I think I am inflating the calculations some
 
 I am going to run miranda once more with the following flags: `-en -10 -strict`. The score (140), scale (4), gap-open penalty (-4), and gap-extend pentaly (-9) will be kept as the defaults. Submitted batch job 345844
 
-
-
-
-
-things to ask e5 ppl: 
-
-- do we want to run gene ext or estimate the 3'UTR as 1000bp right flank? if yes, i need bam files from Peve and Pmea 
-
-redo the 1kb stuff 
-
 I want to check to see how similar the results would be between the 1kb estimate and the gene ext + 1kb estimate. Use this [post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-06-15-e5-deepdive-miRNA-TargetPrediction.md) as reference. 
 
 ```
@@ -721,7 +711,6 @@ awk 'BEGIN{OFS="\t"} {
         print $1, $2, $3, $4, $5, $6, $7, $8, gene_id;
     }
 }' > Apul_3UTR_1kb.gtf
-
 ```
 
 Subtract overlaps of other genes
@@ -736,5 +725,89 @@ Extract 3'UTR seqs from genome fasta
 bedtools getfasta -fi /data/putnamlab/REFS/Apul/apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.masked.fa -bed Apul_3UTR_1kb_corrected.gtf -fo Apul_3UTR_1kb.fasta -fullHeader
 ```
 
-Run miranda - edit `miranda_strict_all_1kb_apul.sh` in scripts folder so that input 3'UTR fasta is `/data/putnamlab/jillashey/e5/refs/Apul/Apul_3UTR_1kb.fasta`. Submitted batch job 345851
+Run miranda - edit `miranda_strict_all_1kb_apul.sh` in scripts folder so that input 3'UTR fasta is `/data/putnamlab/jillashey/e5/refs/Apul/Apul_3UTR_1kb.fasta`. Submitted batch job 345851. 
+
+```
+counting number of putative interactions predicted Tue Oct 29 16:11:40 EDT 2024
+2009896
+Parsing output Tue Oct 29 16:11:45 EDT 2024
+counting number of putative interactions predicted Tue Oct 29 16:11:46 EDT 2024
+99112 /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_parsed_apul.txt
+```
+
+Slightly less putative interactions than when using the gene ext 3'UTRs and the manual 1kb 3'UTRs. The outputs look very similar to one another: 
+
+```
+head miranda_strict_all_3UTRs_parsed_Apul.txt
+>apul-mir-100	ntLink_6:10255357-10256357	145.00	-15.40	2 19	264 286	20	65.00%	70.00%
+>apul-mir-100	ntLink_6:10563192-10564192	153.00	-20.42	2 14	791 810	12	83.33%	91.67%
+>apul-mir-100	ntLink_6:10617301-10618424	145.00	-15.84	2 16	679 697	14	78.57%	78.57%
+>apul-mir-100	ntLink_6:10672091-10673508	161.00	-23.97	2 16	951 969	14	92.86%	92.86%
+>apul-mir-100	ntLink_6:11090988-11091647	146.00	-15.95	2 11	545 564	9	88.89%	100.00%
+>apul-mir-100	ntLink_6:11405289-11406669	149.00	-16.68	2 16	1000 1018	14	78.57%	85.71%
+>apul-mir-100	ntLink_6:1142082-1142891	142.00	-16.61	2 11	9 28	9	88.89%	88.89%
+>apul-mir-100	ntLink_6:11697492-11698492	154.00	-18.81	2 15	540 559	13	84.62%	84.62%
+>apul-mir-100	ntLink_6:12100733-12101733	154.00	-15.72	2 15	563 582	13	84.62%	84.62%
+>apul-mir-100	ntLink_6:12100733-12101733	157.00	-23.22	2 16	467 485	14	85.71%	92.86%
+(base) [jillashey@ssh3 miranda]$ head miranda_strict_all_1kb_parsed_apul.txt
+>apul-mir-100	ntLink_6:10255357-10256357	145.00	-15.40	2 19	264 286	20	65.00%	70.00%
+>apul-mir-100	ntLink_6:10563192-10564192	153.00	-20.42	2 14	791 810	12	83.33%	91.67%
+>apul-mir-100	ntLink_6:10617301-10618301	145.00	-15.84	2 16	679 697	14	78.57%	78.57%
+>apul-mir-100	ntLink_6:10672508-10673508	161.00	-23.97	2 16	534 552	14	92.86%	92.86%
+>apul-mir-100	ntLink_6:11090988-11091647	146.00	-15.95	2 11	545 564	9	88.89%	100.00%
+>apul-mir-100	ntLink_6:11405669-11406669	149.00	-16.68	2 16	620 638	14	78.57%	85.71%
+>apul-mir-100	ntLink_6:1142082-1143082	142.00	-16.61	2 11	9 28	9	88.89%	88.89%
+>apul-mir-100	ntLink_6:11697492-11698492	154.00	-18.81	2 15	540 559	13	84.62%	84.62%
+>apul-mir-100	ntLink_6:12100733-12101733	154.00	-15.72	2 15	563 582	13	84.62%	84.62%
+>apul-mir-100	ntLink_6:12100733-12101733	157.00	-23.22	2 16	467 485	14	85.71%	92.86%
+```
+
+I also figured out how to get the gene name to be in the 3'UTR fasta file. For the 1kb only data: 
+
+```
+module load BEDTools/2.30.0-GCC-11.3.0
+
+awk '{print $1 "\t" $4-1 "\t" $5 "\t" $9 "\t" "." "\t" $7}' Apul_3UTR_1kb_corrected.gtf | sed 's/"//g' > Apul_3UTR_1kb_corrected.bed
+
+bedtools getfasta -fi /data/putnamlab/REFS/Apul/apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.masked.fa -bed Apul_3UTR_1kb_corrected.bed -fo Apul_3UTR_1kb.fasta -name
+
+head Apul_3UTR_1kb.fasta
+>FUN_002303::ntLink_7:4679-5679
+TCTGACATCGAATGCTGCCCAAAGCAGGGAAAAGCTAAGGACAGGAACTCTGAACTCCGTCAAAAGTTGCGCTAGATCGAGTCTAGGATAGGATAGGAATTTCACCGAACTTTCTATTTGTGTATTTGTATTTCGCTCTTCGAGCCTATTCAGTCAAACGGTTCAAAAGTCCATGTTCATGTAAGATGCATTAAATCAGTTTAGATCTCGATTCTCGTTGGATGTAAATGTAGGTTTAATTAAAAAAAAAAAAAGATTGCGAGGAAACGATCAGTGTTGGTCGATGTGTTGGTGCCCCCGGGGAAACGGGTTTTGAAGGAGAAATTCTACGCTCTAAAGAGCACTTTTATACAGAACAAGAACACTGAAAAAAGTGAACAAATTTCTTAAGAAAACACGATCCGAACAAATTTCGGATTACGCAGTTTAGAAAAAGGAGAAAATTTTCGCGCCCCCTCCATAGAGAGGGACTGGGGCCGGTTTCTCGAAAGTCCCGATAATGAGCTGTCGCCGTTTGCATTAAAGATCGAGGTCTCAATAGTTTTGCATCTAGCATGATAAAACCATCAGTGAAACAAAATGGAGTAGTCTGCTAGCAAGGACCCGCGCTCTTATTCTTTATATTCCGATTTGACTATTTGATCCCGGGCCCCAAAAGTTACCGGGACTTCCGAGAAACGGGCACACCCCAGGGCTCCTTTCGCTCGCTCGCGCCGACGCAGTAAGAACGGCAAAAACAGCTGAATCCAACTTCGCTTGAATTGGAAATACCATCACTGCAGTGGCCTCCATACGAATTCGACAAAAGAAAAGCTTAGGAGAAATTAAACATGACCTCTACGCCGGGGTAAGTTACCGTGATAACTGAGTTACCGGGTGGCTGATCGAATTGCCCCGCACCATTTTTAGCTGCGCGATATCCTGTCTTGCTTTTCTTGATTTGGCGGGGGAAGAAATTCTGGATTAAAATAAGAACCTTAGGGTCTTGCGTTTGTCTCGG
+>FUN_002304::ntLink_7:11384-12384
+```
+
+From the gene ext + 1kb data: 
+
+```
+awk -F'\t' '{split($9,a,";"); for(i in a) {if(a[i]~/gene_id/) {gsub(/^[ \t]+|[ \t]+$/, "", a[i]); gsub(/"/, "", a[i]); gene=a[i]}}} {print $1 "\t" $4-1 "\t" $5 "\t" gene "\t" "." "\t" $7}' Apul_all_3UTRs.gtf | sed 's/gene_id //' > Apul_all_3UTRs.bed
+
+bedtools getfasta -fi /data/putnamlab/REFS/Apul/apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.masked.fa -bed Apul_all_3UTRs.bed -fo Apul_all_3UTRs.fasta -name
+
+head Apul_all_3UTRs.fasta
+FUN_002303::ntLink_7:4679-5033
+TCTGACATCGAATGCTGCCCAAAGCAGGGAAAAGCTAAGGACAGGAACTCTGAACTCCGTCAAAAGTTGCGCTAGATCGAGTCTAGGATAGGATAGGAATTTCACCGAACTTTCTATTTGTGTATTTGTATTTCGCTCTTCGAGCCTATTCAGTCAAACGGTTCAAAAGTCCATGTTCATGTAAGATGCATTAAATCAGTTTAGATCTCGATTCTCGTTGGATGTAAATGTAGGTTTAATTAAAAAAAAAAAAAGATTGCGAGGAAACGATCAGTGTTGGTCGATGTGTTGGTGCCCCCGGGGAAACGGGTTTTGAAGGAGAAATTCTACGCTCTAAAGAGCACTTTTATACAG
+>FUN_002305::ntLink_7:24187-24541
+TCTGACATCGAATGCTGCCCAAAGCAGGGAAAAGCTAAGGACAGGAACTCTGAACTCCGTCAAAAGTTGCGCTAGATCGAGTCTAGGATAGGATAGGAATTTCACCGAACTTTCTATTTGTGTATTTGTATTTCGCTCTTCGAGCCTATTCAGTCAAACGGTTCAAAAGTCCATGTTCATGTAAGATGCATTAAATCAGTTTAGATCTCGATTCTCGTTGGATGTAAATGTAGGTTTAATTAAAAAAAAAAAAAGATTGCGAGGAAACGATCAGTGTTGGTCGATGTGTTGGTGCCCCCGGGGAAACGGGTTTTGAAGGAGAAATTCTACGCTCTAAAGAGCACTTTTATACAG
+>FUN_002309::ntLink_7:63179-63540
+```
+
+Rerun miranda so that gene names are associated with the interactions. Submitted batch job 346015 for gene ext + 1kb data. Submitted batch job 346016 for the 1kb data only. Both ran in ~20 mins. 
+
+```
+# Gene ext + 1kb data
+counting number of putative interactions predicted Wed Oct 30 09:10:32 EDT 2024
+1991808
+Parsing output Wed Oct 30 09:10:38 EDT 2024
+counting number of putative interactions predicted Wed Oct 30 09:10:39 EDT 2024
+99345 /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_3UTRs_parsed_Apul.txt
+
+# 1kb data only
+counting number of putative interactions predicted Wed Oct 30 09:11:28 EDT 2024
+2009896
+Parsing output Wed Oct 30 09:11:31 EDT 2024
+counting number of putative interactions predicted Wed Oct 30 09:11:32 EDT 2024
+99112 /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_1kb_parsed_apul.txt
+```
+
 

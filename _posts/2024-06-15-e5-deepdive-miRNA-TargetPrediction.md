@@ -155,13 +155,6 @@ echo "Apul miranda script complete" $(date)
 
 Submitted batch job 341156. Started running immediately. 
 
-
-
-
-
-
-
-
 ### Peve
 
 To run miranda, I need to identify the 3' UTR ends. 
