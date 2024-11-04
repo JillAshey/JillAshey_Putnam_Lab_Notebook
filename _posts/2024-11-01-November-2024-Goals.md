@@ -41,9 +41,11 @@ October 2024 goals and daily notebook entries.
 
 - e5 ncRNA paper writing 
 - e5 meeting 
-- 
+- Running miranda for updated miRNAs e5 
 
+### 20241103
 
+- Playing around w mirtarrnaseq 
 
 
 
