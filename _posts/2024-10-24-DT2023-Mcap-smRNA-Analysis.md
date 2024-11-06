@@ -440,6 +440,137 @@ Reported 803 alignments
 
 Vast majority of reads are not aligning which makes sense because I gave it very long reads (>150bp). This is probably why it failed. No results files or miRNA fasta files were generated either. Need to revisit trimming
 
+### 20241105
+
+Revisiting trimming with cutadapt. In the scripts folder, edit `cutadapt_trim.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts            
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+# Load modules 
+module load cutadapt/4.2-GCCcore-11.3.0
+#module load cutadapt/3.5-GCCcore-11.2.0
+module load FastQC/0.11.8-Java-1.8
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/
+
+#echo "Count number of reads in each file" $(date)
+
+#zgrep -c "@LH00" *.gz > smRNA_raw_read_count.txt
+
+echo "Start read trimming with cutadapt, followed by QC" $(date)
+
+# Make an array of sequences to trim
+array1=($(ls *R1_001.fastq.gz))
+
+# cutadapt loop
+for i in ${array1[@]}; do
+    cutadapt -a TGGAATTCTCGGGTGCCAAGG -u 3 -m 15 -q 20,20 --trim-n --max-n 0 -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim/trim_cutadapt_${i} $i
+done
+
+echo "Read trimming of adapters complete" $(date)
+```
+
+Submitted batch job 347763. Took almost 4 hours. I didn't put the QC code in here because I wanted to run it in interactive mode. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim
+interactive
+module load FastQC/0.11.8-Java-1.8
+fastqc *
+```
+
+Started running in interactive mode at 2:15pm
+
+```
+mv *qc ../../output/fastqc/trim
+cd ../../output/fastqc/trim
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+multiqc *
+```
+
+Looks very similar to cutadapt attempt 1. The samples that were sequenced in the first batch were able to be successfully trimmed to 25 bp. Going to rerun cutadapt with some more stringent cutoffs and more adapter seqs that were identified in the individual fastqc outputs. In the scripts folder: `nano cutadapt_trim_stringent.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts            
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+# Load modules 
+module load cutadapt/4.2-GCCcore-11.3.0
+#module load cutadapt/3.5-GCCcore-11.2.0
+module load FastQC/0.11.8-Java-1.8
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/
+
+#echo "Count number of reads in each file" $(date)
+
+#zgrep -c "@LH00" *.gz > smRNA_raw_read_count.txt
+
+echo "Start read trimming with cutadapt, followed by QC" $(date)
+
+# Make an array of sequences to trim
+array1=($(ls *R1_001.fastq.gz))
+
+# cutadapt loop
+for i in ${array1[@]}; do
+cutadapt -a TGGAATTCTCGGGTGCCAAGG -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a GATCGGAAGAGCACACGTCTGAACTCCAGTCA -a GAAACGTTGGGTTGCGGTATTGGAAGAGCACACGTCTGAACTCCAGTCAC -a AGTGTCCTATCAGCTACCATCGGAAGAGCACACGTCTGAACTCCAGTCAC -a CTCGGCATGGAAGCCGTGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -a TAGCGTCGAACGGGCGCAATCGGAAGAGCACACGTCTGAACTCCAGTCAC -a ACGTCTGAACTCCAGTCACTTACAGGAATCTGGGGGGGGGGGGGGGGGGG -a TATCGGTGAAACATCCTCATCGGAAGAGCACACGTCTGAACTCCAGTCAC -m 18 -M 30 -q 30,30 --trim-n --max-n 0 --discard-untrimmed -e 0.1 -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_${i} $i
+done
+
+## added adapters that were overrepresented sequences from the individual fastqc htmls 
+
+echo "Read trimming of adapters complete" $(date)
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/
+fastqc * -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/fastqc/trim_stringent
+done
+
+echo "Read trimming of adapters and QC complete. Starting multiqc" $(date)
+
+module unload cutadapt/4.2-GCCcore-11.3.0
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/fastqc/trim_stringent
+multiqc * 
+
+echo "MultiQC complete" $(date)
+
+echo "Count number of reads in each trimmed file" $(date)
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent
+zgrep -c "@LH00" *.gz > smRNA_trim_stringent_read_count.txt
+```
+
+Submitted batch job 347786. Based on initial looks, a lot of the reads are getting tossed because they are too short. 
+
+
+
+
+
+
+
+
+Zoe cutadapt trimming: https://github.com/zdellaert/LaserCoral/blob/1b776313512822d368e957591890b2228c590bd5/code/RNA-seq-bioinf.md 
+
+
 
 
 

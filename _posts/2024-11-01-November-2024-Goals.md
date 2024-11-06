@@ -47,8 +47,22 @@ October 2024 goals and daily notebook entries.
 
 - Playing around w mirtarrnaseq 
 
+### 20241104
 
+- mirtarrnaseq Apul e5 deep dive expression 
+- Mote interview 
+- Lab meeting 
+- Prospective student meeting 
+- Aquarium room stuff
 
+### 20241105
+
+- Cutadapt iterations for DT samples 
+- Writing for e5 ncRNA manuscript 
+
+### 20241106
+
+- 
 
 
 to do 
