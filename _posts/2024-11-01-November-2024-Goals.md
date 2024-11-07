@@ -59,10 +59,23 @@ October 2024 goals and daily notebook entries.
 
 - Cutadapt iterations for DT samples 
 - Writing for e5 ncRNA manuscript 
+- Sent e5 draft to authors 
 
 ### 20241106
 
-- 
+- bleh
+- Writing accountability 
+- Sent Pacuta manuscript to authors 
+- Changed water for larvs 
+- beach screm
+
+### 20241107
+
+- Writing meeting 
+- Aquarium room stuff
+- Hollie meeting
+- Looking at multiQC
+- Shortstack coding 
 
 
 to do 

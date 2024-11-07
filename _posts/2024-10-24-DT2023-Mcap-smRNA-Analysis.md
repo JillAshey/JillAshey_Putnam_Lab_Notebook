@@ -561,6 +561,88 @@ zgrep -c "@LH00" *.gz > smRNA_trim_stringent_read_count.txt
 
 Submitted batch job 347786. Based on initial looks, a lot of the reads are getting tossed because they are too short. 
 
+### 20241107
+
+Took a while but ran. The lengths look much better, as does the GC content. There are some samples that have such a high duplication rate though...I know this is a result of PCR artifacts. I may run shortstack to see what the output looks like. I may need to do some adapter trimming as well with certain samples. 
+
+next steps: 
+
+- run short stack on stringent trimmed reads 
+- run picard (picard/2.25.1-Java-11)
+	- EstimateLibraryComplexity - Estimates the numbers of unique molecules in a sequencing library.  
+	- ExtractIlluminaBarcodes - Tool determines the barcode for each read in an Illumina lane.  
+	- MarkDuplicates - Identifies duplicate reads.  
+USAGE: PicardCommandLine <program name> [-h]
+
+Run short stack. 
+
+In the scripts folder: `nano shortstack_trim_stringent.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Running short stack on mature trimmed miRNAs from Mcap DT project"
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent
+
+# Load modules 
+module load ShortStack/4.0.2-foss-2022a  
+module load Kent_tools/442-GCC-11.3.0
+
+# Run short stack
+ShortStack \
+--genomefile /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta \
+--readfile trim_stringent_cutadapt_10_small_RNA_S4_R1_001.fastq.gz \
+trim_stringent_cutadapt_11_small_RNA_S5_R1_001.fastq.gz \
+trim_stringent_cutadapt_13_S76_R1_001.fastq.gz \
+trim_stringent_cutadapt_14_small_RNA_S6_R1_001.fastq.gz \
+trim_stringent_cutadapt_23_S77_R1_001.fastq.gz \
+trim_stringent_cutadapt_24_small_RNA_S7_R1_001.fastq.gz \
+trim_stringent_cutadapt_26_small_RNA_S8_R1_001.fastq.gz \
+trim_stringent_cutadapt_28_small_RNA_S9_R1_001.fastq.gz \
+trim_stringent_cutadapt_35_S78_R1_001.fastq.gz \
+trim_stringent_cutadapt_36_small_RNA_S10_R1_001.fastq.gz \
+trim_stringent_cutadapt_37_small_RNA_S11_R1_001.fastq.gz \
+trim_stringent_cutadapt_39_small_RNA_S12_R1_001.fastq.gz \
+trim_stringent_cutadapt_47_small_RNA_S13_R1_001.fastq.gz \
+trim_stringent_cutadapt_48_small_RNA_S14_R1_001.fastq.gz \
+trim_stringent_cutadapt_51_small_RNA_S15_R1_001.fastq.gz \
+trim_stringent_cutadapt_52_S79_R1_001.fastq.gz \
+trim_stringent_cutadapt_60_S80_R1_001.fastq.gz \
+trim_stringent_cutadapt_61_small_RNA_S16_R1_001.fastq.gz \
+trim_stringent_cutadapt_62_small_RNA_S17_R1_001.fastq.gz \
+trim_stringent_cutadapt_63_small_RNA_S18_R1_001.fastq.gz \
+#trim_stringent_cutadapt_6_small_RNA_S1_R1_001.fastq.gz \
+#trim_stringent_cutadapt_72_S81_R1_001.fastq.gz \
+#trim_stringent_cutadapt_73_small_RNA_S19_R1_001.fastq.gz \
+#trim_stringent_cutadapt_74_small_RNA_S20_R1_001.fastq.gz \
+#trim_stringent_cutadapt_75_small_RNA_S21_R1_001.fastq.gz \
+#trim_stringent_cutadapt_7_small_RNA_S2_R1_001.fastq.gz \
+#trim_stringent_cutadapt_85_S82_R1_001.fastq.gz \
+#trim_stringent_cutadapt_86_small_RNA_S22_R1_001.fastq.gz\
+#trim_stringent_cutadapt_87_small_RNA_S23_R1_001.fastq.gz \
+#trim_stringent_cutadapt_88_small_RNA_S24_R1_001.fastq.gz \
+#trim_stringent_cutadapt_8_small_RNA_S3_R1_001.fastq.gz \
+#trim_stringent_cutadapt_9_S75_R1_001.fastq.gz \
+--known_miRNAs /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa \
+--outdir /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/shortstack_trim_stringent \
+--threads 10 \
+--dn_mirna
+
+echo "Short stack complete!"
+```
+
+Submitted batch job 348221 - only doing a subset for now
 
 
 
