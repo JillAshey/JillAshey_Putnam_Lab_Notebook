@@ -965,3 +965,68 @@ wc -l Mcap_gene_count_matrix.csv
 ```
 
 Copy to local computer. Hooray! 
+
+### 20241108 
+
+Identify lncRNAs using my [Astrangia code](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-01-16-Astrangia2021-lncRNA-Analysis.md) and Zach's [oyster code](https://github.com/zbengt/oyster-lnc/blob/main/code/10-count-matrices-DESeq2-final.Rmd) as reference. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/stringtie
+
+awk '$3 == "transcript" && $1 !~ /^#/' merged.annotated.gtf | awk '($5 - $4 > 199) || ($4 - $5 > 199)' > Mcap_lncRNA_candidates.gtf
+
+head Mcap_lncRNA_candidates.gtf 
+Montipora_capitata_HIv3___Scaffold_1	StringTie	transcript	82397	95409	.	+	.	transcript_id "Montipora_capitata_HIv3___RNAseq.g4584.t1"; gene_id "MSTRG.4"; gene_name "Montipora_capitata_HIv3___RNAseq.g4584.t1"; xloc "XLOC_000001"; ref_gene_id "Montipora_capitata_HIv3___RNAseq.g4584.t1"; cmp_ref "Montipora_capitata_HIv3___RNAseq.g4584.t1"; class_code "="; tss_id "TSS1";
+Montipora_capitata_HIv3___Scaffold_1	StringTie	transcript	109801	163388	.	+	.	transcript_id "Montipora_capitata_HIv3___RNAseq.g4586.t1"; gene_id "MSTRG.30"; gene_name "Montipora_capitata_HIv3___RNAseq.g4586.t1"; xloc "XLOC_000002"; ref_gene_id "Montipora_capitata_HIv3___RNAseq.g4586.t1"; cmp_ref "Montipora_capitata_HIv3___RNAseq.g4586.t1"; class_code "="; tss_id "TSS2";
+Montipora_capitata_HIv3___Scaffold_1	StringTie	transcript	162568	163156	.	+	.	transcript_id "Montipora_capitata_HIv3___TS.g26272.t1"; gene_id "MSTRG.30"; gene_name "Montipora_capitata_HIv3___TS.g26272.t1"; xloc "XLOC_000003"; ref_gene_id "Montipora_capitata_HIv3___TS.g26272.t1"; cmp_ref "Montipora_capitata_HIv3___TS.g26272.t1"; class_code "="; tss_id "TSS3";
+Montipora_capitata_HIv3___Scaffold_1	StringTie	transcript	169950	170561	.	+	.	transcript_id "Montipora_capitata_HIv3___TS.g26273.t1"; gene_id "MSTRG.5"; gene_name "Montipora_capitata_HIv3___TS.g26273.t1"; xloc "XLOC_000004"; ref_gene_id "Montipora_capitata_HIv3___TS.g26273.t1"; cmp_ref "Montipora_capitata_HIv3___TS.g26273.t1"; class_code "="; tss_id "TSS4";
+Montipora_capitata_HIv3___Scaffold_1	StringTie	transcript	170982	172082	.	+	.	transcript_id "Montipora_capitata_HIv3___RNAseq.g4588.t1"; gene_id "MSTRG.6"; gene_name "Montipora_capitata_HIv3___RNAseq.g4588.t1"; xloc "XLOC_000005"; ref_gene_id "Montipora_capitata_HIv3___RNAseq.g4588.t1"; cmp_ref "Montipora_capitata_HIv3___RNAseq.g4588.t1"; class_code "="; tss_id "TSS5";
+Montipora_capitata_HIv3___Scaffold_1	StringTie	transcript	176400	276376	.	+	.	transcript_id "Montipora_capitata_HIv3___RNAseq.g4589.t1"; gene_id "MSTRG.7"; gene_name "Montipora_capitata_HIv3___RNAseq.g4589.t1"; xloc "XLOC_000006"; ref_gene_id "Montipora_capitata_HIv3___RNAseq.g4589.t1"; cmp_ref "Montipora_capitata_HIv3___RNAseq.g4589.t1"; class_code "="; tss_id "TSS6";
+Montipora_capitata_HIv3___Scaffold_1	StringTie	transcript	204191	204451	.	+	.	transcript_id "Montipora_capitata_HIv3___TS.g26276.t1"; gene_id "MSTRG.8"; gene_name "Montipora_capitata_HIv3___TS.g26276.t1"; xloc "XLOC_000007"; ref_gene_id "Montipora_capitata_HIv3___TS.g26276.t1"; cmp_ref "Montipora_capitata_HIv3___TS.g26276.t1"; class_code "="; tss_id "TSS7";
+Montipora_capitata_HIv3___Scaffold_1	StringTie	transcript	223366	223638	.	+	.	transcript_id "Montipora_capitata_HIv3___TS.g26277.t1"; gene_id "MSTRG.9"; gene_name "Montipora_capitata_HIv3___TS.g26277.t1"; xloc "XLOC_000008"; ref_gene_id "Montipora_capitata_HIv3___TS.g26277.t1"; cmp_ref "Montipora_capitata_HIv3___TS.g26277.t1"; class_code "="; tss_id "TSS8";
+Montipora_capitata_HIv3___Scaffold_1	StringTie	transcript	330242	330991	.	+	.	transcript_id "Montipora_capitata_HIv3___RNAseq.g4592.t1"; gene_id "MSTRG.12"; gene_name "Montipora_capitata_HIv3___RNAseq.g4592.t1"; xloc "XLOC_000009"; ref_gene_id "Montipora_capitata_HIv3___RNAseq.g4592.t1"; cmp_ref "Montipora_capitata_HIv3___RNAseq.g4592.t1"; class_code "="; tss_id "TSS9";
+Montipora_capitata_HIv3___Scaffold_1	StringTie	transcript	396628	400449	.	+	.	transcript_id "Montipora_capitata_HIv3___TS.g26284.t1"; gene_id "MSTRG.19"; gene_name "Montipora_capitata_HIv3___TS.g26284.t1"; xloc "XLOC_000010"; ref_gene_id "Montipora_capitata_HIv3___TS.g26284.t1"; cmp_ref "Montipora_capitata_HIv3___TS.g26284.t1"; class_code "="; tss_id "TSS10";
+
+wc -l Mcap_lncRNA_candidates.gtf
+54314 Mcap_lncRNA_candidates.gtf
+```
+
+Use bedtools to extract sequence data from the reference genome based on the coordinates from the GTF. The resulting seqs represent potential lncRNA candidates. 
+
+```
+interactive 
+module load BEDTools/2.30.0-GCC-11.3.0 
+bedtools getfasta -fi /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta -bed Mcap_lncRNA_candidates.gtf -fo Mcap_lncRNA_candidates.fasta -name -split
+
+zgrep -c ">" Mcap_lncRNA_candidates.fasta
+```
+
+Run CPC2. 
+
+```
+module load CPC2/1.0.1-foss-2022a
+CPC2.py -i /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/stringtie/Mcap_lncRNA_candidates.fasta
+
+awk '$8 != "coding"' cpc2output.txt.txt > Mcap_noncoding_transcripts_info.txt
+
+awk '$8 == "noncoding" {print $1}' cpc2output.txt.txt > Mcap_noncoding_transcripts_ids.txt
+
+grep -Fwf Mcap_noncoding_transcripts_ids.txt Mcap_lncRNA_candidates.fasta > Mcap_merged_final_lncRNAs.gtf
+
+wc -l Mcap_merged_final_lncRNAs.gtf
+31519 Mcap_merged_final_lncRNAs.gtf
+```
+
+Download rfam sequences 
+
+https://ftp.ebi.ac.uk/pub/databases/Rfam/CURRENT/fasta_files/ 
+
+
+
+
+
+Download rfam database
+
+```
+wget ftp://ftp.ebi.ac.uk/pub/databases/Rfam/CURRENT/fasta_files/Rfam.fa.gz
+```

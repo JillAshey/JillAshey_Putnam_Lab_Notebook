@@ -561,7 +561,7 @@ zgrep -c "@LH00" *.gz > smRNA_trim_stringent_read_count.txt
 
 Submitted batch job 347786. Based on initial looks, a lot of the reads are getting tossed because they are too short. 
 
-### 20241107
+### 20241108
 
 Took a while but ran. The lengths look much better, as does the GC content. There are some samples that have such a high duplication rate though...I know this is a result of PCR artifacts. I may run shortstack to see what the output looks like. I may need to do some adapter trimming as well with certain samples. 
 
@@ -570,7 +570,6 @@ next steps:
 - run short stack on stringent trimmed reads 
 - run picard (picard/2.25.1-Java-11)
 	- EstimateLibraryComplexity - Estimates the numbers of unique molecules in a sequencing library.  
-	- ExtractIlluminaBarcodes - Tool determines the barcode for each read in an Illumina lane.  
 	- MarkDuplicates - Identifies duplicate reads.  
 USAGE: PicardCommandLine <program name> [-h]
 
@@ -600,8 +599,106 @@ module load ShortStack/4.0.2-foss-2022a
 module load Kent_tools/442-GCC-11.3.0
 
 # Run short stack
+# Run short stack
 ShortStack \
 --genomefile /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta \
+--readfile trim_stringent_cutadapt_10_small_RNA_S4_R1_001.fastq.gz \
+trim_stringent_cutadapt_11_small_RNA_S5_R1_001.fastq.gz \
+trim_stringent_cutadapt_13_S76_R1_001.fastq.gz \
+trim_stringent_cutadapt_63_small_RNA_S18_R1_001.fastq.gz \
+--known_miRNAs /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mature_mirbase_cnidarian_T.fa \
+--outdir /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/shortstack_trim_stringent \
+--threads 10 \
+--dn_mirna
+
+echo "Short stack complete!"
+```
+
+Submitted batch job 348221 - only doing a subset for now. Ran but ended with this error: `/var/spool/slurmd/job348221/slurm_script: line 56: --known_miRNAs: command not found`, even though that is a command...Maybe copy `mature_mirbase_cnidarian_T.fa` to this folder? 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data
+cp /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa .
+```
+
+Edit the `shortstack_trim_stringent.sh` script so that the known miRNAs path is the new path (`/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mature_mirbase_cnidarian_T.fa`). Submitted batch job 348256. Got the same error. Trying on a subset and making sure that the backslashes are correct. Submitted batch job 348269
+
+Let's try running picard in interactive mode
+
+```
+interactive 
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/shortstack_trim_stringent/ShortStack_1731009886
+module load picard/2.25.1-Java-11
+To execute picard run: java -jar $EBROOTPICARD/picard.jar
+```
+
+I just want to test picard on one of the bam files (`trim_stringent_cutadapt_51_small_RNA_S15_R1_001.bam`). 
+
+```
+# Run EstimateLibraryComplexity
+java -jar $EBROOTPICARD/picard.jar EstimateLibraryComplexity \
+    I=trim_stringent_cutadapt_24_small_RNA_S7_R1_001.bam \
+    O=trim_stringent_cutadapt_24_small_RNA_complexity_metrics.txt
+    
+INFO	2024-11-08 09:24:40	EstimateLibraryComplexity	
+
+********** NOTE: Picard's command line syntax is changing.
+**********
+********** For more information, please see:
+********** https://github.com/broadinstitute/picard/wiki/Command-Line-Syntax-Transition-For-Users-(Pre-Transition)
+**********
+********** The command line looks like this in the new syntax:
+**********
+**********    EstimateLibraryComplexity -I trim_stringent_cutadapt_51_small_RNA_S15_R1_001.bam -O trim_stringent_cutadapt_51_small_RNA_complexity_metrics.txt
+**********
+
+
+09:24:42.296 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/opt/software/picard/2.25.1-Java-11/picard.jar!/com/intel/gkl/native/libgkl_compression.so
+[Fri Nov 08 09:24:42 EST 2024] EstimateLibraryComplexity INPUT=[trim_stringent_cutadapt_51_small_RNA_S15_R1_001.bam] OUTPUT=trim_stringent_cutadapt_51_small_RNA_complexity_metrics.txt    MIN_IDENTICAL_BASES=5 MAX_DIFF_RATE=0.03 MIN_MEAN_QUALITY=20 MAX_GROUP_RATIO=500 MAX_READ_LENGTH=0 MIN_GROUP_COUNT=2 READ_NAME_REGEX=<optimized capture of last three ':' separated fields as numeric values> OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 MAX_OPTICAL_DUPLICATE_SET_SIZE=300000 VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=33053659 CREATE_INDEX=false CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json USE_JDK_DEFLATER=false USE_JDK_INFLATER=false
+[Fri Nov 08 09:24:42 EST 2024] Executing as jillashey@n063.cluster.com on Linux 3.10.0-1160.119.1.el7.x86_64 amd64; OpenJDK 64-Bit Server VM 11.0.2+9; Deflater: Intel; Inflater: Intel; Provider GCS is not available; Picard version: 2.25.1
+INFO	2024-11-08 09:24:42	EstimateLibraryComplexity	Will store 33053659 read pairs in memory before sorting.
+INFO	2024-11-08 09:24:45	EstimateLibraryComplexity	Finished reading - read 0 records - moving on to scanning for duplicates.
+[Fri Nov 08 09:24:45 EST 2024] picard.sam.markduplicates.EstimateLibraryComplexity done. Elapsed time: 0.05 minutes.
+Runtime.totalMemory()=2035417088
+```
+
+didn't really seem to run successfully...I got an output file but no information in the output file. Let's try running MarkDuplicates
+
+```
+java -jar $EBROOTPICARD/picard.jar MarkDuplicates -I trim_stringent_cutadapt_51_small_RNA_S15_R1_001.bam -O marked_dups_trim_stringent_cutadapt_51_small_RNA_S15_R1_001.bam -M marked_dup_51_small_RNA_metrics.txt
+
+09:32:36.015 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/opt/software/picard/2.25.1-Java-11/picard.jar!/com/intel/gkl/native/libgkl_compression.so
+[Fri Nov 08 09:32:36 EST 2024] MarkDuplicates INPUT=[trim_stringent_cutadapt_51_small_RNA_S15_R1_001.bam] OUTPUT=marked_dups_trim_stringent_cutadapt_51_small_RNA_S15_R1_001.bam METRICS_FILE=marked_dup_51_small_RNA_metrics.txt    MAX_SEQUENCES_FOR_DISK_READ_ENDS_MAP=50000 MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=8000 SORTING_COLLECTION_SIZE_RATIO=0.25 TAG_DUPLICATE_SET_MEMBERS=false REMOVE_SEQUENCING_DUPLICATES=false TAGGING_POLICY=DontTag CLEAR_DT=true DUPLEX_UMI=false ADD_PG_TAG_TO_READS=true REMOVE_DUPLICATES=false ASSUME_SORTED=false DUPLICATE_SCORING_STRATEGY=SUM_OF_BASE_QUALITIES PROGRAM_RECORD_ID=MarkDuplicates PROGRAM_GROUP_NAME=MarkDuplicates READ_NAME_REGEX=<optimized capture of last three ':' separated fields as numeric values> OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 MAX_OPTICAL_DUPLICATE_SET_SIZE=300000 VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json USE_JDK_DEFLATER=false USE_JDK_INFLATER=false
+[Fri Nov 08 09:32:36 EST 2024] Executing as jillashey@n063.cluster.com on Linux 3.10.0-1160.119.1.el7.x86_64 amd64; OpenJDK 64-Bit Server VM 11.0.2+9; Deflater: Intel; Inflater: Intel; Provider GCS is not available; Picard version: 2.25.1
+INFO	2024-11-08 09:32:36	MarkDuplicates	Start of doWork freeMemory: 2018640208; totalMemory: 2035417088; maxMemory: 31136546816
+INFO	2024-11-08 09:32:36	MarkDuplicates	Reading input file and constructing read end information.
+INFO	2024-11-08 09:32:36	MarkDuplicates	Will retain up to 112813575 data points before spilling to disk.
+INFO	2024-11-08 09:32:37	MarkDuplicates	Read 102803 records. 0 pairs never matched.
+INFO	2024-11-08 09:32:38	MarkDuplicates	After buildSortedReadEndLists freeMemory: 1285863816; totalMemory: 2214113280; maxMemory: 31136546816
+INFO	2024-11-08 09:32:38	MarkDuplicates	Will retain up to 973017088 duplicate indices before spilling to disk.
+Killed
+```
+
+Failed bleh. Also no miRNA loci found in short stack...may need to adjust trimming parameters. 
+
+
+
+
+Rerun cutadapt with updated trimming. look at individual fastqc files to determine any other adapters, particularly from samples that did not have a high % of reads with adapters 
+
+
+```
+cutadapt -a TGGAATTCTCGGGTGCCAAGG -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA [...other adapters...] \
+-m 15 -M 35 -q 20,20 --trim-n --max-n 1 -e 0.15 \
+-o output.fastq input.fastq
+```
+
+
+
+
+
+
+```
 --readfile trim_stringent_cutadapt_10_small_RNA_S4_R1_001.fastq.gz \
 trim_stringent_cutadapt_11_small_RNA_S5_R1_001.fastq.gz \
 trim_stringent_cutadapt_13_S76_R1_001.fastq.gz \
@@ -634,15 +731,7 @@ trim_stringent_cutadapt_63_small_RNA_S18_R1_001.fastq.gz \
 #trim_stringent_cutadapt_88_small_RNA_S24_R1_001.fastq.gz \
 #trim_stringent_cutadapt_8_small_RNA_S3_R1_001.fastq.gz \
 #trim_stringent_cutadapt_9_S75_R1_001.fastq.gz \
---known_miRNAs /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa \
---outdir /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/shortstack_trim_stringent \
---threads 10 \
---dn_mirna
-
-echo "Short stack complete!"
 ```
-
-Submitted batch job 348221 - only doing a subset for now
 
 
 

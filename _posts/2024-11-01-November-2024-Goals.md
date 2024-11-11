@@ -77,6 +77,17 @@ October 2024 goals and daily notebook entries.
 - Looking at multiQC
 - Shortstack coding 
 
+### 20241108
+
+- Despairing over smRNA dups 
+- Writing accountability 
+- Edits to Pacuta paper 
+- lncRNA Mcap identification
+- Danielle practice defense 
+
+### 20241110
+
+- Small edits for Pacuta paper 
 
 to do 
 
