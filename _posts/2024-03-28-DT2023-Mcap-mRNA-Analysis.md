@@ -996,7 +996,7 @@ Use bedtools to extract sequence data from the reference genome based on the coo
 ```
 interactive 
 module load BEDTools/2.30.0-GCC-11.3.0 
-bedtools getfasta -fi /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta -bed Mcap_lncRNA_candidates.gtf -fo Mcap_lncRNA_candidates.fasta -name -split
+bedtools getfasta -fi /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta -bed Mcap_lncRNA_candidates.gtf -fo Mcap_lncRNA_candidates.fasta -fullHeader -split
 
 zgrep -c ">" Mcap_lncRNA_candidates.fasta
 ```
@@ -1008,25 +1008,157 @@ module load CPC2/1.0.1-foss-2022a
 CPC2.py -i /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/stringtie/Mcap_lncRNA_candidates.fasta
 
 awk '$8 != "coding"' cpc2output.txt.txt > Mcap_noncoding_transcripts_info.txt
+head Mcap_noncoding_transcripts_info.txt
+#ID	transcript_length	peptide_length	Fickett_score	pI	ORF_integrity	coding_probability	label
+transcript::Montipora_capitata_HIv3___Scaffold_1:204190-204451	261	87	0.35153	10.518226432800294	1	0.10615	noncoding
+transcript::Montipora_capitata_HIv3___Scaffold_1:223365-223638	273	91	0.45305	9.851301002502442	1	0.437989	noncoding
+transcript::Montipora_capitata_HIv3___Scaffold_1:330241-330991	750	53	0.44283	4.5459486007690435	1	0.100817	noncoding
+transcript::Montipora_capitata_HIv3___Scaffold_1:499117-506138	7021	102	0.29595000000000005	9.135637474060061	1	0.0984293	noncoding
+transcript::Montipora_capitata_HIv3___Scaffold_1:581275-583890	2615	84	0.39626000000000006	9.359922981262208	1	0.154755	noncoding
+transcript::Montipora_capitata_HIv3___Scaffold_1:600468-626017	25549	131	0.2921	10.076875877380367	1	0.19239	noncoding
+transcript::Montipora_capitata_HIv3___Scaffold_1:696118-715336	19218	107	0.29367000000000004	10.136251258850098	1	0.108674	noncoding
+transcript::Montipora_capitata_HIv3___Scaffold_1:1058733-1069888	11155	118	0.29367000000000004	5.867625617980956	1	0.3621	noncoding
+transcript::Montipora_capitata_HIv3___Scaffold_1:1128944-1147155	18211	133	0.2921	8.951193428039552	1	0.23396	noncoding
 
 awk '$8 == "noncoding" {print $1}' cpc2output.txt.txt > Mcap_noncoding_transcripts_ids.txt
-
-grep -Fwf Mcap_noncoding_transcripts_ids.txt Mcap_lncRNA_candidates.fasta > Mcap_merged_final_lncRNAs.gtf
-
-wc -l Mcap_merged_final_lncRNAs.gtf
-31519 Mcap_merged_final_lncRNAs.gtf
+head Mcap_noncoding_transcripts_ids.txt
+transcript::Montipora_capitata_HIv3___Scaffold_1:204190-204451
+transcript::Montipora_capitata_HIv3___Scaffold_1:223365-223638
+transcript::Montipora_capitata_HIv3___Scaffold_1:330241-330991
+transcript::Montipora_capitata_HIv3___Scaffold_1:499117-506138
+transcript::Montipora_capitata_HIv3___Scaffold_1:581275-583890
+transcript::Montipora_capitata_HIv3___Scaffold_1:600468-626017
+transcript::Montipora_capitata_HIv3___Scaffold_1:696118-715336
+transcript::Montipora_capitata_HIv3___Scaffold_1:1058733-1069888
+transcript::Montipora_capitata_HIv3___Scaffold_1:1128944-1147155
+transcript::Montipora_capitata_HIv3___Scaffold_1:1152456-1156614
 ```
 
-Download rfam sequences 
+Extract putative lncRNAs from fasta 
+```
+sed 's/^transcript:://' Mcap_noncoding_transcripts_ids.txt > Mcap_noncoding_transcripts_ids_modified.txt
 
-https://ftp.ebi.ac.uk/pub/databases/Rfam/CURRENT/fasta_files/ 
+grep -A 1 -Ff Mcap_noncoding_transcripts_ids_modified.txt Mcap_lncRNA_candidates.fasta | sed '/^--$/d' > Mcap_lncRNAs_putative.fasta
+```
 
+I have putative lncRNAs. 
 
+### 20241112
 
-
-
-Download rfam database
+Download rfam sequences to blast against putative lncRNAs to remove any unwanted rRNAs, tRNAs, etc. First, make a refs folder for the sequences
 
 ```
-wget ftp://ftp.ebi.ac.uk/pub/databases/Rfam/CURRENT/fasta_files/Rfam.fa.gz
+cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA
+mkdir refs 
 ```
+
+In the scripts folder: `nano wget_rfam.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/scripts            
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Download rfam sequences" $(date)
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/refs
+
+wget -r -np -nd -A .fa.gz ftp://ftp.ebi.ac.uk/pub/databases/Rfam/CURRENT/fasta_files/
+
+echo "Download complete, cat all sequences" $(date)
+
+cat *fa.gz > rfam_seqs.fa.gz
+rm RF*
+
+echo "Cat complete" $(date)
+```
+
+Submitted batch job 348568
+
+After the sequences are done downloading, blast the putative lncRNAs against the rfam sequences. Make new folder for output. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output
+mkdir lnc_blast 
+```
+
+In the scripts folder: `nano blastn_rfam.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/scripts            
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BLAST+/2.9.0-iimpi-2019b
+
+echo "Blasting putative lncRNAs against rfam" $(date)
+echo "Making blast db" $(date)
+
+makeblastdb -in /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/refs/rfam_seqs.fa -out /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/refs/rfam_db -dbtype nucl
+
+echo "Db creation complete, blast putative lncRNAs against rfam db" $(date)
+
+blastn -query /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/stringtie/Mcap_lncRNAs_putative.fasta -db /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/refs/rfam_db -out /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/lnc_blast/Mcap_lnc_rfam_blastn.tab -evalue 1E-40 -num_threads 10 -max_target_seqs 1 -max_hsps 1 -outfmt 6
+
+echo "Blast complete" $(date)
+
+```
+
+Submitted batch job 348600. Ran in about 5 mins. Look at output
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/lnc_blast
+
+head Mcap_lnc_rfam_blastn.tab 
+Montipora_capitata_HIv3___Scaffold_10:50987091-51005681	MU825396.1/212773-212653	96.694	121	4	0	10869	10989	121	1	1.95e-48	202
+Montipora_capitata_HIv3___Scaffold_1013:6609-13142	MU826834.1/1912895-1913082	95.531	179	6	2	3345	3522	188	11	6.68e-74	285
+Montipora_capitata_HIv3___Scaffold_1013:13927-20177	MU827310.1/718302-718465	96.951	164	5	0	2981	3144	164	1	3.85e-71	276
+Montipora_capitata_HIv3___Scaffold_11:3287015-3291500	MU827309.1/2350248-2350386	96.063	127	5	0	4035	4161	127	1	1.02e-50	207
+Montipora_capitata_HIv3___Scaffold_13:24569367-24573028	MU827310.1/717380-717262	95.798	119	5	0	1580	1698	1	119	2.35e-46	193
+Montipora_capitata_HIv3___Scaffold_13:24617531-24626060	LJWW01001071.1/6624-6820	95.690	116	3	2	2761	2876	142	29	9.11e-44	185
+Montipora_capitata_HIv3___Scaffold_13:24738989-24746769	MU826834.1/1912895-1913082	95.506	178	5	2	3075	3251	188	13	1.03e-72	281
+Montipora_capitata_HIv3___Scaffold_13:24798335-24808343	LSMT01000541.1/6279-6088	97.917	192	4	0	2639	2830	192	1	3.57e-88	333
+Montipora_capitata_HIv3___Scaffold_4:36816332-36834523	MU827817.1/523255-523552	90.333	300	25	4	17249	17546	1	298	3.80e-105	390
+Montipora_capitata_HIv3___Scaffold_4:31137676-31146429	MU826834.1/1905971-1906134	93.252	163	11	0	4963	5125	163	1	1.97e-60	241
+
+wc -l Mcap_lnc_rfam_blastn.tab 
+15 Mcap_lnc_rfam_blastn.tab
+```
+
+Only 15 sequences got hits as possible rfam contaminants. Make a list of these. 
+
+```
+awk '{print $1}' Mcap_lnc_rfam_blastn.tab > sequences_to_remove.txt
+```
+
+Remove sequences from fasta
+
+```
+cd ../stringtie
+grep -v -F -f <(sed 's/^/>/' /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/lnc_blast/sequences_to_remove.txt) Mcap_lncRNAs_putative.fasta | sed '/^$/d' > Mcap_lncRNAs_final.fasta
+
+zgrep -c ">" Mcap_lncRNAs_putative.fasta
+31519
+zgrep -c ">" Mcap_lncRNAs_final.fasta
+31504
+```
+
+
+
+

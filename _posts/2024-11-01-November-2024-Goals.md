@@ -89,6 +89,19 @@ October 2024 goals and daily notebook entries.
 
 - Small edits for Pacuta paper 
 
+### 20241112
+
+- Small edits for Pacuta paper 
+- Moved settled Pacuta into blue tank 1/2
+- Ran shortstack on the samples from seq batch 1
+- Downloaded rfam seqs 
+- Blasting putative mcap lncRNAs against rfam db
+- mirdeep2 for mcap dt 2023
+
+
+
+
+
 to do 
 
 - HI job app 

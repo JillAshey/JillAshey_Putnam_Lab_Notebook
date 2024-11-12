@@ -681,6 +681,189 @@ Killed
 
 Failed bleh. Also no miRNA loci found in short stack...may need to adjust trimming parameters. 
 
+### 20241112
+
+Need to retrim but first going to run short stack with the samples from the initial sequencing run. These have lower duplication rates and I do not think that they have as much PCR duplication. In the scripts folder: `nano shortstack_trim_stringent_sub.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Running short stack on mature trimmed miRNAs from Mcap DT project"
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent
+
+# Load modules 
+module load ShortStack/4.0.2-foss-2022a  
+module load Kent_tools/442-GCC-11.3.0
+
+# Run short stack
+# Run short stack
+ShortStack \
+--genomefile /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta \
+--readfile trim_stringent_cutadapt_13_S76_R1_001.fastq.gz \
+trim_stringent_cutadapt_23_S77_R1_001.fastq.gz \
+trim_stringent_cutadapt_35_S78_R1_001.fastq.gz \
+trim_stringent_cutadapt_52_S79_R1_001.fastq.gz \
+trim_stringent_cutadapt_60_S80_R1_001.fastq.gz \
+trim_stringent_cutadapt_72_S81_R1_001.fastq.gz \
+trim_stringent_cutadapt_85_S82_R1_001.fastq.gz \
+trim_stringent_cutadapt_9_S75_R1_001.fastq.gz \
+--known_miRNAs /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mature_mirbase_cnidarian_T.fa \
+--threads 10 \
+--dn_mirna
+
+echo "Short stack complete!"
+```
+
+Submitted batch job 348560. Ran in a few hours. Output said it found 3 miRNA loci but not sure if this includes known miRNAs...
+
+```
+awk '$3 == "mature_miRNA"' Results.gff3 > filtered_mature_miRNA.gff
+head filtered_mature_miRNA.gff
+Montipora_capitata_HIv3___Scaffold_2    ShortStack      mature_miRNA    46381100        46381121        476     +       .       ID=Cluster_2999.mature;Parent=Cluster_2999
+Montipora_capitata_HIv3___Scaffold_8    ShortStack      mature_miRNA    22810894        22810915        204     +       .       ID=Cluster_12334.mature;Parent=Cluster_12334
+Montipora_capitata_HIv3___Scaffold_14   ShortStack      mature_miRNA    2986538 2986560 1       +       .       ID=Cluster_27569.mature;Parent=Cluster_27569
+
+awk -F'\t' '$20 == "Y"' Results.txt > Results_miRNA.txt
+head Results_miRNA.txt
+Montipora_capitata_HIv3___Scaffold_2:46381078-46381169  Cluster_2999    Montipora_capitata_HIv3___Scaffold_2    46381078        46381169        92      1012    59      1.0     +       ACAAUGUUUCGGCUUGUUCCCG  476     108     8       169     705     17      5       22      Y       spi-mir-temp-14_Stylophora_pistillata_Liew_et_al._2014_NA
+Montipora_capitata_HIv3___Scaffold_8:22810843-22810935  Cluster_12334   Montipora_capitata_HIv3___Scaffold_8    22810843        22810935        93      4483    95      1.0     +       AUGCAGCGGAAAUCGAACCUGGG 3053    154     15      43      256     3224    791     23      Y       NA
+Montipora_capitata_HIv3___Scaffold_14:2986487-2986580   Cluster_27569   Montipora_capitata_HIv3___Scaffold_14   2986487 2986580 94      49      7       1.0     +       ACGGUGAAAGUCGUCUCAAUAUUCA       35      2       35      0       1       1       10      N       Y       spi-mir-temp-30_Stylophora_pistillata_Liew_et_al._2014_Close_match_of_nve-miR-2036.;eca-nve-F-miR-2036_Edwardsiella_carnea_Praher_et_al._2021_Transcriptome-level;Adi-Mir-2036_3p_Acropora_digitifera_Gajigan_&_Conaco_2017_nve-miR-2036-3p;_nve-miR-2036-3p;_spi-miR-temp-30;ami-nve-F-miR-2036-3p_Acropora_millepora_Praher_et_al._2021_NA;spi-nve-F-miR-2036_Stylophora_pistillata_Praher_et_al._2021_NA
+```
+
+Clearly didn't pick up all miRNAs. Maybe trying running mirdeep2?? I did a lot of trouble shooting with AST and mirdeep2 (see post [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/76d256ef61ada1c96b99fd09d07bfca3df781bd2/_posts/2023-06-05-Astrangia2021-smRNA-Analysis.md)). First, I need to map the samples to the genome with the `mapper.pl` script. Genome must first be indexed by bowtie-build (NOT bowtie2). Because I have multiple samples, I need to make a config file that contains fq file locations and a unique 3 letter code (see mirdeep2 [documentation](https://www.mdc-berlin.de/content/mirdeep2-documentation?mdcbl%5B0%5D=%2Fn-rajewsky%23t-data%2Csoftware%26resources&mdcbv=71nDTh7VzOJOW6SFGuFySs4mus4wnovu-t2LZzV2dL8&mdcot=6&mdcou=20738&mdctl=0)). I will also be unzipping the files so remove the .gz from file name. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent
+
+nano config.txt
+
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_10_small_RNA_S4_R1_001.fastq s10
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_11_small_RNA_S5_R1_001.fastq s11
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_13_S76_R1_001.fastq s13
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_14_small_RNA_S6_R1_001.fastq s14
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_23_S77_R1_001.fastq s23
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_24_small_RNA_S7_R1_001.fastq s24
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_26_small_RNA_S8_R1_001.fastq s26
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_28_small_RNA_S9_R1_001.fastq s28
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_35_S78_R1_001.fastq s35
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_36_small_RNA_S10_R1_001.fastq s36
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_37_small_RNA_S11_R1_001.fastq s37
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_39_small_RNA_S12_R1_001.fastq s39
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_47_small_RNA_S13_R1_001.fastq s47
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_48_small_RNA_S14_R1_001.fastq s48
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_51_small_RNA_S15_R1_001.fastq s51
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_52_S79_R1_001.fastq s52
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_60_S80_R1_001.fastq s60
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_61_small_RNA_S16_R1_001.fastq s61
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_62_small_RNA_S17_R1_001.fastq s62
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_63_small_RNA_S18_R1_001.fastq s63
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_6_small_RNA_S1_R1_001.fastq s06
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_72_S81_R1_001.fastq s72
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_73_small_RNA_S19_R1_001.fastq s73
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_74_small_RNA_S20_R1_001.fastq s74
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_75_small_RNA_S21_R1_001.fastq s75
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_7_small_RNA_S2_R1_001.fastq s07
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_85_S82_R1_001.fastq s85
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_86_small_RNA_S22_R1_001.fastq s86
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_87_small_RNA_S23_R1_001.fastq s87
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_88_small_RNA_S24_R1_001.fastq s88
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_8_small_RNA_S3_R1_001.fastq s08
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_9_S75_R1_001.fastq s09
+```
+
+In the `config.txt` file, I have the path and file name, as well as the unique 3 letter code (s followed by sample number).
+
+In the scripts folder: `nano mapper_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load GCCcore/11.3.0 #I needed to add this to resolve conflicts between loaded GCCcore/9.3.0 and GCCcore/11.3.0
+module load Bowtie/1.3.1-GCC-11.3.0
+
+echo "Index Mcap genome" $(date)
+
+# Index the reference genome for Mcap 
+bowtie-build /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex
+
+echo "Referece genome indexed!" $(date)
+echo "Unload unneeded packages and run mapper script for trimmed stringent reads" $(date)
+
+module unload module load GCCcore/11.3.0 
+module unload Bowtie/1.3.1-GCC-11.3.0
+
+conda activate /data/putnamlab/mirdeep2
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent
+
+gunzip *.fastq.gz
+
+mapper.pl config.txt -e -d -h -j -l 18 -m -p /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex -s mapped_reads.fa -t mapped_reads_vs_genome.arf
+
+echo "Mapping complete for trimmed stringent reads" $(date)
+
+conda deactivate 
+```
+
+Submitted batch job 348612. The flags mean the following: 
+
+- `-e`- use fastq files as input
+- `-d` - input is config file 
+- `-h` - convert to fasta format 
+- `-i` - convert RNA to DNA alphabet 
+- `-j` - remove entries with non-canonical letters
+- `-l` - discard reads shorter than 18 nt
+- `-m` - collapse reads 
+- `-p` - map to genome--genome has to be indexed by bowtie build 
+- `-s` - mapped reads fasta output
+- `-t` - read mappings v genome output
+
+Also consider adding -q which allows mapping with one mismatch in seed but mapping takes longer. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
