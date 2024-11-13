@@ -839,9 +839,80 @@ Submitted batch job 348612. The flags mean the following:
 - `-s` - mapped reads fasta output
 - `-t` - read mappings v genome output
 
-Also consider adding -q which allows mapping with one mismatch in seed but mapping takes longer. 
+Also consider adding -q which allows mapping with one mismatch in seed but mapping takes longer. Ran in about an hour. Look at output
 
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent
 
+zgrep -c ">" mapped_reads.fa
+21804779
+
+wc -l mapped_reads_vs_genome.arf
+8098667 mapped_reads_vs_genome.arf
+
+less bowtie.log 
+# reads processed: 2215013
+# reads with at least one reported alignment: 416126 (18.79%)
+# reads that failed to align: 1500959 (67.76%)
+# reads with alignments suppressed due to -m: 297928 (13.45%)
+Reported 841100 alignments to 1 output stream(s)
+```
+
+I can now run mirdeep2 but this is a problem for tomorrow!
+
+### 20241113
+
+Short stack and mirdeep2 output has been in this folder: `/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent`. Going to move to output folder. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output
+mkdir mirdeep2_trim_stringent
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent
+mv ShortStack_1731* ../../output/shortstack_trim_stringent/
+mv mapp* ../../output/mirdeep2_trim_stringent/
+mv bowtie.log ../../output/mirdeep2_trim_stringent/
+mv config.txt ../../output/mirdeep2_trim_stringent/
+```
+
+The output files from the `mapper.pl` portion of mirdeep2 will be used as input for the `mirdeep2.pl` portion of the pipeline. In the scripts folder: `nano mirna_predict_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 with reads that were trimmed stringently via cutadapt" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_trim_stringent/mapped_reads.fa /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_trim_stringent/mapped_reads_vs_genome.arf /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mature_mirbase_cnidarian_T.fa none none -P -v -g -1 2>report.log
+
+echo "mirdeep2 complete" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 348663. In the past, mirdeep2 has taken a few days to process my AST samples so I am guessing it will take a similar amount of time. The flags mean the following: 
+
+- `mapped_reads.fa` - fasta file with sequencing reads 
+- `Montipora_capitata_HIv3.assembly.fasta` - genome fasta 
+- `mapped_reads_vs_genome.arf` - mapped reads to the genome in miRDeep2 arf format
+- `mature_mirbase_cnidarian_T.fa` - known miRNAs 
+- `none` - no fasta file for precursor sequences. I accidently added two `none` flags in there, hopefully that wont mess things up too much. 
+- `-P` - report novel miRNAs 
+- `-v` - output verbose mode 
+- `-g -1` - report all potential miRNAs regardless of low score
+- `2>report.log` - redirects errors to log file 
 
 
 

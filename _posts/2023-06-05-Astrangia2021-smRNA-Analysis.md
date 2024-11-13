@@ -7493,32 +7493,14 @@ module load Miniconda3/4.9.2
 conda activate /data/putnamlab/conda/GeneExt
 ```
 
+### 20241113
+
+Hello again. I decided not to run gene ext -- I did it with the e5 data and the estimates of the 3'UTRs were ~1000bp, which was my estimate as well. So I am going to clean up my shortstack output using Sam's [code](https://github.com/urol-e5/deep-dive/blob/main/F-Pmea/code/13.2.1.1-Pmea-sRNAseq-ShortStack-FastA-extraction.md). 
+
+Examine the `Results.txt` file. 
 
 
 
-
-In the XXXXX folder, `nano GeneExt.sh`
-
-```
-#!/bin/bash -i
-#SBATCH -t 120:00:00
-#SBATCH --nodes=1 --ntasks-per-node=20
-#SBATCH --export=NONE
-#SBATCH --mem=200GB
-#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
-#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
-#SBATCH --account=putnamlab
-#SBATCH -D /data/putnamlab/jillashey/Astrangia_Genome
-#SBATCH -o slurm-%j.out
-#SBATCH -e slurm-%j.error
-
-conda activate /data/putnamlab/conda/GeneExt
-
-cd /data/putnamlab/jillashey/Astrangia_Genome
-
-python /data/putnamlab/conda/GeneExt/geneext.py -g apoculata_v2.0_modified.gtf -b /data/putnamlab/jillashey/Astrangia2021/mRNA/output/bowtie/align/AST_merge.bam -o Apoc_GeneExt.gtf -j 20 -v 3 --clip_strand both
-
-```
 
 
 

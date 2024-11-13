@@ -1159,6 +1159,96 @@ zgrep -c ">" Mcap_lncRNAs_final.fasta
 31504
 ```
 
+### 20241113 
 
+I need to quantify the lncRNAs with kallisto. Make kallisto output folder
 
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output
+mkdir kallisto 
+```
 
+The lncRNA fasta (`Mcap_lncRNAs_final.fasta`) will be used to generate the kallisto index. Then, the RNAseq reads (located `/data/putnamlab/jillashey/DT_Mcap_2023/mRNA/data/trim`) will be aligned to the lncRNA index using kallisto. In the scripts folder: `nano kallisto_lnc.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/scripts            
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load kallisto/0.48.0-gompi-2022a 
+
+echo "Creating kallisto index from lncRNA fasta" $(date)
+
+kallisto index -i /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/kallisto/mcap_lncRNA_index /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/stringtie/Mcap_lncRNAs_final.fasta
+
+echo "lncRNA index creation complete, starting read alignment" $(date)
+
+array=($(ls /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/data/trim/*R1_001.fastq.gz)) # call the clean sequences - make an array to align
+
+for i in ${array[@]}; do
+    # Extract just the filename from the input FASTQ file path
+    filename=$(basename ${i})
+    # Construct the output directory path
+    output_dir="/data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/kallisto/kallisto.${filename}"
+    # Run kallisto quant
+    kallisto quant -i /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/kallisto/mcap_lncRNA_index -o ${output_dir} ${i} $(echo ${i} | sed 's/_R1/_R2/')
+done
+
+echo "lncRNA alignment complete!" $(date)
+```
+
+Submitted batch job 348664. Ran in about 3 hours. Run trinity to generate lncRNa count matrix. in the scripts folder: `nano trinity_gene_matrix.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=32GB --cpus-per-task=24
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/lncRNA/scripts              
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load Trinity/2.15.1-foss-2022a
+
+echo "Use trinity to generate lncRNA count matrix" $(date)
+
+perl $EBROOTTRINITY/trinityrnaseq-v2.15.1/util/abundance_estimates_to_matrix.pl \
+--est_method kallisto \
+--gene_trans_map none \
+--out_prefix /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/kallisto/Mcap_lncRNA_count_matrix \
+--name_sample_by_basedir \
+/data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/kallisto/*/abundance.tsv
+
+echo "LncRNA count matrix created!" $(date)
+```
+
+Submitted batch job 348671. Ran super fast but no slurm error or output files...But we did get 4 output files: 
+
+```
+-rw-r--r--. 1 jillashey 8.1M Nov 13 12:20 Mcap_lncRNA_count_matrix.isoform.TPM.not_cross_norm
+-rw-r--r--. 1 jillashey 6.6M Nov 13 12:20 Mcap_lncRNA_count_matrix.isoform.counts.matrix
+-rw-r--r--. 1 jillashey    0 Nov 13 12:20 Mcap_lncRNA_count_matrix.isoform.TMM.EXPR.matrix
+-rw-r--r--. 1 jillashey  684 Nov 13 12:20 Mcap_lncRNA_count_matrix.isoform.TPM.not_cross_norm.runTMM.R
+```
+
+According to the Trinity [wiki](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Trinity-Transcript-Quantification#building-expression-matrices), these files mean the following: 
+
+```
+kallisto.isoform.counts.matrix  : the estimated RNA-Seq fragment counts (raw counts)
+kallisto.isoform.TPM.not_cross_norm  : a matrix of TPM expression values (not cross-sample normalized)
+kallisto.isoform.TMM.EXPR.matrix : a matrix of TMM-normalized expression values
+```
+
+Copy `Mcap_lncRNA_count_matrix.isoform.counts.matrix` onto local computer! 

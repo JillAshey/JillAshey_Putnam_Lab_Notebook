@@ -96,10 +96,22 @@ October 2024 goals and daily notebook entries.
 - Ran shortstack on the samples from seq batch 1
 - Downloaded rfam seqs 
 - Blasting putative mcap lncRNAs against rfam db
-- mirdeep2 for mcap dt 2023
+- mirdeep2 mapper for mcap dt 2023
+
+### 20241113
+
+- mirdeep2 mirna prediction for mcap dt 2023 
+- Started sicb presentation 
+- Kallisto and trinity for mcap lncRNAs
+- Lab meeting 
+- Zach meeting 
 
 
 
+
+to do more important 
+
+- rerun miranda with AST shortstack miRNAs and 3'UTRs 
 
 
 to do 
