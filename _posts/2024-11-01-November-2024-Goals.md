@@ -105,17 +105,23 @@ October 2024 goals and daily notebook entries.
 - Kallisto and trinity for mcap lncRNAs
 - Lab meeting 
 - Zach meeting 
+- DESeq2 for mRNA and lncRNA mcap data 
+- lncRNA - mRNA co-expression analysis 
 
+### 20241114
 
+- Fixing shortstack headers for AST miRNAs 
+- Writing meeting 
+- Set up larval system in aquarium room 
 
+### 20241115
 
-to do more important 
+DANIELLE DEFENSE!!!!!!!!!!!!!
 
-- rerun miranda with AST shortstack miRNAs and 3'UTRs 
+### 20241117
 
+- Cassie practice defense 
 
-to do 
+### 20241118
 
-- HI job app 
-- Lirman lab job app 
-- pacuta discussion
+- AST mirtarrnaseq 

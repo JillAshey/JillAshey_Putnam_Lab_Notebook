@@ -7499,6 +7499,335 @@ Hello again. I decided not to run gene ext -- I did it with the e5 data and the 
 
 Examine the `Results.txt` file. 
 
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/shortstack
+
+head Results.txt | column -t
+Locus                       Name       Chrom         Start   End     Length  Reads  UniqueReads  FracTop                Strand  MajorRNA                        MajorRNAReads  Short  Long  21    22     23    24    DicerCall  MIRNA  known_miRNAs
+chromosome_1:18460-18882    Cluster_1  chromosome_1  18460   18882   423     460    107          0.9108695652173913     +       UCAAACCAACGCAGCCGAAAAGUAGAUGU   131            18     414   2     1      15    10    N          N      NA
+chromosome_1:70293-70717    Cluster_2  chromosome_1  70293   70717   425     62964  382          1.0                    +       UAAGACUCUGAGGAUGGAAU            30756          37586  393   2202  15934  4643  2206  N          N      NA
+chromosome_1:125835-126254  Cluster_3  chromosome_1  125835  126254  420     5946   24           0.0                    -       CGAAAACGAAUCUGCUAA              3302           5885   0     59    2      0     0     N          N      NA
+chromosome_1:187614-188042  Cluster_4  chromosome_1  187614  188042  429     942    156          0.024416135881104035   -       UAAAUCGGUUUUCUGUUUUCCAACGUGU    279            8      923   3     1      3     4     N          N      NA
+chromosome_1:734332-734761  Cluster_5  chromosome_1  734332  734761  430     809    87           0.9802224969097652     +       ACAACAAGAACUUGCGUUUGCUGAACGUU   264            1      794   4     1      5     4     N          N      NA
+chromosome_1:772269-772697  Cluster_6  chromosome_1  772269  772697  429     463    71           0.028077753779697623   -       UGUUCAAAUCUGUAAGCAUUAACCGAAGC   240            5      451   0     0      1     6     N          N      NA
+chromosome_1:809191-809619  Cluster_7  chromosome_1  809191  809619  429     1150   216          0.0017391304347826088  -       UCAUAUCGUCUACAUUGUGAUGCACCAGU   250            23     1113  0     1      1     12    N          N      NA
+chromosome_1:811151-811576  Cluster_8  chromosome_1  811151  811576  426     1399   392          0.0035739814152966403  -       UAGCCGACCAGGAUUGAAGGAUUGAGUCUU  49             19     1352  9     2      1     16    N          N      NA
+chromosome_1:812845-813280  Cluster_9  chromosome_1  812845  813280  436     2670   414          0.0026217228464419477  -       UGCUUCUGGUGCACUGUAAAUGACAGCUCC  739 
+
+wc -l Results.txt 
+9259 Results.txt
+```
+
+Columns of interest: 
+
+- Column 1 - genomic region of miRNA match 
+- Column 20 - shortstack miRNA? Y/N
+- Column 21 - match to mirbase? NA or mirbase match 
+
+```
+awk '{print $1"\t"$20"\t"$21}' "Results.txt" | head | column -t
+Locus                       MIRNA  known_miRNAs
+chromosome_1:18460-18882    N      NA
+chromosome_1:70293-70717    N      NA
+chromosome_1:125835-126254  N      NA
+chromosome_1:187614-188042  N      NA
+chromosome_1:734332-734761  N      NA
+chromosome_1:772269-772697  N      NA
+chromosome_1:809191-809619  N      NA
+chromosome_1:811151-811576  N      NA
+chromosome_1:812845-813280  N      NA
+```
+
+miRNAs matching mirbase:
+
+```
+awk '$20 == "Y" && $21 != "NA" {print $1"\t"$20"\t"$21}' "Results.txt" | head | column -t
+column: line 3 is too long, output will be truncated
+chromosome_6:21902734-21902826                                                                                                                                                                                                                                                                                                                                                               Y  nve-miR-9425_MIMAT0035384_Nematostella_vectensis_miR-9425;miR-9425_Nematostella_vectensis_Moran_et_al._2014_NA
+chromosome_7:2303817-2303911                                                                                                                                                                                                                                                                                                                                                                 Y  sca-nve-F-miR-2036_Scolanthus_callimorphus_Praher_et_al._2021_Transcriptome-level;eca-nve-F-miR-2036_Edwardsiella_carnea_Praher_et_al._2021_Transcriptome-level
+0-5p;ccr-miR-100_MIMAT0026195_Cyprinus_carpio_miR-100;pmi-miR-100-5p_MIMAT0032156_Patiria_miniata_miR-100-5p;cpi-miR-100-5p_MIMAT0037714_Chrysemys_picta_miR-100-5p;chi-miR-100-5p_MIMAT0035897_Capra_hircus_miR-100-5p;dma-miR-100_MIMAT0049252_Daubentonia_madagascariensis_miR-100;sbo-miR-100_MIMAT0049501_Saimiri_boliviensis_miR-100;ola-miR-100_MIMAT0022614_Oryzias_latipes_miR-100
+chromosome_8:4117884-4117974                                                                                                                                                                                                                                                                                                                                                                 Y  Adi-Mir-2030_5p_Acropora_digitifera_Gajigan_&_Conaco_2017_nve-miR-2030-5p;_nve-miR-2030-5p;_spi-miR-temp-40;ami-nve-F-miR-2030-5p_Acropora_millepora_Praher_et_al._2021_NA;adi-nve-F-miR-2030_Acropora_digitifera__Praher_et_al._2021_NA;spi-mir-temp-40_Stylophora_pistillata_Liew_et_al._2014_Close_match_of_nve-miR-2030;eca-nve-F-miR-2030_Edwardsiella_carnea_Praher_et_al._2021_Transcriptome-level;miR-2030_Nematostella_vectensis_Moran_et_al._2014_NA
+chromosome_14:8601339-8601434                                                                                                                                                                                                                                                                                                                                                                Y  apa-mir-2037_Exaiptasia_pallida_Baumgarten_et_al._2017_miR-2037;_Nve;_Spis;spi-mir-temp-20_Stylophora_pistillata_Liew_et_al._2014_NA;eca-nve-F-miR-2037_Edwardsiella_carnea_Praher_et_al._2021_Transcriptome-level;spi-nve-F-miR-2037_Stylophora_pistillata_Praher_et_al._2021_NA;sca-nve-F-miR-2037-3p_Scolanthus_callimorphus_Praher_et_al._2021_Transcriptome-level;ami-nve-F-miR-2037-3p_Acropora_millepora_Praher_et_al._2021_NA;mse-nve-F-miR-2037-3p_Metridium_senile_Praher_et_al._2021_Transcriptome-level;avi-miR-temp-2037_Anemonia_viridis_Urbarova_et_al._2018_NA
+
+awk '$20 == "Y" && $21 != "NA" {print $1"\t"$20"\t"$21}' "Results.txt" | wc -l 
+5
+```
+
+There are 5 miRNAs that had matches to mirbase (all from the cnidarian miRNAs). How many miRNAs were identified in total? 
+
+```
+awk '$20 == "Y" {print $1"\t"$20"\t"$21}' "Results.txt" | wc -l 
+51
+```
+
+Look at fasta
+
+```
+grep "^>" "mir.fasta" | head
+>Cluster_30::chromosome_1:2984896-2984988(+)
+>Cluster_30.mature::chromosome_1:2984918-2984940(+)
+>Cluster_30.star::chromosome_1:2984947-2984968(+)
+>Cluster_137::chromosome_1:16932584-16932677(-)
+>Cluster_137.mature::chromosome_1:16932635-16932657(-)
+>Cluster_137.star::chromosome_1:16932604-16932626(-)
+>Cluster_247::chromosome_2:2155517-2155610(+)
+>Cluster_247.mature::chromosome_2:2155539-2155561(+)
+>Cluster_247.star::chromosome_2:2155568-2155590(+)
+>Cluster_449::chromosome_2:20014601-20014694(+)
+```
+
+The fasta starting coordinates need to be fixed due to a big in the code (see [issue](https://github.com/urol-e5/deep-dive/blob/main/F-Pmea/code/13.2.1.1-Pmea-sRNAseq-ShortStack-FastA-extraction.md)), which incorrectly calculates the starting coordinates in the fasta output. All other files where start/stop coordinates are displayed are correct. Using Sam White [code](https://github.com/urol-e5/deep-dive/blob/main/F-Pmea/code/13.2.1.1-Pmea-sRNAseq-ShortStack-FastA-extraction.md). 
+
+```
+awk '
+/^>/ {
+    # Split the line into main parts based on "::" delimiter
+    split($0, main_parts, "::")
+    
+    # Extract the coordinate part and strand information separately
+    coordinates_strand = main_parts[2]
+    split(coordinates_strand, coord_parts, "[:-]")
+    
+    # Determine if the strand information is present and extract it
+    strand = ""
+    if (substr(coordinates_strand, length(coordinates_strand)) ~ /[\(\)\-\+]/) {
+        strand = substr(coordinates_strand, length(coordinates_strand) - 1)
+        coordinates_strand = substr(coordinates_strand, 1, length(coordinates_strand) - 2)
+        split(coordinates_strand, coord_parts, "[:-]")
+    }
+    
+    # Increment the starting coordinate by 1
+    new_start = coord_parts[2] + 1
+    
+    # Reconstruct the description line with the new starting coordinate
+    new_description = main_parts[1] "::" coord_parts[1] ":" new_start "-" coord_parts[3] strand
+    
+    # Print the modified description line
+    print new_description
+    
+    # Skip to the next line to process the sequence line
+    next
+}
+
+# For sequence lines, print them as-is
+{
+    print
+}
+' "mir.fasta" \
+> "mir_coords_fixed.fasta"
+
+diff "mir.fasta" \
+"mir_coords_fixed.fasta" \
+| head
+
+< >Cluster_30::chromosome_1:2984896-2984988(+)
+---
+> >Cluster_30::chromosome_1:2984897-2984988(+)
+3c3
+< >Cluster_30.mature::chromosome_1:2984918-2984940(+)
+---
+> >Cluster_30.mature::chromosome_1:2984919-2984940(+)
+5c5
+< >Cluster_30.star::chromosome_1:2984947-2984968(+)
+```
+
+Success. Select only mature miRNAs from fasta
+
+```
+awk '/^>/ {p = ($0 ~ /mature/)} p' mir_coords_fixed.fasta > mir_coords_fixed_mature.fasta
+
+zgrep -c ">" mir_coords_fixed_mature.fasta
+51
+```
+
+I want to double check my 3'UTR identification for Astrangia and rerun miranda with the shortstack miRNAs. 
+
+Going to redo the 3'UTR estimation (using e5 deep dive [code](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-06-15-e5-deepdive-miRNA-TargetPrediction.md)). I already have `all_features.txt`, `apoc.Chromosome_lenghts.txt`, and `apoc.Chromosome_names.txt`. Generate individual gff for genes
+
+```
+cd /data/putnamlab/jillashey/Astrangia_Genome
+
+grep $'\tgene\t' apoculata_v2.0.gff3 > apoc_gene.gtf
+```
+
+Create 1kb 3'UTR
+
+```
+interactive 
+
+module load BEDTools/2.30.0-GCC-11.3.0
+
+bedtools flank -i apoc_gene.gtf -g apoc.Chromosome_lenghts.txt -l 0 -r 1000 -s | awk '{gsub("gene","3prime_UTR",$3); print $0 }' | awk '{if($5-$4 > 3)print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' | tr ' ' '\t' > apoc_3UTR_1kb.gtf
+```
+
+Subtract portions of 3' UTRs that overlap nearby genes
+
+```
+bedtools subtract -a apoc_3UTR_1kb.gtf -b apoc_gene.gtf > apoc_3UTR_1kb_corrected.gtf
+```
+
+This might have more lines because it is subtracting gene overlaps from the 3'UTRs. So if a 3'UTR contains a short gene (200bp), it will subtract that 200bp section and keep the rest of the 3'UTR regardless of where it is. This might not make sense except in my head. 
+
+Extract 3'UTR sequences from genome
+
+```
+awk '{print $1 "\t" $4-1 "\t" $5 "\t" $9 "\t" "." "\t" $7}' apoc_3UTR_1kb_corrected.gtf | sed 's/"//g' > apoc_3UTR_1kb_corrected.bed
+
+bedtools getfasta -fi apoculata.assembly.scaffolds_chromosome_level.fasta -bed apoc_3UTR_1kb_corrected.bed -fo apoc_3UTR_1kb.fasta -name
+```
+
+Hooray now we have a fasta of the 3'UTRs with their corresponding gene!
+
+Before running miranda, clean up `/data/putnamlab/jillashey/Astrangia2021/smRNA`
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA
+
+ls -othr
+total 1.9G
+drwxr-xr-x  4 jillashey 4.0K Oct  9  2023 fastqc
+-rw-r--r--  1 jillashey  80K Jan  4  2024 reads_collapsed.fa
+-rw-r--r--  1 jillashey  92K Jan  4  2024 reads_collapsed_vs_genome.arf
+drwxr-xr-x  2 jillashey 4.0K Jan  4  2024 dir_prepare_signature1704403591
+-rw-r--r--  1 jillashey  377 Jan  4  2024 error_04_01_2024_t_16_26_17.log
+-rw-r--r--  1 jillashey 4.5K Jan  4  2024 result_04_01_2024_t_16_26_17.csv
+-rw-r--r--  1 jillashey  45K Jan  4  2024 result_04_01_2024_t_16_26_17.html
+drwxr-xr-x  2 jillashey 4.0K Jan  4  2024 pdfs_04_01_2024_t_16_26_17
+-rw-r--r--  1 jillashey  941 Jan  4  2024 result_04_01_2024_t_16_26_17.bed
+drwxr-xr-x  2 jillashey 4.0K Jan  4  2024 mirna_results_04_01_2024_t_16_26_17
+drwxr-xr-x  2 jillashey 4.0K Jan  4  2024 dir_prepare_signature1704404056
+-rw-r--r--  1 jillashey  377 Jan  4  2024 error_04_01_2024_t_16_34_08.log
+-rw-r--r--  1 jillashey 4.5K Jan  4  2024 result_04_01_2024_t_16_34_08.csv
+-rw-r--r--  1 jillashey  45K Jan  4  2024 result_04_01_2024_t_16_34_08.html
+drwxr-xr-x  2 jillashey 4.0K Jan  4  2024 pdfs_04_01_2024_t_16_34_08
+-rw-r--r--  1 jillashey  941 Jan  4  2024 result_04_01_2024_t_16_34_08.bed
+drwxr-xr-x  2 jillashey 4.0K Jan  4  2024 mirna_results_04_01_2024_t_16_34_08
+-rw-r--r--  1 jillashey 500M Jan  7  2024 20240107_reads_collapsed.fa
+-rw-r--r--  1 jillashey 147M Jan  7  2024 20240107_reads_collapsed_vs_genome.arf
+drwxr-xr-x  7 jillashey 4.0K Jan  7  2024 mirdeep_runs
+drwxr-xr-x  2 jillashey 4.0K Jan  7  2024 dir_prepare_signature1704668491
+-rw-r--r--  1 jillashey   29 Jan  7  2024 error_07_01_2024_t_17_59_09.log
+-rw-r--r--  1 jillashey 2.7K Jan  7  2024 report.log
+-rw-r--r--  1 jillashey 449M Jan 16  2024 20240116_reads_collapsed.fa
+-rw-r--r--  1 jillashey 256M Jan 16  2024 20240116_reads_collapsed_vs_genome.arf
+drwxr-xr-x  2 jillashey 4.0K Jan 19  2024 mapper_logs
+-rw-r--r--  1 jillashey 359M Jan 19  2024 20240119_reads_collapsed.fa
+-rw-r--r--  1 jillashey  246 Jan 19  2024 bowtie.log
+-rw-r--r--  1 jillashey 181M Jan 19  2024 20240119_reads_collapsed_vs_genome.arf
+drwxr-xr-x  3 jillashey 4.0K Jan 24  2024 refs
+drwxr-xr-x 22 jillashey 4.0K Jan 30  2024 mirdeep2
+drwxr-xr-x  4 jillashey 4.0K Mar 20  2024 data
+drwxr-xr-x  2 jillashey 4.0K May  8  2024 miranda
+drwxr-xr-x 18 jillashey 4.0K Oct 27 13:52 scripts
+drwxr-xr-x  3 jillashey 4.0K Nov 14 08:59 shortstack
+
+mv 2024* mirdeep2
+mv reads* mirdeep2
+mv result_04_01_2024_t_16_* mirdeep2
+mv mapper_logs/ mirdeep2
+mv dir_prepare_signature1704* mirdeep2
+mv mirna_results_04_01_2024_t_16_* mirdeep2
+mv *log mirdeep2
+mv pdfs_04_01_2024_t_16_* mirdeep2
+mv mirdeep_runs/ mirdeep2
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda
+mkdir old 
+mv * old 
+```
+
+Rerun miranda with shortstack mirnas and 3'UTR fasta (with gene names included in fasta headers yay). In the scripts folder, I have a script `miranda_strict_all.sh` that ran miranda with the mirdeep2 miRNAs. Going to rename this script: 
+
+```
+mv miranda_strict_all.sh miranda_strict_all_mirdeep2.sh
+```
+
+Write new script for miranda with shortstack miRNAs. In the scripts folder: `nano miranda_strict_all_shortstack.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Apoc starting miranda run with all genes and miRNAs with energy cutoff <-20 and strict binding invoked"$(date)
+echo "Using updated miRNAs from short stack"
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/conda/miranda 
+
+miranda /data/putnamlab/jillashey/Astrangia2021/smRNA/shortstack/mir_coords_fixed_mature.fasta /data/putnamlab/jillashey/Astrangia_Genome/apoc_3UTR_1kb.fasta -en -20 -strict -out /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_1kb_apoc_shortstack.tab
+
+conda deactivate
+
+echo "miranda run finished!" $(date)
+echo "counting number of interactions attempted" $(date)
+
+zgrep -c "Performing Scan" /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_1kb_apoc_shortstack.tab
+
+echo "Parsing output" $(date)
+grep -A 1 "Scores for this hit:" /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_1kb_apoc_shortstack.tab | sort | grep '>' > /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_1kb_apoc_shortstack_parsed.txt
+
+echo "counting number of putative interactions predicted" $(date)
+wc -l /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_1kb_apoc_shortstack_parsed.txt
+
+echo "Apoc miranda script complete" $(date)
+```
+
+Submitted batch job 348808. Ran in ~20 mins. Look at output: 
+
+```
+counting number of interactions attempted Thu Nov 14 14:43:19 EST 2024
+2547144
+Parsing output Thu Nov 14 14:43:28 EST 2024
+counting number of putative interactions predicted Thu Nov 14 14:43:28 EST 2024
+5187 /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_1kb_apoc_shortstack_parsed.txt
+```
+
+Look at txt file
+
+```
+head miranda_strict_all_1kb_apoc_shortstack_parsed.txt
+>Cluster_1155.mature::chromosome_5:8149619-8149640(-)	ID=evm.TU.chromosome_10.126;Name=EVM%20prediction%20chromosome_10.126::chromosome_10:1142345-1143345	170.00	-21.16	2 20	717 739	19	84.21%	84.21%
+>Cluster_1155.mature::chromosome_5:8149619-8149640(-)	ID=evm.TU.chromosome_11.3016;Name=EVM%20prediction%20chromosome_11.3016::chromosome_11:31902611-31903611	166.00	-21.91	2 21	842 865	21	76.19%	85.71%
+>Cluster_1155.mature::chromosome_5:8149619-8149640(-)	ID=evm.TU.chromosome_11.359;Name=EVM%20prediction%20chromosome_11.359::chromosome_11:3751965-3752965	164.00	-20.30	2 18	439 461	17	82.35%	88.24%
+>Cluster_1155.mature::chromosome_5:8149619-8149640(-)	ID=evm.TU.chromosome_12.1475;Name=EVM%20prediction%20chromosome_12.1475::chromosome_12:15544468-15545468	155.00	-21.98	2 17	149 174	19	73.68%	78.95%
+>Cluster_1155.mature::chromosome_5:8149619-8149640(-)	ID=evm.TU.chromosome_12.1806;Name=EVM%20prediction%20chromosome_12.1806::chromosome_12:19406302-19407302	163.00	-20.09	2 17	977 999	16	87.50%	87.50%
+>Cluster_1155.mature::chromosome_5:8149619-8149640(-)	ID=evm.TU.chromosome_12.2475;Name=EVM%20prediction%20chromosome_12.2475::chromosome_12:26095701-26096701	173.00	-20.76	2 21	336 355	19	84.21%	89.47%
+>Cluster_1155.mature::chromosome_5:8149619-8149640(-)	ID=evm.TU.chromosome_12.2814;Name=EVM%20prediction%20chromosome_12.2814::chromosome_12:28905929-28906929	163.00	-20.09	2 17	349 371	16	87.50%	87.50%
+>Cluster_1155.mature::chromosome_5:8149619-8149640(-)	ID=evm.TU.chromosome_13.1892;Name=EVM%20prediction%20chromosome_13.1892::chromosome_13:19643825-19644825	177.00	-20.79	2 18	860 881	16	93.75%	93.75%
+>Cluster_1155.mature::chromosome_5:8149619-8149640(-)	ID=evm.TU.chromosome_13.2239;Name=EVM%20prediction%20chromosome_13.2239::chromosome_13:23509872-23510872	173.00	-21.02	2 21	577 596	19	84.21%	89.47%
+>Cluster_1155.mature::chromosome_5:8149619-8149640(-)	ID=evm.TU.chromosome_13.330;Name=EVM%20prediction%20chromosome_13.330::chromosome_13:2959926-2960926	172.00	-21.83	2 17	218 239	15	93.33%	93.33%
+```
+
+How many unique miRNAs had predicted interactions? 
+
+```
+cut -f1 miranda_strict_all_1kb_apoc_shortstack_parsed.txt | sort | uniq | wc -l
+51
+```
+
+How many unique 3'UTRs had interactions with miRNAs?
+
+```
+cut -f2 miranda_strict_all_1kb_apoc_shortstack_parsed.txt | sort | uniq | wc -l
+4515
+```
+
+Copy `miranda_strict_all_1kb_apoc_shortstack_parsed.txt` onto local computer. 
+
+
+
+
+
+
 
 
 
@@ -7523,5 +7852,3 @@ Interpretation of mirdeep2 output
 good resource for miranda 
 - https://bioinformaticsworkbook.org/dataAnalysis/SmallRNA/Miranda_miRNA_Target_Prediction.html#gsc.tab=0 
 
-This could be a good R use for downstread miRNA:mRNA analysis: https://link.springer.com/article/10.1186/s12864-022-08558-w
-- https://bioconductor.org/packages/release/bioc/html/mirTarRnaSeq.html
