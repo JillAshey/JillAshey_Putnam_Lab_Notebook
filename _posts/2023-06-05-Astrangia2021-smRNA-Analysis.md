@@ -7957,8 +7957,11 @@ echo "mirdeep2 complete" $(date)
 conda deactivate
 ```
 
-Submitted batch job 349437
+Submitted batch job 349437. Ran in about 2 days. 
 
+### 20241121
+
+Downloaded output to computer and identified putative novel and known miRNAs. There were ~240 putative miRNAs total. I will need to look at pdfs to determine MFE and total number of binding bps in hairpin structure. 
 
 
 

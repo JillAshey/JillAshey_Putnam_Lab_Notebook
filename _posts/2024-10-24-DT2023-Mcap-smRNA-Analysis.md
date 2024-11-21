@@ -918,9 +918,495 @@ Submitted batch job 348663. In the past, mirdeep2 has taken a few days to proces
 
 Took about 2 days to run and most of output was put in scripts folder. Downloaded output to my computer. 
 
+### 20241121
 
+I need to revisit trimming. I downloaded `slurm-347786.out` (most recent trimming iteration output) to my computer to look at sample adapter information. 
 
+```
+# M10
+Total reads processed:              19,773,964
+Reads with adapters:                12,283,878 (62.1%)
 
+== Read fate breakdown ==
+Reads that were too short:           3,481,028 (17.6%)
+Reads that were too long:            7,532,588 (38.1%)
+Reads with too many N:                  33,125 (0.2%)
+Reads discarded as untrimmed:           25,736 (0.1%)
+Reads written (passing filters):     8,701,487 (44.0%)
+
+Total basepairs processed: 2,985,868,564 bp
+Quality-trimmed:              49,791,977 bp (1.7%)
+Total written (filtered):    175,293,612 bp (5.9%)
+
+# M11
+Total reads processed:              12,310,413
+Reads with adapters:                10,586,911 (86.0%)
+
+== Read fate breakdown ==
+Reads that were too short:           6,691,286 (54.4%)
+Reads that were too long:            1,817,067 (14.8%)
+Reads with too many N:                  14,264 (0.1%)
+Reads discarded as untrimmed:           13,200 (0.1%)
+Reads written (passing filters):     3,774,596 (30.7%)
+
+Total basepairs processed: 1,858,872,363 bp
+Quality-trimmed:              32,849,546 bp (1.8%)
+Total written (filtered):     79,147,991 bp (4.3%)
+
+# M13
+Total reads processed:              25,732,779
+Reads with adapters:                25,613,472 (99.5%)
+
+== Read fate breakdown ==
+Reads that were too short:           7,832,390 (30.4%)
+Reads that were too long:            4,570,545 (17.8%)
+Reads with too many N:                   6,929 (0.0%)
+Reads discarded as untrimmed:           48,788 (0.2%)
+Reads written (passing filters):    13,274,127 (51.6%)
+
+Total basepairs processed: 3,885,649,629 bp
+Quality-trimmed:             133,678,654 bp (3.4%)
+Total written (filtered):    328,216,706 bp (8.4%)
+
+# M14
+Total reads processed:              35,754,439
+Reads with adapters:                29,105,761 (81.4%)
+
+== Read fate breakdown ==
+Reads that were too short:          26,385,621 (73.8%)
+Reads that were too long:            6,927,638 (19.4%)
+Reads with too many N:                   8,413 (0.0%)
+Reads discarded as untrimmed:           15,538 (0.0%)
+Reads written (passing filters):     2,417,229 (6.8%)
+
+Total basepairs processed: 5,398,920,289 bp
+Quality-trimmed:              90,439,586 bp (1.7%)
+Total written (filtered):     53,521,904 bp (1.0%)
+
+# M23
+Total reads processed:              28,608,340
+Reads with adapters:                28,488,320 (99.6%)
+
+== Read fate breakdown ==
+Reads that were too short:           8,300,653 (29.0%)
+Reads that were too long:            5,340,020 (18.7%)
+Reads with too many N:                   8,149 (0.0%)
+Reads discarded as untrimmed:           50,412 (0.2%)
+Reads written (passing filters):    14,909,106 (52.1%)
+
+Total basepairs processed: 4,319,859,340 bp
+Quality-trimmed:             121,050,542 bp (2.8%)
+Total written (filtered):    381,785,695 bp (8.8%)
+
+# M24 
+Total reads processed:              16,185,558
+Reads with adapters:                15,051,209 (93.0%)
+
+== Read fate breakdown ==
+Reads that were too short:           1,238,159 (7.6%)
+Reads that were too long:            1,298,021 (8.0%)
+Reads with too many N:                  53,492 (0.3%)
+Reads discarded as untrimmed:           17,232 (0.1%)
+Reads written (passing filters):    13,578,654 (83.9%)
+
+Total basepairs processed: 2,444,019,258 bp
+Quality-trimmed:              51,942,286 bp (2.1%)
+Total written (filtered):    258,626,182 bp (10.6%)
+
+# M26
+Total reads processed:              45,463,982
+Reads with adapters:                33,200,737 (73.0%)
+
+== Read fate breakdown ==
+Reads that were too short:          26,954,608 (59.3%)
+Reads that were too long:           12,621,446 (27.8%)
+Reads with too many N:                  21,951 (0.0%)
+Reads discarded as untrimmed:           29,590 (0.1%)
+Reads written (passing filters):     5,836,387 (12.8%)
+
+Total basepairs processed: 6,865,061,282 bp
+Quality-trimmed:             114,030,951 bp (1.7%)
+Total written (filtered):    124,668,281 bp (1.8%)
+
+# M28 
+Total reads processed:              29,330,724
+Reads with adapters:                22,529,784 (76.8%)
+
+== Read fate breakdown ==
+Reads that were too short:          20,934,300 (71.4%)
+Reads that were too long:            6,864,087 (23.4%)
+Reads with too many N:                   5,150 (0.0%)
+Reads discarded as untrimmed:           36,179 (0.1%)
+Reads written (passing filters):     1,491,008 (5.1%)
+
+Total basepairs processed: 4,428,939,324 bp
+Quality-trimmed:              57,180,891 bp (1.3%)
+Total written (filtered):     33,212,070 bp (0.7%)
+
+# M35
+Total reads processed:              27,415,125
+Reads with adapters:                27,297,487 (99.6%)
+
+== Read fate breakdown ==
+Reads that were too short:           8,746,075 (31.9%)
+Reads that were too long:            4,714,853 (17.2%)
+Reads with too many N:                   7,301 (0.0%)
+Reads discarded as untrimmed:           46,476 (0.2%)
+Reads written (passing filters):    13,900,420 (50.7%)
+
+Total basepairs processed: 4,139,683,875 bp
+Quality-trimmed:             135,071,303 bp (3.3%)
+Total written (filtered):    350,393,120 bp (8.5%)
+
+# M36
+Total reads processed:              21,669,140
+Reads with adapters:                15,229,442 (70.3%)
+
+== Read fate breakdown ==
+Reads that were too short:           3,530,235 (16.3%)
+Reads that were too long:            6,397,943 (29.5%)
+Reads with too many N:                  45,695 (0.2%)
+Reads discarded as untrimmed:           37,563 (0.2%)
+Reads written (passing filters):    11,657,704 (53.8%)
+
+Total basepairs processed: 3,272,040,140 bp
+Quality-trimmed:              51,150,713 bp (1.6%)
+Total written (filtered):    228,309,042 bp (7.0%)
+
+# M37
+Total reads processed:              20,247,832
+Reads with adapters:                19,802,633 (97.8%)
+
+== Read fate breakdown ==
+Reads that were too short:           7,675,729 (37.9%)
+Reads that were too long:              434,204 (2.1%)
+Reads with too many N:                  45,858 (0.2%)
+Reads discarded as untrimmed:           20,730 (0.1%)
+Reads written (passing filters):    12,071,311 (59.6%)
+
+Total basepairs processed: 3,057,422,632 bp
+Quality-trimmed:              62,466,338 bp (2.0%)
+Total written (filtered):    246,713,865 bp (8.1%)
+
+# M39
+Total reads processed:              20,298,000
+Reads with adapters:                14,625,467 (72.1%)
+
+== Read fate breakdown ==
+Reads that were too short:          13,581,604 (66.9%)
+Reads that were too long:            5,768,966 (28.4%)
+Reads with too many N:                   3,465 (0.0%)
+Reads discarded as untrimmed:           11,546 (0.1%)
+Reads written (passing filters):       932,419 (4.6%)
+
+Total basepairs processed: 3,064,998,000 bp
+Quality-trimmed:              41,859,848 bp (1.4%)
+Total written (filtered):     19,320,488 bp (0.6%)
+
+# M47
+Total reads processed:              61,683,862
+Reads with adapters:                56,145,283 (91.0%)
+
+== Read fate breakdown ==
+Reads that were too short:          13,015,507 (21.1%)
+Reads that were too long:            5,696,266 (9.2%)
+Reads with too many N:                 166,609 (0.3%)
+Reads discarded as untrimmed:          153,126 (0.2%)
+Reads written (passing filters):    42,652,354 (69.1%)
+
+Total basepairs processed: 9,314,263,162 bp
+Quality-trimmed:             181,161,945 bp (1.9%)
+Total written (filtered):    846,330,853 bp (9.1%)
+
+# M48
+Total reads processed:              26,207,354
+Reads with adapters:                 5,677,260 (21.7%)
+
+== Read fate breakdown ==
+Reads that were too short:           3,896,981 (14.9%)
+Reads that were too long:           20,434,620 (78.0%)
+Reads with too many N:                   6,817 (0.0%)
+Reads discarded as untrimmed:           90,086 (0.3%)
+Reads written (passing filters):     1,778,850 (6.8%)
+
+Total basepairs processed: 3,957,310,454 bp
+Quality-trimmed:              46,499,881 bp (1.2%)
+Total written (filtered):     35,591,311 bp (0.9%)
+
+# M51
+Total reads processed:              20,348,304
+Reads with adapters:                 7,710,258 (37.9%)
+
+== Read fate breakdown ==
+Reads that were too short:           7,042,815 (34.6%)
+Reads that were too long:           12,673,695 (62.3%)
+Reads with too many N:                   2,273 (0.0%)
+Reads discarded as untrimmed:           14,418 (0.1%)
+Reads written (passing filters):       615,103 (3.0%)
+
+Total basepairs processed: 3,072,593,904 bp
+Quality-trimmed:              48,509,512 bp (1.6%)
+Total written (filtered):     12,632,989 bp (0.4%)
+
+# M52
+Total reads processed:              29,279,123
+Reads with adapters:                29,137,374 (99.5%)
+
+== Read fate breakdown ==
+Reads that were too short:           7,298,239 (24.9%)
+Reads that were too long:            6,020,859 (20.6%)
+Reads with too many N:                   8,657 (0.0%)
+Reads discarded as untrimmed:           61,778 (0.2%)
+Reads written (passing filters):    15,889,590 (54.3%)
+
+Total basepairs processed: 4,421,147,573 bp
+Quality-trimmed:             151,159,079 bp (3.4%)
+Total written (filtered):    408,145,425 bp (9.2%)
+
+# M60
+Total reads processed:              24,332,450
+Reads with adapters:                24,230,741 (99.6%)
+
+== Read fate breakdown ==
+Reads that were too short:           9,734,570 (40.0%)
+Reads that were too long:            3,070,229 (12.6%)
+Reads with too many N:                   5,938 (0.0%)
+Reads discarded as untrimmed:           38,908 (0.2%)
+Reads written (passing filters):    11,482,805 (47.2%)
+
+Total basepairs processed: 3,674,199,950 bp
+Quality-trimmed:             119,459,545 bp (3.3%)
+Total written (filtered):    282,122,042 bp (7.7%)
+
+# M61
+Total reads processed:              24,731,279
+Reads with adapters:                 6,861,730 (27.7%)
+
+== Read fate breakdown ==
+Reads that were too short:           6,034,816 (24.4%)
+Reads that were too long:           17,805,944 (72.0%)
+Reads with too many N:                   2,980 (0.0%)
+Reads discarded as untrimmed:           76,252 (0.3%)
+Reads written (passing filters):       811,287 (3.3%)
+
+Total basepairs processed: 3,734,423,129 bp
+Quality-trimmed:              46,085,583 bp (1.2%)
+Total written (filtered):     16,211,139 bp (0.4%)
+
+# M62
+Total reads processed:              15,145,513
+Reads with adapters:                 7,633,247 (50.4%)
+
+== Read fate breakdown ==
+Reads that were too short:           4,771,918 (31.5%)
+Reads that were too long:            7,508,877 (49.6%)
+Reads with too many N:                  11,032 (0.1%)
+Reads discarded as untrimmed:           45,692 (0.3%)
+Reads written (passing filters):     2,807,994 (18.5%)
+
+Total basepairs processed: 2,286,972,463 bp
+Quality-trimmed:              37,090,659 bp (1.6%)
+Total written (filtered):     55,944,873 bp (2.4%)
+
+# M63
+Total reads processed:              21,903,406
+Reads with adapters:                10,379,795 (47.4%)
+
+== Read fate breakdown ==
+Reads that were too short:           9,069,045 (41.4%)
+Reads that were too long:           11,612,371 (53.0%)
+Reads with too many N:                   4,485 (0.0%)
+Reads discarded as untrimmed:           28,940 (0.1%)
+Reads written (passing filters):     1,188,565 (5.4%)
+
+Total basepairs processed: 3,307,414,306 bp
+Quality-trimmed:              46,947,183 bp (1.4%)
+Total written (filtered):     25,709,935 bp (0.8%)
+
+# M6 
+Total reads processed:              24,211,196
+Reads with adapters:                15,778,017 (65.2%)
+
+== Read fate breakdown ==
+Reads that were too short:          15,305,643 (63.2%)
+Reads that were too long:            8,428,574 (34.8%)
+Reads with too many N:                   1,536 (0.0%)
+Reads discarded as untrimmed:           43,373 (0.2%)
+Reads written (passing filters):       432,070 (1.8%)
+
+Total basepairs processed: 3,655,890,596 bp
+Quality-trimmed:              52,333,701 bp (1.4%)
+Total written (filtered):      9,537,955 bp (0.3%)
+
+# M72 
+Total reads processed:              25,266,689
+Reads with adapters:                25,144,539 (99.5%)
+
+== Read fate breakdown ==
+Reads that were too short:           7,803,487 (30.9%)
+Reads that were too long:            3,726,653 (14.7%)
+Reads with too many N:                   7,388 (0.0%)
+Reads discarded as untrimmed:           51,139 (0.2%)
+Reads written (passing filters):    13,678,022 (54.1%)
+
+Total basepairs processed: 3,815,270,039 bp
+Quality-trimmed:             137,376,345 bp (3.6%)
+Total written (filtered):    328,694,194 bp (8.6%)
+
+# M73 
+Total reads processed:               5,419,554
+Reads with adapters:                 5,395,120 (99.5%)
+
+== Read fate breakdown ==
+Reads that were too short:           3,459,671 (63.8%)
+Reads that were too long:              320,201 (5.9%)
+Reads with too many N:                   6,668 (0.1%)
+Reads discarded as untrimmed:            4,293 (0.1%)
+Reads written (passing filters):     1,628,721 (30.1%)
+
+Total basepairs processed:   818,352,654 bp
+Quality-trimmed:              17,216,446 bp (2.1%)
+Total written (filtered):     32,665,596 bp (4.0%)
+
+# M74
+Total reads processed:              23,599,752
+Reads with adapters:                 6,346,294 (26.9%)
+
+== Read fate breakdown ==
+Reads that were too short:           5,447,500 (23.1%)
+Reads that were too long:           17,208,033 (72.9%)
+Reads with too many N:                   3,295 (0.0%)
+Reads discarded as untrimmed:           55,067 (0.2%)
+Reads written (passing filters):       885,857 (3.8%)
+
+Total basepairs processed: 3,563,562,552 bp
+Quality-trimmed:              44,030,663 bp (1.2%)
+Total written (filtered):     18,225,152 bp (0.5%)
+
+# M75
+Total reads processed:              39,936,022
+Reads with adapters:                31,308,251 (78.4%)
+
+== Read fate breakdown ==
+Reads that were too short:          26,334,128 (65.9%)
+Reads that were too long:            9,283,704 (23.2%)
+Reads with too many N:                  15,318 (0.0%)
+Reads discarded as untrimmed:           53,526 (0.1%)
+Reads written (passing filters):     4,249,346 (10.6%)
+
+Total basepairs processed: 6,030,339,322 bp
+Quality-trimmed:             104,351,331 bp (1.7%)
+Total written (filtered):     94,582,130 bp (1.6%)
+
+# M7
+Total reads processed:              30,275,553
+Reads with adapters:                24,226,251 (80.0%)
+
+== Read fate breakdown ==
+Reads that were too short:          11,063,587 (36.5%)
+Reads that were too long:            6,232,765 (20.6%)
+Reads with too many N:                  48,605 (0.2%)
+Reads discarded as untrimmed:           51,715 (0.2%)
+Reads written (passing filters):    12,878,881 (42.5%)
+
+Total basepairs processed: 4,571,608,503 bp
+Quality-trimmed:              88,504,444 bp (1.9%)
+Total written (filtered):    255,714,395 bp (5.6%)
+
+# M85
+Total reads processed:              21,835,402
+Reads with adapters:                21,711,666 (99.4%)
+
+== Read fate breakdown ==
+Reads that were too short:           7,627,502 (34.9%)
+Reads that were too long:            2,616,361 (12.0%)
+Reads with too many N:                   5,995 (0.0%)
+Reads discarded as untrimmed:           48,112 (0.2%)
+Reads written (passing filters):    11,537,432 (52.8%)
+
+Total basepairs processed: 3,297,145,702 bp
+Quality-trimmed:             123,423,025 bp (3.7%)
+Total written (filtered):    268,088,833 bp (8.1%)
+
+# M86
+Total reads processed:              17,514,990
+Reads with adapters:                 8,429,216 (48.1%)
+
+== Read fate breakdown ==
+Reads that were too short:           5,771,993 (33.0%)
+Reads that were too long:            9,103,226 (52.0%)
+Reads with too many N:                  10,039 (0.1%)
+Reads discarded as untrimmed:           38,292 (0.2%)
+Reads written (passing filters):     2,591,440 (14.8%)
+
+Total basepairs processed: 2,644,763,490 bp
+Quality-trimmed:              46,364,967 bp (1.8%)
+Total written (filtered):     52,301,229 bp (2.0%)
+
+# M87
+Total reads processed:              35,917,496
+Reads with adapters:                30,802,070 (85.8%)
+
+== Read fate breakdown ==
+Reads that were too short:          27,183,568 (75.7%)
+Reads that were too long:            5,601,464 (15.6%)
+Reads with too many N:                  11,049 (0.0%)
+Reads discarded as untrimmed:           64,118 (0.2%)
+Reads written (passing filters):     3,057,297 (8.5%)
+
+Total basepairs processed: 5,423,541,896 bp
+Quality-trimmed:              82,622,227 bp (1.5%)
+Total written (filtered):     68,971,401 bp (1.3%)
+
+# M88
+Total reads processed:              28,792,588
+Reads with adapters:                11,393,165 (39.6%)
+
+== Read fate breakdown ==
+Reads that were too short:           9,948,192 (34.6%)
+Reads that were too long:           17,523,034 (60.9%)
+Reads with too many N:                   4,898 (0.0%)
+Reads discarded as untrimmed:           30,002 (0.1%)
+Reads written (passing filters):     1,286,462 (4.5%)
+
+Total basepairs processed: 4,347,680,788 bp
+Quality-trimmed:              58,097,687 bp (1.3%)
+Total written (filtered):     27,541,768 bp (0.6%)
+
+# M8
+Total reads processed:              37,732,448
+Reads with adapters:                21,548,435 (57.1%)
+
+== Read fate breakdown ==
+Reads that were too short:          19,322,853 (51.2%)
+Reads that were too long:           16,300,593 (43.2%)
+Reads with too many N:                   7,780 (0.0%)
+Reads discarded as untrimmed:           49,950 (0.1%)
+Reads written (passing filters):     2,051,272 (5.4%)
+
+Total basepairs processed: 5,697,599,648 bp
+Quality-trimmed:              82,384,975 bp (1.4%)
+Total written (filtered):     45,156,438 bp (0.8%)
+
+# M9
+Total reads processed:              25,911,154
+Reads with adapters:                25,800,281 (99.6%)
+
+== Read fate breakdown ==
+Reads that were too short:           8,632,667 (33.3%)
+Reads that were too long:            4,601,815 (17.8%)
+Reads with too many N:                   6,587 (0.0%)
+Reads discarded as untrimmed:           45,543 (0.2%)
+Reads written (passing filters):    12,624,542 (48.7%)
+
+Total basepairs processed: 3,912,584,254 bp
+Quality-trimmed:             153,459,563 bp (3.9%)
+Total written (filtered):    305,187,572 bp (7.8%)
+```
+
+A lot of samples had a high percentage of reads that were too short for the 18 bp cutoff. There were also some samples that did not have many reads with adapters, which means I need to go back to the fastqc files to identify adapters/sequences that were overrepresented in these samples and add them to the cut adapt code. By doing this, I will capture more reads with adapters for trimming. 
+
+Next trimming iteration: decrease min length to 15 bp, look at fastqc for more adapter sequences 
 
 
 

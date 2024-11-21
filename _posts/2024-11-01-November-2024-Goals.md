@@ -144,6 +144,13 @@ DANIELLE DEFENSE!!!!!!!!!!!!!
 - President visit 
 - Found rest of e5 samples 
 - Edits to Pacuta paper 
-- Methods for Mcap DT
+- Bioinformatic methods for Mcap DT (mRNA and lncRNAs)
 - mRNA lncRNA co-expression for mcap - will need to run on unity 
 - CASSIE DEFENSE!!!!!!!!!!!!!!!
+
+### 20241121
+
+- Zoe practice oral exam questions 
+- Continuing to explore mRNA lncRNA co-expression for mcap
+- Looked at mirdeep2 AST output 
+- Looked at cutadapt results for smRNA mcap
