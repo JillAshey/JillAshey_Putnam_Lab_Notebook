@@ -19,7 +19,7 @@ October 2024 goals and daily notebook entries.
 ### Sample processing
 
 1. Send WGBS e5 deep dive samples 
-2. Phys stuff for AST and Mcap DT
+2. Phys stuff for AST and Mcap DT ?
 
 ### Data analysis
 
@@ -125,3 +125,25 @@ DANIELLE DEFENSE!!!!!!!!!!!!!
 ### 20241118
 
 - AST mirtarrnaseq 
+- Prep for e5 sample processing 
+- RIblast db creation for mcap 
+- Reran mapper.pl for AST
+
+### 20241119 
+
+- Dentist 
+- RIblast RNA interactions for mcap 
+- Started to rerun mirdeep2.pl for AST 
+- Protein plate for e5 test samples 
+- Protein calculations for e5 test samples 
+- Searching for e5 samples 
+
+### 20241120
+
+- Drop car off 
+- President visit 
+- Found rest of e5 samples 
+- Edits to Pacuta paper 
+- Methods for Mcap DT
+- mRNA lncRNA co-expression for mcap - will need to run on unity 
+- CASSIE DEFENSE!!!!!!!!!!!!!!!

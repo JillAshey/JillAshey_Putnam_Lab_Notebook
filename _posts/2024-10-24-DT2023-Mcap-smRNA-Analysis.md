@@ -914,7 +914,9 @@ Submitted batch job 348663. In the past, mirdeep2 has taken a few days to proces
 - `-g -1` - report all potential miRNAs regardless of low score
 - `2>report.log` - redirects errors to log file 
 
+### 20241118
 
+Took about 2 days to run and most of output was put in scripts folder. Downloaded output to my computer. 
 
 
 

@@ -7823,6 +7823,144 @@ cut -f2 miranda_strict_all_1kb_apoc_shortstack_parsed.txt | sort | uniq | wc -l
 
 Copy `miranda_strict_all_1kb_apoc_shortstack_parsed.txt` onto local computer. 
 
+### 20241118
+
+Rerun mirdeep2???? Okay. I feel like I have a little more clarity with the mirdeep2 analysis now that I've also run it for my [Mcap data](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-10-24-DT2023-Mcap-smRNA-Analysis.md). First, I need to map the samples to the genome with the mapper.pl script. Genome must first be indexed by bowtie-build (NOT bowtie2). Because I have multiple samples, I need to make a config file that contains fq file locations and a unique 3 letter code (see mirdeep2 [documentation](https://www.mdc-berlin.de/content/mirdeep2-documentation?mdcbl%5B0%5D=%2Fn-rajewsky%23t-data%2Csoftware%26resources&mdcbv=71nDTh7VzOJOW6SFGuFySs4mus4wnovu-t2LZzV2dL8&mdcot=6&mdcou=20738&mdctl=0)).
+
+``` 
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
+
+nano config.txt
+
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1065_R1_001.fastq.gz_1.fastq s01
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1147_R1_001.fastq.gz_1.fastq s02
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1412_R1_001.fastq.gz_1.fastq s03
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1560_R1_001.fastq.gz_1.fastq s04
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1567_R1_001.fastq.gz_1.fastq s05
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1617_R1_001.fastq.gz_1.fastq s06
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-1722_R1_001.fastq.gz_1.fastq s07
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2000_R1_001.fastq.gz_1.fastq s08
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2007_R1_001.fastq.gz_1.fastq s09
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2302_R1_001.fastq.gz_1.fastq s10
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2360_R1_001.fastq.gz_1.fastq s11
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2398_R1_001.fastq.gz_1.fastq s12
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2404_R1_001.fastq.gz_1.fastq s13
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2412_R1_001.fastq.gz_1.fastq s14
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2512_R1_001.fastq.gz_1.fastq s15
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2523_R1_001.fastq.gz_1.fastq s16
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2563_R1_001.fastq.gz_1.fastq s17
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2729_R1_001.fastq.gz_1.fastq s18
+/data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar/AST-2755_R1_001.fastq.gz_1.fastq s19
+``` 
+
+In the config.txt file, I have the path and file name, as well as the unique 3 letter code (s followed by sample number).
+
+In the scripts folder: `nano mapper_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load GCCcore/11.3.0 #I needed to add this to resolve conflicts between loaded GCCcore/9.3.0 and GCCcore/11.3.0
+module load Bowtie/1.3.1-GCC-11.3.0
+
+echo "Index Apoc genome" $(date)
+
+# Index the reference genome for Apoc 
+bowtie-build /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/Apoc_ref.btindex
+
+echo "Referece genome indexed!" $(date)
+echo "Unload unneeded packages and run mapper script for trimmed stringent reads" $(date)
+
+module unload module load GCCcore/11.3.0 
+module unload Bowtie/1.3.1-GCC-11.3.0
+
+conda activate /data/putnamlab/mirdeep2
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
+
+mapper.pl config.txt -e -d -h -j -l 18 -m -p /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/Apoc_ref.btindex -s apoc_mapped_reads.fa -t apoc_mapped_reads_vs_genome.arf
+
+echo "Mapping complete for trimmed reads" $(date)
+
+conda deactivate 
+```
+
+Submitted batch job 349330. Ran in about an hour. 
+
+### 20241119 
+
+Look at the output 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
+
+zgrep -c ">" apoc_mapped_reads.fa
+88460783
+
+wc -l apoc mapped_reads_vs_genome.arf
+17920088 apoc_mapped_reads_vs_genome.arf
+
+less bowtie.log 
+# reads processed: 4816214
+# reads with at least one reported alignment: 326607 (6.78%)
+# reads that failed to align: 4413294 (91.63%)
+# reads with alignments suppressed due to -m: 76313 (1.58%)
+Reported 624511 alignments to 1 output stream(s)
+```
+
+I can now run mirdeep2 to predict my miRNAs. Move the mapper output from the data folder to the output folder. 
+
+```
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2
+mkdir 20241119
+
+cd /data/putnamlab/jillashey/Astrangia2021/smRNA/data/trim/flexbar
+mv mapper_logs/ /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/20241119/
+mv *mapped* /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/20241119/
+mv bowtie.log /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/20241119/
+```
+
+The output files from the `mapper.pl` portion of mirdeep2 will be used as input for the `mirdeep2.pl` portion of the pipeline. In the scripts folder: `nano mirna_predict_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/20241119/apoc_mapped_reads.fa /data/putnamlab/jillashey/Astrangia_Genome/apoculata.assembly.scaffolds_chromosome_level.fasta /data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/20241119/apoc_mapped_reads_vs_genome.arf /data/putnamlab/jillashey/Astrangia2021/smRNA/refs/mature_mirbase_cnidarian_T.fa none none -P -v -g -1 2>report.log
+
+echo "mirdeep2 complete" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 349437
+
+
+
 
 
 

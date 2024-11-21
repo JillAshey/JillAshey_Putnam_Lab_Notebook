@@ -1253,3 +1253,92 @@ kallisto.isoform.TMM.EXPR.matrix : a matrix of TMM-normalized expression values
 
 Copy `Mcap_lncRNA_count_matrix.isoform.counts.matrix` onto local computer! 
 
+### 20241118
+
+Huang et al. 2019 used [RIblast](https://academic.oup.com/bioinformatics/article/33/17/2666/3778372) to compute interaction probabilities for each possible lncRNA-mRNA pair based on free energy required for hybridization. The github for RIblast is [here](https://github.com/fukunagatsu/RIblast). 
+
+```
+cd /data/putnamlab/jillashey
+git clone https://github.com/fukunagatsu/RIblast.git
+make # compile 
+```
+
+The first step is to generate a database. I'm going to generate a db of mRNAs and the lncRNAs will be my query. No idea how long this is supposed to take. 
+
+```
+interactive 
+
+cd /data/putnamlab/jillashey/genome/Mcap/V3
+gunzip Montipora_capitata_HIv3.genes.cds.fna.gz 
+
+cd /data/putnamlab/jillashey/genome/RIblast
+export PATH=$PATH:/data/putnamlab/jillashey/RIblast
+RIblast db -i /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.genes.cds.fna -o mRNA_db
+``` 
+
+Taking a while so I am going to submit as a job. In the Mcap scripts folder (`/data/putnamlab/jillashey/DT_Mcap_2023/mRNA/scripts`): `nano RIblast_db.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=32GB --cpus-per-task=24
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/scripts             
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Make RI blast db for mRNAs" $(date)
+
+cd /data/putnamlab/jillashey/genome/RIblast
+export PATH=$PATH:/data/putnamlab/jillashey/RIblast
+RIblast db -i /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.genes.cds.fna -o mRNA_db
+
+echo "mRNA db creation complete" $(date)
+```
+
+Submitted batch job 349336
+
+### 20241119
+
+Took about 13 hours. Move output into refs folder. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/scripts
+mv mRNA_db.* ../refs/
+```
+
+Make output folder for RIblast 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output
+mkdir RIblast
+```
+
+Next step is to search the potential RNA-RNA interactions of the query sequence (lncRNAs) to the db sequences (mRNAs). In the scripts folder: `nano RIblast_ris.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=1
+#SBATCH --export=NONE
+#SBATCH --mem=125GB --cpus-per-task=24
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/scripts             
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Start RNA-RNA interaction predictions" $(date)
+
+export PATH=$PATH:/data/putnamlab/jillashey/RIblast
+RIblast ris -i /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/stringtie/Mcap_lncRNAs_final.fasta -o /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/RIblast/RIblast_lncRNA_output.txt -d /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/refs/mRNA_db -e -20.0
+
+echo "RNA interaction prediction complete - lncRNA as query and mRNA as db" $(date)
+```
+
+Submitted batch job 349435. The `-e` flag refers to the hybridization energy threshold for seed search, default is -6.0 but I set it at -20.0 for increased stringency. 
