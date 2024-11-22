@@ -154,3 +154,10 @@ DANIELLE DEFENSE!!!!!!!!!!!!!
 - Continuing to explore mRNA lncRNA co-expression for mcap
 - Looked at mirdeep2 AST output 
 - Looked at cutadapt results for smRNA mcap
+
+### 20241122
+
+- mirtarrnaseq for deep dive expression
+- Jane defense 
+- e5 meeting 
+- e5 miRNA mRNA coding 
