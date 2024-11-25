@@ -1408,7 +1408,14 @@ A lot of samples had a high percentage of reads that were too short for the 18 b
 
 Next trimming iteration: decrease min length to 15 bp, look at fastqc for more adapter sequences 
 
+### 20241125
 
+I am going to look at the outputs from the [individual sample fastQC](https://github.com/JillAshey/DevelopmentalTimeseries/tree/main/data/Molecular/smRNA/trim) to see what adapters I am missing. I will focus primarily on the samples that did not have high adapter content in my trimmed stringent iteration. I am hoping there is no limit to number of adapters. 
+
+Most of the samples I did in the initial sequencing batch have no adaptere hits for overrepresented sequences.
+
+
+cutadapt with -b: For this type of adapter, the sequence is specified with -b ADAPTER (or use the longer spelling --anywhere ADAPTER). The adapter may appear in the beginning (even degraded), within the read, or at the end of the read (even partially). The decision which part of the read to remove is made as follows: If there is at least one base before the found adapter, then the adapter is considered to be a 3’ adapter and the adapter itself and everything following it is removed. Otherwise, the adapter is considered to be a 5’ adapter and it is removed from the read, but the sequence after it remains.
 
 
 

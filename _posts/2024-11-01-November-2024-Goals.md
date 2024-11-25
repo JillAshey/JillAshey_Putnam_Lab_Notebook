@@ -161,3 +161,10 @@ DANIELLE DEFENSE!!!!!!!!!!!!!
 - Jane defense 
 - e5 meeting 
 - e5 miRNA mRNA coding 
+
+### 20241125
+
+- Zoe pico prep 
+- Lab meeting 
+- IDing adapter sequences for Mcap smRNA cutadapt 
+- Trinity Ross meeting 

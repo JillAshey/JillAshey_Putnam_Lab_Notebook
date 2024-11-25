@@ -1342,3 +1342,31 @@ echo "RNA interaction prediction complete - lncRNA as query and mRNA as db" $(da
 ```
 
 Submitted batch job 349435. The `-e` flag refers to the hybridization energy threshold for seed search, default is -6.0 but I set it at -20.0 for increased stringency. 
+
+### 20241125
+
+Ran for 5 days, then timed out. Look at results:
+
+```
+RIblast_lncRNA_output.txt 
+3907608,Montipora_capitata_HIv3___Scaffold_10:60672740-60674143,1403,Montipora_capitata_HIv3___RNAseq.g26524.t1,2634,9.50348,-22.54,-13.0365,(1101-1123:1513-1491) 
+3907609,Montipora_capitata_HIv3___Scaffold_10:60672740-60674143,1403,Montipora_capitata_HIv3___RNAseq.g37057.t2,2322,12.1252,-21.51,-9.38481,(65-82:1428-1411) 
+3907610,Montipora_capitata_HIv3___Scaffold_10:60672740-60674143,1403,Montipora_capitata_HIv3___RNAseq.g5510.t1,369,8.12618,-20.68,-12.5538,(47-63:363-347) 
+3907611,Montipora_capitata_HIv3___Scaffold_10:60672740-60674143,1403,Montipora_capitata_HIv3___RNAseq.g45082.t1,2604,8.09315,-20.9,-12.8069,(43-60:661-644) 
+3907612,Montipora_capitata_HIv3___Scaffold_10:60672740-60674143,1403,Montipora_capitata_HIv3___RNAseq.g12829.t1,1161,11.4163,-23.01,-11.5937,(940-962:979-959) 
+3907613,Montipora_capitata_HIv3___Scaffold_10:60672740-60674143,1403,Montipora_capitata_HIv3___RNAseq.g13008.t1,1317,12.3443,-22.45,-10.1057,(514-532:645-627) 
+3907614,Montipora_capitata_HIv3___Scaffold_10:60672740-60674143,1403,Montipora_capitata_HIv3___RNAseq.g41166.t1,4125,8.98718,-20.68,-11.6928,(170-189:3145-3126) 
+3907615,Montipora_capitata_HIv3___Scaffold_10:60672740-60674143,1403,Montipora_capitata_HIv3___RNAseq.g5583.t1,372,6.80997,-22.06,-15.25,(1384-1402:51-33) 
+3907616,Montipora_capitata_HIv3___Scaffold_10:60672740-60674143,1403,Montipora_capitata_HIv3___TS.g47533.t1,11961,10.1834,-20.97,-10.7866,(777-797:9969-9949) 
+3907617,Montipora_capitata_HIv3___Scaffold_10:60672740-60674143,1403,Montipora_capitata_HIv3___TS.g2834.t1,2289,7.26336,-21.12,-13.8566,(236-255:1854-1835) 
+
+wc -l RIblast_lncRNA_output.txt 
+3,907,621 RIblast_lncRNA_output.txt
+```
+
+Column 1 is the ID (looks like a running count of interactions predicted), column 2 is the query RNA (the lncRNA in our case), column 3 is the query length, column 4 is the target name (mRNA in our case), column 6 is the target length, column 7 is the accessibility energy, column 8 is the hybridization energy, column 9 is the interaction energy, and column 10 is the interacted regions ([region in query]:[region in target]). 
+
+I need to set a longer time and maybe more tasks per node / cpus per task. How many interactions should there be? There are 54384 genes and 31504 lncRNAs. 54384*31504 = 1.7 BILLION. I only got to 3 million!!! 
+
+maybe break up into 6 different fastas and then run as separate jobs?
+
