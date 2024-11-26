@@ -168,3 +168,5 @@ DANIELLE DEFENSE!!!!!!!!!!!!!
 - Lab meeting 
 - IDing adapter sequences for Mcap smRNA cutadapt 
 - Trinity Ross meeting 
+- Putting together tables for Apul genome 
+- Edits for ncRNA paper 
