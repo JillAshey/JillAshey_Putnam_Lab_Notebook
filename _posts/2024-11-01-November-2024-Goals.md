@@ -170,3 +170,8 @@ DANIELLE DEFENSE!!!!!!!!!!!!!
 - Trinity Ross meeting 
 - Putting together tables for Apul genome 
 - Edits for ncRNA paper 
+
+### 20241126
+
+- Processed 12 samples for lipid/metabolite - e5 timeseries 
+- Quick Ariana meeting 
