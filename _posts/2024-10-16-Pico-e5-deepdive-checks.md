@@ -1,41 +1,164 @@
+
 ---
 layout: post
-title: Metabolite and lipid sample prep
-date: '2024-11-26'
+title: Pico Methyl-Seq library prep checks 
+date: '2024-10-16'
 categories:
-tags: [Protocols, Lipids, Metabolites]
+tags: [DNA, Library prep, Protocols, WGBS]
 projects: e5
 ---
 
-# e5 sample prep for lipid and metabolite analysis
+# Pico Methy-Seq Library Prep checks for E5 samples
 
-To characterize lipids and metabolites in the e5 timeseries data, we have to homogenize and separate the samples before sending them to the [UW facility](https://northwestmetabolomicsorg.wpcomstaging.com/). We first sent them 4 test samples to see if these samples would work. The lipids worked great but the metabolite data was lacking some key metabolites --  we may not have given them enough sample as input and the instruments may have gotten disrupted by salt since we used 10x PBS to airbrush the samples. See the [former protocol](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-08-29-e5-Airbrushing-Metabolomics-Test-Samples.md) e5 timeseries molecular [github](https://github.com/urol-e5/timeseries_molecular/tree/main/M-multi-species) for information about test samples. 
+I have been doing the pico prep for 15 e5 deep dive samples and I want to sum up all the information here, as I have had to redo 6 samples. 
 
-To remedy these issues, Ariana and I developed the following [protocol](https://ahuffmyer.github.io/ASH_Putnam_Lab_Notebook/E5-metabolomics-lipidomics-tissue-preps/), which I followed for all samples unless otherwise noted. 
+### Prep dates 
 
-The major changes of the protocol: 
+- [6/13/24](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-06-13-Zymo-Pico-Methyl-Seq-Library-Prep.md)
+	- Input amount: 25 ng for all species 
+	- Number of PCR cycles (Section 4): 9 
+	- Successful libraries: 403 (POC), 413 (ACR), 417(POC), 423 (ACR), 427 (ACR), 439 (ACR), 467 (ACR), 471 (POR), 491 (POR)
+	- Failed libraries: 385 (POC), 393 (POC), 401 (POC), 421 (POR), 487 (POR), 489 (POR)
+	- [Tapestation results](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_Pico-2024-06-13.pdf)
+	
+- [8/7/24](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-08-07-Zymo-Pico-Methyl-Seq-Library-Prep.md)
+	- Input amount: 25 ng for all species 
+	- Number of PCR cycles (Section 4): 9 
+	- Modifications: new PrepAmp polymerase 
+	- Successful libraries: none
+	- Failed libraries: 385 (POC), 393 (POC), 401 (POC), 421 (POR), 487 (POR), 489 (POR)
+	- [Tapestation results](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_Pico-2024-08-07.pdf)
 
-- Use LCMS grade water for airbrushing 
-- Airbrush fragment primarily with air and remove any residual tissue with water + airbrush, which should lead to a more concentrated sample 
-- Collect homogenate from each sample for protein assay
-- Run protein assay to quantify the ug/mL of protein in tissue 
+- [8/28/24](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-08-28-Zymo-Pico-Methyl-Seq-Library-Prep.md)
+	- Input amount: 25 ng for POC, 10 ng for POR
+	- Number of PCR cycles (Section 4): 12 for POC, 9 for POR
+	- Modifications: Different input amount for POR, changed number of cycles for POC
+	- Successful libraries: none
+	- Failed libraries: 385 (POC), 393 (POC), 401 (POC), 421 (POR), 487 (POR), 489 (POR)
+	- [Tapestation results](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_Pico-2024-08-28.pdf)
 
-### Sample prep 
+- [10/15/24](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-10-15-Zymo-Pico-Methyl-Seq-Library-Prep.md)
+	- Input amount: 50-60 ng for POC, 2-20 ng for POR
+	- Number of PCR cycles (Section 4): 15 for POC, 9 for POR
+	- Modifications: Different input amount for both species, changed number of cycles for POC. For POR, used extractions done by myself (on 9/25/24) and Kristina (in 2021). Also cleaned the POR DNA before using a Zymo PCR adapter clean-up kit (see [post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2024-10-14-Zymo-Cleanup-DNA-E5.md))
+	- Successful libraries: none
+	- Failed libraries: 385 (POC), 393 (POC), 401 (POC), 421 (POR), 487 (POR), 489 (POR)
+	- [Tapestation results](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_Pico-2024-08-28.pdf)
 
-Below are the details for the samples I prepped. There are 96 samples total. I will continue to add to this table as I complete each sample. 
+### Failed libraries 
 
-| Sample  | Timepoint | Species                  | Site            | Frozen Frag | Fragment bag (M1 or M2) | Bag notes                                                                      | Jill finding note | Date of airbrushing | Airbrush notes                                                          | Serial number | Metabolite volume (uL) | Lipid volume (uL) | Backup volume (uL) | Protein volume (uL) | Total volume (mL) |
-| ------- | --------- | ------------------------ | --------------- | ----------- | ----------------------- | ------------------------------------------------------------------------------ | ----------------- | ------------------- | ----------------------------------------------------------------------- | ------------- | ---------------------- | ----------------- | ------------------ | ------------------- | ----------------- |
-| POR-73  | TP2       | Porites evermanni        | Manava (site 1) | yes         | green                   | No date on whirlpak, but from March - based on handwriting. Zoe has picture,   |                   | 20241126 ?          | Could be from TP1 or TP2 - need to check handwriting and photos of bags | 1             | 1000                   | 1000              | 1000               | 1000                | 6                 |
-| POR-73  | TP1       | Porites evermanni        | Manava (site 1) | yes         | orange                  | From "undated" January bag - Zoe has picture                                   |                   | 20241126 ?          | Could be from TP1 or TP2 - need to check handwriting and photos of bags | 1             | 1000                   | 1000              | 1000               | 1000                | 6                 |
-| POC-42  | TP3       | Pocillopora tuahiniensis | Manava (site 1) | yes         | pink                    |                                                                                |                   | 20241126            |                                                                         | 2             | 1000                   | 1000              | 1000               | 1000                | 5                 |
-| ACR-145 | TP4       | Acropora pulchra         | Manava (site 1) | yes         | grey                    |                                                                                |                   | 20241126            |                                                                         | 3             | 1000                   | 1000              | 1000               | 1000                | 5.5               |
-| POC-53  | TP3       | Pocillopora tuahiniensis | Manava (site 1) | yes         | grey                    |                                                                                |                   | 20241126            |                                                                         | 4             | 1000                   | 1000              | 1000               | 1000                | 4                 |
-| POC-52  | TP1       | Pocillopora tuahiniensis | Manava (site 1) | yes         | orange                  | From "undated" January bag - Zoe has picture                                   |                   | 20241126            |                                                                         | 5             | 1000                   | 1000              | 1000               | 1000                | 4                 |
-| POC-259 | TP4       | Pocillopora tuahiniensis | Mahana (site 2) | yes         | pink                    |                                                                                |                   | 20241126            |                                                                         | 6             | 1000                   | 1000              | 1000               | 1000                | 5                 |
-| POC-42  | TP4       | Pocillopora tuahiniensis | Manava (site 1) | yes         | blue                    |                                                                                |                   | 20241126            |                                                                         | 7             | 1000                   | 1000              | 1000               | 1000                | 9                 |
-| POC-53  | TP1       | Pocillopora tuahiniensis | Manava (site 1) | yes         | orange                  | No date on whirlpak, but from January - based on handwriting. Zoe has picture, |                   | 20241126            |                                                                         | 8             | 1000                   | 1000              | 1000               | 1000                | 4                 |
-| POR-216 | TP1       | Porites evermanni        | Mahana (site 2) | yes         | green                   |                                                                                |                   | 20241126            |                                                                         | 9             | 1000                   | 1000              | 1000               | 1000                | 9                 |
-| POR-72  | TP3       | Porites evermanni        | Manava (site 1) | yes         | grey                    |                                                                                |                   | 20241126            |                                                                         | 10            | 1000                   | 1000              | 1000               | 1000                | 4                 |
-| ACR-237 | TP3       | Acropora pulchra         | Mahana (site 2) | yes         | green                   |                                                                                |                   | 20241126            |                                                                         | 11            | 1000                   | 1000              | 1000               | 500                 | 3.5               |
-| POR-216 | TP3       | Porites evermanni        | Mahana (site 2) | yes         | green                   |                                                                                |                   | 20241126            |                                                                         | 12            | 1000                   | 1000              | 1000               | 500                 | 3.5               |
+Let's take a closer look at the Tapestation results for the libraries that failed 
+
+#### 385 (POC)
+
+6/13/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_385_20240613.png)
+
+8/7/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_385_20240807.png)
+
+8/28/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_385_20240828.png)
+
+10/15/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_385_20241015.png)
+
+#### 393 (POC)
+
+6/13/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_393_20240613.png)
+
+8/7/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_393_20240807.png)
+
+8/28/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_393_20240828.png)
+
+10/15/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_393_20241015.png)
+
+#### 401 (POC)
+
+6/13/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_401_20240613.png)
+
+8/7/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_401_20240807.png)
+
+8/28/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_401_20240828.png)
+
+10/15/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_401_20241015.png)
+
+#### 421 (POR)
+
+6/13/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_421_20240613.png)
+
+8/7/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_421_20240807.png)
+
+8/28/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_421_20240828.png)
+
+10/15/24 (top is Kristina extraction, bottom is my extraction)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_421_10-8_20241015.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_421_9-25_20241015.png)
+
+#### 487 (POR)
+
+6/13/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_487_20240613.png)
+
+8/7/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_487_20240807.png)
+
+8/28/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_487_20240828.png)
+
+10/15/24 (top is Kristina extraction, bottom is my extraction)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_487_11-22_20241015.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_487_9-25_20241015.png)
+
+#### 489 (POR)
+
+6/13/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_489_20240613.png)
+
+8/7/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_489_20240807.png)
+
+8/28/24
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_489_20240828.png)
+
+10/15/24 (top is Kristina extraction, bottom is my extraction)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_489_11-29_20241015.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_489_9-25_20241015.png)
