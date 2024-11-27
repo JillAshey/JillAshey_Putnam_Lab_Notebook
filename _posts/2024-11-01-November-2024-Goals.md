@@ -176,3 +176,7 @@ DANIELLE DEFENSE!!!!!!!!!!!!!
 - Processed 12 samples for lipid/metabolite - e5 timeseries 
 - Quick Ariana meeting 
 - Post writeup for lab stuff today 
+
+### 20241127
+
+- e5 ncRNA writing 
