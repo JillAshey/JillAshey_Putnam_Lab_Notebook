@@ -180,3 +180,8 @@ DANIELLE DEFENSE!!!!!!!!!!!!!
 ### 20241127
 
 - e5 ncRNA writing 
+- Pacuta figs 
+
+### 20241128 
+
+- Pacuta figs
