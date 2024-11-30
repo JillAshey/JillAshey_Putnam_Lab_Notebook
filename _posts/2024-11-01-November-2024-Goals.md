@@ -189,3 +189,37 @@ DANIELLE DEFENSE!!!!!!!!!!!!!
 ### 20241129
 
 - Pacuta figs
+
+### 20241130
+
+- Pacuta figs
+- Pacuta paper writing 
+
+## How did I do on my goals for this month?  
+
+### Writing and manuscripts 
+
+1. e5 ncRNA complete draft of manuscript - basically done! Planning to submit to biorxiv on Dec 6
+2. Pacuta manuscript send to coauthors for edits - yes! Coauthors have given edits, done with majority of them. HP still needs to look at updated figs and discussion
+3. AST results for manuscript - nope
+
+### Sample processing
+
+1. Send WGBS e5 deep dive samples - nope but having fedex issues. hoping to send out on Dec 3
+2. Phys stuff for AST and Mcap DT ? - nope
+
+### Data analysis
+
+1. Make fasta for 3'UTRs with gene names and rerun miranda - yes for e5
+2. Run mirtarrnaseq for AST and make figures for manuscript - no
+3. Run mirtarrnaseq for deep dive (Apul) - need count matrices for both miRNA and mRNA and miranda info - no
+4. Figure out trimming for miRNA data Mcap DT 2023 - sort of? did some different trimming versions 
+5. Compiling all phys stuff for AST 2021 (if time) - no
+
+### Field work / travel 
+
+1. Resgister for sicb - yes
+2. Book flights for sicb - no, maybe do that tomorrow
+3. Confirm travel for cbass workshop - yes! All documents ready to go, just need to print 
+
+Overall a decent month. A lot of writing for e5 and Pacuta paper, both of which should be submitted very soon. Danielle and Cassie also both defended this month!!!!!! Which was very exciting. 
