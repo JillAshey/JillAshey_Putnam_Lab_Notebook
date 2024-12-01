@@ -42,3 +42,4 @@ December 2024 goals and daily notebook entries.
 - Attempted to submit TAR 
 - Minor edits to Pacuta paper 
 - Edits to e5 paper 
+- Processed 6 samples for lipid/metabolite - e5 timeseries 
