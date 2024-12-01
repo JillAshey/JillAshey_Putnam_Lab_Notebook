@@ -1,12 +1,12 @@
 ---
 layout: post
-title: October 2024 Goals
-date: '2024-10-01'
+title: November 2024 Goals
+date: '2024-11-01'
 categories: Monthly_Goals
 tags: Goals
 ---
 
-October 2024 goals and daily notebook entries.
+November 2024 goals and daily notebook entries.
 
 ## Goals  
 
