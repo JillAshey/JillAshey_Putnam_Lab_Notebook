@@ -39,7 +39,14 @@ December 2024 goals and daily notebook entries.
 
 ### 20241201
 
-- Attempted to submit TAR 
+- Submitted TAR 
 - Minor edits to Pacuta paper 
 - Edits to e5 paper 
 - Processed 6 samples for lipid/metabolite - e5 timeseries 
+
+### 20241202
+
+- Processed 12 samples for lipid/metabolite - e5 timeseries 
+- Lab meeting 
+
+
