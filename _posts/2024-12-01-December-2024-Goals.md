@@ -48,5 +48,6 @@ December 2024 goals and daily notebook entries.
 
 - Processed 12 samples for lipid/metabolite - e5 timeseries 
 - Lab meeting 
+- Pacuta fig and tables 
 
 
