@@ -1490,92 +1490,43 @@ array1=($(ls *R1_001.fastq.gz))
 
 # cutadapt loop
 for i in ${array1[@]}; do
-cutadapt -b TGGAATTCTCGGGTGCCAAGG -b AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -b GATCGGAAGAGCACACGTCTGAACTCCAGTCA -b GAAACGTTGGGTTGCGGTATTGGAAGAGCACACGTCTGAACTCCAGTCAC -b AGTGTCCTATCAGCTACCATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b CTCGGCATGGAAGCCGTGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b TAGCGTCGAACGGGCGCAATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b ACGTCTGAACTCCAGTCACTTACAGGAATCTGGGGGGGGGGGGGGGGGGG -b TATCGGTGAAACATCCTCATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b ACCGTTGTTCGAGCAGGAATCGGAAGAGCACACGTCTGAACTCCAGTCAC
-
-
-
-
-
-
-
-
-
-
--m 15 -M 35 -q 30,30 --trim-n --max-n 0 --discard-untrimmed -e 0.1 -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent_take2/trim_stringent_take2_cutadapt_${i} $i
+cutadapt -b TGGAATTCTCGGGTGCCAAGG -b AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -b GATCGGAAGAGCACACGTCTGAACTCCAGTCA -b GAAACGTTGGGTTGCGGTATTGGAAGAGCACACGTCTGAACTCCAGTCAC -b AGTGTCCTATCAGCTACCATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b CTCGGCATGGAAGCCGTGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b TAGCGTCGAACGGGCGCAATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b ACGTCTGAACTCCAGTCACTTACAGGAATCTGGGGGGGGGGGGGGGGGGG -b TATCGGTGAAACATCCTCATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b ACCGTTGTTCGAGCAGGAATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b TCGGAAGAGCACACGTCTGAACTCCAGTCACTACCGAGGATCTGGGGGGG -b TCGGAAGAGCACACGTCTGAACTCCAGTCACTCGTAGTGATCTGGGGGGG -b TCGGAAGAGCACACGTCTGAACTCCAGTCACCGTTAGAAATCTGGGGGGG -b TCGGAAGAGCACACGTCTGAACTCCAGTCACCTACGACAATCTGGGGGGG -b CTCGGCATGGAAGCCGTGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b AAGAGCACACGTCTGAACTCCAGTCACTAAGTGGTATCTGGGGGGGGGGG -b ACGTCTGAACTCCAGTCACCGGACAACATCTGGGGGGGGGGGGGGGGGGG -b TCGGAAGAGCACACGTCTGAACTCCAGTCACATATGGATATCTGGGGGGG -b TCGGAAGAGCACACGTCTGAACTCCAGTCACGCGCAAGCATCTAGGGGGG -b GAAGAGCACACGTCTGAACTCCAGTCACCCGTGAAGATCTGGGGGGGGGG -b TCGGAAGAGCACACGTCTGAACTCCAGTCACAAGATACTATCTGGGGGGG -b TCGGAAGAGCACACGTCTGAACTCCAGTCACATGAGGCCATCTGGGGGGG -b ACGTCTGAACTCCAGTCACGGAGCGTCATCTGGGGGGGGGGGGGGGGGGG -b TCGGAAGAGCACACGTCTGAACTCCAGTCACATGGCATGATCTGGGGGGG -b CTCGGCATGGAAGCCGTGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b CTCGGCATGGAAGCCGTGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b TCGGAAGAGCACACGTCTGAACTCCAGTCACGCAATGCAATCTGGGGGGG -b TCGGAAGAGCACACGTCTGAACTCCAGTCACGTTCCAATATCTAGGGGGG -b TCGGAAGAGCACACGTCTGAACTCCAGTCACGATTCTGCATCTGGGGGGG -m 15 -M 35 -q 30,30 --trim-n --max-n 0 --discard-untrimmed -e 0.1 -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent_take2/trim_stringent_take2_cutadapt_${i} $i
 done
+
+## added even more adapters that were overrepresented sequences from the individual fastqc htmls 
+
+echo "Read trimming of adapters complete" $(date)
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent_take2/
+fastqc * -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/fastqc/trim_stringent_take2
+done
+
+echo "Read trimming of adapters and QC complete. Starting multiqc" $(date)
+
+module unload cutadapt/4.2-GCCcore-11.3.0
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/fastqc/trim_stringent_take2
+multiqc * 
+
+echo "MultiQC complete" $(date)
+
+echo "Count number of reads in each trimmed file" $(date)
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent_take2
+zgrep -c "@LH00" *.gz > smRNA_trim_stringent_take2_read_count.txt
 ```
  
- 
- 
- 
+Submitted batch job 352143. In this iteration, I used cutadapt with -b: For this type of adapter, the sequence is specified with -b ADAPTER (or use the longer spelling --anywhere ADAPTER). The adapter may appear in the beginning (even degraded), within the read, or at the end of the read (even partially). The decision which part of the read to remove is made as follows: If there is at least one base before the found adapter, then the adapter is considered to be a 3’ adapter and the adapter itself and everything following it is removed. Otherwise, the adapter is considered to be a 5’ adapter and it is removed from the read, but the sequence after it remains.
+
+discussion w. zoe
+- do they all have adapters? 
+- blast overrepresented sequences 
+- reverse complement of sequence 
+- what would data look like if i dont throw out anything >30bp
+- sequences of index primers 
 
 
-cutadapt with -b: For this type of adapter, the sequence is specified with -b ADAPTER (or use the longer spelling --anywhere ADAPTER). The adapter may appear in the beginning (even degraded), within the read, or at the end of the read (even partially). The decision which part of the read to remove is made as follows: If there is at least one base before the found adapter, then the adapter is considered to be a 3’ adapter and the adapter itself and everything following it is removed. Otherwise, the adapter is considered to be a 5’ adapter and it is removed from the read, but the sequence after it remains.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Rerun cutadapt with updated trimming. look at individual fastqc files to determine any other adapters, particularly from samples that did not have a high % of reads with adapters 
-
-
-```
-cutadapt -a TGGAATTCTCGGGTGCCAAGG -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA [...other adapters...] \
--m 15 -M 35 -q 20,20 --trim-n --max-n 1 -e 0.15 \
--o output.fastq input.fastq
-```
-
-
-
-
-
-
-```
---readfile trim_stringent_cutadapt_10_small_RNA_S4_R1_001.fastq.gz \
-trim_stringent_cutadapt_11_small_RNA_S5_R1_001.fastq.gz \
-trim_stringent_cutadapt_13_S76_R1_001.fastq.gz \
-trim_stringent_cutadapt_14_small_RNA_S6_R1_001.fastq.gz \
-trim_stringent_cutadapt_23_S77_R1_001.fastq.gz \
-trim_stringent_cutadapt_24_small_RNA_S7_R1_001.fastq.gz \
-trim_stringent_cutadapt_26_small_RNA_S8_R1_001.fastq.gz \
-trim_stringent_cutadapt_28_small_RNA_S9_R1_001.fastq.gz \
-trim_stringent_cutadapt_35_S78_R1_001.fastq.gz \
-trim_stringent_cutadapt_36_small_RNA_S10_R1_001.fastq.gz \
-trim_stringent_cutadapt_37_small_RNA_S11_R1_001.fastq.gz \
-trim_stringent_cutadapt_39_small_RNA_S12_R1_001.fastq.gz \
-trim_stringent_cutadapt_47_small_RNA_S13_R1_001.fastq.gz \
-trim_stringent_cutadapt_48_small_RNA_S14_R1_001.fastq.gz \
-trim_stringent_cutadapt_51_small_RNA_S15_R1_001.fastq.gz \
-trim_stringent_cutadapt_52_S79_R1_001.fastq.gz \
-trim_stringent_cutadapt_60_S80_R1_001.fastq.gz \
-trim_stringent_cutadapt_61_small_RNA_S16_R1_001.fastq.gz \
-trim_stringent_cutadapt_62_small_RNA_S17_R1_001.fastq.gz \
-trim_stringent_cutadapt_63_small_RNA_S18_R1_001.fastq.gz \
-#trim_stringent_cutadapt_6_small_RNA_S1_R1_001.fastq.gz \
-#trim_stringent_cutadapt_72_S81_R1_001.fastq.gz \
-#trim_stringent_cutadapt_73_small_RNA_S19_R1_001.fastq.gz \
-#trim_stringent_cutadapt_74_small_RNA_S20_R1_001.fastq.gz \
-#trim_stringent_cutadapt_75_small_RNA_S21_R1_001.fastq.gz \
-#trim_stringent_cutadapt_7_small_RNA_S2_R1_001.fastq.gz \
-#trim_stringent_cutadapt_85_S82_R1_001.fastq.gz \
-#trim_stringent_cutadapt_86_small_RNA_S22_R1_001.fastq.gz\
-#trim_stringent_cutadapt_87_small_RNA_S23_R1_001.fastq.gz \
-#trim_stringent_cutadapt_88_small_RNA_S24_R1_001.fastq.gz \
-#trim_stringent_cutadapt_8_small_RNA_S3_R1_001.fastq.gz \
-#trim_stringent_cutadapt_9_S75_R1_001.fastq.gz \
-```
 
 
 

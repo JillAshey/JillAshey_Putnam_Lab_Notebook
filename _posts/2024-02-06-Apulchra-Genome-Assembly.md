@@ -4903,7 +4903,221 @@ mRNA
 tRNA
 ```
 
-
-
-
 for reference: https://github.com/hputnam/Meth_Compare?tab=readme-ov-file
+
+### 20241203
+
+Talked with Ross and Trinity last week to discuss figures and tables to include in the paper. Meeting summary (by Trinity): 
+
+- We agreed that I will take over the bulk of responsibility for writing the draft, with Jill & I listed as Co-First Authors
+- Our first deadline will be December 6th  -- I will have a rough draft prepared in the overleaf and will let everyone know when that’s done!
+- We will drop figures and such in the shared github – Jill and I will also keep in contact
+ 
+Figures 
+- image of pulchra + sampling/geographic distribution  (Trinity)
+- potential Busco scores (Jill + whatever Trinity can help with!)
+- repeat content distribution (Trinity)
+- bioanalyzer result/sequence quality statistics  (Supplementary?)
+Tables 
+- comparison assembly statistics to sanger A.palmata & A.cervicornis, and A.digitifera & A.millepora genomes (Jill)
+- description of structural + functional annotation & comparison to other Acropora assemblies (Trinity)
+ 
+Other tasks for Jill & Trinity
+- Jill & Trinity: do more literature searches on use of pacbio for detection of methylation data to provide context for Jill’s methylation analysis
+- Jill & Trinity: think a little more about whether we want to include any other non-acroporids in genome comparison
+
+Trinity recently reran busco on our masked genome and it looks beautiful! 96.6% completeness! I now need to run busco on the other genomes to compare completeness. We decided to look at Amillepora, Adigitifera, Acervicornis, and Apalmata (see [table](https://github.com/hputnam/Apulchra_genome/blob/main/Tables/AssemblyComparisons.csv)). 
+
+Amil BUSCO: `cd /data/putnamlab/jillashey/genome/Amil_v2.01`. In this folder: `nano amil_busco.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/genome/Amil_v2.01
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Begin busco on Amil fasta" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/genome/Amil_v2.01/Amil.v2.01.chrs.fasta" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${jillashey/genome/Amil_v2.01}"
+busco --config "$EBROOTBUSCO/config/config.ini"  -f -c 20 --long -i "${query}" -l metazoa_odb10 -o amil.busco -m genome
+
+echo "busco complete for Amil" $(date)
+``` 
+
+Submitted batch job 352146
+
+Adig BUSCO: `/data/putnamlab/jillashey/genome/Adig`. In this folder: `nano adig_busco.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/genome/Adig
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Begin busco on Adig fasta" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/genome/Adig/GCA_014634065.1_Adig_2.0_genomic.fna" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${jillashey/genome/Adig}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o adig.busco -m genome
+
+echo "busco complete for Amil" $(date)
+```
+
+Submitted batch job 352147
+
+I am using recently made [Acerv](https://www.ebi.ac.uk/ena/browser/view/GCA_964034795.1) and [Apalm](https://www.ebi.ac.uk/ena/browser/view/GCA_964030595) genomes. For Acerv: 
+
+```
+cd /data/putnamlab/jillashey/genome
+mkdir jaAcrCerv1.1
+cd jaAcrCerv1.1
+wget ftp://ftp.ebi.ac.uk/pub/databases/ena/wgs/public/cax/CAXITW01.fasta.gz
+```
+
+In this folder: `nano acerv_busco.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/genome/jaAcrCerv1.1
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Begin busco on Acerv fasta" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/genome/jaAcrCerv1.1/CAXITW01.fasta" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${jillashey/genome/jaAcrCerv1.1}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o acerv.busco -m genome
+
+echo "busco complete for Acerv" $(date)
+```
+
+Submitted batch job 352148. For Apalm: 
+
+```
+cd /data/putnamlab/jillashey/genome
+mkdir jaAcrPala1.1
+cd jaAcrPala1.1
+wget ftp://ftp.ebi.ac.uk/pub/databases/ena/wgs/public/cax/CAXIQB01.fasta.gz
+```
+
+In this folder: `nano apalm_busco.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/genome/jaAcrPala1.1
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Begin busco on Apalm fasta" $(date)
+
+labbase=/data/putnamlab
+busco_shared="${labbase}/shared/busco"
+[ -z "$query" ] && query="${labbase}/jillashey/genome/jaAcrPala1.1/CAXIQB01.fasta" # set this to the query (genome/transcriptome) you are running
+[ -z "$db_to_compare" ] && db_to_compare="${busco_shared}/downloads/lineages/metazoa_odb10"
+
+source "${busco_shared}/scripts/busco_init.sh"  # sets up the modules required for this in the right order
+
+# This will generate output under your $HOME/busco_output
+cd "${labbase}/${jillashey/genome/jaAcrPala1.1}"
+busco --config "$EBROOTBUSCO/config/config.ini" -f -c 20 --long -i "${query}" -l metazoa_odb10 -o apalm.busco -m genome
+
+echo "busco complete for Apalm" $(date)
+```
+
+Submitted batch job 352149. All ran very fast! Look at results:
+
+```
+# Amil 
+        --------------------------------------------------
+        |Results from dataset metazoa_odb10               |
+        --------------------------------------------------
+        |C:92.7%[S:87.2%,D:5.5%],F:2.6%,M:4.7%,n:954      |
+        |884    Complete BUSCOs (C)                       |
+        |832    Complete and single-copy BUSCOs (S)       |
+        |52     Complete and duplicated BUSCOs (D)        |
+        |25     Fragmented BUSCOs (F)                     |
+        |45     Missing BUSCOs (M)                        |
+        |954    Total BUSCO groups searched               |
+        --------------------------------------------------
+        
+# Adig
+        --------------------------------------------------
+        |Results from dataset metazoa_odb10               |
+        --------------------------------------------------
+        |C:93.2%[S:92.8%,D:0.4%],F:3.4%,M:3.4%,n:954      |
+        |889    Complete BUSCOs (C)                       |
+        |885    Complete and single-copy BUSCOs (S)       |
+        |4      Complete and duplicated BUSCOs (D)        |
+        |32     Fragmented BUSCOs (F)                     |
+        |33     Missing BUSCOs (M)                        |
+        |954    Total BUSCO groups searched               |
+        --------------------------------------------------
+```
+
+Acerv and Apalm failed with this error: 
+
+```
+2024-12-03 11:09:13 ERROR:      Unable to parse metaeuk results. This typically occurs because sequence headers contain pipes ('|'). Metaeuk uses pipes as delimiters in the results files. The additional pipes interfere with BUSCO's ability to accurately parse the results.To fix this problem remove any pipes from sequence headers and try again.
+2024-12-03 11:09:13 ERROR:      BUSCO analysis failed!
+```
+
+Checking sequence headers and yes they do contain |. Edit code for both species so that the "|" is changed to a "-" with the following line of code: 
+
+```
+sed 's/|/-/g' GENOME.fasta > GENOME_modified.fasta
+```
+
+Submitted batch job 352154 for Apalm and Submitted batch job 352155 for Acerv. Zoe also informed me of the Acerv and Apalm genomes that Nick assembled (see his [github](https://github.com/mistergroot/apal_acer_genomes/tree/main/resources) and [paper](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-024-11025-3)). I am also going to download those and run busco 
+
+NCBI genome accessions are GCA_025960835.2 for A. palmata, GCA_037043185.1 for A. cervicornis version 1, and GCA_041430625.1 for A. cervicornis version 2 
+

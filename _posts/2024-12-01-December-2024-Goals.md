@@ -53,3 +53,9 @@ December 2024 goals and daily notebook entries.
 ### 20241203
 
 - Adding updated fig and tables to Pacuta paper 
+- Rerunning cutadapt for smRNA Mcap data 
+- Edits to e5 paper 
+- BUSCO for Apul genome comparisons 
+- BUSCO fig making 
+- Zoe meeting 
+- Therapy 
