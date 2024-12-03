@@ -50,4 +50,6 @@ December 2024 goals and daily notebook entries.
 - Lab meeting 
 - Pacuta fig and tables 
 
+### 20241203
 
+- Adding updated fig and tables to Pacuta paper 

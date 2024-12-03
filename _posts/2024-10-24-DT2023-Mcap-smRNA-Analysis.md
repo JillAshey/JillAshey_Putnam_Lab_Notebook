@@ -1408,11 +1408,106 @@ A lot of samples had a high percentage of reads that were too short for the 18 b
 
 Next trimming iteration: decrease min length to 15 bp, look at fastqc for more adapter sequences 
 
-### 20241125
+### 20241203
 
 I am going to look at the outputs from the [individual sample fastQC](https://github.com/JillAshey/DevelopmentalTimeseries/tree/main/data/Molecular/smRNA/trim) to see what adapters I am missing. I will focus primarily on the samples that did not have high adapter content in my trimmed stringent iteration. I am hoping there is no limit to number of adapters. 
 
-Most of the samples I did in the initial sequencing batch have no adaptere hits for overrepresented sequences.
+Most of the samples I did in the initial sequencing batch have no adaptere hits for overrepresented sequences. Using the individual fastQC files, I pulled all the adapters that had >1% of possible contamination and got over 400 unique adapter sequences lol. Instead, I am going to go through the individual fastQCs again while looking at the cutadapt output to see which samples did not have many reads with adapters. 
+
+Adapters to include: 
+
+```
+TGGAATTCTCGGGTGCCAAGG 
+AGATCGGAAGAGCACACGTCTGAACTCCAGTCA 
+GATCGGAAGAGCACACGTCTGAACTCCAGTCA 
+GAAACGTTGGGTTGCGGTATTGGAAGAGCACACGTCTGAACTCCAGTCAC 
+AGTGTCCTATCAGCTACCATCGGAAGAGCACACGTCTGAACTCCAGTCAC 
+CTCGGCATGGAAGCCGTGATCGGAAGAGCACACGTCTGAACTCCAGTCAC 
+TAGCGTCGAACGGGCGCAATCGGAAGAGCACACGTCTGAACTCCAGTCAC 
+ACGTCTGAACTCCAGTCACTTACAGGAATCTGGGGGGGGGGGGGGGGGGG 
+TATCGGTGAAACATCCTCATCGGAAGAGCACACGTCTGAACTCCAGTCAC 
+ACCGTTGTTCGAGCAGGAATCGGAAGAGCACACGTCTGAACTCCAGTCAC # M10
+TCGGAAGAGCACACGTCTGAACTCCAGTCACTACCGAGGATCTGGGGGGG # M11
+TCGGAAGAGCACACGTCTGAACTCCAGTCACTCGTAGTGATCTGGGGGGG # M14
+TCGGAAGAGCACACGTCTGAACTCCAGTCACCGTTAGAAATCTGGGGGGG # M26
+TCGGAAGAGCACACGTCTGAACTCCAGTCACCTACGACAATCTGGGGGGG # M28
+CTCGGCATGGAAGCCGTGATCGGAAGAGCACACGTCTGAACTCCAGTCAC # M36
+AAGAGCACACGTCTGAACTCCAGTCACTAAGTGGTATCTGGGGGGGGGGG # M39
+ACGTCTGAACTCCAGTCACCGGACAACATCTGGGGGGGGGGGGGGGGGGG # M48
+TCGGAAGAGCACACGTCTGAACTCCAGTCACATATGGATATCTGGGGGGG # M51
+TCGGAAGAGCACACGTCTGAACTCCAGTCACGCGCAAGCATCTAGGGGGG # M61
+GAAGAGCACACGTCTGAACTCCAGTCACCCGTGAAGATCTGGGGGGGGGG # M62
+TCGGAAGAGCACACGTCTGAACTCCAGTCACAAGATACTATCTGGGGGGG # M63
+TCGGAAGAGCACACGTCTGAACTCCAGTCACATGAGGCCATCTGGGGGGG # M6
+ACGTCTGAACTCCAGTCACGGAGCGTCATCTGGGGGGGGGGGGGGGGGGG # M74
+TCGGAAGAGCACACGTCTGAACTCCAGTCACATGGCATGATCTGGGGGGG # M75
+CTCGGCATGGAAGCCGTGATCGGAAGAGCACACGTCTGAACTCCAGTCAC # M7
+CTCGGCATGGAAGCCGTGATCGGAAGAGCACACGTCTGAACTCCAGTCAC # M86
+TCGGAAGAGCACACGTCTGAACTCCAGTCACGCAATGCAATCTGGGGGGG # M87
+TCGGAAGAGCACACGTCTGAACTCCAGTCACGTTCCAATATCTAGGGGGG # M88
+TCGGAAGAGCACACGTCTGAACTCCAGTCACGATTCTGCATCTGGGGGGG # M8
+```
+
+Make new folders for output
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data
+mkdir trim_stringent_take2
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/fastqc
+mkdir trim_stringent_take2
+```
+
+My last cutadapt run (job 347786) took about a day to run. I am going to set the time higher this time since I am adding so many more adapters. In the scripts folder: `nano cutadapt_trim_stringent_take2.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts            
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+# Load modules 
+module load cutadapt/4.2-GCCcore-11.3.0
+#module load cutadapt/3.5-GCCcore-11.2.0
+module load FastQC/0.11.8-Java-1.8
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/
+
+#echo "Count number of reads in each file" $(date)
+
+#zgrep -c "@LH00" *.gz > smRNA_raw_read_count.txt
+
+echo "Start read trimming with cutadapt, followed by QC" $(date)
+
+# Make an array of sequences to trim
+array1=($(ls *R1_001.fastq.gz))
+
+# cutadapt loop
+for i in ${array1[@]}; do
+cutadapt -b TGGAATTCTCGGGTGCCAAGG -b AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -b GATCGGAAGAGCACACGTCTGAACTCCAGTCA -b GAAACGTTGGGTTGCGGTATTGGAAGAGCACACGTCTGAACTCCAGTCAC -b AGTGTCCTATCAGCTACCATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b CTCGGCATGGAAGCCGTGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b TAGCGTCGAACGGGCGCAATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b ACGTCTGAACTCCAGTCACTTACAGGAATCTGGGGGGGGGGGGGGGGGGG -b TATCGGTGAAACATCCTCATCGGAAGAGCACACGTCTGAACTCCAGTCAC -b ACCGTTGTTCGAGCAGGAATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+
+
+
+
+
+
+
+
+
+
+-m 15 -M 35 -q 30,30 --trim-n --max-n 0 --discard-untrimmed -e 0.1 -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent_take2/trim_stringent_take2_cutadapt_${i} $i
+done
+```
+ 
+ 
+ 
+ 
 
 
 cutadapt with -b: For this type of adapter, the sequence is specified with -b ADAPTER (or use the longer spelling --anywhere ADAPTER). The adapter may appear in the beginning (even degraded), within the read, or at the end of the read (even partially). The decision which part of the read to remove is made as follows: If there is at least one base before the found adapter, then the adapter is considered to be a 3’ adapter and the adapter itself and everything following it is removed. Otherwise, the adapter is considered to be a 5’ adapter and it is removed from the read, but the sequence after it remains.
