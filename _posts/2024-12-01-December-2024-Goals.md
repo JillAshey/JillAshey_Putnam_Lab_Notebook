@@ -59,3 +59,21 @@ December 2024 goals and daily notebook entries.
 - BUSCO fig making 
 - Zoe meeting 
 - Therapy 
+- Booked flights for sicb
+
+### 20241204
+
+- Processed 12 samples for lipid/metabolite - e5 timeseries 
+- Pacuta fig
+- Packing 
+
+### 20241205
+
+- Writing meeting 
+- Editing and formatting e5 paper 
+- Pacuta fig 
+- Writing for Apul genome paper 
+- Program of study 
+- Processed 6 samples for lipid/metabolite - e5 timeseries 
+
+

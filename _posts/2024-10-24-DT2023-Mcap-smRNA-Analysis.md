@@ -1526,6 +1526,7 @@ discussion w. zoe
 - what would data look like if i dont throw out anything >30bp
 - sequences of index primers 
 
+Bleh trimming is hard and confusing. 
 
 
 
