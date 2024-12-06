@@ -1528,6 +1528,358 @@ discussion w. zoe
 
 Bleh trimming is hard and confusing. 
 
+### 20241206
+
+While trimming takes place, I am going to run the quantifier module to obtain counts for the miRNAs. From the mirdeep2 output, I identified putative novel and known miRNAs (see [code](https://github.com/JillAshey/DevelopmentalTimeseries/blob/main/scripts/miRNA_discovery.Rmd)). For the novel miRNAs, I filtered the list so that mirdeep2 score >10, no rfam info, at least 10 reads in mature read count, and significant randfold p-value; 52 putative novel miRNAs were identified. For the known miRNAs, I filtered the list so that mirdeep2 score >0, no rfam info, at least 10 reads in mature read count, and significant ranfold p-value; 7 putative known miRNAs were identified. 59 miRNAs total! 
+
+```
+# novel 
+Montipora_capitata_HIv3___Scaffold_2_98529
+Montipora_capitata_HIv3___Scaffold_8_488597
+Montipora_capitata_HIv3___Scaffold_4_264216
+Montipora_capitata_HIv3___Scaffold_9_587940
+Montipora_capitata_HIv3___Scaffold_9_625013
+Montipora_capitata_HIv3___Scaffold_2_71488
+Montipora_capitata_HIv3___Scaffold_9_613239
+Montipora_capitata_HIv3___Scaffold_11_759461
+Montipora_capitata_HIv3___Scaffold_12_859123
+Montipora_capitata_HIv3___Scaffold_10_631026
+Montipora_capitata_HIv3___Scaffold_8_585867
+Montipora_capitata_HIv3___Scaffold_2_124999
+Montipora_capitata_HIv3___Scaffold_8_578139
+Montipora_capitata_HIv3___Scaffold_11_826703
+Montipora_capitata_HIv3___Scaffold_10_729473
+Montipora_capitata_HIv3___Scaffold_10_667068
+Montipora_capitata_HIv3___Scaffold_151_1075760
+Montipora_capitata_HIv3___Scaffold_14_1017829
+Montipora_capitata_HIv3___Scaffold_5_309429
+Montipora_capitata_HIv3___Scaffold_8_508612
+Montipora_capitata_HIv3___Scaffold_8_553085
+Montipora_capitata_HIv3___Scaffold_7_456843
+Montipora_capitata_HIv3___Scaffold_4_291272
+Montipora_capitata_HIv3___Scaffold_6_400996
+Montipora_capitata_HIv3___Scaffold_13_954675
+Montipora_capitata_HIv3___Scaffold_8_542727
+Montipora_capitata_HIv3___Scaffold_14_999529
+Montipora_capitata_HIv3___Scaffold_14_994729
+Montipora_capitata_HIv3___Scaffold_9_617967
+Montipora_capitata_HIv3___Scaffold_5_322659
+Montipora_capitata_HIv3___Scaffold_6_419669
+Montipora_capitata_HIv3___Scaffold_10_645863
+Montipora_capitata_HIv3___Scaffold_2_87665
+Montipora_capitata_HIv3___Scaffold_1_35393
+Montipora_capitata_HIv3___Scaffold_4_232369
+Montipora_capitata_HIv3___Scaffold_5_375083
+Montipora_capitata_HIv3___Scaffold_2_64557
+Montipora_capitata_HIv3___Scaffold_3_149822
+Montipora_capitata_HIv3___Scaffold_9_606053
+Montipora_capitata_HIv3___Scaffold_11_801837
+Montipora_capitata_HIv3___Scaffold_8_508613
+Montipora_capitata_HIv3___Scaffold_8_535535
+Montipora_capitata_HIv3___Scaffold_11_796076
+Montipora_capitata_HIv3___Scaffold_11_787579
+Montipora_capitata_HIv3___Scaffold_11_816162
+Montipora_capitata_HIv3___Scaffold_13_949160
+Montipora_capitata_HIv3___Scaffold_11_841599
+Montipora_capitata_HIv3___Scaffold_5_310446
+Montipora_capitata_HIv3___Scaffold_6_439094
+Montipora_capitata_HIv3___Scaffold_5_365006
+Montipora_capitata_HIv3___Scaffold_2_67225
+Montipora_capitata_HIv3___Scaffold_5_307262
+
+# known 
+Montipora_capitata_HIv3___Scaffold_14_1018693
+Montipora_capitata_HIv3___Scaffold_2_96328
+Montipora_capitata_HIv3___Scaffold_8_565039
+Montipora_capitata_HIv3___Scaffold_8_586427
+Montipora_capitata_HIv3___Scaffold_14_992284
+Montipora_capitata_HIv3___Scaffold_12_910953
+Montipora_capitata_HIv3___Scaffold_1_4183
+```
+
+I now want to do 2 things - quantify the miRNAs and use miranda to assess miRNA binding to 3'UTR. Let's quantify first. 
+
+All output files from mirdeep2 were put in the scripts folder. Move them to the proper output folder. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+mv dir_prepare_signature1731506059/ ../output/mirdeep2_trim_stringent/
+mv result_13_11_2024_t_08_48_44.* ../output/mirdeep2_trim_stringent/
+mv mirna_results_13_11_2024_t_08_48_44/ ../output/mirdeep2_trim_stringent/
+mv report.log ../output/mirdeep2_trim_stringent/
+mv pdfs_13_11_2024_t_08_48_44/ ../output/mirdeep2_trim_stringent/
+mv mirdeep_runs/ ../output/mirdeep2_trim_stringent/
+```
+
+In this folder (`/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_trim_stringent/mirna_results_13_11_2024_t_08_48_44`), there are bed and fasta files for the known and novel mature, star and precursor sequences. I need to filter them by the miRNAs that I identified. Make a text file with the novel and known names of putative miRNAs.
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_trim_stringent/mirna_results_13_11_2024_t_08_48_44
+nano putative_miRNA_list.txt 
+Montipora_capitata_HIv3___Scaffold_2_98529
+Montipora_capitata_HIv3___Scaffold_8_488597
+Montipora_capitata_HIv3___Scaffold_4_264216
+Montipora_capitata_HIv3___Scaffold_9_587940
+Montipora_capitata_HIv3___Scaffold_9_625013
+Montipora_capitata_HIv3___Scaffold_2_71488
+Montipora_capitata_HIv3___Scaffold_9_613239
+Montipora_capitata_HIv3___Scaffold_11_759461
+Montipora_capitata_HIv3___Scaffold_12_859123
+Montipora_capitata_HIv3___Scaffold_10_631026
+Montipora_capitata_HIv3___Scaffold_8_585867
+Montipora_capitata_HIv3___Scaffold_2_124999
+Montipora_capitata_HIv3___Scaffold_8_578139
+Montipora_capitata_HIv3___Scaffold_11_826703
+Montipora_capitata_HIv3___Scaffold_10_729473
+Montipora_capitata_HIv3___Scaffold_10_667068
+Montipora_capitata_HIv3___Scaffold_151_1075760
+Montipora_capitata_HIv3___Scaffold_14_1017829
+Montipora_capitata_HIv3___Scaffold_5_309429
+Montipora_capitata_HIv3___Scaffold_8_508612
+Montipora_capitata_HIv3___Scaffold_8_553085
+Montipora_capitata_HIv3___Scaffold_7_456843
+Montipora_capitata_HIv3___Scaffold_4_291272
+Montipora_capitata_HIv3___Scaffold_6_400996
+Montipora_capitata_HIv3___Scaffold_13_954675
+Montipora_capitata_HIv3___Scaffold_8_542727
+Montipora_capitata_HIv3___Scaffold_14_999529
+Montipora_capitata_HIv3___Scaffold_14_994729
+Montipora_capitata_HIv3___Scaffold_9_617967
+Montipora_capitata_HIv3___Scaffold_5_322659
+Montipora_capitata_HIv3___Scaffold_6_419669
+Montipora_capitata_HIv3___Scaffold_10_645863
+Montipora_capitata_HIv3___Scaffold_2_87665
+Montipora_capitata_HIv3___Scaffold_1_35393
+Montipora_capitata_HIv3___Scaffold_4_232369
+Montipora_capitata_HIv3___Scaffold_5_375083
+Montipora_capitata_HIv3___Scaffold_2_64557
+Montipora_capitata_HIv3___Scaffold_3_149822
+Montipora_capitata_HIv3___Scaffold_9_606053
+Montipora_capitata_HIv3___Scaffold_11_801837
+Montipora_capitata_HIv3___Scaffold_8_508613
+Montipora_capitata_HIv3___Scaffold_8_535535
+Montipora_capitata_HIv3___Scaffold_11_796076
+Montipora_capitata_HIv3___Scaffold_11_787579
+Montipora_capitata_HIv3___Scaffold_11_816162
+Montipora_capitata_HIv3___Scaffold_13_949160
+Montipora_capitata_HIv3___Scaffold_11_841599
+Montipora_capitata_HIv3___Scaffold_5_310446
+Montipora_capitata_HIv3___Scaffold_6_439094
+Montipora_capitata_HIv3___Scaffold_5_365006
+Montipora_capitata_HIv3___Scaffold_2_67225
+Montipora_capitata_HIv3___Scaffold_5_307262
+Montipora_capitata_HIv3___Scaffold_14_1018693
+Montipora_capitata_HIv3___Scaffold_2_96328
+Montipora_capitata_HIv3___Scaffold_8_565039
+Montipora_capitata_HIv3___Scaffold_8_586427
+Montipora_capitata_HIv3___Scaffold_14_992284
+Montipora_capitata_HIv3___Scaffold_12_910953
+Montipora_capitata_HIv3___Scaffold_1_4183
+```
+
+Cat the known and novel miRNA fasta together and filter fasta so that I keep only the miRNAs in `putative_miRNA_list.txt`. 
+
+```
+cat novel_mature_13_11_2024_t_08_48_44_score-50_to_na.fa known_mature_13_11_2024_t_08_48_44_score-50_to_na.fa > putative_miRNAs.fa
+
+grep -F -f putative_miRNA_list.txt putative_miRNAs.fa -A 1 --no-group-separator > putative_miRNAs_filt.fa
+```
+
+Do the same with the precursor sequences. 
+
+```
+cat novel_pres_13_11_2024_t_08_48_44_score-50_to_na.fa known_pres_13_11_2024_t_08_48_44_score-50_to_na.fa > putative_precursors.fa
+
+grep -F -f putative_miRNA_list.txt putative_precursors.fa -A 1 --no-group-separator > putative_precursors_filt.fa
+```
+
+Similar to the mapper module, I can use a `config.txt` file to specify all the samples. I also need to use the `mapped_reads.fa` as the collapsed reads. 
+
+In the scripts folder: `nano quantifier_mirdeep2.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Quantifying smRNA counts" $(date)
+
+conda activate /data/putnamlab/mirdeep2
+
+quantifier.pl -r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_trim_stringent/mapped_reads.fa -p /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_trim_stringent/mirna_results_13_11_2024_t_08_48_44/putative_precursors_filt.fa -m /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_trim_stringent/mirna_results_13_11_2024_t_08_48_44/putative_miRNAs_filt.fa -c /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_trim_stringent/config.txt 
+
+echo "Quantifying complete!" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 352797. Success! But...
+
+```
+# reads processed: 21804779
+# reads with at least one reported alignment: 5795 (0.03%)
+# reads that failed to align: 21798984 (99.97%)
+Reported 6985 alignments to 1 output stream(s)
+```
+
+Only ~5700 reads aligned...I am going to mess around with the cutoffs. Going to add the following: 
+
+- `-k` - also considers precursor-mature mappings that have different IDs
+- `-g 3` - number of allowed mismatches when mapping reads to precursors, default is 1
+- `-e 4` - number of nt upstream of mature sequence to consider, default is 2 
+- `-f 7` - number of nt downstream of mature sequence to consider, default is 5 
+- `-w` - considers whole precursor as mature sequence 
+
+Submitted batch job 352801
+
+Identify 3'UTRs. First, identify counts of each feature from gff file 
+
+```
+cd /data/putnamlab/jillashey/genome/Mcap/V3
+
+module load BEDTools/2.30.0-GCC-11.3.0
+
+grep -v '^#' Montipora_capitata_HIv3.genes.gff3 | cut -s -f 3 | sort | uniq -c | sort -rn > all_features_mcap.txt
+256031 exon
+ 256031 CDS
+  54384 transcript
+```
+
+Generate individual gff for transcripts 
+
+```
+grep $'\ttranscript\t' Montipora_capitata_HIv3.genes.gff3 > Mcap_transcript.gtf
+```
+
+Extract scaffold lengths 
+
+```
+cat is Montipora_capitata_HIv3.assembly.fasta | awk '$0 ~ ">" {if (NR > 1) {print c;} c=0;printf substr($0,2,100) "\t"; } $0 !~ ">" {c+=length($0);} END { print c; }' > Mcap_Chromosome_lengths.txt
+
+wc -l Mcap_Chromosome_lengths.txt 
+1699 Mcap_Chromosome_lengths.txt
+```
+
+Extract scaffold names 
+
+```
+awk -F" " '{print $1}' Mcap_Chromosome_lengths.txt > Mcap_Chromosome_names.txt
+```
+
+Sort gtf 
+
+```
+bedtools sort -faidx Mcap_Chromosome_names.txt -i Mcap_transcript.gtf > Mcap_transcript_sorted.gtf
+```
+
+Create 1kb 3'UTR in gff 
+
+```
+bedtools flank -i Mcap_transcript_sorted.gtf -g Mcap_Chromosome_lengths.txt -l 0 -r 1000 -s | awk '{gsub("transcript","3prime_UTR",$3); print $0 }' | awk '{if($5-$4 > 3)print $1"\t"$2"\t"$3"\t"$4"\t"$5"\t"$6"\t"$7"\t"$8"\t"$9}' | tr ' ' '\t' > Mcap_3UTR_1kb.gtf
+```
+
+Subtract portions of 3'UTRs that overlap with nearby genes 
+
+```
+bedtools subtract -a Mcap_3UTR_1kb.gtf -b Mcap_transcript_sorted.gtf > Mcap_3UTR_1kb_corrected.gtf
+```
+
+Extract 3'UTR sequences from genome 
+
+```
+awk '{print $1 "\t" $4-1 "\t" $5 "\t" $9 "\t" "." "\t" $7}' Mcap_3UTR_1kb_corrected.gtf | sed 's/"//g' > Mcap_3UTR_1kb_corrected.bed
+
+bedtools getfasta -fi Montipora_capitata_HIv3.assembly.fasta -bed Mcap_3UTR_1kb_corrected.bed -fo Mcap_3UTR_1kb.fasta -name
+
+grep -c ">" Mcap_3UTR_1kb.fasta
+55148
+```
+
+Run miranda for the Mcap data. In the scripts folder: `nano miranda_strict_all_1kb_mcap.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Mcap starting miranda run with all genes and miRNAs with energy cutoff <-20 and strict binding invoked"$(date)
+
+module load Miniconda3/4.9.2
+conda activate /data/putnamlab/conda/miranda 
+
+miranda /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_trim_stringent/mirna_results_13_11_2024_t_08_48_44/putative_miRNAs_filt.fa /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_3UTR_1kb.fasta -en -20 -strict -out /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/miranda_trim_stringent/miranda_strict_all_1kb_mcap.tab
+
+conda deactivate
+
+echo "miranda run finished!"$(date)
+echo "counting number of interactions possible" $(date)
+
+zgrep -c "Performing Scan" /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/miranda_trim_stringent/miranda_strict_all_1kb_mcap.tab
+
+echo "Parsing output" $(date)
+grep -A 1 "Scores for this hit:" /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/miranda_trim_stringent/miranda_strict_all_1kb_mcap.tab | sort | grep '>' > /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/miranda_trim_stringent/miranda_strict_all_1kb_parsed_mcap.txt
+
+echo "counting number of putative interactions predicted" $(date)
+wc -l /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/miranda_trim_stringent/miranda_strict_all_1kb_parsed_mcap.txt
+
+echo "Mcap DT miranda script complete" $(date)
+```
+
+Submitted batch job 352829. And the quantifier script finished running!
+
+```
+# reads processed: 21804779
+# reads with at least one reported alignment: 20407 (0.09%)
+# reads that failed to align: 21784372 (99.91%)
+Reported 24370 alignments to 1 output stream(s)
+```
+
+Still very low alignment rate...and when looking at the csv, only the samples that were sequenced in the first batch got read counts. The others have 0s for basically all miRNAs. Need to look back at trimming. 
+
+Miranda script ran! 
+
+```
+counting number of interactions possible Fri Dec 6 16:07:31 EST 2024
+3253732
+Parsing output Fri Dec 6 16:07:43 EST 2024
+counting number of putative interactions predicted Fri Dec 6 16:07:44 EST 2024
+25457 /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/miranda_trim_stringent/miranda_strict_all_1kb_parsed_mcap.txt
+```
+
+Copy onto local computer. Rerunning the QC for raw data (Submitted batch job 352838). 
+
+
+
+
+
+
+
+
+Next steps for trimming
+
+- Look at each raw QC file and trim each one using adapters and index primers 
+- blast overrepresented seqs -- maybe they are something ?
+- reverse complement of adapters and primers 
+- what would data look like if i dont throw out anything >30bp 
+
+
+
 
 
 

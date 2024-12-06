@@ -75,5 +75,13 @@ December 2024 goals and daily notebook entries.
 - Writing for Apul genome paper 
 - Program of study 
 - Processed 6 samples for lipid/metabolite - e5 timeseries 
+- Packing 
+
+### 20241206 
+
+- Packing 
+- IMUGA form 
+- e5 meeting 
+- Mcap smRNA coding 
 
 
