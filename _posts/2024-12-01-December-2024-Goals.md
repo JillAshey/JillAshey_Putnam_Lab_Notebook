@@ -84,4 +84,7 @@ December 2024 goals and daily notebook entries.
 - e5 meeting 
 - Mcap smRNA coding 
 
+### 20241207
 
+- Mcap miRNA DE 
+- Travel 
