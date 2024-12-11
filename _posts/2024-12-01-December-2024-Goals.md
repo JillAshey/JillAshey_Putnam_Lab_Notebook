@@ -88,3 +88,20 @@ December 2024 goals and daily notebook entries.
 
 - Mcap miRNA DE 
 - Travel 
+
+### 20241208
+
+- Travel 
+
+### 20241209
+
+- Travel & CBASS workshop 
+
+### 20241210
+
+- CBASS workshop 
+- Looking at Astrangia reviews
+
+### 20241211
+
+- CBASS workshop 
