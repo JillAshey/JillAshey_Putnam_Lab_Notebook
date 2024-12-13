@@ -105,3 +105,11 @@ December 2024 goals and daily notebook entries.
 ### 20241211
 
 - CBASS workshop 
+
+### 20241212
+
+- CBASS workshop 
+
+### 20241213
+
+- CBASS workshop 
