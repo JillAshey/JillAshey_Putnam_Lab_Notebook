@@ -102,14 +102,28 @@ December 2024 goals and daily notebook entries.
 - CBASS workshop 
 - Looking at Astrangia reviews
 
-### 20241211
+### 20241211 - 20241217
 
 - CBASS workshop 
 
-### 20241212
+### 20241218
 
-- CBASS workshop 
+- Travel 
 
-### 20241213
+### 20241219 
 
-- CBASS workshop 
+- Travel recovery 
+- CBASS paper 
+
+### 20241220
+
+- Travel recovery 
+- CBASS paper 
+
+### 20241224
+
+- Mcap data analysis for sicb
+
+### 20241228
+
+- Mcap data analysis for sicb
