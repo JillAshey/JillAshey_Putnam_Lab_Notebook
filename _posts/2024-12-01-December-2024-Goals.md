@@ -131,3 +131,8 @@ December 2024 goals and daily notebook entries.
 ### 20241229
 
 - Mcap data analysis for sicb
+
+### 20241230
+
+- Mcap data analysis for sicb
+- Presentation practice 
