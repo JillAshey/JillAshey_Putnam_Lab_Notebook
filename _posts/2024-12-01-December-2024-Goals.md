@@ -136,3 +136,8 @@ December 2024 goals and daily notebook entries.
 
 - Mcap data analysis for sicb
 - Presentation practice 
+
+### 20241231
+
+- Edits to Pacuta paper 
+- Running flexbar for mcap smRNA data 

@@ -1864,35 +1864,101 @@ counting number of putative interactions predicted Fri Dec 6 16:07:44 EST 2024
 
 Copy onto local computer. Rerunning the QC for raw data (Submitted batch job 352838). 
 
+### 20241230
+
+Back at it! Holidays and travel have prevented me from working more on this. I reran the QC for the raw data and put it in my repo (link [here](https://github.com/JillAshey/DevelopmentalTimeseries/tree/main/data/Molecular/smRNA/raw_qc)). There is a lot of duplication. Even in the individual fastqc files, there is high duplication for each sample. My sequence duplication plotes look exactly like example 4 (see below) from this [page](https://proteo.me.uk/2013/09/a-new-way-to-look-at-duplication-in-fastqc-v0-11/): 
+
+![](https://proteo.me.uk/wp-content/uploads/2013/09/high_duplication.png)
+
+On the page, the author writes about this example: "This was about the worst example I could find.  This was an RNA-Seq library which had some nasty contamination and PCR duplication.  you can see that in the raw data the majority of reads come from sequences which are present tens of thousands of times in the library, but that there is also strong representation from reads which are present hundreds or thousands of times, suggesting that the duplication is widespreads. In this case deduplicating may help the experiment, but it causes the loss of 93% of the original data so it’s a pretty drastic step to take." Need to discuss with Hollie. 
+
+I am going to rerun fastp on R1. Make new folder for them. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data
+mkdir trim_fastp
+```
+
+I already have a script (`fastp_trim_R1.sh`) that will run this. I am not going to set a length limit for now. I am also changing `--trim_poly_x` to `--trim_poly_g`, which is what was used in the [e5 deep dive code](https://github.com/urol-e5/deep-dive/blob/main/D-Apul/code/08.1-Apul-sRNAseq-trimming-R1-only.Rmd). Submitted batch job 354306
+
+### 20241231
+
+Talked to Hollie briefly about my concerns. My data looks relatively similar to the deep dive [smRNA QC](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/A_pulchra/raw_fastqc/multiqc_report.html). We also know we have a small diversity library (ie there are not that many unique miRNAs) and we sequenced to 28 million reads, which is a lot of sequencing to throw at a low diversity library. The Zymo miRNA library prep kit recommended to only sequence 75bp single end, but we did 150bp paired end. Following Sam's [notebook](https://robertslab.github.io/sams-notebook/posts/2023/2023-06-20-Trimming-and-QC---E5-Coral-sRNA-seq-Data-fro-A.pulchra-P.evermanni-and-P.meandrina-Using--FastQC-flexbar-and-MultiQC-on-Mox/), I am going to use flexbar to trim on R1 only. I am first only going to trim to 75 bp and then see how that looks. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data
+mkdir flexbar_75bp
+```
+
+In the scripts folder: `nano flexbar_75bp.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Flexbar trimming to 75bp" $(date)
+
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
+module load MultiQC/1.9-intel-2020a-Python-3.8.2
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw
+
+# Make an array of sequences to trim 
+array1=($(ls *R1_001.fastq.gz))
+
+for i in ${array1[@]}; do
+flexbar \
+-r ${i} \
+-a /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+-qf i1.8 \
+-qt 25 \
+--post-trim-length 75 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.${i} \
+--zip-output GZ
+done 
+
+echo "Flexbar trimming complete, run QC" $(date)
+
+for file in /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/*fastq.gz
+do 
+fastqc $file --outdir /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/fastqc/flexbar_75bp
+done
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/fastqc/flexbar_75bp
+multiqc *
+
+echo "QC complete" $(date)
+```
+
+Submitted batch job 354418
+
+
+
+
+https://dnatech.ucdavis.edu/faqs/should-i-remove-pcr-duplicates-from-my-rna-seq-data 
 
 
 
 
 
 
-
-Next steps for trimming
+Next steps for trimming ????
 
 - Look at each raw QC file and trim each one using adapters and index primers 
 - blast overrepresented seqs -- maybe they are something ?
 - reverse complement of adapters and primers 
 - what would data look like if i dont throw out anything >30bp 
 
-
-
-
-
-
-
-
-
-
 Zoe cutadapt trimming: https://github.com/zdellaert/LaserCoral/blob/1b776313512822d368e957591890b2228c590bd5/code/RNA-seq-bioinf.md 
 
-
-
-
-
-
-code to extract fasta info from shortstack: https://github.com/urol-e5/deep-dive/blob/main/F-Pmea/code/13.2.1.1-Pmea-sRNAseq-ShortStack-FastA-extraction.md 
 
