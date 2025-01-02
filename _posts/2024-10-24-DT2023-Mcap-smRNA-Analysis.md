@@ -1942,15 +1942,117 @@ echo "QC complete" $(date)
 
 Submitted batch job 354418
 
+### 20250101
+
+Happy new year! Flexbar ran in about 9 hours. The QC data is [here](https://github.com/JillAshey/DevelopmentalTimeseries/tree/main/data/Molecular/smRNA/flexbar_75bp_qc). The length of samples are from 20 - 70bp, quite a range. The adapter content looks good though. Still a lot of overrepresented sequences and sequence duplication but we are going to move forward. Now I need to run the mapper portion of mirdeep2. According to the mirdeep2 [documentation](https://www.mdc-berlin.de/content/mirdeep2-documentation?mdcbl%5B0%5D=%2Fn-rajewsky%23t-data%2Csoftware%26resources&mdcbv=71nDTh7VzOJOW6SFGuFySs4mus4wnovu-t2LZzV2dL8&mdcot=6&mdcou=20738&mdctl=0) because I have multiple samples, I need to make a config file that contains the fq file locations and a unique 3 letter code. I will also be unzipping the files so remove the .gz from file name. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp
+
+nano config.txt 
+
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.10_small_RNA_S4_R1_001.fastq.gz.fastq s10
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.11_small_RNA_S5_R1_001.fastq.gz.fastq s11
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.13_S76_R1_001.fastq.gz.fastq s13
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.14_small_RNA_S6_R1_001.fastq.gz.fastq s14
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.23_S77_R1_001.fastq.gz.fastq s23
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.24_small_RNA_S7_R1_001.fastq.gz.fastq s24
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.26_small_RNA_S8_R1_001.fastq.gz.fastq s26
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.28_small_RNA_S9_R1_001.fastq.gz.fastq s28
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.35_S78_R1_001.fastq.gz.fastq s35
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.36_small_RNA_S10_R1_001.fastq.gz.fastq s36
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.37_small_RNA_S11_R1_001.fastq.gz.fastq s37
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.39_small_RNA_S12_R1_001.fastq.gz.fastq s39
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.47_small_RNA_S13_R1_001.fastq.gz.fastq s47
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.48_small_RNA_S14_R1_001.fastq.gz.fastq s48
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.51_small_RNA_S15_R1_001.fastq.gz.fastq s51
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.52_S79_R1_001.fastq.gz.fastq s52
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.60_S80_R1_001.fastq.gz.fastq s60
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.61_small_RNA_S16_R1_001.fastq.gz.fastq s61
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.62_small_RNA_S17_R1_001.fastq.gz.fastq s62
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.63_small_RNA_S18_R1_001.fastq.gz.fastq s63
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.6_small_RNA_S1_R1_001.fastq.gz.fastq s06
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.72_S81_R1_001.fastq.gz.fastq s72
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.73_small_RNA_S19_R1_001.fastq.gz.fastq s73
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.74_small_RNA_S20_R1_001.fastq.gz.fastq s74
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.75_small_RNA_S21_R1_001.fastq.gz.fastq s75
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.7_small_RNA_S2_R1_001.fastq.gz.fastq s07
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.85_S82_R1_001.fastq.gz.fastq s85
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.86_small_RNA_S22_R1_001.fastq.gz.fastq s86
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.87_small_RNA_S23_R1_001.fastq.gz.fastq s87
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.88_small_RNA_S24_R1_001.fastq.gz.fastq s88
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.8_small_RNA_S3_R1_001.fastq.gz.fastq s08
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/trim.flexbar.75bp.9_S75_R1_001.fastq.gz.fastq s09
+```
+
+In the config.txt file, I have the path and file name, as well as the unique 3 letter code (s followed by sample number). In the scripts folder, I already have a mapper script (`mapper_mirdeep2.sh`) that I am going to edit with the updated paths. 
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load GCCcore/11.3.0 #I needed to add this to resolve conflicts between loaded GCCcore/9.3.0 and GCCcore/11.3.0
+#module load Bowtie/1.3.1-GCC-11.3.0
+
+#echo "Index Mcap genome" $(date)
+
+# Index the reference genome for Mcap 
+#bowtie-build /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex
+
+#module unload module load GCCcore/11.3.0 
+#module unload Bowtie/1.3.1-GCC-11.3.0
+
+#echo "Map trimmed reads with mirdeep2 mapper script" $(date)
+
+conda activate /data/putnamlab/mirdeep2
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp
+
+gunzip *.fastq.gz
+
+mapper.pl config.txt -e -d -h -j -l 18 -m -q -p /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex -s mapped_reads.fa -t mapped_reads_vs_genome.arf
+
+echo "Mapping complete for trimmed stringent reads" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 354426. The flags mean the following: 
+
+- `-e`- use fastq files as input
+- `-d` - input is config file 
+- `-h` - convert to fasta format 
+- `-i` - convert RNA to DNA alphabet 
+- `-j` - remove entries with non-canonical letters
+- `-l` - discard reads shorter than 18 nt
+- `-m` - collapse reads 
+- `-p` - map to genome--genome has to be indexed by bowtie build 
+- `-s` - mapped reads fasta output
+- `-t` - read mappings v genome output
+- `-q` - map with one mismatch in the seed 
+
+
+
+
+
+
+
+
+
+
 
 
 
 https://dnatech.ucdavis.edu/faqs/should-i-remove-pcr-duplicates-from-my-rna-seq-data 
-
-
-
-
-
 
 Next steps for trimming ????
 

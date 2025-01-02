@@ -141,3 +141,33 @@ December 2024 goals and daily notebook entries.
 
 - Edits to Pacuta paper 
 - Running flexbar for mcap smRNA data 
+
+## How did I do on my goals for this month?  
+
+### Writing and manuscripts 
+
+1. e5 ncRNA complete draft of manuscript submit to biorxiv - nope, basically done though 
+2. Pacuta manuscript submit to biorixiv - nope, very close to being done. Hollie has now done all of her edits 
+3. Results for Mcap 2023 - no writing, just data analysis
+
+### Sample processing
+
+1. Send WGBS e5 deep dive samples - yes Zoe sent while I was away
+2. Process e5 timeseries samples for lipids + metabolites - yes, about halfway done 
+
+### Data analysis
+
+1. Rerun cutadapt for Mcap data - yes
+2. Rerun mirdeep2 for Mcap - yes
+3. Identify 3'UTRs for Mcap -yes
+4. Run miranda with Mcap data - yes
+5. Run mirtarrnaseq or mirDREM for Mcap data - yes, mirtarrnaseq
+6. Work on SICB presentation - yes
+
+### Field work / travel 
+
+1. Book flights for sicb - yes
+2. CBASS workshop! - yes!!!!! Super great workshop, very glad that I went 
+
+My Mcap data for sicb still doesn't look amazing, but we are moving forward. The CBASS workshop was a wonderful experience, I am very glad that I went. Hopefully in 2025, I will have some more first author papers. 
+
