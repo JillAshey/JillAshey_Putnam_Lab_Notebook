@@ -5133,88 +5133,87 @@ interactive
 module load BEDTools/2.30.0-GCC-11.3.0
 
 cd /data/putnamlab/jillashey/Apul_Genome/methylation/data
+cp /data/putnamlab/jillashey/Apul_Genome/assembly/data/chrom_lengths.txt .
+
+# Remove > at beginning of chromosome name 
+sed 's/^>//' chrom_lengths.txt > cleaned_chrom_lengths.txt
 
 # Extract genes
-awk '$3=="transcript" {print $1"\t"$4-1"\t"$5"\t"$9}' /data/putnamlab/tconn/annotate_results/Acropora_pulchra.gtf | sed 's/.*gene_id "//' | sed 's/".*//' > genes.bed
+awk '$3=="transcript" {
+    split($0, a, "gene_id ");
+    split(a[2], b, "\"");
+    print $1"\t"$4-1"\t"$5"\t"b[2]
+}' /data/putnamlab/tconn/annotate_results/Acropora_pulchra.gtf > genes.bed
 
 # Extract exons
-awk '$3=="exon" {print $1"\t"$4-1"\t"$5"\t"$9}' /data/putnamlab/tconn/annotate_results/Acropora_pulchra.gtf | sed 's/.*gene_id "//' | sed 's/".*//' > exons.bed
+awk '$3=="exon" {
+    split($0, a, "gene_id ");
+    split(a[2], b, "\"");
+    print $1"\t"$4-1"\t"$5"\t"b[2]
+}' /data/putnamlab/tconn/annotate_results/Acropora_pulchra.gtf > exons.bed
 
 # Extract introns (assuming genes are continuous)
 bedtools subtract -a genes.bed -b exons.bed > introns.bed
 
+# Change cleaned_chrom_lengths.txt to tab delimited file instead of space delimited file 
+sed 's/ /\t/' cleaned_chrom_lengths.txt > tab_delimited_chrom_lengths.txt
+
+# Sort tab delim file 
+sort -k1,1 tab_delimited_chrom_lengths.txt > sorted_chrom_lengths.txt
+
+# Sort gene.bed file 
+sort -k1,1 -k2,2n genes.bed > sorted_genes.bed
+
 # Extract intergenic regions
-bedtools complement -i genes.bed -g genome.txt > intergenic.bed
+bedtools complement -i sorted_genes.bed -g tab_delimited_chrom_lengths.txt > intergenic.bed
 ```
 
-Intergenic region extraction not working - need to do this still. come back to it
-
-I LEFT OFF HERE ON 1/9/25
+Sort methylation data file 
 
 ```
-bedtools intersect -a genes.bed -b Apul.pbmm2.combined.bed -wa -wb > methylated_genes.bed
-bedtools intersect -a exons.bed -b Apul.pbmm2.combined.bed -wa -wb > exon_methylation.bed
-bedtools intersect -a introns.bed -b Apul.pbmm2.combined.bed -wa -wb > intron_methylation.bed
-#bedtools intersect -a intergenic.bed -b Apul.pbmm2.combined.bed -wa -wb > intergenic_methylation.bed
+sort -k1,1 -k2,2n Apul.pbmm2.combined.bed > sorted_Apul.pbmm2.combined.bed
 ```
 
-might have to run these as a job
-
-Assess methylation patterns
+Intersect bed feature files with methylation data. I need to run these as a job. In the scripts folder: `nano intersect_methylation.sh`
 
 ```
-# Calculate average methylation score for each region
-awk '{sum+=$8; count++} END {print "Exon average methylation score:", sum/count}' exon_methylation.bed
-awk '{sum+=$8; count++} END {print "Intron average methylation score:", sum/count}' intron_methylation.bed
-awk '{sum+=$8; count++} END {print "Intergenic average methylation score:", sum/count}' intergenic_methylation.bed
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/methylation/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
 
-# Count methylated CpGs in each region
-wc -l exon_methylation.bed intron_methylation.bed intergenic_methylation.bed
+echo "Intersect bed feature files with methylation data" $(date)
+
+module load BEDTools/2.30.0-GCC-11.3.0
+
+cd /data/putnamlab/jillashey/Apul_Genome/methylation/data
+
+# Sort methylation file 
+sort -k1,1 -k2,2n Apul.pbmm2.combined.bed > sorted_Apul.pbmm2.combined.bed
+
+# Intersect 
+bedtools intersect -a genes.bed -b sorted_Apul.pbmm2.combined.bed -wa -wb > gene_methylation.bed
+bedtools intersect -a exons.bed -b sorted_Apul.pbmm2.combined.bed -wa -wb > exon_methylation.bed
+bedtools intersect -a introns.bed -b sorted_Apul.pbmm2.combined.bed -wa -wb > intron_methylation.bed
+bedtools intersect -a intergenic.bed -b sorted_Apul.pbmm2.combined.bed -wa -wb > intergenic_methylation.bed
+
+echo "Intersection complete" $(date)
 ```
 
-Count number of methylated CpGs per gene (or intron or exon)
+Submitted batch job 354769. Ran in <5 mins. Count CpGs in each region
 
 ```
-# Assuming you've already created the methylated_genes.bed file from the previous steps
-awk '{print $4"\t"$8}' methylated_genes.bed | sort | uniq -c | sort -k1,1nr > methylated_cpgs_per_gene.txt
+wc -l gene_methylation.bed exon_methylation.bed intron_methylation.bed intergenic_methylation.bed
 ```
 
-Add gene length to bed file 
 
-```
-awk '{print $1"\t"$2"\t"$3"\t"$4"\t"$3-$2}' genes.bed > genes_with_length.bed
-```
 
-Calculate density of CpGs per gene (or intron or exon)
 
-```
-join -1 4 -2 4 <(sort -k4,4 genes_with_length.bed) <(sort -k4,4 methylated_cpgs_per_gene.txt) | \
-awk '{print $4, $1, $2, $3, $5, $6, $6/$5}' | \
-sort -k7,7nr > methylation_density.txt
-```
 
-Distribution of methylation scores in genes 
-
-```
-awk '{print $4"\t"$8}' methylated_genes.bed | sort -k1,1 -k2,2n > gene_methylation_scores.txt
-
-# Calculate basic statistics for each gene
-awk '
-    function abs(x) {return x < 0 ? -x : x}
-    {
-        gene=$1
-        score=$2
-        count[gene]++
-        sum[gene] += score
-        sumsq[gene] += score*score
-    }
-    END {
-        for (gene in count) {
-            mean = sum[gene]/count[gene]
-            variance = sumsq[gene]/count[gene] - mean*mean
-            stddev = sqrt(abs(variance))
-            print gene, count[gene], mean, stddev
-        }
-    }
-' gene_methylation_scores.txt | sort -k2,2nr > methylation_score_stats.txt
-```
