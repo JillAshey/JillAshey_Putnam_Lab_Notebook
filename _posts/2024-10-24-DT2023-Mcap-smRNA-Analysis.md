@@ -2263,11 +2263,182 @@ echo "Mapping complete for trimmed reads (flexbar 35bp)" $(date)
 conda deactivate
 ```
 
-Submitted batch job 354532
+Submitted batch job 354532. Move mapper files into proper folder once this is done running 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp
+mv mapp* ../../output/mirdeep2_flexbar_35bp/
+mv bowtie.log ../../output/mirdeep2_flexbar_35bp/
+```
 
 ### 20250105
 
 mirdeep2 miRNA prediction finished running early this morning. 
+
+### 20250122
+
+Ended up focusing on other things for sicb presentation but coming back to this analysis now. As a reminder, I ran two different trimming iterations with flexbar: one that trimmed data to 75bp max (`/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp`) and one that trimmed data to 35bp max (`/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp`). Here is what the mapping percentages looked like for each iteration: 
+
+```
+## 75bp trim: /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_75bp
+# reads processed: 2850328
+# reads with at least one reported alignment: 1319485 (46.29%)
+# reads that failed to align: 726277 (25.48%)
+# reads with alignments suppressed due to -m: 804566 (28.23%)
+Reported 2569169 alignments to 1 output stream(s)
+
+## 35bp trim: /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_35bp
+# reads processed: 2781873
+# reads with at least one reported alignment: 1318985 (47.41%)
+# reads that failed to align: 685674 (24.65%)
+# reads with alignments suppressed due to -m: 777214 (27.94%)
+Reported 2567887 alignments to 1 output stream(s)
+```
+
+Kept and aligned slightly more reads using the 35bp trimming. 
+
+I also ran the miRNA prediction on the 75bp trimmed reads. Move output into correct folder
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+mv report.log ../output/mirdeep2_flexbar_75bp/
+mv *02_01_2025_t_14_40_55* ../output/mirdeep2_flexbar_75bp/
+```
+
+I downloaded the pdfs and html outputs to my computer and a quick look at them shows me they look as expected for miRNAs! Hooray! 
+
+For the 35bp trimmed reads, I have run the mapper module and now need to run the mirdeep2 module. In the scripts folder: `nano mirdeep2_flexbar_35bp.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 with reads trimmed with flexbar to max 35bp" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_35bp/mapped_reads.fa /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_35bp/mapped_reads_vs_genome.arf /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mature_mirbase_cnidarian_T.fa none none -P -v -g -1 2>report.log
+
+echo "mirdeep2 on 35bp max reads complete" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 356032. While this is running, identify the putative miRNAs from the 75bp max mirdeep2 run using the [miRNA discovery code](https://github.com/JillAshey/DevelopmentalTimeseries/blob/main/scripts/miRNA_discovery.Rmd). 
+
+In this folder (`/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_75bp/mirna_results_02_01_2025_t_14_40_55`), there are bed and fasta files for the known and novel mature, star and precursor sequences. I need to filter them by the miRNAs that I identified. Make a text file with the novel and known names of putative miRNAs.
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_75bp/mirna_results_02_01_2025_t_14_40_55
+nano flexbar_75bp_putative_miRNA_list.txt
+Montipora_capitata_HIv3___Scaffold_14_866635
+Montipora_capitata_HIv3___Scaffold_8_480075
+Montipora_capitata_HIv3___Scaffold_8_498263
+Montipora_capitata_HIv3___Scaffold_12_774709
+Montipora_capitata_HIv3___Scaffold_1_3519
+Montipora_capitata_HIv3___Scaffold_8_414648
+Montipora_capitata_HIv3___Scaffold_2_83947
+Montipora_capitata_HIv3___Scaffold_8_415215
+Montipora_capitata_HIv3___Scaffold_9_531157
+Montipora_capitata_HIv3___Scaffold_2_60896
+Montipora_capitata_HIv3___Scaffold_9_521005
+Montipora_capitata_HIv3___Scaffold_8_497799
+Montipora_capitata_HIv3___Scaffold_2_119703
+Montipora_capitata_HIv3___Scaffold_2_106363
+Montipora_capitata_HIv3___Scaffold_8_491119
+Montipora_capitata_HIv3___Scaffold_11_702925
+Montipora_capitata_HIv3___Scaffold_10_620169
+Montipora_capitata_HIv3___Scaffold_12_773601
+Montipora_capitata_HIv3___Scaffold_1_48204
+Montipora_capitata_HIv3___Scaffold_14_865867
+Montipora_capitata_HIv3___Scaffold_151_915764
+Montipora_capitata_HIv3___Scaffold_5_262937
+Montipora_capitata_HIv3___Scaffold_8_432272
+Montipora_capitata_HIv3___Scaffold_7_388195
+Montipora_capitata_HIv3___Scaffold_4_247620
+Montipora_capitata_HIv3___Scaffold_6_340912
+Montipora_capitata_HIv3___Scaffold_8_461265
+Montipora_capitata_HIv3___Scaffold_14_850199
+Montipora_capitata_HIv3___Scaffold_9_525121
+Montipora_capitata_HIv3___Scaffold_11_696080
+Montipora_capitata_HIv3___Scaffold_14_846123
+Montipora_capitata_HIv3___Scaffold_10_585455
+Montipora_capitata_HIv3___Scaffold_4_197697
+Montipora_capitata_HIv3___Scaffold_5_318975
+Montipora_capitata_HIv3___Scaffold_3_127504
+Montipora_capitata_HIv3___Scaffold_9_515007
+Montipora_capitata_HIv3___Scaffold_11_681829
+Montipora_capitata_HIv3___Scaffold_8_432273
+Montipora_capitata_HIv3___Scaffold_8_455105
+Montipora_capitata_HIv3___Scaffold_13_807296
+Montipora_capitata_HIv3___Scaffold_5_263768
+Montipora_capitata_HIv3___Scaffold_11_634165
+Montipora_capitata_HIv3___Scaffold_9_530478
+Montipora_capitata_HIv3___Scaffold_6_373318
+Montipora_capitata_HIv3___Scaffold_2_57253
+```
+
+Cat the known and novel miRNA fasta together and filter fasta so that I keep only the miRNAs in `flexbar_75bp_putative_miRNA_list.txt`.
+
+```
+cat known_mature_02_01_2025_t_14_40_55_score-50_to_na.fa novel_mature_02_01_2025_t_14_40_55_score-50_to_na.fa > flexbar_75bp_putative_miRNAs.fa
+
+grep -F -f flexbar_75bp_putative_miRNA_list.txt flexbar_75bp_putative_miRNAs.fa -A 1 --no-group-separator > flexbar_75bp_putative_miRNAs_filt.fa
+```
+
+Do the same with the precursor sequences
+
+```
+cat known_pres_02_01_2025_t_14_40_55_score-50_to_na.fa novel_pres_02_01_2025_t_14_40_55_score-50_to_na.fa > flexbar_75bp_putative_pres.fa
+
+grep -F -f flexbar_75bp_putative_miRNA_list.txt flexbar_75bp_putative_pres.fa -A 1 --no-group-separator > flexbar_75bp_putative_pres_filt.fa
+```
+
+Similar to the mapper module, I can use a `config.txt` file to specify all the samples. I also need to use the `mapped_reads.fa` as the collapsed reads.
+
+In the scripts folder: `nano quant_mirdeep2_flexbar_75bp.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Quantifying smRNA counts for flexbar 75bp trimmed reads" $(date)
+
+conda activate /data/putnamlab/mirdeep2
+
+quantifier.pl -r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_75bp/mapped_reads.fa -p /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_75bp/mirna_results_02_01_2025_t_14_40_55/flexbar_75bp_putative_pres_filt.fa -m /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_75bp/mirna_results_02_01_2025_t_14_40_55/flexbar_75bp_putative_miRNAs_filt.fa -c /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_75bp/config.txt -k -g 3 -e 4 -f 7 -w
+
+echo "Quantifying complete for flexbar 75bp trimmed reads!" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 356039
+
+
+
+
+
+
 
 
 
