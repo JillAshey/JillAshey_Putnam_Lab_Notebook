@@ -5213,6 +5213,66 @@ Submitted batch job 354769. Ran in <5 mins. Count CpGs in each region
 wc -l gene_methylation.bed exon_methylation.bed intron_methylation.bed intergenic_methylation.bed
 ```
 
+### 20250124
+
+We are also interested in finding the % of CpGs found in each region, a la Trigg et al. 2021. I need to identify the upstream and downstream flanks of the genes (1000bp on each flank). This also means I need to redefine the intergenic regions. 
+
+```
+interactive
+module load BEDTools/2.30.0-GCC-11.3.0
+
+cd /data/putnamlab/jillashey/Apul_Genome/methylation/data
+
+rm intergenic*
+
+# Extract 1000bp upstream flanking regions
+bedtools flank -i sorted_genes.bed -g tab_delimited_chrom_lengths.txt -l 1000 -r 0 > upstream_flank.bed
+
+# Extract 1000bp downstream flanking regions
+bedtools flank -i sorted_genes.bed -g tab_delimited_chrom_lengths.txt -l 0 -r 1000 > downstream_flank.bed
+
+# Combine genes and flanking regions
+cat sorted_genes.bed upstream_flank.bed downstream_flank.bed | sort -k1,1 -k2,2n | bedtools merge -i - > genes_with_flanks.bed
+
+# Redefine intergenic regions
+bedtools complement -i genes_with_flanks.bed -g sorted_chrom_lengths.txt > updated_intergenic.bed
+```
+
+Intersect methylation calls with upstream flanks, downstream flanks, and updated intergenic regions. In the scripts folder: `nano update_intersect_methylation.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=15
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Apul_Genome/methylation/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Intersect flanks and intergenic feature files with methylation data" $(date)
+
+module load BEDTools/2.30.0-GCC-11.3.0
+
+cd /data/putnamlab/jillashey/Apul_Genome/methylation/data
+
+# Sort methylation file 
+#sort -k1,1 -k2,2n Apul.pbmm2.combined.bed > sorted_Apul.pbmm2.combined.bed
+
+bedtools intersect -a updated_intergenic.bed -b sorted_Apul.pbmm2.combined.bed -wa -wb > intergenic_methylation.bed
+
+bedtools intersect -a upstream_flank.bed -b sorted_Apul.pbmm2.combined.bed -wa -wb > upstream_flanks_methylation.bed
+
+bedtools intersect -a downstream_flank.bed -b sorted_Apul.pbmm2.combined.bed -wa -wb > downstream_flanks_methylation.bed
+
+echo "Intersection complete" $(date)
+```
+
+Submitted batch job 356222
+
 
 
 
