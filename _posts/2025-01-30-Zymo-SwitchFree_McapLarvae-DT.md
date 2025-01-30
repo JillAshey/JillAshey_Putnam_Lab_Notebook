@@ -107,3 +107,5 @@ I ran the tapestation on the libraries on 1/30/25. See the full report [here](ht
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_M86_20250130.png)
 
 Libraries don't look amazing. Some have double peaks and some have pretty low concentration. Some libraries look pretty good! Need to discuss w/ Hollie to decide whether to move forward with the rest of the samples. 
+
+I also eluted in 20 uL and could try a lower elution volume (15 uL) to see if that improves concentrations. 
