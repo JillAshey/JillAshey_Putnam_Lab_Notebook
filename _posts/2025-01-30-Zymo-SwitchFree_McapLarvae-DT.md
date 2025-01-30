@@ -29,6 +29,8 @@ I will be prepping my 32 Mcap DT 2023 samples (see project github [repo](https:/
 | M75    | 27.4                      | 5                    | 3.6                        | 1.4                         | 12     |
 | M86    | 75.9                      | 5                    | 1.3                        | 3.7                         | 13     |
 
+I am using the Zymo UDI primers for these preps. See more information and barcode sequences [here](https://www.zymoresearch.com/products/zymo-seq-udi-primer-sets?srsltid=AfmBOoqmYVsF5dEMxwuwu7L6mn6Ot93O6ldOc9wwDwvXUhCkKhg0WK5Y). 
+
 Here's the SwitchFree library prep workflow: 
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/switchfree_lib_prep_workflow.png)
