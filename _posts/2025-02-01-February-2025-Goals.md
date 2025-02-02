@@ -31,7 +31,7 @@ February 2025 goals and daily notebook entries.
 	- Compare/contrast miRNA function with previous lit
 2. Astrangia 2021 continue analysis for miRNA mRNA interactions (chapter 2)
 	- Pathways of interest for discussion 
-	- Plot number of binding sites by energy score 
+	- Plot number of binding sites by energy score - done 2/2/25
 	- Spearman rank correlation in addition to Pearson's (Zhang et al. 2018)
 3. Mcap miRNA trimming and identification (chapter 2) 
 4. DE analysis for Mcap miRNA and mRNA data (chapter 2)
@@ -49,13 +49,16 @@ February 2025 goals and daily notebook entries.
 
 - Switchfree library prep w/ Mcap 2023 samples 
 
+### 20250202
+
+- Switchfree library prep w/ Mcap 2023 samples 
+
 
 
 To do code-wise for AST 2021: 
 
-- BH correction for PCC pvalues 
 - Spearman's correlation calculation
-- 
+- Correlate mRNAs of interest against other mRNAs a la Tan et al. 2019--either double negative correlation (miRNA is targeting suppressor OR double positive TF is upregulating both miRNA and mRNA)
 
 
 
