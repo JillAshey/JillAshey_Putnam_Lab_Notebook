@@ -7,7 +7,7 @@ tags: [DNA, RNA, Library prep, Protocols]
 projects: Kit test 
 ---
 
-# SwitchFree library prep test
+# SwitchFree library prep
 
 This post details the info about the SwitchFree library prep. See Zymo's protocol [here](https://files.zymoresearch.com/protocols/_r3008_r3009__zymo_seq_switchfree_3_mrna_library_kit.pdf). 
 
