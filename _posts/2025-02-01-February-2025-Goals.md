@@ -53,6 +53,10 @@ February 2025 goals and daily notebook entries.
 
 - Switchfree library prep w/ Mcap 2023 samples 
 
+### 20250203
+
+- AST writing (chapter 1)
+- Lab meeting 
 
 
 To do code-wise for AST 2021: 
