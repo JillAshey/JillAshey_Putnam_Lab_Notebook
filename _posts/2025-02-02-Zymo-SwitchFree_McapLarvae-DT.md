@@ -1,7 +1,7 @@
 ---
 layout: post
 title: SwitchFree library prep
-date: '2025-02-01'
+date: '2025-02-02'
 categories:
 tags: [DNA, RNA, Library prep, Protocols]
 projects: Kit test 

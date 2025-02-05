@@ -58,6 +58,17 @@ February 2025 goals and daily notebook entries.
 - AST writing (chapter 1)
 - Lab meeting 
 
+### 20250204
+
+- AST writing (chapter 1) + functional enrichment coding 
+
+### 20250205
+
+- Switchfree library prep w/ Mcap 2023 samples 
+
+
+
+
 
 To do code-wise for AST 2021: 
 
