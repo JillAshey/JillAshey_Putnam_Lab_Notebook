@@ -147,3 +147,91 @@ BioProjects that include more than one genome assembly.  Note that we
 prefer not to change the BioProject/BioSample links after the WGS assembly
 is released.
 ```
+
+## Raw PacBio sequencing data submission to NCBI
+
+Gigabyte requires that our raw PacBio data also be stored on NCBI. I'm going to start a new SRA submission and link it to the existing BioProject (PRJNA1162071). 
+
+### Overview 
+
+- Submission: SUB15071615
+- Submitting raw PacBio Hifi reads  
+
+### Submitter 
+
+- Jill Ashey; 120 Flagg Road, Kingston RI 02881
+
+### General info 
+
+- Associated with existing bioproject: PRJNA1162071
+- Release date: Immediately 
+- Not associated with existing biosample 
+
+### Biosample type 
+
+- Invertebrate 
+- Sample name: Acropora_pulchra_raw_reads_JA
+- BioProject accession: PRJNA1162071
+- Organism: Acropora pulchra 
+- Isolate: Coral host 
+- Isolation source: Coral reef 
+- collection date: 2022-10-23
+- Location: French Polynesia: Moorea
+- Tissue: sperm
+- Developmental stage: adult 
+- Broad scale env context: coral reef [ENVO:00000150]
+- Sex: hermaphrodite 
+
+### SRA metadata 
+
+- Sample name: Acropora_pulchra_raw_reads_JA
+- Library ID: m84100_240128_024355_s2
+- Title: PacBio raw HiFi seqences of Acropora pulchra
+- Library strategy (drop down options): WGS
+- Library source (drop down options): Genomic 
+- Library selection (drop down options): size fractionation 
+- Library layout (drop down options): single 
+- Platform (drop down options): PACBIO_SMRT
+- Instrument model (drop down options): Revio 
+- Design description: DNA was extracted by DNA Sequencing Center at Brigham Young University using the Qiagen Genomic Tip protocol and buffers (Qiagen Cat \# 10223). The samples were ethanol (2x) precipitated post column elution, put in the -20°C freezer overnight and then spun for 30 minutes at 14K rcf the following day. Ethanol was removed and the DNA pellets were suspended in low TE buffer. The resulting DNA was cleaned prior to library prep with the PacBio SRE Kit (PacBio Cat \# 102-208-300) to remove fragments under 25kb. Following extraction, DNA was sheared to ~17kb using a Diagenode Megaruptor (Diagenode Cat \# B06010003) and checked on an Agilent Femto Pulse system (Agilent Part \# M5330AA) to assess size. The DNA was then cleaned and concentrated post-shearing using a 1x AMPure bead cleaning (AMPure Cat \#20805800). The DNA was then put into a library using the PacBio SMRTbell prep kit 3.0 (PacBio Cat \# 102-141-700), following the instructions provided with the kit. The final sizing of the library was performed using the 35\% v/v dilution of AMPure PB beads (AMPure Part \#  100-265-900). The single SMRTbell library was then sequenced using one 8M SMRT Revio Cell, and run for 29 hours on a PacBio Revio sequencer. Consensus accuracy circular consensus sequencing (CCS) processing was used to generate HiFi reads. -- from methods section of paper 
+- File type: bam
+- Reference assembly: unaligned
+- File name: m84100_240128_024355_s2.hifi_reads.bc1029.bam
+
+### Files 
+
+Command line upload 
+
+Make new file with only sequence data 
+
+```
+cd /data/putnamlab/jillashey/Apul_Genome/ncbi
+ln -s /data/putnamlab/KITT/hputnam/20240129_Apulchra_Genome_LongRead/m84100_240128_024355_s2.hifi_reads.bc1029.bam
+```
+
+Use FTP command line file upload to provide files. Activate FTP on the command line. Command prompt now changes to ftp>. Immediately login using the username and password from the NCBI submission portal.
+
+```
+ftp -i
+open ftp-private.ncbi.nlm.nih.gov
+USERNAME
+PASSWORD
+```
+
+Go into the folder that NCBI provided from the NCBI submission portal. Make a new directory for the files and go into that folder. Put all the sequences from Andromeda into this new folder (they will still be on Andromeda after transfer is complete).
+
+```
+cd uploads/jillashey_uri.edu_XXXXX
+mkdir apul_raw_bam_2024
+cd apul_raw_bam_2024
+mput m84100_240128_024355_s2.hifi_reads.bc1029.bam
+local: m84100_240128_024355_s2.hifi_reads.bc1029.bam remote: m84100_240128_024355_s2.hifi_reads.bc1029.bam
+227 Entering Passive Mode (130,14,250,6,195,171).
+150 Opening BINARY mode data connection for m84100_240128_024355_s2.hifi_reads.bc1029.bam
+226 Transfer complete
+38666252812 bytes sent in 536 secs (72146.58 Kbytes/sec)
+```
+
+## Submit!
+
+SAMN46708315 - assigned biosample number. SRA currently processing submission as of 2/6/24.

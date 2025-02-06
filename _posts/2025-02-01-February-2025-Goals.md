@@ -65,7 +65,19 @@ February 2025 goals and daily notebook entries.
 ### 20250205
 
 - Switchfree library prep w/ Mcap 2023 samples 
+- e5 deep dive expression coding 
+- Some AST writing (chapter 1)
 
+### 20250206
+
+- Submitted pacbio bam to SRA 
+- e5 deep dive expression coding and writing 
+
+
+to do 
+
+- message kathleen re mirna names
+- push mcap and ast stuff to github- put large files on osf 
 
 
 
