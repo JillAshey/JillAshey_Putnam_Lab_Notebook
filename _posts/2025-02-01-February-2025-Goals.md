@@ -72,12 +72,24 @@ February 2025 goals and daily notebook entries.
 
 - Submitted pacbio bam to SRA 
 - e5 deep dive expression coding and writing 
+- TER for sicb
 
+### 20250207
 
-to do 
+- e5 deep dive expression coding and writing 
+- Trinity talk 
+- Colloquium
 
+### 20250209
+
+- e5 deep dive expression coding and writing 
+
+to do 2/10
+- answer emails 
+- look at mcap 2023 data - trimming and quant for 35bp
 - message kathleen re mirna names
 - push mcap and ast stuff to github- put large files on osf 
+- ter for cbass 
 
 
 
@@ -97,7 +109,7 @@ Notes:
 GSA for maldives 
 ask Hollie for cfs for maldives 
 sicb put difference on intern 
-uber:8.10+10.19+7.29+8.48+10.21+8.95
+uber:8.10+10.19+7.29+8.48+10.21+8.95=53.22
 
 polyA for Mcap 
 tapestation and qubit for every sample -- 32 samples for me, #1-32, ask what concentrations to pool at -- will be prepared to pool at specific molarity 

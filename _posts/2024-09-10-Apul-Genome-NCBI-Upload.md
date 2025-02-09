@@ -234,4 +234,4 @@ local: m84100_240128_024355_s2.hifi_reads.bc1029.bam remote: m84100_240128_02435
 
 ## Submit!
 
-SAMN46708315 - assigned biosample number. SRA currently processing submission as of 2/6/24.
+SAMN46708315 - assigned biosample number. SRA currently processing submission as of 2/6/24. Downloaded attributes file and will put on github repo. 
