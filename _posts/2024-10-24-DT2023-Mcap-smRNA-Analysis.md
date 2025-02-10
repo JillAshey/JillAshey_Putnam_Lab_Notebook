@@ -2434,10 +2434,200 @@ conda deactivate
 
 Submitted batch job 356039
 
+### 20250210
 
+I am back and ready to trim. Let's look at the output of the quant script I ran with the 75bp trim.
 
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+less slurm-356039.error
 
+#desc   total   mapped  unmapped        %mapped %unmapped
+total: 628271581        259598  628011983       0.041   99.959
+s06: 16391063   72      16390991        0.000   100.000
+s07: 26105703   0       26105703        0.000   100.000
+s08: 20914298   247     20914051        0.001   99.999
+s09: 17402129   16948   17385181        0.097   99.903
+s10: 17319666   20      17319646        0.000   100.000
+s11: 8702825    0       8702825 0.000   100.000
+s13: 18013957   27107   17986850        0.150   99.850
+s14: 22983933   416     22983517        0.002   99.998
+s23: 20418458   27534   20390924        0.135   99.865
+s24: 15238105   1055    15237050        0.007   99.993
+s26: 29779739   2       29779737        0.000   100.000
+s28: 20579195   13      20579182        0.000   100.000
+s35: 18792516   36247   18756269        0.193   99.807
+s36: 20592535   0       20592535        0.000   100.000
+s37: 18149246   0       18149246        0.000   100.000
+s39: 15148458   0       15148458        0.000   100.000
+s47: 57405680   5       57405675        0.000   100.000
+s48: 23820154   0       23820154        0.000   100.000
+s51: 15857877   4       15857873        0.000   100.000
+s52: 22109116   35915   22073201        0.162   99.838
+s60: 14726932   36548   14690384        0.248   99.752
+s61: 21442064   3       21442061        0.000   100.000
+s62: 12666509   0       12666509        0.000   100.000
+s63: 14685987   2139    14683848        0.015   99.985
+s72: 17626646   38663   17587983        0.219   99.781
+s73: 5016164    0       5016164 0.000   100.000
+s74: 20074738   1       20074737        0.000   100.000
+s75: 23958496   849     23957647        0.004   99.996
+s85: 14366598   35275   14331323        0.246   99.754
+s86: 13903555   8       13903547        0.000   100.000
+s87: 21859884   500     21859384        0.002   99.998
+s88: 22219355   27      22219328        0.000   100.000
+```
 
+This is showing the number of reads mapped to the miRNAs identified. The samples that I sent for test sequencing look good but the others not so much. I also ran mirdeep2 for the 35 bp trimmed reads. Move all of this output to the correct output folder 
+
+```
+# Data from mirdeep2 quant with 75bp trim
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts/expression_analyses
+mv expression_analyses_1737578046 ../../output/mirdeep2_flexbar_75bp
+cd ../
+mv *1737578046* ../output/mirdeep2_flexbar_75bp/
+
+# Data from mirdeep2 with 35bp trim
+mv *22_01_2025_t_14_50_27* ../output/mirdeep2_flexbar_35bp/
+mv mirdeep_runs ../output/mirdeep2_flexbar_35bp/
+mv dir_prepare_signature1737576068 ../output/mirdeep2_flexbar_35bp/
+```
+
+It doesn't look like the 75bp trimming did much to improve mapping rates. My next step is to identify the miRNAs from the mirdeep2 output with the 35bp reads. Copy `result_22_01_2025_t_14_50_27.csv` from `/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_35bp` onto local computer to ID miRNAs. In `/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_35bp/mirna_results_22_01_2025_t_14_50_27`, there are bed and fasta files for the known and novel mature, star and precursor sequences. I need to filter them by the miRNAs that I identified. Make a text file with the novel and known names of putative miRNAs.
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_35bp/mirna_results_22_01_2025_t_14_50_27
+nano flexbar_35bp_putative_miRNA_list.txt
+Montipora_capitata_HIv3___Scaffold_1157_961045
+Montipora_capitata_HIv3___Scaffold_8_414648
+Montipora_capitata_HIv3___Scaffold_2_83947
+Montipora_capitata_HIv3___Scaffold_8_415215
+Montipora_capitata_HIv3___Scaffold_9_531157
+Montipora_capitata_HIv3___Scaffold_2_60896
+Montipora_capitata_HIv3___Scaffold_9_521005
+Montipora_capitata_HIv3___Scaffold_8_497799
+Montipora_capitata_HIv3___Scaffold_2_119703
+Montipora_capitata_HIv3___Scaffold_2_106363
+Montipora_capitata_HIv3___Scaffold_8_491119
+Montipora_capitata_HIv3___Scaffold_11_702925
+Montipora_capitata_HIv3___Scaffold_10_620169
+Montipora_capitata_HIv3___Scaffold_12_773601
+Montipora_capitata_HIv3___Scaffold_151_915764
+Montipora_capitata_HIv3___Scaffold_5_262937
+Montipora_capitata_HIv3___Scaffold_8_432272
+Montipora_capitata_HIv3___Scaffold_7_388195
+Montipora_capitata_HIv3___Scaffold_4_247620
+Montipora_capitata_HIv3___Scaffold_6_340912
+Montipora_capitata_HIv3___Scaffold_8_461265
+Montipora_capitata_HIv3___Scaffold_14_850199
+Montipora_capitata_HIv3___Scaffold_9_525121
+Montipora_capitata_HIv3___Scaffold_14_846123
+Montipora_capitata_HIv3___Scaffold_4_197697
+Montipora_capitata_HIv3___Scaffold_5_318975
+Montipora_capitata_HIv3___Scaffold_3_127504
+Montipora_capitata_HIv3___Scaffold_9_515007
+Montipora_capitata_HIv3___Scaffold_11_681829
+Montipora_capitata_HIv3___Scaffold_8_432273
+Montipora_capitata_HIv3___Scaffold_8_455105
+Montipora_capitata_HIv3___Scaffold_13_807296
+Montipora_capitata_HIv3___Scaffold_5_263768
+Montipora_capitata_HIv3___Scaffold_6_373318
+Montipora_capitata_HIv3___Scaffold_9_530478
+Montipora_capitata_HIv3___Scaffold_2_57253
+Montipora_capitata_HIv3___Scaffold_5_310384
+Montipora_capitata_HIv3___Scaffold_14_866635
+Montipora_capitata_HIv3___Scaffold_8_480075
+Montipora_capitata_HIv3___Scaffold_8_498263
+Montipora_capitata_HIv3___Scaffold_12_774709
+Montipora_capitata_HIv3___Scaffold_1_3519
+```
+
+Cat known and novel miRNA fasta files together and filter fasta so that I keep only miRNAs in 
+
+```
+cat known_mature_22_01_2025_t_14_50_27_score-50_to_na.fa novel_mature_22_01_2025_t_14_50_27_score-50_to_na.fa > flexbar_35bp_putative_miRNAs.fa
+
+grep -F -f flexbar_35bp_putative_miRNA_list.txt flexbar_35bp_putative_miRNAs.fa -A 1 --no-group-separator > flexbar_35bp_putative_miRNAs_filt.fa
+```
+
+Do the same with the precursor sequences
+
+```
+cat known_pres_22_01_2025_t_14_50_27_score-50_to_na.fa novel_pres_22_01_2025_t_14_50_27_score-50_to_na.fa > flexbar_35bp_putative_pres.fa
+grep -F -f flexbar_35bp_putative_miRNA_list.txt flexbar_35bp_putative_pres.fa -A 1 --no-group-separator > flexbar_35bp_putative_pres_filt.fa
+```
+
+Similar to the mapper module, I can use a `config.txt` file to specify all the samples. I also need to use the mapped_reads.fa as the collapsed reads.
+
+In the scripts folder: `nano quant_mirdeep2_flexbar_35bp.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Quantifying smRNA counts for flexbar 35bp trimmed reads" $(date)
+
+conda activate /data/putnamlab/mirdeep2
+
+quantifier.pl -r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_35bp/mapped_reads.fa -p /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_35bp/mirna_results_22_01_2025_t_14_50_27/flexbar_35bp_putative_pres_filt.fa -m /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_35bp/mirna_results_22_01_2025_t_14_50_27/flexbar_35bp_putative_miRNAs_filt.fa -c /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/config.txt -k -g 3 -e 4 -f 7 -w
+
+echo "Quantifying complete for flexbar 35bp trimmed reads!" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 360856. Looking at the mirdeep2 output from the identification module, the counts in the results files are still quite low so not sure this trimming was as effective as I had hoped. The quantification is complete, let's look at how it did: 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+less slurm-360856.error
+
+#desc   total   mapped  unmapped        %mapped %unmapped
+total: 628271581        235065  628036516       0.037   99.963
+s06: 16391063   36      16391027        0.000   100.000
+s07: 26105703   0       26105703        0.000   100.000
+s08: 20914298   247     20914051        0.001   99.999
+s09: 17402129   15012   17387117        0.086   99.914
+s10: 17319666   13      17319653        0.000   100.000
+s11: 8702825    0       8702825 0.000   100.000
+s13: 18013957   17840   17996117        0.099   99.901
+s14: 22983933   418     22983515        0.002   99.998
+s23: 20418458   22185   20396273        0.109   99.891
+s24: 15238105   4312    15233793        0.028   99.972
+s26: 29779739   0       29779739        0.000   100.000
+s28: 20579195   12      20579183        0.000   100.000
+s35: 18792516   26114   18766402        0.139   99.861
+s36: 20592535   0       20592535        0.000   100.000
+s37: 18149246   0       18149246        0.000   100.000
+s39: 15148458   0       15148458        0.000   100.000
+s47: 57405680   0       57405680        0.000   100.000
+s48: 23820154   0       23820154        0.000   100.000
+s51: 15857877   1       15857876        0.000   100.000
+s52: 22109116   29771   22079345        0.135   99.865
+s60: 14726932   31455   14695477        0.214   99.786
+s61: 21442064   0       21442064        0.000   100.000
+s62: 12666509   0       12666509        0.000   100.000
+s63: 14685987   2139    14683848        0.015   99.985
+s72: 17626646   45491   17581155        0.258   99.742
+s73: 5016164    0       5016164 0.000   100.000
+s74: 20074738   0       20074738        0.000   100.000
+s75: 23958496   813     23957683        0.003   99.997
+s85: 14366598   38691   14327907        0.269   99.731
+s86: 13903555   6       13903549        0.000   100.000
+s87: 21859884   482     21859402        0.002   99.998
+s88: 22219355   27      22219328        0.000   100.000
+```
+
+Bleh...basically the same as before. Back to the drawing board for trimming. I may need to trim each sample a very specific way. 
 
 
 

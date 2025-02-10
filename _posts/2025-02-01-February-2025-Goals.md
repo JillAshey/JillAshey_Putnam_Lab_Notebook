@@ -84,11 +84,20 @@ February 2025 goals and daily notebook entries.
 
 - e5 deep dive expression coding and writing 
 
+### 20250210
+
+- Lab meeting 
+- AST writing (chapter 1)
+- Organizing AST repo to some degree 
+- Attempted to rename miRNAs for e5
+- Requested genohub quote for mcap libraries (request 8599420)
+- Run mirdeep2 quant for Mcap 2023
+- Despairing over my lack of organization with AST 2021 phys 
+
+
 to do 2/10
 - answer emails 
-- look at mcap 2023 data - trimming and quant for 35bp
-- message kathleen re mirna names
-- push mcap and ast stuff to github- put large files on osf 
+- push mcap stuff to github- put large files on osf 
 - ter for cbass 
 
 
