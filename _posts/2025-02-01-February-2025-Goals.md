@@ -91,23 +91,22 @@ February 2025 goals and daily notebook entries.
 - Organizing AST repo to some degree 
 - Attempted to rename miRNAs for e5
 - Requested genohub quote for mcap libraries (request 8599420)
-- Run mirdeep2 quant for Mcap 2023
+- Run mirdeep2 quant for Mcap 2023 - boo
 - Despairing over my lack of organization with AST 2021 phys 
 
+### 20250211
 
-to do 2/10
+- AST writing (chapter 1)
+- Chloe meetup 
+
+
+to do 2/12
 - answer emails 
 - push mcap stuff to github- put large files on osf 
 - ter for cbass 
-
-
-
-
-To do code-wise for AST 2021: 
-
-- Spearman's correlation calculation
-- Correlate mRNAs of interest against other mRNAs a la Tan et al. 2019--either double negative correlation (miRNA is targeting suppressor OR double positive TF is upregulating both miRNA and mRNA)
-
+- cbass paper stuff - give corin access
+- lay out mcap trimming attempts thus far 
+- Outline potential hypotheses for Nia 
 
 
 
