@@ -2629,8 +2629,217 @@ s88: 22219355   27      22219328        0.000   100.000
 
 Bleh...basically the same as before. Back to the drawing board for trimming. I may need to trim each sample a very specific way. 
 
+### 20250212
+
+Digging in deep. I am thinking that I have a lot of PCR duplication but I am not sure if it is PCR or biological. UMIs are unique molecular identifiers that can be used to distinguish PCR dups from biologically real dups. I know that I put adapters and Illumina sequences but not sure if I or the sequencing facility added UMIs...I do not think that I did in my library prep protocol
 
 
+Let me look at the raw sequences for one sample (M6). I think I will only be using R1. 
+
+```
+# Raw M6 fastq
+@LH00260:104:22GLL5LT4:2:1101:7522:1056 1:N:0:ATGAGGCCAT+CAATTAACGT
+CNCACGTCTGAACTCCAGTCACATGAAGCCATCTAGGGGGGTGGGTGGGGGTTGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
++
+I#IIIII9II-IIIIIIIIIIIIII9-IIIII-----IIII-9I999-9----999999--999999I999I9II9-IIIII9IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+@LH00260:104:22GLL5LT4:2:1101:11148:1056 1:N:0:ATGAGTCCAT+CNATTAACGT
+ANCGGAGCGCACACGTCTGAACTCCAGTCACATAAGGCCATCTGGGGGGGGGGGGTGGGGGGGGGGGGGGGGGGGGGGGGAGGGGGGGGGGGGGGGGGGGGGTGGGGGGGGGTTGTAGGGGGGGGGGGGGGGGGGGTGGGGGGGGGGTAGG
++
+9#9I9I-99IIIII9IIII999IIIIIIIII99-9I9II9999II-9III9II-9III-I-----I---II-I9IIII-I-99I9-9II9I--I-9-9I99I-9I99-9999-----9--99-9-9--9999-9-9--99---I-99-9--
+@LH00260:104:22GLL5LT4:2:1101:14635:1070 1:N:0:ATGAGGCCAT+CAATTAACGT
+ANATACACGTCTGAACTCCAGTCACATGAGGCCATCTGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
++
+I#IIIII9IIIIIIIIIIIIIIIIIIIIIIIIIIIII9III--IIIIII9I-II9-9II9I-II-IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+```
+
+A lot of Gs present in the latter half of the read. Let's look at the M6sample trimmed to 35bp. While this is the sample sample, these are not the same reads as the ones above. 
+
+```
+@LH00260:104:22GLL5LT4:2:1101:4018:1098 1:N:0:ATGAGGCCAT+CAATTAACGT
+CACACGTCTGAACTCCAGTCACATGAGGCCATCTG
++
+IIIIII9II9IIIIIIIIIIIIII9IIIII9IIII
+@LH00260:104:22GLL5LT4:2:1101:6001:1112 1:N:0:ATGAGGCCGT+CAATTAACGT
+ACACGTCTGAACTCCAGTCACATGAGGCCATCTGG
++
+III9IIIIIIIIII-IIIIIIIIIIII99IIII9I
+@LH00260:104:22GLL5LT4:2:1101:6422:1112 1:N:0:ATGAGGCCAT+CAATTAACGT
+GAGCACACGTCTGACCTCCAGTCACATGAGGCCAT
++
+II-I9IIIIIIIIIIIIIIIII9III9IIIIII9I
+```
+
+Interesting - the I symbol corresponds to a phred score of 40 and a 0.0001 probability of an incorrect base call. 9 corresponds to a phred score of 24 with a 0.004 probablity of an incorrect base call. When I trim with flexbar, I am setting the minimum quality threshold to 25, althought the default is 20. 
+
+I found the same read in both raw and trimmed data as an example:
+
+```
+# Raw read 
+@LH00260:104:22GLL5LT4:2:1101:6001:1112 1:N:0:ATGAGGCCGT+CAATTAACGT
+ACACGTCTGAACTCCAGTCACATGAGGCCATCTGGGGGGGGTTTTTTTGGGGGGGCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
++
+III9IIIIIIIIII-IIIIIIIIIIII99IIII9I9-9II-----9-9----99-----99-99--99-9999999I9---99--99I-II--9-I-III99II9IIIIIIIII-I9IIIIIIII-IIIIIII9IIIIII9III-99IIII
+
+# Flexbar 35bp trim read 
+@LH00260:104:22GLL5LT4:2:1101:6001:1112 1:N:0:ATGAGGCCGT+CAATTAACGT
+ACACGTCTGAACTCCAGTCACATGAGGCCATCTGG
++
+III9IIIIIIIIII-IIIIIIIIIIII99IIII9I
+```
+
+Okay now what? I also emailed Zymo to see if they have any recommendations. I want to convert one of the fastq samples into a fasta file and then blast it against the Mcap genome. In the scripts folder: `nano fasta_blast_M6.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load GCC/9.3.0 
+module load seqtk/1.3-GCC-9.3.0
+module load BLAST+/2.9.0-iimpi-2019b
+
+echo "Convert trimmed M6 fastq file to fasta file" $(date)
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/
+
+seqtk seq -a trim.flexbar.35bp.6_small_RNA_S1_R1_001.fastq.gz.fastq > trim.flexbar.35bp.6_small_RNA_S1_R1_001.fasta
+
+echo "Fastq to fastq complete for M6" $(date)
+echo "Make blast db from Mcap genome" $(date)
+
+makeblastdb -in /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta -out /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_genome_V3 -dbtype nucl
+
+echo "Blast M6 fasta against Mcap genome" $(date)
+
+blastn -query trim.flexbar.35bp.6_small_RNA_S1_R1_001.fasta -db /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_genome_V3 -out M6_genome_blast_results.txt -outfmt 0
+
+blastn -query trim.flexbar.35bp.6_small_RNA_S1_R1_001.fasta -db /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_genome_V3 -out M6_genome_blast_results_tab.txt -outfmt 6 -max_target_seqs 3
+
+echo "Blast complete" $(date)
+```
+
+Submitted batch job 361447. Idk how this will help me but I want to see that the sequences actually map to the genome. 
+
+I could also collapse the reads...The blast script above finished running in about an hour. Look at the data
+
+```
+head M6_genome_blast_results_tab.txt
+LH00260:104:22GLL5LT4:2:1101:34494:1154	Montipora_capitata_HIv3___Scaffold_1699	100.000	34	0	0	1	34	695	662	4.97e-10	63.9
+LH00260:104:22GLL5LT4:2:1101:34494:1154	Montipora_capitata_HIv3___Scaffold_1288	100.000	34	0	0	1	34	4524	4557	4.97e-10	63.9
+LH00260:104:22GLL5LT4:2:1101:34494:1154	Montipora_capitata_HIv3___Scaffold_1157	100.000	34	0	0	1	34	4349	4316	4.97e-10	63.9
+LH00260:104:22GLL5LT4:2:1101:34494:1154	Montipora_capitata_HIv3___Scaffold_1157	100.000	34	0	0	1	34	19191	19158	4.97e-10	63.9
+LH00260:104:22GLL5LT4:2:1101:27186:1364	Montipora_capitata_HIv3___Scaffold_1699	100.000	30	0	0	1	30	3489	3460	5.29e-08	56.5
+LH00260:104:22GLL5LT4:2:1101:27186:1364	Montipora_capitata_HIv3___Scaffold_1288	100.000	30	0	0	1	30	1731	1760	5.29e-08	56.5
+LH00260:104:22GLL5LT4:2:1101:27186:1364	Montipora_capitata_HIv3___Scaffold_1288	100.000	30	0	0	1	30	11607	11636	5.29e-08	56.5
+LH00260:104:22GLL5LT4:2:1101:27186:1364	Montipora_capitata_HIv3___Scaffold_1157	100.000	30	0	0	1	30	7145	7116	5.29e-08	56.5
+LH00260:104:22GLL5LT4:2:1101:44965:1546	Montipora_capitata_HIv3___Scaffold_839	100.000	32	0	0	2	33	7302	7333	5.84e-09	60.2
+LH00260:104:22GLL5LT4:2:1101:44965:1546	Montipora_capitata_HIv3___Scaffold_478	100.000	32	0	0	2	33	25150	25181	5.84e-09	60.2
+
+# Number of unique terms in first column - ie the sequencing reads 
+cut -f1 M6_genome_blast_results_tab.txt | sort -u | wc -l
+45855
+
+# Number of unique terms in first column - ie the genome
+cut -f2 M6_genome_blast_results_tab.txt | sort -u | wc -l
+1136
+
+# Number of lines in file 
+wc -l M6_genome_blast_results_tab.txt
+219193
+```
+
+- Total Number of Reads: 16391063
+- Unique Reads that Mapped (from BLAST results): 45855
+- Total Alignments (from BLAST results): 219193
+
+So this information indicates that only 0.28% of the total reads in this sample uniquely mapped to the genome (with the caveat that this was blast not an actual aligner). This suggests a very high level of duplication. Going to collapse the reads to see how many unique reads we actually have. 
+
+```
+module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
+fastx_collapser -v -i trim.flexbar.35bp.6_small_RNA_S1_R1_001.fastq.gz.fastq -o collapse.trim.flexbar.35bp.6_small_RNA_S1_R1_001.fastq
+```
+
+Here are the collapsed read information:
+
+```
+Input: 16391063 sequences (representing 16391063 reads)
+Output: 179728 sequences (representing 16391063 reads)
+
+head collapse.trim.flexbar.35bp.6_small_RNA_S1_R1_001.fastq 
+>1-2633861
+CACACGTCTGAACTCCAGTCACATGAGGCCATCTG
+>2-2598169
+GCACACGTCTGAACTCCAGTCACATGAGGCCATCT
+>3-1314236
+AGCACACGTCTGAACTCCAGTCACATGAGGCCATC
+>4-1219064
+GAGCACACGTCTGAACTCCAGTCACATGAGGCCAT
+>5-710687
+AGAGCACACGTCTGAACTCCAGTCACATGAGGCCA
+
+grep -c ">" collapse.trim.flexbar.35bp.6_small_RNA_S1_R1_001.fastq 
+179728
+
+grep -c ">" trim.flexbar.35bp.6_small_RNA_S1_R1_001.fasta
+16391063
+```
+
+Okay so our library is really not complex at all. Duplication is v high. I am going to use bowtie to map the collapsed reads to the genome and mirbase. In the scripts folder: `nano bowtie_M6.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load Bowtie/1.3.1-GCC-11.3.0
+#other options if needed: Bowtie/1.2.3-GCC-8.3.0, Bowtie/1.3.1-GCC-11.2.0, Bowtie/1.2.2-foss-2018b 
+
+echo "Use bowtie to align collapsed reads to genome for M6" $(date)
+
+# genome already has bowtie index built, do not need to rebuild
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/
+
+bowtie -a --verbose --best --strata -n 1 -x /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex -q /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/collapse.trim.flexbar.35bp.6_small_RNA_S1_R1_001.fastq -S /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/aligned_genome_M6.sam
+
+echo "Bowtie alignment complete for M6 to genome" $(date)
+#echo "Build mirbase bowtie index" $(date)
+
+bowtie-build /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mature_mirbase_cnidarian_T.fa /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mirbase_ref
+
+echo "Build complte, align collapsed reads to mirbase for M6" $(date)
+
+bowtie -a --verbose --best --strata -n 1 -x /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mirbase_ref -q /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/collapse.trim.flexbar.35bp.6_small_RNA_S1_R1_001.fastq -S /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/aligned_mirbase_M6.sam
+
+echo "Alignments complete!" $(date)
+```
+
+There are a lot of different alignment options with bowtie in terms of mismatches and what not, so I can play with settings if needed. Submitted batch job 361504. Did the genome in about an hour. Needed to fix the mirbase ref file path. Submitted batch job 361505
+
+I am looking at the genome aligned file and I put some of the sequences that got hits on the genome into blast and they are turning up as rRNA...
+
+
+
+
+I need to intersect the sam file with the gtf to see if it overlaps with any genomic feature. also sam to bam
+
+I need to bowtie align collapsed file against miRNAs idenfied by the 8 samples that were initially sequenced, as well as the miRNAs that I derived from all samples 
 
 
 

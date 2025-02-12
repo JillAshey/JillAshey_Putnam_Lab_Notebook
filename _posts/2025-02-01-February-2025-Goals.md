@@ -99,6 +99,12 @@ February 2025 goals and daily notebook entries.
 - AST writing (chapter 1)
 - Chloe meetup 
 
+### 20250212
+
+- Writing time - writing potential questions
+- Getting rid of unneeded files on Andromeda 
+- Looking into ways to deal with my Mcap smRNA data 
+
 
 to do 2/12
 - answer emails 
