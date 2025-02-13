@@ -2834,6 +2834,9 @@ There are a lot of different alignment options with bowtie in terms of mismatche
 
 I am looking at the genome aligned file and I put some of the sequences that got hits on the genome into blast and they are turning up as rRNA...
 
+### 20250213
+
+Downloading `aligned_genome_M6.sam` and `aligned_mirbase_M6.sam` to my computer to look at them on IGB. 
 
 
 

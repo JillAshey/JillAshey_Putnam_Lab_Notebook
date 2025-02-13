@@ -112,7 +112,6 @@ to do 2/12
 - ter for cbass 
 - cbass paper stuff - give corin access
 - lay out mcap trimming attempts thus far 
-- Outline potential hypotheses for Nia 
 
 
 
