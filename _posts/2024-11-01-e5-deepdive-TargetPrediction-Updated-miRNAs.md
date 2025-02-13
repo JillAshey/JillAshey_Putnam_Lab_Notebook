@@ -81,6 +81,65 @@ counting number of putative interactions predicted Fri Nov 1 14:02:46 EDT 2024
 
 With previous miRNAs and Amil genome, there were 4144 putative interactions predicted. With updated miRNAs and Apul genome, 6109 putative interactions were predicted. 
 
+It is possible that miRNAs also bind to coding regions as well. Perform miranda run using coding sequences as targets. First, extract sequences from genome using bedtools.
+
+```
+interactive
+cd /data/putnamlab/jillashey/e5/refs/Apul
+module load BEDTools/2.30.0-GCC-11.3.0
+
+awk '$3 == "transcript"' genome.fixed.gtf > Apul_transcripts.gtf
+
+bedtools getfasta -fi /data/putnamlab/REFS/Apul/apul.hifiasm.s55_pa.p_ctg.fa.k32.w100.z1000.ntLink.5rounds.masked.fa -bed Apul_transcripts.gtf -fo apul_transcripts.fasta
+
+grep -c ">" apul_transcripts.fasta
+44371
+
+wc -l Apul_transcripts.gtf
+44371
+```
+
+Run miranda. In the scripts folder: `nano miranda_strict_all_mrna_apul_updated.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/e5/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Apul starting miranda run with mRNAs as targets and miRNAs with energy cutoff <-20 and strict binding invoked"$(date)
+echo "Using updated miRNAs from newer short stack version"
+
+module load Miniconda3/4.9.2
+conda activate /data/putnamlab/conda/miranda 
+
+miranda /data/putnamlab/jillashey/e5/mirna_seqs/Apul_updated_results_mature.fasta /data/putnamlab/jillashey/e5/refs/Apul/apul_transcripts.fasta -en -20 -strict -out /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_apul_updated.tab
+
+conda deactivate
+
+echo "miranda run finished!"$(date)
+echo "counting number of interactions attempted" $(date)
+
+zgrep -c "Performing Scan" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_apul_updated.tab
+
+echo "Parsing output" $(date)
+grep -A 1 "Scores for this hit:" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_apul_updated.tab | sort | grep '>' > /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_parsed_apul_updated.txt
+
+echo "counting number of putative interactions predicted" $(date)
+wc -l /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_parsed_apul_updated.txt
+
+echo "Apul miranda script complete" $(date)
+```
+
+Submitted batch job 361539
+
 ### Pevermanni 
 
 Download new sequences and rename fasta files. Copied fasta sequences from [here](https://github.com/urol-e5/deep-dive-expression/blob/main/E-Peve/output/05-Peve-sRNA-ShortStack_4.1.0/ShortStack_out/mir.fasta). 
@@ -147,6 +206,62 @@ counting number of putative interactions predicted Fri Nov 1 14:05:17 EDT 2024
 
 With previous miRNAs, there were 7187 putative interactions predicted. With updated miRNAs, 5067 putative interactions were predicted. 
 
+It is possible that miRNAs also bind to coding regions as well. Perform miranda run using coding sequences as targets. First, extract sequences from genome using bedtools. 
+
+```
+interactive
+cd /data/putnamlab/jillashey/genome/Peve
+module load BEDTools/2.30.0-GCC-11.3.0
+
+bedtools getfasta -fi Porites_evermanni_v1.fa -bed peve_GFFannotation.mRNA_sorted.gff -fo peve_mRNA.fasta
+grep -c ">" peve_mRNA.fasta
+40389
+wc -l peve_GFFannotation.mRNA_sorted.gff
+40389
+```
+
+Run miranda. In the scripts folder: `nano miranda_strict_all_mrna_peve_updated.sh `
+
+```
+#!/bin/bash -i
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/e5/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Peve starting miranda run with mRNAs as targets and miRNAs with energy cutoff <-20 and strict binding invoked"$(date)
+echo "Using updated miRNAs from newer short stack version"
+
+module load Miniconda3/4.9.2
+conda activate /data/putnamlab/conda/miranda 
+
+miranda /data/putnamlab/jillashey/e5/mirna_seqs/Peve_updated_results_mature.fasta /data/putnamlab/jillashey/genome/Peve/peve_mRNA.fasta -en -20 -strict -out /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_peve_updated.tab
+
+conda deactivate
+
+echo "miranda run finished!"$(date)
+echo "counting number of interactions attempted" $(date)
+
+zgrep -c "Performing Scan" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_peve_updated.tab
+
+echo "Parsing output" $(date)
+grep -A 1 "Scores for this hit:" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_peve_updated.tab | sort | grep '>' > /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_parsed_peve_updated.txt
+
+echo "counting number of putative interactions predicted" $(date)
+wc -l /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_parsed_peve_updated.txt
+
+echo "Peve miranda script complete" $(date)
+```
+
+Submitted batch job 361535
+
+
 ### Ptuahiniensis
 
 Download new sequences and rename fasta files. Copied fasta sequences from [here](https://github.com/urol-e5/deep-dive-expression/blob/main/F-Ptuh/output/05-Ptuh-sRNA-ShortStack_4.1.0/ShortStack_out/mir.fasta). 
@@ -212,4 +327,59 @@ counting number of putative interactions predicted Fri Nov 1 14:04:19 EDT 2024
 ```
 
 With previous miRNAs, there were 3863 putative interactions predicted. With updated miRNAs, 4105 putative interactions were predicted. 
+
+It is possible that miRNAs also bind to coding regions as well. Perform miranda run using coding sequences as targets. First, extract sequences from genome using bedtools. 
+
+```
+interactive
+cd /data/putnamlab/jillashey/genome/Pmea
+module load BEDTools/2.30.0-GCC-11.3.0
+
+bedtools getfasta -fi Pocillopora_meandrina_HIv1.assembly.fasta -bed Pmea_transcript.gtf -fo pmea_mrna.fasta
+grep -c ">" pmea_mrna.fasta
+31840
+wc -l Pmea_transcript.gtf
+31840
+```
+
+Run miranda. In the scripts folder: `nano miranda_strict_all_mrna_ptuh_updated.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/e5/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Pmea starting miranda run with mRNAs as targets and miRNAs with energy cutoff <-20 and strict binding invoked"$(date)
+echo "Using updated miRNAs from newer short stack version"
+
+module load Miniconda3/4.9.2
+conda activate /data/putnamlab/conda/miranda 
+
+miranda /data/putnamlab/jillashey/e5/mirna_seqs/Ptuh_updated_results_mature.fasta /data/putnamlab/jillashey/genome/Pmea/pmea_mrna.fasta -en -20 -strict -out /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_ptuh_updated.tab
+
+conda deactivate
+
+echo "miranda run finished!"$(date)
+echo "counting number of interactions attempted" $(date)
+
+zgrep -c "Performing Scan" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_ptuh_updated.tab
+
+echo "Parsing output" $(date)
+grep -A 1 "Scores for this hit:" /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_ptuh_updated.tab | sort | grep '>' > /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_parsed_ptuh_updated.txt
+
+echo "counting number of putative interactions predicted" $(date)
+wc -l /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_parsed_ptuh_updated.txt
+
+echo "Pmea miranda script complete" $(date)
+```
+
+Submitted batch job 361538
 

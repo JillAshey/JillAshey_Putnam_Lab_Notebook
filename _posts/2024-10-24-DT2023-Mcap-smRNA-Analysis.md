@@ -2816,7 +2816,7 @@ echo "Use bowtie to align collapsed reads to genome for M6" $(date)
 
 cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/
 
-bowtie -a --verbose --best --strata -n 1 -x /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex -q /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/collapse.trim.flexbar.35bp.6_small_RNA_S1_R1_001.fastq -S /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/aligned_genome_M6.sam
+bowtie -a --verbose --best --strata -n 1 -x /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex -f /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/collapse.trim.flexbar.35bp.6_small_RNA_S1_R1_001.fastq -S /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/aligned_genome_M6.sam
 
 echo "Bowtie alignment complete for M6 to genome" $(date)
 #echo "Build mirbase bowtie index" $(date)
@@ -2825,7 +2825,7 @@ bowtie-build /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mature_mirbase_cn
 
 echo "Build complte, align collapsed reads to mirbase for M6" $(date)
 
-bowtie -a --verbose --best --strata -n 1 -x /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mirbase_ref -q /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/collapse.trim.flexbar.35bp.6_small_RNA_S1_R1_001.fastq -S /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/aligned_mirbase_M6.sam
+bowtie -a --verbose --best --strata -n 1 -x /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mirbase_ref -f /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/collapse.trim.flexbar.35bp.6_small_RNA_S1_R1_001.fastq -S /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/aligned_mirbase_M6.sam
 
 echo "Alignments complete!" $(date)
 ```
@@ -2836,20 +2836,138 @@ I am looking at the genome aligned file and I put some of the sequences that got
 
 ### 20250213
 
-Downloading `aligned_genome_M6.sam` and `aligned_mirbase_M6.sam` to my computer to look at them on IGB. 
+Downloading `aligned_genome_M6.sam` and `aligned_mirbase_M6.sam` to my computer to look at them on IGB. Looking at the sam file aligned to the genome...doesn't look great. Here is an example of one of the chromosomes: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/IGB_mcap_miRNA_genome_example_chrom.png)
+
+There is a lot of sequences aligning all over the place but its hard to know if any are biologically meaningful. I also looked at one of the sequences close up:
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/IGB_mcap_miRNA_genome_example_seq.png)
+
+This read is just GAGAGAGA repeating. When looking at the sequences aligned to the mirbase db, I see several sequences aligning to nve-miR-9415 from Nematostella but no sequences are aligning to any other miRNAs, which is strange to me. Let's go back to the server and bowtie align the collapsed M6 file against the putative miRNAs identified from the Mcap data. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_35bp/mirna_results_22_01_2025_t_14_50_27
+
+grep -c ">" flexbar_35bp_putative_miRNAs_filt.fa
+42
+```
+
+The `flexbar_35bp_putative_miRNAs_filt.fa` file contains the putative miRNAs that were identified from the 35bp trimmed data. When I quantified the counts of these miRNAs for each sample, a lot of the re-amped samples got 0 counts for many of the putative miRNAs. Build a bowtie index for this fasta file 
+
+```
+interactive
+module load Bowtie/1.3.1-GCC-11.3.0
+
+bowtie-build flexbar_35bp_putative_miRNAs_filt.fa putative_miRNA_ref
+```
+
+Align the collapsed M6 file to the `putative_miRNA_ref` index.
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/
+
+bowtie -a --verbose --best --strata -n 1 -x /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_35bp/mirna_results_22_01_2025_t_14_50_27/putative_miRNA_ref -f collapse.trim.flexbar.35bp.6_small_RNA_S1_R1_001.fastq -S aligned_putative_mirna_M6.sam
+
+# reads processed: 179728
+# reads with at least one alignment: 8 (0.00%)
+# reads that failed to align: 179720 (100.00%)
+Reported 8 alignments
+```
+
+8 alignments reported LOL. When I look through the sam file itself, I can't even find the aligned reads. THIS SUCKS I SUCK!!!!!!
+
+I am going to collapse one of the samples that went through the first sequencing iteration. There were 8 samples that we sent (n=1 per time point) initially to be sequenced to check if the library prep worked. I did not re-amp these samples and they turned out with much less duplication than the rest of the samples. First, collapse M9 fastq
+
+```
+module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
+fastx_collapser -v -i trim.flexbar.35bp.9_S75_R1_001.fastq.gz.fastq -o collapse.trim.flexbar.35bp.9_S75_R1_001.fastq
+Input: 17402129 sequences (representing 17402129 reads)
+Output: 2781873 sequences (representing 17402129 reads)
+
+head collapse.trim.flexbar.35bp.9_S75_R1_001.fastq
+>1-1339235
+AAACCTTTGTTCTAAGATCGA
+>2-969023
+AATGTCTGTCTGAGGGTCGAA
+>3-715497
+AATCTGAGATTCAACCTTTGTTCTAAGATCGA
+>4-607457
+ACCCGGGAGCATGTCTGTCTGAGGGTCGAA
+>5-451812
+AGTCTGTCTGAGGGTCGAA
+
+grep -c ">" collapse.trim.flexbar.35bp.9_S75_R1_001.fastq
+2781873
+
+grep -c "@LH" trim.flexbar.35bp.9_S75_R1_001.fastq.gz.fastq
+17402129
+```
+
+Library still isn't super complex, but more so than the M6 sample. 
+
+
+I am going to use bowtie to map the collapsed reads to the genome and mirbase. In the scripts folder: `nano bowtie_M9.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load Bowtie/1.3.1-GCC-11.3.0
+#other options if needed: Bowtie/1.2.3-GCC-8.3.0, Bowtie/1.3.1-GCC-11.2.0, Bowtie/1.2.2-foss-2018b 
+
+echo "Use bowtie to align collapsed reads to genome for M9" $(date)
+
+# all indices already built, no need to redo 
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_35bp/
+
+bowtie -a --verbose --best --strata -n 1 -x /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex -f collapse.trim.flexbar.35bp.9_S75_R1_001.fastq -S aligned_genome_M9.sam
+
+echo "Bowtie alignment complete for M9 to genome" $(date)
+echo "Use bowtie to align collapsed reads to mirbase for M9" $(date)
+
+bowtie -a --verbose --best --strata -n 1 -x /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mirbase_ref -f collapse.trim.flexbar.35bp.9_S75_R1_001.fastq -S aligned_mirbase_M9.sam
+
+echo "Bowtie alignment complete for M9 to mirbase" $(date)
+echo "Use bowtie to align collapsed reads to putative miRNAs for M9" $(date)
+
+bowtie -a --verbose --best --strata -n 1 -x /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_flexbar_35bp/mirna_results_22_01_2025_t_14_50_27/putative_miRNA_ref -f collapse.trim.flexbar.35bp.9_S75_R1_001.fastq -S aligned_putative_mirna_M9.sam
+
+echo "Alignments complete!" $(date)
+```
 
 
 
-I need to intersect the sam file with the gtf to see if it overlaps with any genomic feature. also sam to bam
-
-I need to bowtie align collapsed file against miRNAs idenfied by the 8 samples that were initially sequenced, as well as the miRNAs that I derived from all samples 
 
 
+
+
+
+
+
+
+
+
+
+Random notes: 
 
 https://dnatech.ucdavis.edu/faqs/should-i-remove-pcr-duplicates-from-my-rna-seq-data 
 
+Since I don't have UMIs (I don't think) for this seq data, I cannot tell PCR dups from true biology 
+
 Next steps for trimming ????
 
+- Trim to 28 or 30 bp?
 - Look at each raw QC file and trim each one using adapters and index primers 
 - blast overrepresented seqs -- maybe they are something ?
 - reverse complement of adapters and primers 

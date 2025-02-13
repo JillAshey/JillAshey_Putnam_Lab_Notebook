@@ -105,13 +105,18 @@ February 2025 goals and daily notebook entries.
 - Getting rid of unneeded files on Andromeda 
 - Looking into ways to deal with my Mcap smRNA data 
 
+### 20250213
+
+- Writing time 
+- Mcap 2023 coding smRNA 
+- e5 coding - 
+
 
 to do 2/12
 - answer emails 
 - push mcap stuff to github- put large files on osf 
 - ter for cbass 
 - cbass paper stuff - give corin access
-- lay out mcap trimming attempts thus far 
 
 
 
