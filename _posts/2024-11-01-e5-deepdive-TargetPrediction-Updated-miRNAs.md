@@ -381,5 +381,14 @@ wc -l /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_parsed
 echo "Pmea miranda script complete" $(date)
 ```
 
-Submitted batch job 361538
+Submitted batch job 361538. Ran in a little under an hour. Results: 
 
+```
+counting number of interactions attempted Thu Feb 13 11:34:11 EST 2025
+1178080
+Parsing output Thu Feb 13 11:34:14 EST 2025
+counting number of putative interactions predicted Thu Feb 13 11:34:15 EST 2025
+26311 /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_parsed_ptuh_updated.txt
+```
+
+WAY may putative interactions predicted using mRNAs than 3'UTR. 

@@ -109,14 +109,12 @@ February 2025 goals and daily notebook entries.
 
 - Writing time 
 - Mcap 2023 coding smRNA 
-- e5 coding - 
+- e5 coding - miranda with miRNAs and mrna/transcripts
+- Resubmitted SICB TER
+- Hollie meeting 
+- Made draft committee meeting presentation
 
 
-to do 2/12
-- answer emails 
-- push mcap stuff to github- put large files on osf 
-- ter for cbass 
-- cbass paper stuff - give corin access
 
 
 
