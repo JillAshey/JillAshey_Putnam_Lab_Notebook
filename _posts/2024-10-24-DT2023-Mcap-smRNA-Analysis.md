@@ -2946,6 +2946,11 @@ bowtie -a --verbose --best --strata -n 1 -x /data/putnamlab/jillashey/DT_Mcap_20
 echo "Alignments complete!" $(date)
 ```
 
+### 20250214
+
+Talked w/ Hollie yesterday about the data. Our take-aways: Chapter 3 the problem child - samples that were sequenced in the second batch have high duplication and a lot of adapter/index sequences. We are expecting to have a lot of duplication anyway because these libraries are not very complex. We suspect that this is due to the re-amplification that I had to do with these samples, as the Taq premix didn't initially work. I aligned one sample yesterday and very few reads aligned to the genome. I am going to use the index sequences as inputs for the trimming step to see if I can rid the samples of their trash sequences. If that does not work, we will use n=1 of our initial miRNA sequencing samples and assume that the miRNA pattern is the same across all time points. In this case, we will only look at the genes that those miRNA are binding and look at expression through time.
+
+It always comes down to more trimming. Taking another look at `/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent_take2/` this trimming iteration. I used 
 
 
 

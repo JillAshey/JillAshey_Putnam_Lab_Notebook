@@ -114,20 +114,17 @@ February 2025 goals and daily notebook entries.
 - Hollie meeting 
 - Made draft committee meeting presentation
 
+### 20250214
+
+- Submitted TER
+- DT 2023 mcap coding and writing 
+- e5 meeting
+
+
+Notes 
+
+- GSA for maldives
 
 
 
-
-
-
-Notes: 
-
-GSA for maldives 
-ask Hollie for cfs for maldives 
-sicb put difference on intern 
-uber:8.10+10.19+7.29+8.48+10.21+8.95=53.22
-
-polyA for Mcap 
-tapestation and qubit for every sample -- 32 samples for me, #1-32, ask what concentrations to pool at -- will be prepared to pool at specific molarity 
-- https://knowledge.illumina.com/library-preparation/dna-library-prep/library-preparation-dna-library-prep-reference_material-list/000001240 
 
