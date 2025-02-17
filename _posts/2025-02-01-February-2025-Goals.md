@@ -104,6 +104,7 @@ February 2025 goals and daily notebook entries.
 - Writing time - writing potential questions
 - Getting rid of unneeded files on Andromeda 
 - Looking into ways to deal with my Mcap smRNA data 
+- Nia meeting 
 
 ### 20250213
 
@@ -116,9 +117,22 @@ February 2025 goals and daily notebook entries.
 
 ### 20250214
 
-- Submitted TER
+- Submitted cbass TER
 - DT 2023 mcap coding and writing 
 - e5 meeting
+- Astrangia writing 
+- Worked on committee presentation
+
+### 20250216
+
+- Reviewer for RSO - complete 
+
+### 20250217
+
+- Lab meeting 
+- Renamed miRNAs for e5 deep dive expression
+- AST 2021 figure making 
+- Trimming for Mcap 2023 smRNA
 
 
 Notes 

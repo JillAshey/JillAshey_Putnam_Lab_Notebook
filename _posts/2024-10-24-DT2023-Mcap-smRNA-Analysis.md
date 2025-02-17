@@ -2950,34 +2950,238 @@ echo "Alignments complete!" $(date)
 
 Talked w/ Hollie yesterday about the data. Our take-aways: Chapter 3 the problem child - samples that were sequenced in the second batch have high duplication and a lot of adapter/index sequences. We are expecting to have a lot of duplication anyway because these libraries are not very complex. We suspect that this is due to the re-amplification that I had to do with these samples, as the Taq premix didn't initially work. I aligned one sample yesterday and very few reads aligned to the genome. I am going to use the index sequences as inputs for the trimming step to see if I can rid the samples of their trash sequences. If that does not work, we will use n=1 of our initial miRNA sequencing samples and assume that the miRNA pattern is the same across all time points. In this case, we will only look at the genes that those miRNA are binding and look at expression through time.
 
-It always comes down to more trimming. Taking another look at `/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent_take2/` this trimming iteration. I used 
+It always comes down to more trimming. Taking another look at `/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent_take2/` this trimming iteration. I looked at the multiqc and it definitely didn't do what I wanted. still high levels of duplication. Okay...should I run each sample individually?? 
 
+### 20250217
 
+Talked with Zoe about the trimming. She went on a trimming [saga](https://github.com/zdellaert/LaserCoral/blob/main/code/notes/Trim_Saga.md) of her own for WGBS data. We talked about adjusting trimming parameters for flexbar. Specifically, I'm going to play around with `--adapter-trim-end`, `--adapter-trim-end`, and `--adapter-error-rate`. I'm going to try some different iterations on M6. 
 
+Iterations that I will try today: 
 
+- `--adapter-trim-end` to ANY - this will remove adapter sequence in any location of the read and the longer side of the read will remain after removal of overlap
+- `--adapter-min-overlap` to 4 - this will allow more potential matches and removal 
+- `--adapter-error-rate` to 0.2 
+- `--htrim-right G` - trim any poly Gs on the right side of the read 
 
+In the scripts folder: `nano flexbar_M6_20250217.sh`
 
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH --array=0-3
 
+echo "Flexbar trimming iterations" $(date)
 
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
 
+output_dir="/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250217"
+mkdir -p $output_dir
 
+# Define argument variations
+arg_types=("trim_any" "trim_any_ao4" "trim_any_ae0.2" "trim_any_htrim_g")
 
+cmds=(
+"--adapter-trim-end ANY"
+"--adapter-trim-end ANY --adapter-min-overlap 4"
+"--adapter-trim-end ANY --adapter-error-rate 0.2"
+"--adapter-trim-end ANY --htrim-right G"
+)
 
+# Get the trimming command for this array task
+arg_type=${arg_types[$SLURM_ARRAY_TASK_ID]}
+cmd=${cmds[$SLURM_ARRAY_TASK_ID]}
 
-Random notes: 
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapter-preset SmallRNA \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+ ${cmd} \
+--zip-output GZ \
+--threads 16 \
+-t "${output_dir}/${arg_type}_M6"
 
-https://dnatech.ucdavis.edu/faqs/should-i-remove-pcr-duplicates-from-my-rna-seq-data 
+# Run FastQC on the output
+fastqc "${output_dir}/${arg_type}_M6.fastq.gz" -o $output_dir
 
-Since I don't have UMIs (I don't think) for this seq data, I cannot tell PCR dups from true biology 
+echo "Finished processing ${arg_type}"
+```
 
-Next steps for trimming ????
+Submitted batch job 361795-98. No output though...Got this in the error files: `Adapter trim-end should be RIGHT for adapter presets.` Editing the script to use the illumina fasta sequences that I have on the server already. These should be the exact same as the presets. Submitted batch job 361799_*. Large output to one file: XXX. But not fastq or fastqc files produced. Got this error: `/var/spool/slurmd/job361800/slurm_script: line 39: -a: command not found`. Going to comment out the fastqc portion and change the `-a` to `--adapters`. Submitted batch job 361809_0-3. This is annoying. Going to comment out the cmds and arg lines for now and just run them one at a time. 
 
-- Trim to 28 or 30 bp?
-- Look at each raw QC file and trim each one using adapters and index primers 
-- blast overrepresented seqs -- maybe they are something ?
-- reverse complement of adapters and primers 
-- what would data look like if i dont throw out anything >30bp 
+In the scripts folder: `nano flexbar_M6_20250217.sh`
 
-Zoe cutadapt trimming: https://github.com/zdellaert/LaserCoral/blob/1b776313512822d368e957591890b2228c590bd5/code/RNA-seq-bioinf.md 
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
 
+echo "Flexbar trimming iterations" $(date)
 
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
+
+output_dir="/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250217"
+
+echo "Flexbar trimming iterations - trim ANY" $(date)
+
+# Define argument variations
+arg_type=("trim_any")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+#--adapter-preset SmallRNA \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+# ${cmd} \
+--zip-output GZ \
+--threads 16 \
+-t "${output_dir}/${arg_type}_M6"
+
+# Run FastQC on the output
+fastqc "${output_dir}/${arg_type}_M6.fastq.gz" -o $output_dir
+
+echo "Flexbar trimming iterations - trim ANY with min overlap of 4" $(date)
+
+# Define argument variations
+arg_type=("trim_any_ao4")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+#--adapter-preset SmallRNA \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--adapter-min-overlap 4 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+# ${cmd} \
+--zip-output GZ \
+--threads 16 \
+-t "${output_dir}/${arg_type}_M6"
+
+# Run FastQC on the output
+fastqc "${output_dir}/${arg_type}_M6.fastq.gz" -o $output_dir
+
+echo "Flexbar trimming iterations - trim ANY with error rate of 0.2" $(date)
+
+# Define argument variations
+arg_type=("trim_any_ae0.2")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+#--adapter-preset SmallRNA \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--adapter-error-rate 0.2 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+# ${cmd} \
+--zip-output GZ \
+--threads 16 \
+-t "${output_dir}/${arg_type}_M6"
+
+# Run FastQC on the output
+fastqc "${output_dir}/${arg_type}_M6.fastq.gz" -o $output_dir
+
+echo "Flexbar trimming iterations - trim ANY with polyG trimming right" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+#--adapter-preset SmallRNA \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+# ${cmd} \
+--zip-output GZ \
+--threads 16 \
+-t "${output_dir}/${arg_type}_M6"
+
+# Run FastQC on the output
+fastqc "${output_dir}/${arg_type}_M6.fastq.gz" -o $output_dir
+
+echo "Flexbar trimming iterations complete" $(date)
+```
+
+Submitted batch job 361815. Okay reads are still getting written out to `flexbarOut.fastq` so I am stopping this job. Going to edit the code so that it is `--target` instead of `-t`. Actually first I'm going to run in interactive mode to see what is going on. Lol there was an s at the end of `arg_type` when I set the variable but not when I wrote it to the output. Remove the s, set `--target` and rerun. Submitted batch job 361821. STILL writing to flexbarOut.fastq!!!!! Letting it run for 5 mins and then checking. Okay cancelling. Trying to run ONE iteration. In the scripts folder: `nano flexbar_M6_trim_any.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Flexbar trimming iterations" $(date)
+
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
+
+#output_dir="/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250217"
+
+echo "Flexbar trimming iterations - trim ANY" $(date)
+
+# Define argument variations
+arg_type=("trim_any")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+#--adapter-preset SmallRNA \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+# ${cmd} \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250217/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "${output_dir}/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250217/
+```
+
+Submitted batch job 361822. STILL WRITING OUT TO THE FLEXBAR FILE. This is annoying. Got this error: 
+
+```
+/var/spool/slurmd/job361822/slurm_script: line 28: --adapters: command not found
+/var/spool/slurmd/job361822/slurm_script: line 33: --zip-output: command not found
+Skipping '/trim_any_M6.fastq.gz' which didn't exist, or couldn't be read
+```
+
+???? Why do you hate me flexbar? Going into interactive mode and running this: 
+
+```
+flexbar -r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz --adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta --adapter-trim-end ANY --qtrim-format i1.8 --qtrim-threshold 25 --zip-output GZ
+```
+
+Ran for a little then stopped it. Appears to be working correctly. Zoe recommended I check to make sure there are no weird spaces and to remove the commented out lines from my script (ie adapter preset and cmd). Submitted batch job 361824. Okay this seems to be working! Cancelling this job so I can add all of the iterations to this script. Submitted batch job 361825. Ran in 6 mins! But only the first iteration ran. Going to change the `--target` so that the full path is there for all iterations. Submitted batch job 361826. Download fastqc files from here (`/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250217`) onto local computer. The one that looks the best is the `trim_any_htrim_g` iteration. Here, the vast majority of the adapter content is removed and the polyGs are gone. There are still some adapter overrepresented sequences but at a much lower percentage than before. My next step is to redo this trimming iteration with increased numbers of mismatches
