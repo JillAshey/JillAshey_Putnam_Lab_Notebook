@@ -61,3 +61,11 @@ echo "Blast complete!" $(date)
 ```
 
 Submitted batch job 361991
+
+Following the BLAST, the results in the .txt file will need to be compared to the miranda results for each species to see if the genes are targeted by any miRNAs. 
+
+- [AST miranda data](https://github.com/JillAshey/Astrangia_repo/blob/main/output/Molecular/interactions/miranda_strict_all_1kb_apoc_shortstack_parsed.txt)
+- [POC miranda data](https://github.com/urol-e5/deep-dive-expression/blob/main/F-Ptuh/output/11-Ptuh-mRNA-miRNA-interactions/three_prime_interaction/miranda_strict_all_1kb_parsed_ptuh_updated.txt)
+- [POR miranda data](https://github.com/urol-e5/deep-dive-expression/blob/main/E-Peve/output/10-Peve-mRNA-miRNA-interactions/miranda_strict_all_1kb_parsed_peve_updated.txt)
+
+The miranda data is comparing the 3'UTR sequence to the mature miRNA sequence, invoking strict binding. 

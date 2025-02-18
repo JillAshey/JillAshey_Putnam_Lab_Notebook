@@ -3943,5 +3943,48 @@ Let's evaluate what I have done so far:
 - The only time I got no hits was `--adapter-trim-end ANY --htrim-right G --adapter-min-overlap 3 --adapter-error rate 0.3` and `--adapter-trim-end ANY --htrim-right G --adapter-min-overlap 3 --adapter-error rate 0.5`. But this also left <1 million seqs and sequences with polyTs
 - The lowest that I have been able to get the overrepresented sequences percentage is with `--adapter-trim-end ANY --htrim-right G --adapter-gap -3`, where it was 1%
 
+I feel pretty good about the 1% adapter content, I think this might be as good as it gets. First, lets trim to 75 bp. In the scripts folder: `nano flexbar_M6_20250218_part9.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Flexbar trimming iterations" $(date)
+
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
+
+echo "Flexbar trimming iterations - any, polyG trimming right, adapter gap at -3, 75bp max length" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g_gap3_max75")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--post-trim-length 75 \
+--adapter-gap -3 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+```
+
 
 
