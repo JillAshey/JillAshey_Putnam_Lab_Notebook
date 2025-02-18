@@ -3986,5 +3986,176 @@ fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_202
 
 ```
 
+Submitted batch job 361992. Let's also do 50 max bp. Submitted batch job 361993. Okay LETS MAP!!!!!!!! Using the mirdeep2 mapper module. Make an output folder
 
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output
+mkdir mirdeep2_trim_any_htrim_g_gap3_max50
+```
+
+In the scripts folder: `nano mapper_mirdeep2_trim_any_htrim_g_gap3_max50.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load GCCcore/11.3.0 #I needed to add this to resolve conflicts between loaded GCCcore/9.3.0 and GCCcore/11.3.0
+#module load Bowtie/1.3.1-GCC-11.3.0
+
+#echo "Index Mcap genome" $(date)
+
+# Index the reference genome for Mcap 
+#bowtie-build /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex
+
+#module unload module load GCCcore/11.3.0 
+#module unload Bowtie/1.3.1-GCC-11.3.0
+
+echo "Map trimmed reads (trim_any_htrim_g_gap3_max50) with mirdeep2 mapper script" $(date)
+
+conda activate /data/putnamlab/mirdeep2
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218
+
+gunzip trim_any_htrim_g_gap3_max50_M6.fastq.gz
+
+mapper.pl /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/trim_any_htrim_g_gap3_max50_M6.fastq -e -h -j -l 18 -m -q -p /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex -s /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_trim_any_htrim_g_gap3_max50/mapped_reads.fa -t /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_trim_any_htrim_g_gap3_max50/mapped_reads_vs_genome.arf
+
+echo "Mapping complete for trimmed reads (trim_any_htrim_g_gap3_max50)" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 361994. Got this error: `prefix 1:N:0:ATGAGGCCAT+CAATTAACGT does not contain exactly three alphabet letters`. Why do you care? Removed `-d` argument, which says that input file is config file (it usually is a config file but only running one sample rn). Submitted batch job 361995. 
+
+```
+Mapping statistics
+#desc   total   mapped  unmapped        %mapped %unmapped
+total: 2137429  15302   2122127 0.716   99.284
+seq: 2137429    15302   2122127 0.716   99.284
+```
+
+Still very low...let's try running the mirdeep2 module, which does the miRNA predictions
+
+In the scripts folder: `nano mirdeep2_trim_any_htrim_g_gap3_max50.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 with trimmed reads (trim_any_htrim_g_gap3_max50)" $(date)
+
+miRDeep2.pl /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_trim_any_htrim_g_gap3_max50/mapped_reads.fa /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_trim_any_htrim_g_gap3_max50/mapped_reads_vs_genome.arf /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mature_mirbase_cnidarian_T.fa none none -P -v -g -1 2>report.log
+
+echo "mirdeep2 on trimmed reads (trim_any_htrim_g_gap3_max50)" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 361997. Cool cool nothing was predicted. 
+
+```
+Mapping mature,star and loop sequences against index
+# reads processed: 21
+# reads with at least one reported alignment: 4 (19.05%)
+# reads that failed to align: 17 (80.95%)
+Reported 32 alignments to 1 output stream(s)
+```
+
+I want to also map using bowtie (though I think mirdeep2 uses bowtie). In the scripts folder: `nano bowtie_trim_any_htrim_g_gap3_max50.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load Bowtie/1.3.1-GCC-11.3.0
+#other options if needed: Bowtie/1.2.3-GCC-8.3.0, Bowtie/1.3.1-GCC-11.2.0, Bowtie/1.2.2-foss-2018b 
+
+echo "Use bowtie to align collapsed reads to genome for trim_any_htrim_g_gap3_max50_M6 fastq" $(date)
+
+# all indices already built, no need to redo 
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+bowtie -a --verbose --seedmms 3 -x /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex -q trim_any_htrim_g_gap3_max50_M6.fastq -S aligned_genome_trim_any_htrim_g_gap3_max50_M6.sam
+
+echo "Bowtie alignment complete for trim_any_htrim_g_gap3_max50_M6 fastq to genome" $(date)
+```
+
+Submitted batch job 362001. maybe also try running shortstack?? In the scripts folder: `nano shortstack_trim_any_htrim_g_gap3_max50.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Running short stack using trim_any_htrim_g_gap3_max50"
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+# Load modules 
+module load ShortStack/4.0.2-foss-2022a  
+module load Kent_tools/442-GCC-11.3.0
+
+# Run short stack
+# Run short stack
+ShortStack \
+--genomefile /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta \
+--readfile trim_any_htrim_g_gap3_max50_M6.fastq \
+--known_miRNAs /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mature_mirbase_cnidarian_T.fa \
+--threads 10 \
+--dn_mirna
+
+echo "Short stack complete!"
+```
+
+Submitted batch job 362003. Failed, no miRNAs IDed. 
+
+
+
+
+Things to try / think about 
+
+- Aligner - how is it scoring the alignments? what about mismatches 
+- Blast mir100 against raw/trimmed reads 
+- Run another bad sample to see if I can trim and align
+- Run all good samples to move forward with n=1
+- Use bwa or mapper that aligns part of the read 
 

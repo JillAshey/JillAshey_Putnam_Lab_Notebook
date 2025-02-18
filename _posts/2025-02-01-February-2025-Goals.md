@@ -134,6 +134,11 @@ February 2025 goals and daily notebook entries.
 - AST 2021 figure making 
 - Trimming for Mcap 2023 smRNA
 
+### 20250217
+
+- Trimming for Mcap 2023 smRNA
+- biomin blast for AST, POC, POR
+
 
 Notes 
 
