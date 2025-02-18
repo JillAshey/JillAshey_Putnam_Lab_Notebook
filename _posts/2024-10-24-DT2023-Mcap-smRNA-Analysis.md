@@ -3184,4 +3184,764 @@ Skipping '/trim_any_M6.fastq.gz' which didn't exist, or couldn't be read
 flexbar -r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz --adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta --adapter-trim-end ANY --qtrim-format i1.8 --qtrim-threshold 25 --zip-output GZ
 ```
 
-Ran for a little then stopped it. Appears to be working correctly. Zoe recommended I check to make sure there are no weird spaces and to remove the commented out lines from my script (ie adapter preset and cmd). Submitted batch job 361824. Okay this seems to be working! Cancelling this job so I can add all of the iterations to this script. Submitted batch job 361825. Ran in 6 mins! But only the first iteration ran. Going to change the `--target` so that the full path is there for all iterations. Submitted batch job 361826. Download fastqc files from here (`/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250217`) onto local computer. The one that looks the best is the `trim_any_htrim_g` iteration. Here, the vast majority of the adapter content is removed and the polyGs are gone. There are still some adapter overrepresented sequences but at a much lower percentage than before. My next step is to redo this trimming iteration with increased numbers of mismatches
+Ran for a little then stopped it. Appears to be working correctly. Zoe recommended I check to make sure there are no weird spaces and to remove the commented out lines from my script (ie adapter preset and cmd). Submitted batch job 361824. Okay this seems to be working! Cancelling this job so I can add all of the iterations to this script. Submitted batch job 361825. Ran in 6 mins! But only the first iteration ran. Going to change the `--target` so that the full path is there for all iterations. Submitted batch job 361826. Download fastqc files from here (`/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250217`) onto local computer (see qc files [here](https://github.com/JillAshey/DevelopmentalTimeseries/tree/main/data/Molecular/smRNA/flexbar_iterations)). The one that looks the best is the `trim_any_htrim_g` iteration. Here, the vast majority of the adapter content is removed and the polyGs are gone. There are still some adapter overrepresented sequences but at a much lower percentage than before. My next step is to redo this trimming iteration with increased numbers of mismatches
+
+### 20250218
+
+More trimming today. First, going to try to set the `--adapter-min-overlap` to 3 and 2 to see what happens in conjunction with `--adapter-trim-end ANY` and `--htrim-right G`. In the scripts folder: `nano flexbar_M6_20250218_part1.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Flexbar trimming iterations" $(date)
+
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
+
+mkdir /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218
+output_dir = /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218
+
+echo "Flexbar trimming iterations - trim ANY with polyG trimming right and min overlap of 3" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g_ao3")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--adapter-min-overlap 3 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "${output_dir}/${arg_type}_M6.fastq.gz" -o $output_dir
+
+echo "Flexbar trimming iterations - trim ANY with polyG trimming right and min overlap of 2" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g_ao2")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--adapter-min-overlap 2 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "${output_dir}/${arg_type}_M6.fastq.gz" -o $output_dir
+
+echo "Flexbar trimming iterations complete" $(date)
+```
+
+Submitted batch job 361892. Ran in about 6 mins. This is what the log files look like: 
+
+```
+# trim_any_htrim_g_ao3
+Filtering statistics
+====================
+Processed reads                   24211196
+  skipped due to uncalled bases     465454
+  short prior to adapter removal         0
+  finally skipped short reads     19978118
+Discarded reads overall           20443572
+Remaining reads                    3767624   (15%)
+
+Processed bases   3655890596
+Remaining bases    127805448   (3% of input)
+
+# trim_any_htrim_g_ao2
+Filtering statistics
+====================
+Processed reads                   24211196
+  skipped due to uncalled bases     465454
+  short prior to adapter removal         0
+  finally skipped short reads     19978796
+Discarded reads overall           20444250
+Remaining reads                    3766946   (15%)
+
+Processed bases   3655890596
+Remaining bases    127020871   (3% of input)
+```
+
+Pretty similar results. Compared to the only htrim from yesterday: 
+
+```
+# trim_any_htrim_g
+Filtering statistics
+====================
+Processed reads                   24211196
+  skipped due to uncalled bases     465454
+  short prior to adapter removal         0
+  finally skipped short reads     19978118
+Discarded reads overall           20443572
+Remaining reads                    3767624   (15%)
+
+Processed bases   3655890596
+Remaining bases    127805448   (3% of input)
+```
+
+The `trim_any_htrim_g` and `trim_any_htrim_g_ao3` appear to be identical. Looking at the fastqc, I am still getting some adapter content in the overrepresented sequences. Let's try increasing the error rate. In the scripts folder: `nano flexbar_M6_20250218_part2.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Flexbar trimming iterations" $(date)
+
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
+
+echo "Flexbar trimming iterations - trim ANY with polyG trimming right, min overlap of 3, error rate of 0.3" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g_ao3_ae0.3")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--adapter-min-overlap 3 \
+--adapter-error-rate 0.3 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations - trim ANY with polyG trimming right, min overlap of 3, error rate of 0.5" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g_ao3_ae0.5")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--adapter-min-overlap 3 \
+--adapter-error-rate 0.5 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations complete" $(date)
+```
+
+Submitted batch job 361895. Let's look at the log files: 
+
+```
+# trim_any_htrim_g_ao3_ae0.3
+Filtering statistics
+====================
+Processed reads                   24211196
+  skipped due to uncalled bases     465454
+  short prior to adapter removal         0
+  finally skipped short reads     22995599
+Discarded reads overall           23461053
+Remaining reads                     750143   (3%)
+
+Processed bases   3655890596
+Remaining bases     29142835   (0% of input)
+
+# trim_any_htrim_g_ao3_ae0.5
+Filtering statistics
+====================
+Processed reads                   24211196
+  skipped due to uncalled bases     465454
+  short prior to adapter removal         0
+  finally skipped short reads     23018985
+Discarded reads overall           23484439
+Remaining reads                     726757   (3%)
+
+Processed bases   3655890596
+Remaining bases     27824550   (0% of input)
+```
+
+When looking at the fastqc, it looks like I got rid of the adapter content but there are some sequences that are overrepresented, such as `CATGAGGCCATCTGGGGGGGGGGGTTTTTTTTT`. The QC output says no hit but it looks like it might be an adapter? Instead of messing around with the error rate (though might come back to this), let's try to add the M6 index primer sequences to the adapter fasta file. The primers for M6 are `CAAGCAGAAGACGGCATACGAGATGGCCTCATGTGACTGGAGTTCAGACGTGT` for i7 and `AATGATACGGCGACCACCGAGATCTACACGTTAATTGACACTCTTTCCCTACACGAC` for i5. 
+
+In the scripts folder: `nano flexbar_M6_20250218_part3.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Flexbar trimming iterations" $(date)
+
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
+
+echo "Flexbar trimming iterations - trim ANY with polyG trimming right and min overlap of 3" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g_ao3_index_primers")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--adapter-min-overlap 3 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations - trim ANY with polyG trimming right and min overlap of 2" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g_ao2_index_primers")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--adapter-min-overlap 2 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations complete" $(date)
+```
+
+Submitted batch job 361899. Looking at the QC, this didn't do anything to improve from the only polyG trimming. Also looking at the QC again, the decrease of adapter overlap to 2 and 3 did not improve the QC relative to the iteration where only polyGs were trimmed.  I'm not sure what adapter matches, mismatches, or gaps mean or if it would help me...
+
+Let's try to include `-ac, --adapter-revcomp STRING - Include reverse complements of adapters. One of ON and ONLY.` and max length of 35. 
+
+In the scripts folder: `nano flexbar_M6_20250218_part4.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Flexbar trimming iterations" $(date)
+
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
+
+echo "Flexbar trimming iterations - trim ANY with polyG trimming right and reverse complement of adapters" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g_reverse")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--adapter-revcomp ON \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations - trim ANY with polyG trimming right and max length of 35bp" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g_max35")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--qtrim-format i1.8 \
+--post-trim-length 35 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations complete" $(date)
+```
+
+Submitted batch job 361914. The reverse did not change anything. The trim down to max 35bp also did not change the adapter content in the overrepresented sequences. Going to try removing the `--adapter-trim-end ANY` so that it trims from the right (default) and increasing the error rate. 
+
+In the scripts folder: `nano flexbar_M6_20250218_part5.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Flexbar trimming iterations" $(date)
+
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
+
+echo "Flexbar trimming iterations - polyG trimming right and default error rate" $(date)
+
+# Define argument variations
+arg_type=("trim_htrim_g")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--htrim-right G \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations - polyG trimming right and error rate of 0.3" $(date)
+
+# Define argument variations
+arg_type=("trim_htrim_g_ae0.3")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--htrim-right G \
+--adapter-error-rate 0.3 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations - polyG trimming right and error rate of 0.5" $(date)
+
+# Define argument variations
+arg_type=("trim_htrim_g_ae0.5")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--htrim-right G \
+--adapter-error-rate 0.5 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+```
+
+Submitted batch job 361949. Still got some adapter in there. Going to try the above script again but replace the illumina fasta with the preset adapters that come in the software. They should be the same, I just want to check. 
+
+`nano flexbar_M6_20250218_part6.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Flexbar trimming iterations" $(date)
+
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
+
+echo "Flexbar trimming iterations - polyG trimming right, default error rate, preset adapters" $(date)
+
+# Define argument variations
+arg_type=("trim_htrim_g_preset_adapters")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapter-preset SmallRNA \
+--htrim-right G \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations - polyG trimming right, error rate of 0.3, preset adapters" $(date)
+
+# Define argument variations
+arg_type=("trim_htrim_g_ae0.3_preset_adapters")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapter-preset SmallRNA \
+--htrim-right G \
+--adapter-error-rate 0.3 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations - polyG trimming right, error rate of 0.5, preset adapters" $(date)
+
+# Define argument variations
+arg_type=("trim_htrim_g_ae0.5_preset_adapters")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapter-preset SmallRNA \
+--htrim-right G \
+--adapter-error-rate 0.5 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+```
+
+Submitted batch job 361966. okay so no dice there. I think I need to start playing around with the alignment score...but I don't understand what that means. Here are the options in flexbar: 
+
+```
+-am, --adapter-match INTEGER
+      Alignment match score. Default: 1.
+-ai, --adapter-mismatch INTEGER
+      Alignment mismatch score. Default: -1.
+-ag, --adapter-gap INTEGER
+      Alignment gap score. Default: -6.
+```
+
+In the manual, it says: "The scoring scheme can be adjusted separately for detection of barcodes and adapters. This includes alignment match, mismatch and gap scores, see program options page. For example, it could make sense to specify a larger score for gaps, when the data's sequencing platform has high indel error rates: `flexbar -r reads.fasta -a adapters.fasta --adapter-gap -4`. If the gap score is set to a value of -4, the score of a gap corresponds to 4 mismatches and can be compensated by 4 matches." Not sure where the program options page is...This is a nice simple illustration of what these things mean: 
+
+![](https://miro.medium.com/v2/resize:fit:954/1*2Wh0jTmRhXLcJQsHhirviw.png)
+
+It appears that alignment scores (commonly using the [Smith & Waterman algorithm](https://www.sciencedirect.com/science/article/pii/0022283681900875)) are computed in flexbar. Although not flexbar, this [page](https://resources.qiagenbioinformatics.com/manuals/clcgenomicsworkbench/1010/index.php?manual=Alignment_scoring_match_thresholds.html) was helpful in understanding how these things are computed. In our case, a match in the adapter sequence gives a score of 1, a mismatch gives a score of -1, and a gap gives a score of -6. I don't know if there is a minimum alignment score that needs to happen for each adapter? Here are my hypotheses about what will happen if I change the following: 
+
+- Increase `--adapter-match` to 5 - matches more favorable, more conservative trimming 
+- Increase `--adapter-mismatch` from -1 to -0.5 - mismatches less costly, potentially leading to more adapter detection and trimming but potential for false positives
+- Increase `--adapter-gap` from -6 to -3 - gaps less costly, potentially leading to more adapter detection and trimming but potential for false positives
+
+I am going to increase `--adapter-mismatch` from -1 to -0.5, increase `--adapter-gap` from -6 to -3, and combine both. In the scripts folder: `nano flexbar_M6_20250218_part7.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Flexbar trimming iterations" $(date)
+
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
+
+echo "Flexbar trimming iterations - polyG trimming right, adapter mismatch at 0" $(date)
+
+# Define argument variations
+arg_type=("trim_htrim_g_mismatch0")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--htrim-right G \
+--adapter-mismatch 0 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations - polyG trimming right, adapter gap at -3" $(date)
+
+# Define argument variations
+arg_type=("trim_htrim_g_gap3")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--htrim-right G \
+--adapter-gap -3 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations - polyG trimming right, mismatch at 0, adapter gap at -3" $(date)
+
+# Define argument variations
+arg_type=("trim_htrim_g_mismatch0_gap3")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--htrim-right G \
+--adapter-mismatch 0 \
+--adapter-gap -3 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+##### ADD ANY back in for adapters
+
+echo "Flexbar trimming iterations - any, polyG trimming right, adapter mismatch at 0" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g_mismatch0")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--adapter-mismatch 0 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations - any, polyG trimming right, adapter gap at -3" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g_gap3")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--adapter-gap -3 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations - any, polyG trimming right, mismatch at 0, adapter gap at -3" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g_mismatch0_gap3")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--adapter-mismatch 0 \
+--adapter-gap -3 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+```
+
+Submitted batch job 361968. Turns out that I need to give the mismatch option an integer, not a decimal. Going to change to 0 and rerun. Submitted batch job 361969. Using ANY is definitely the way to go. I got about 2 million reads when using `--adapter-trim-end ANY --htrim-right G --adapter-gap -3` and 1% as the highest overrepresented sequences, which were TruSeq adapters. When I added `--adapter-gap -3` to the function, the number of reads retained increased to 3.8 million but higher precentage of overrepresented TruSeq adapters (2.1%). What about if I set the `--adapter-gap` to -2, -1, and 0?
+
+In the scripts folder: `nano flexbar_M6_20250218_part8.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Flexbar trimming iterations" $(date)
+
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
+
+echo "Flexbar trimming iterations - any, polyG trimming right, adapter gap at -2" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g_gap2")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--adapter-gap -2 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations - any, polyG trimming right, adapter gap at -1" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g_gap1")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--adapter-gap -1 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+echo "Flexbar trimming iterations - any, polyG trimming right, adapter gap at 0" $(date)
+
+# Define argument variations
+arg_type=("trim_any_htrim_g_gap0")
+
+flexbar \
+-r /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--adapter-gap 0 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6
+
+# Run FastQC on the output
+fastqc "/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/${arg_type}_M6.fastq.gz" -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+```
+
+Submitted batch job 361980. Output for -2 and -1 gap similar to -3 gap but less sequences are retained (1.6 v 2.1 million, respectively). When gap was 0, more sequences were kept (4 million) but more adapter content remained in overrepresented sequences. I also saw some overrepresented seqs that had polyT tails...should I add this to trimming?
+
+Let's evaluate what I have done so far: 
+
+- I get down to ~3.7 million sequences when using `--adapter-trim-end ANY --htrim-right G`, `--adapter-trim-end ANY --htrim-right G --adapter-min-overlap 2`, `--adapter-trim-end ANY --htrim-right G --adapter-min-overlap 3`, `--adapter-trim-end ANY --htrim-right G --adapter-min-overlap 2 INDEX Primers`, `--adapter-trim-end ANY --htrim-right G --adapter-min-overlap 3 INDEX Primers`, `--adapter-trim-end ANY --htrim-right G --adapter-revcomp ON`, `--adapter-trim-end ANY --htrim-right G --post-trim-length 35`, and `--adapter-trim-end ANY --htrim-right G --adapter-mismatch 0 --adapter-gap -3`. For all of these iterations, I am still getting some residual adapter content (2.1% for highest overrepresented seq, which is typically a TruSeq Adapter index 1)
+- Trimming with `--adapter-trim-end ANY` tends to remove more adapters than without it 
+- Using the preset adapters does not work as well as the illumina adapters that I have in a fasta 
+- The only time I got no hits was `--adapter-trim-end ANY --htrim-right G --adapter-min-overlap 3 --adapter-error rate 0.3` and `--adapter-trim-end ANY --htrim-right G --adapter-min-overlap 3 --adapter-error rate 0.5`. But this also left <1 million seqs and sequences with polyTs
+- The lowest that I have been able to get the overrepresented sequences percentage is with `--adapter-trim-end ANY --htrim-right G --adapter-gap -3`, where it was 1%
+
+
+
