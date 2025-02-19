@@ -4146,7 +4146,148 @@ ShortStack \
 echo "Short stack complete!"
 ```
 
-Submitted batch job 362003. Failed, no miRNAs IDed. 
+Submitted batch job 362003. Failed, no miRNAs IDed. I feel like I have so many things to do...where to start? okay lets trim the good batch of reads with the updating trimming parameters. I'm going to move the raw reads of the good batch into its own folder. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw
+mkdir first_batch
+mv 13_S76* first_batch/
+mv 23_S77_R* first_batch/
+mv 35_S78_R* first_batch/
+mv 52_S79_R* first_batch/
+mv 60_S80_R* first_batch/
+mv 72_S81_R* first_batch/
+mv 85_S82_R* first_batch/
+mv 9_S75_R* first_batch/
+cd ../
+mkdir flexbar_first_batch
+```
+
+Going to trim the first batch using the following: `--adapter-trim-end ANY --htrim-right G --adapter-gap -3`. In the scripts folder: `nano flexbar_trim_any_htrim_g_gap3_max75_first_batch.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Flexbar trimming iterations" $(date)
+
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
+
+echo "Flexbar trimming first batch - any, polyG trimming right, adapter gap at -3, 75bp max length" $(date)
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/first_batch
+
+# Make an array of sequences to trim 
+array1=($(ls *R1_001.fastq.gz))
+
+for i in ${array1[@]}; do
+flexbar \
+-r ${i} \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--post-trim-length 75 \
+--adapter-gap -3 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max75_${i}
+done
+
+echo "Flexbar trimming complete, run QC" $(date)
+
+for file in /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/*fastq.gz
+do 
+fastqc $file 
+done
+```
+
+Submitted batch job 362019. Also going to run one that does the same thing as above but trims to 35bp max. Submitted batch job 362025
+
+Now I am going to collapse some of the raw reads: M6 and M9. I will then use the collapsed reads to make a blast db which I can blast miR-100 against. I want to ground truth that the universal miRNA is in these reads. Use the miR-100 sequences from other species that I have obtained.
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/
+nano mir100.fasta
+
+>Apul mir100 short stack from deep dive expression
+UCCCGUAGAUCCGAACUUGU
+>Peve mir100 short stack from deep dive expression
+UCCCGUAGAUCCGAACUUGU
+>Ptuh mir100 short stack from deep dive expression
+ACCCGUAGAUCCGAACUUGU
+>AST mir100 short stack from AST 2021 experiment
+ACCCGUAGAUCCGAACUUGU
+```
+
+In the scripts folder: `nano collapse_raw_blast_mir100_M6_M9.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "unzip reads" $(date)
+
+gunzip /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq.gz 
+gunzip /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/first_batch/9_S75_R1_001.fastq.gz
+
+echo "unzipping complete, collapse raw reads" $(date)
+
+module load FASTX-Toolkit/0.0.14-GCC-9.3.0 
+
+fastx_collapser -v -i /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/6_small_RNA_S1_R1_001.fastq -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/collapse_6_small_RNA_S1_R1_001.fasta
+
+fastx_collapser -v -i /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/first_batch/9_S75_R1_001.fastq -o /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/first_batch/collapse_9_S75_R1_001.fasta
+
+echo "collapsing complete, make blast dbs" $(date)
+
+module purge 
+module load BLAST+/2.9.0-iimpi-2019b
+
+makeblastdb -in data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/collapse_6_small_RNA_S1_R1_001.fasta -out data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/collapse_6_raw -dbtype nucl
+
+makeblastdb -in /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/first_batch/collapse_9_S75_R1_001.fasta -out /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/first_batch/collapse_9_raw -dbtype nucl
+
+echo "blast dbs complete, blast mir100 against dbs" $(date)
+
+blastn -query /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mir100.fasta -db data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/collapse_6_raw -out data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/mir100_M6_raw_blast_results_tab.txt -outfmt 6 -max_target_seqs 3
+
+blastn -query /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mir100.fasta -db /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/first_batch/collapse_9_raw -out data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/first_batch/mir100_M9_raw_blast_results_tab.txt -outfmt 6 -max_target_seqs 3
+
+wc -l data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/mir100_M6_raw_blast_results_tab.txt
+wc -l data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/first_batch/mir100_M9_raw_blast_results_tab.txt
+
+echo "Blast complete" $(date)
+```
+
+Submitted batch job 362020. Accidently deleted the output files so gotta run again. Submitted batch job 362027
+
+
+
+To run tomorrow 2/19/25! mapper.pl and mirdeep2.pl for first batch, bwa or star, try another couple of samples to see if they will align
+
+
+
 
 
 
@@ -4154,8 +4295,9 @@ Submitted batch job 362003. Failed, no miRNAs IDed.
 Things to try / think about 
 
 - Aligner - how is it scoring the alignments? what about mismatches 
-- Blast mir100 against raw/trimmed reads 
+- Blast mir100 against raw/trimmed reads - running on raw reads 2/18/25
 - Run another bad sample to see if I can trim and align
-- Run all good samples to move forward with n=1
-- Use bwa or mapper that aligns part of the read 
+- Run all good samples to move forward with n=1 - flexbar trimming 2/18/25
+- Use bwa, star or mapper that aligns part of the read 
+- Use the truseq single index [adapters](https://support-docs.illumina.com/SHARE/AdapterSequences/Content/SHARE/AdapterSeq/TruSeq/SingleIndexes.htm)
 

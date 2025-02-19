@@ -134,10 +134,12 @@ February 2025 goals and daily notebook entries.
 - AST 2021 figure making 
 - Trimming for Mcap 2023 smRNA
 
-### 20250217
+### 20250218
 
 - Trimming for Mcap 2023 smRNA
 - biomin blast for AST, POC, POR
+- Blasting mir100 against raw collapsed reads for M9 (first batch) and M6 (second batch)
+- Trimming first batch (n=8) with updated flexbar parameters
 
 
 Notes 
