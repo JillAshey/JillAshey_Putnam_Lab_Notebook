@@ -4282,6 +4282,15 @@ echo "Blast complete" $(date)
 
 Submitted batch job 362020. Accidently deleted the output files so gotta run again. Submitted batch job 362027
 
+### 20250219 
+
+Okay so the things collapsed but it does not look like the dbs were made or anything. Commenting out the collapse lines and running again. Submitted batch job 362040. Being weird and making new files and folders within existing files and folders. Going into interactive mode and running. `mir100_M6_raw_blast_results_tab.txt` got 0 hits. 
+
+
+
+
+
+
 
 
 To run tomorrow 2/19/25! mapper.pl and mirdeep2.pl for first batch, bwa or star, try another couple of samples to see if they will align
