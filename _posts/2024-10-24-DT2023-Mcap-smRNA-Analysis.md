@@ -4284,7 +4284,525 @@ Submitted batch job 362020. Accidently deleted the output files so gotta run aga
 
 ### 20250219 
 
-Okay so the things collapsed but it does not look like the dbs were made or anything. Commenting out the collapse lines and running again. Submitted batch job 362040. Being weird and making new files and folders within existing files and folders. Going into interactive mode and running. `mir100_M6_raw_blast_results_tab.txt` got 0 hits. 
+Okay so the things collapsed but it does not look like the dbs were made or anything. Commenting out the collapse lines and running again. Submitted batch job 362040. Being weird and making new files and folders within existing files and folders. Going into interactive mode and running. `mir100_M6_raw_blast_results_tab.txt` got 0 hits. `mir100_M9_raw_blast_results_tab.txt` also got 0 hits...
+
+Using the trimmed reads from the first batch, run the mapper.pl portion of mirdeep2 with both the 35 and 75bp trimmed reads. Make config files for both trim options. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/
+
+nano config_35bp.txt
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max35_9_S75_R1$.fastq s09
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max35_13_S76_R1_001.fastq.gz.fastq s13
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max35_23_S77_R1_001.fastq.gz.fastq s23
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max35_35_S78_R1_001.fastq.gz.fastq s35
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max35_52_S79_R1_001.fastq.gz.fastq s52
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max35_60_S80_R1_001.fastq.gz.fastq s60
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max35_72_S81_R1_001.fastq.gz.fastq s72
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max35_85_S82_R1_001.fastq.gz.fastq s85
+
+nano config_75bp.txt
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max75_9_S75_R1_001.fastq.fastq s09
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max75_13_S76_R1_001.fastq.gz.fastq s13
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max75_23_S77_R1_001.fastq.gz.fastq s23
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max75_35_S78_R1_001.fastq.gz.fastq s35
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max75_52_S79_R1_001.fastq.gz.fastq s52
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max75_60_S80_R1_001.fastq.gz.fastq s60
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max75_72_S81_R1_001.fastq.gz.fastq s72
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max75_85_S82_R1_001.fastq.gz.fastq s85
+```
+
+In the scripts folder: `nano mapper_mirdeep2_first_batch.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load GCCcore/11.3.0 #I needed to add this to resolve conflicts between loaded GCCcore/9.3.0 and GCCcore/11.3.0
+#module load Bowtie/1.3.1-GCC-11.3.0
+
+#echo "Index Mcap genome" $(date)
+
+# Index the reference genome for Mcap 
+#bowtie-build /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex
+
+#echo "Referece genome indexed!" $(date)
+#echo "Unload unneeded packages and run mapper script for trimmed stringent reads" $(date)
+
+#module unload module load GCCcore/11.3.0 
+#module unload Bowtie/1.3.1-GCC-11.3.0
+
+conda activate /data/putnamlab/mirdeep2
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/
+
+gunzip *.fastq.gz
+
+echo "Start mapping for 35bp trimmed reads from first batch" $(date)
+mapper.pl config_35bp.txt -e -d -h -j -l 18 -m -p /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex -s mapped_reads_35bp.fa -t mapped_reads_vs_genome_35bp.arf
+
+echo "Start mapping for 75bp trimmed reads from first batch" $(date)
+mapper.pl config_75bp.txt -e -d -h -j -l 18 -m -p /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex -s mapped_reads_75bp.fa -t mapped_reads_vs_genome_75bp.arf
+
+echo "Mapping complete for trimmed reads" $(date)
+
+conda deactivate 
+```
+
+Submitted batch job 362044. Cancelling bowtie run (`362001`). Also try mapping the first batch of reads using short stack. In the scripts folder: `nano shortstack_first_batch.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Running short stack on trimmed miRNAs from first seq batch"
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/
+
+# Load modules 
+module load ShortStack/4.0.2-foss-2022a  
+module load Kent_tools/442-GCC-11.3.0
+
+echo "Running short stack on 35bp trimmed miRNAs from first seq batch"
+
+# Run short stack
+ShortStack \
+--genomefile /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta \
+--readfile trim_any_htrim_g_gap3_max35_9_S75_R1$.fastq \
+trim_any_htrim_g_gap3_max35_13_S76_R1_001.fastq.gz.fastq \
+trim_any_htrim_g_gap3_max35_23_S77_R1_001.fastq.gz.fastq \
+trim_any_htrim_g_gap3_max35_35_S78_R1_001.fastq.gz.fastq \
+trim_any_htrim_g_gap3_max75_52_S79_R1_001.fastq.gz.fastq \
+trim_any_htrim_g_gap3_max35_60_S80_R1_001.fastq.gz.fastq \
+trim_any_htrim_g_gap3_max35_72_S81_R1_001.fastq.gz.fastq \
+trim_any_htrim_g_gap3_max35_85_S82_R1_001.fastq.gz.fastq \
+--known_miRNAs /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mature_mirbase_cnidarian_T.fa \
+--threads 10 \
+--dn_mirna
+
+echo "Short stack complete for 35bp first batch, run shortstack on 75bp trimmed reads from first seq batch"
+
+# Run short stack
+ShortStack \
+--genomefile /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta \
+--readfile trim_any_htrim_g_gap3_max75_9_S75_R1$.fastq \
+trim_any_htrim_g_gap3_max75_13_S76_R1_001.fastq.gz.fastq \
+trim_any_htrim_g_gap3_max75_23_S77_R1_001.fastq.gz.fastq \
+trim_any_htrim_g_gap3_max75_35_S78_R1_001.fastq.gz.fastq \
+trim_any_htrim_g_gap3_max75_52_S79_R1_001.fastq.gz.fastq \
+trim_any_htrim_g_gap3_max75_60_S80_R1_001.fastq.gz.fastq \
+trim_any_htrim_g_gap3_max75_72_S81_R1_001.fastq.gz.fastq \
+trim_any_htrim_g_gap3_max75_85_S82_R1_001.fastq.gz.fastq \
+--known_miRNAs /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mature_mirbase_cnidarian_T.fa \
+--threads 10 \
+--dn_mirna
+
+echo "Shortstack complete!" $(date)
+```
+
+Submitted batch job 362047
+
+Let's try to use BWA to align the trimmed M6 sample, as BWA (as well as STAR) can map partially aligned reads. In the scripts folder: `nano bwa_trim_any_htrim_g_gap3_max50_M6.sh`
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load BWA/0.7.17-foss-2018b
+module load SAMtools/1.9-foss-2018b
+
+echo "Index Mcap genome for BWA" $(date)
+
+cd /data/putnamlab/jillashey/genome/Mcap/V3/
+
+bwa index -p Mcap_bwa Montipora_capitata_HIv3.assembly.fasta
+
+echo "index complete, BWA alignment with trim_any_htrim_g_gap3_max50_M6.fastq" $(date)
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+
+bwa mem -t 8 -a -k 15 -T 20 -L 5,5 /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_bwa trim_any_htrim_g_gap3_max50_M6.fastq | samtools view -b > bwa_trim_any_htrim_g_gap3_max50_M6.bam
+
+echo "BWA alignment complete!" $(date)
+```
+
+Submitted batch job 362046. Trying to look at the bam file on IGB but it says an index is required. I downloaded the index but still not working. Calculate some alignment stats. 
+
+```
+module load SAMtools/1.9-foss-2018b
+
+# Only mapped reads
+samtools view -c -F 260 bwa_trim_any_htrim_g_gap3_max50_M6.bam 
+107053
+
+samtools stats bwa_trim_any_htrim_g_gap3_max50_M6.bam
+# This file was produced by samtools stats (1.9+htslib-1.9) and can be plotted using plot-bamstats
+# This file contains statistics for all reads.
+# The command line was:  stats bwa_trim_any_htrim_g_gap3_max50_M6.bam
+# CHK, Checksum	[2]Read Names	[3]Sequences	[4]Qualities
+# CHK, CRC32 of reads which passed filtering followed by addition (32bit overflow)
+CHK	00b80d6f	e489230f	340b6f95
+# Summary Numbers. Use `grep ^SN | cut -f 2-` to extract this part.
+SN	raw total sequences:	2137429
+SN	filtered sequences:	0
+SN	sequences:	2137429
+SN	is sorted:	0
+SN	1st fragments:	2137429
+SN	last fragments:	0
+SN	reads mapped:	104385
+SN	reads mapped and paired:	0	# paired-end technology bit set + both mates mapped
+SN	reads unmapped:	2033044
+SN	reads properly paired:	0	# proper-pair bit set
+SN	reads paired:	0	# paired-end technology bit set
+SN	reads duplicated:	0	# PCR or optical duplicate bit set
+SN	reads MQ0:	70943	# mapped and MQ=0
+SN	reads QC failed:	0
+SN	non-primary alignments:	635928
+SN	total length:	69516885	# ignores clipping
+SN	total first fragment length:	69516885	# ignores clipping
+SN	total last fragment length:	0	# ignores clipping
+SN	bases mapped:	4199002	# ignores clipping
+SN	bases mapped (cigar):	2641333	# more accurate
+SN	bases trimmed:	0
+SN	bases duplicated:	0
+SN	mismatches:	39905	# from NM fields
+SN	error rate:	1.510790e-02	# mismatches / bases mapped (cigar)
+SN	average length:	32
+SN	average first fragment length:	33
+SN	average last fragment length:	0
+SN	maximum length:	50
+SN	maximum first fragment length:	0
+SN	maximum last fragment length:	0
+SN	average quality:	34.6
+SN	insert size average:	0.0
+SN	insert size standard deviation:	0.0
+SN	inward oriented pairs:	0
+SN	outward oriented pairs:	0
+SN	pairs with other orientation:	0
+SN	pairs on different chromosomes:	0
+SN	percentage of properly paired reads (%):	0.0
+```
+
+Okay this is a lot of good info. Only 104,385 reads were aligned to the genome. There are a high number of non-primary alignments (635928), meaning many reads are aligning to multiple places in the genome. I can maybe use htseq count to quantify?
+
+```
+# sort 
+samtools sort bwa_trim_any_htrim_g_gap3_max50_M6.bam -o bwa_trim_any_htrim_g_gap3_max50_M6.sorted.bam
+
+# bam to sam
+samtools view -h bwa_trim_any_htrim_g_gap3_max50_M6.sorted.bam > bwa_trim_any_htrim_g_gap3_max50_M6.sorted.sam
+
+module load HTSeq/0.11.2-foss-2018b-Python-3.6.6 
+htseq-count -f bam -r pos -i ID -t transcript bwa_trim_any_htrim_g_gap3_max50_M6.sorted.bam /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.genes.gff3 > counts_50bp_M6.txt
+```
+
+Didn't work, only the transcript info is in there. Converted bam to sam and looked at it in IGB. Looks similar to the previous one (image above). 
+
+Run mirdeep2 with 35bp first batch samples. In the scripts folder: `nano mirdeep2_trim_any_htrim_g_gap3_35bp.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 with trimmed reads (trim_any_htrim_g_gap3_max35)" $(date)
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch
+
+miRDeep2.pl mapped_reads_35bp.fa /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta mapped_reads_vs_genome_35bp.arf /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mature_mirbase_cnidarian_T.fa none none -P -v -g -1 2>report.log
+
+echo "mirdeep2 on trimmed reads (trim_any_htrim_g_gap3_max35)" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 362086. No miRNAs IDed...
+
+Run flexbar so it trims to 30bp. `nano flexbar_trim_any_htrim_g_gap3_max30_first_batch.sh`
+
+```
+#!/bin/bash 
+#SBATCH -t 24:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Flexbar trimming iterations" $(date)
+
+module load Flexbar/3.5.0-foss-2018b  
+module load FastQC/0.11.9-Java-11
+
+echo "Flexbar trimming first batch - any, polyG trimming right, adapter gap at -3, 30bp max length" $(date)
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/raw/first_batch
+
+# Make an array of sequences to trim 
+array1=($(ls *R1_001.fastq.gz))
+
+for i in ${array1[@]}; do
+flexbar \
+-r ${i} \
+--adapters /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/illumina_adapters.fasta \
+--adapter-trim-end ANY \
+--htrim-right G \
+--post-trim-length 30 \
+--adapter-gap -3 \
+--qtrim-format i1.8 \
+--qtrim-threshold 25 \
+--zip-output GZ \
+--threads 16 \
+--target /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max30_${i}
+done
+
+echo "Flexbar trimming complete, run QC" $(date)
+
+for file in /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max30*fastq.gz
+do 
+fastqc $file 
+done
+```
+
+Submitted batch job 362093
+
+On the successful run previously, I used cutadapt. Maybe I should go back to these reads and map...make a config file from the reads I want to use. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent
+nano config_trim_stringent.txt
+
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_9_S75_R1_001.fastq s09
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_13_S76_R1_001.fastq s13
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_23_S77_R1_001.fastq s23
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_35_S78_R1_001.fastq s35
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_52_S79_R1_001.fastq s52
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_60_S80_R1_001.fastq s60
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_72_S81_R1_001.fastq s72
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent/trim_stringent_cutadapt_85_S82_R1_001.fastq s85
+```
+
+In the scripts folder: `nano mapper_mirdeep2_trim_stringent_first_batch.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load GCCcore/11.3.0 #I needed to add this to resolve conflicts between loaded GCCcore/9.3.0 and GCCcore/11.3.0
+#module load Bowtie/1.3.1-GCC-11.3.0
+
+#echo "Index Mcap genome" $(date)
+
+# Index the reference genome for Mcap 
+#bowtie-build /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex
+
+#echo "Referece genome indexed!" $(date)
+#echo "Unload unneeded packages and run mapper script for trimmed stringent reads" $(date)
+
+#module unload module load GCCcore/11.3.0 
+#module unload Bowtie/1.3.1-GCC-11.3.0
+
+conda activate /data/putnamlab/mirdeep2
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent
+
+#gunzip *.fastq.gz
+
+echo "Start mapping for 30bp cutadapt trimmed reads from first batch" $(date)
+mapper.pl config_trim_stringent.txt -e -d -h -j -l 18 -m -p /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex -s mapped_reads_trim_stringent_first_batch.fa -t mapped_reads_vs_genome_trim_stringent_first_batch.arf
+
+echo "Mapping complete for trimmed reads" $(date)
+
+conda deactivate 
+```
+
+Submitted batch job 362089. Look at the output
+
+```
+# Slurm output error file 
+#desc   total   mapped  unmapped        %mapped %unmapped
+total: 107296044        8932283 98363761        8.325   91.675
+s09: 12624542   833865  11790677        6.605   93.395
+s13: 13274127   1065833 12208294        8.029   91.971
+s23: 14909106   1540921 13368185        10.335  89.665
+s35: 13900420   1330386 12570034        9.571   90.429
+s52: 15889590   1626703 14262887        10.238  89.762
+s60: 11482805   973997  10508808        8.482   91.518
+s72: 13678022   917316  12760706        6.706   93.294
+s85: 11537432   643262  10894170        5.575   94.425
+```
+
+Mapping pretty good! This is what I expected. Move the output to new folder in output directory. 
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/trim_stringent
+mkdir ../../output/mirdeep2_trim_stringent_first_batch
+mv mappe* ../../output/mirdeep2_trim_stringent_first_batch
+mv bowtie.log ../../output/mirdeep2_trim_stringent_first_batch/
+```
+
+Run mirdeep2 with the trim stringent first batch samples. In the scripts folder: `nano mirdeep2_trim_stringent_first_batch.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/mirdeep2
+
+echo "Starting mirdeep2 with cutadapt trimmed reads - first batch" $(date)
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_trim_stringent_first_batch
+
+miRDeep2.pl mapped_reads_trim_stringent_first_batch.fa /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta mapped_reads_vs_genome_trim_stringent_first_batch.arf /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/mature_mirbase_cnidarian_T.fa none none -P -v -g -1 2>report.log
+
+echo "mirdeep2 on cutadapt trimmed reads - first batch" $(date)
+
+conda deactivate
+```
+
+Submitted batch job 362092. 
+
+Flexbar trimming to 30bp finished running. Make a config file as input for mirdeep2
+
+```
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch
+nano config_trim_any_htrim_g_gap3_max30.txt
+
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max30_9_S75_R1_001.fastq.gz.fastq s09
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max30_13_S76_R1_001.fastq.gz.fastq s13
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max30_23_S77_R1_001.fastq.gz.fastq s23
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max30_35_S78_R1_001.fastq.gz.fastq s35
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max30_52_S79_R1_001.fastq.gz.fastq s52
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max30_60_S80_R1_001.fastq.gz.fastq s60
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max30_72_S81_R1_001.fastq.gz.fastq s72
+/data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch/trim_any_htrim_g_gap3_max30_85_S82_R1_001.fastq.gz.fastq s85
+```
+
+In the scripts folder: `nano mapper_mirdeep2_trim_any_htrim_g_gap3_max30_first_batch.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+#module load GCCcore/11.3.0 #I needed to add this to resolve conflicts between loaded GCCcore/9.3.0 and GCCcore/11.3.0
+#module load Bowtie/1.3.1-GCC-11.3.0
+
+#echo "Index Mcap genome" $(date)
+
+# Index the reference genome for Mcap 
+#bowtie-build /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.assembly.fasta /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex
+
+#echo "Referece genome indexed!" $(date)
+#echo "Unload unneeded packages and run mapper script for trimmed stringent reads" $(date)
+
+#module unload module load GCCcore/11.3.0 
+#module unload Bowtie/1.3.1-GCC-11.3.0
+
+conda activate /data/putnamlab/mirdeep2
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_first_batch
+
+gunzip *.fastq.gz
+
+echo "Start mapping for 30bp cutadapt trimmed reads from first batch" $(date)
+mapper.pl config_trim_any_htrim_g_gap3_max30.txt -e -d -h -j -l 18 -m -p /data/putnamlab/jillashey/genome/Mcap/V3/Mcap_ref.btindex -s mapped_reads_trim_any_htrim_g_gap3_max30_first_batch.fa -t mapped_reads_vs_genome_trim_any_htrim_g_gap3_max30_first_batch.arf
+
+echo "Mapping complete for trimmed reads" $(date)
+
+conda deactivate 
+```
+
+Submitted batch job 362118. 
+
+```
+Mapping statistics
+
+#desc   total   mapped  unmapped        %mapped %unmapped
+total: 184302709        32565   184270144       0.018   99.982
+s09: 24398852   1860    24396992        0.008   99.992
+s13: 22050120   4304    22045816        0.020   99.980
+s23: 20245901   6886    20239015        0.034   99.966
+s35: 22019933   4771    22015162        0.022   99.978
+s52: 29206532   5201    29201331        0.018   99.982
+s60: 24265740   5454    24260286        0.022   99.978
+s72: 23100469   1754    23098715        0.008   99.992
+s85: 19015162   2335    19012827        0.012   99.988
+```
+
+Maybe flexbar just sucks?????
+
+
+to do - lncRNA mRNA blast or something 
 
 
 
@@ -4293,7 +4811,37 @@ Okay so the things collapsed but it does not look like the dbs were made or anyt
 
 
 
-To run tomorrow 2/19/25! mapper.pl and mirdeep2.pl for first batch, bwa or star, try another couple of samples to see if they will align
+
+
+
+
+
+
+
+
+mapped using bwa and was trying to quantify 
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=250GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load kallisto/0.48.0-gompi-2022a
+cd /data/putnamlab/jillashey/genome/Mcap/V3/
+kallisto index -i Mcap_V3.idx Montipora_capitata_HIv3.assembly.fasta
+
+cd /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/data/flexbar_iterations_20250218/
+kallisto quant -i index_name.idx -o output_directory -b 100 --single -l 200 -s 20 read.fastq
+```
+
 
 
 
@@ -4308,5 +4856,5 @@ Things to try / think about
 - Run another bad sample to see if I can trim and align
 - Run all good samples to move forward with n=1 - flexbar trimming 2/18/25
 - Use bwa, star or mapper that aligns part of the read 
-- Use the truseq single index [adapters](https://support-docs.illumina.com/SHARE/AdapterSequences/Content/SHARE/AdapterSeq/TruSeq/SingleIndexes.htm)
+- Use the truseq single index [adapters](https://support-docs.illumina.com/SHARE/AdapterSequences/Content/SHARE/AdapterSeq/TruSeq/SingleIndexes.html)
 

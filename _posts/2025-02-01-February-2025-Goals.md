@@ -141,6 +141,24 @@ February 2025 goals and daily notebook entries.
 - Blasting mir100 against raw collapsed reads for M9 (first batch) and M6 (second batch)
 - Trimming first batch (n=8) with updated flexbar parameters
 
+### 20250219
+
+- Ran mapper.pl on flexbar first batch 35 and 75bp
+- Ran short stack with flexbar first batch 35 and 75bp - i think it got confused 
+- Aligned M6 50bp with bwa and looked at alignment stats w samtools
+- Started mirdeep2.pl run with flexbar first batch 35bp
+- topGO for modules 
+- Trimming stuff 
+- Rerunning first batch of samples through mirdeep2 pipeline
+- Running all trimmed flexbar samples to 30bp through mirdeep2 pipeline
+- wgcna for lncRNAs 
+
+### 20250220
+
+- NYUAD interview
+- Writing meeting 
+- Writing e5 ncrna and AST 2021
+
 
 Notes 
 
