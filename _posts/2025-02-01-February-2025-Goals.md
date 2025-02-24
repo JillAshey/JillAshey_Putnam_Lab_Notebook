@@ -159,6 +159,22 @@ February 2025 goals and daily notebook entries.
 - Writing meeting 
 - Writing e5 ncrna and AST 2021
 
+### 20250221
+
+- AST 2021 writing 
+- AMY DEFENSE!!!!!!!!!!!!!
+
+### 20250222
+
+- Astrangia 2021 writing 
+- CBASS writing and coding 
+
+### 20250223
+
+- Mcap smRNA first batch coding 
+- CBASS writing 
+- Working on committee presentation
+
 
 Notes 
 
