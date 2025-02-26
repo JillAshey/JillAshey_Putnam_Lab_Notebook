@@ -5067,7 +5067,9 @@ counting number of putative interactions predicted Sun Feb 23 13:16:42 EST 2025
 
 Lots of potential interactions! Copy miranda text file to local computer. 
 
+### 20250224
 
+quantify cutadapt trim stringent 
 
 
 

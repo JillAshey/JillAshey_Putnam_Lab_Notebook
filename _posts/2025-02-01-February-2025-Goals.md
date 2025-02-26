@@ -175,6 +175,19 @@ February 2025 goals and daily notebook entries.
 - CBASS writing 
 - Working on committee presentation
 
+### 20250224
+
+- Lab meeting 
+- Mcap coding n=1
+- Working on committee presentation
+- Reefbites meeting 
+
+### 20250225
+
+- Hollie meeting 
+- Mcap coding 
+- AST writing 
+- Therapy 
 
 Notes 
 
