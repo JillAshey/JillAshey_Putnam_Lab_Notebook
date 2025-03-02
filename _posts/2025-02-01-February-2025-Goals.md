@@ -33,8 +33,8 @@ February 2025 goals and daily notebook entries.
 	- Pathways of interest for discussion 
 	- Plot number of binding sites by energy score - done 2/2/25
 	- Spearman rank correlation in addition to Pearson's (Zhang et al. 2018)
-3. Mcap miRNA trimming and identification (chapter 2) 
-4. DE analysis for Mcap miRNA and mRNA data (chapter 2)
+3. Mcap miRNA trimming and identification (chapter 3) 
+4. DE analysis for Mcap miRNA and mRNA data (chapter 3)
 5. CBASS plots and tables 
 	- Make nice figures for paper 
 	- Make stats supplementary tables 
@@ -188,6 +188,64 @@ February 2025 goals and daily notebook entries.
 - Mcap coding 
 - AST writing 
 - Therapy 
+
+### 20250226
+
+- CBASS meeting 
+- Hollie meeting 
+- Writing for AST
+- Supp tables for AST
+- DIBP
+- Working on committee presentation 
+
+### 20250227
+
+- Brief lab writing meeting 
+- Applied to Silbiger postdoc job 
+- Working on committee presentation 
+
+### 20250228
+
+- Committee meeting!!!!! Set defense date - APRIL 9
+
+## How did I do on my goals this month?  
+
+### Writing and manuscripts 
+
+1. e5 ncRNA complete draft of manuscript submit to biorxiv (chapter 1) - no, on Hollie's desk
+2. Astrangia 2021 results and discussion (chapter 2)
+	- Linking miRNA mRNA regulation and pathways - yes
+	- Discussing positive and negative miRNA correlations - yes 
+3. Complete my section CBASS results + discussion - sort of? Need to rerun some stats after Lucia reruns ED50 code
+
+### Sample processing
+
+1. Switchfree library prep for Mcap 2023 samples - yes, need to send 
+2. Protein assay for 96 lipid/metabolite e5 samples - no, still need to do 
+
+### Data analysis
+
+1. e5 deep dive expression 
+	- Name updated miRNAs for 3 species - yes
+	- Summarize number of targets of each miRNA, positive/negative correlations, etc - yes for miranda
+	- Compare/contrast miRNA function with previous lit - no
+2. Astrangia 2021 continue analysis for miRNA mRNA interactions (chapter 2)
+	- Pathways of interest for discussion - yes
+	- Plot number of binding sites by energy score - done 2/2/25
+3. Mcap miRNA trimming and identification (chapter 3) - sort of?
+4. DE analysis for Mcap miRNA and mRNA data (chapter 3) - no
+5. CBASS plots and tables - no, on hold until data is rerun
+	- Make nice figures for paper 
+	- Make stats supplementary tables 
+
+### Field work / travel 
+
+1. Fill out TERs (CBASS and sicb) - yes, TERs in URI system now
+
+Overall a good month. I also set the date of my defense as April 9!! So the next two months will be heavily focused on this. 
+
+
+
 
 Notes 
 
