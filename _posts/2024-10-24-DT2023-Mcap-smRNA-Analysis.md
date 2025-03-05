@@ -5067,9 +5067,51 @@ counting number of putative interactions predicted Sun Feb 23 13:16:42 EST 2025
 
 Lots of potential interactions! Copy miranda text file to local computer. 
 
-### 20250224
+### 20250304
 
-quantify cutadapt trim stringent 
+Run miranda on coding sequences as well as 3UTR. 
+
+In the scripts folder: `nano miranda_strict_all_cds_mcap_trim_stringent_first_batch.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=100GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Mcap starting miranda run with all genes (CDS sequences) and miRNAs with energy cutoff <-20 and strict binding invoked"$(date)
+echo "miRNAs generated from cutadapt trim stringent first batch"$(date)
+
+
+module load Miniconda3/4.9.2
+conda activate /data/putnamlab/conda/miranda 
+
+miranda /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/mirdeep2_trim_stringent_first_batch/mirna_results_19_02_2025_t_14_06_12/putative_miRNAs_filt.fa /data/putnamlab/jillashey/genome/Mcap/V3/Montipora_capitata_HIv3.genes.cds.fna -en -20 -strict -out /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/miranda_trim_stringent_first_batch/miranda_strict_all_cds_mcap_trim_stringent_first_batch.tab
+
+conda deactivate
+
+echo "miranda run finished!"$(date)
+echo "counting number of interactions possible" $(date)
+
+zgrep -c "Performing Scan" /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/miranda_trim_stringent_first_batch/miranda_strict_all_cds_mcap_trim_stringent_first_batch.tab
+
+echo "Parsing output" $(date)
+grep -A 1 "Scores for this hit:" /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/miranda_trim_stringent_first_batch/miranda_strict_all_cds_mcap_trim_stringent_first_batch.tab | sort | grep '>' > /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/miranda_trim_stringent_first_batch/miranda_strict_all_cds_mcap_trim_stringent_first_batch_parsed.txt
+
+echo "counting number of putative interactions predicted" $(date)
+wc -l /data/putnamlab/jillashey/DT_Mcap_2023/smRNA/output/miranda_trim_stringent_first_batch/miranda_strict_all_cds_mcap_trim_stringent_first_batch_parsed.txt
+
+echo "Mcap DT miranda script complete" $(date)
+```
+
+Submitted batch job 362621
 
 
 
