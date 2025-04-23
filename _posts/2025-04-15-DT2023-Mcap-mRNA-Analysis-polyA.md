@@ -139,7 +139,7 @@ multiqc *
 echo "Initial QC of polyA data complete." $(date)
 ```
 
-Submitted batch job 32423847. Raw QC data is here XXXX. Time to trim!
+Submitted batch job 32423847. Raw QC data is [here](https://github.com/JillAshey/DevelopmentalTimeseries/blob/main/data/Molecular/mRNA_polyA/raw_multiqc_report_polyA.html). Time to trim!
 
 This info is from the Zymo switchfree [protocol](https://www.zymoresearch.com/products/zymo-seq-switchfree-3-mrna-library-kit):
 
@@ -351,10 +351,30 @@ cutadapt --version
 5.0                                                                           
 ```
 
-Successful installation. Okay lets try running this. 
+Successful installation. Okay lets try running this. In the scripts folder: `nano trim_round2_cutadaptv5.sh`
 
 
 ```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 24:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/scripts 
+
+# load modules needed
+module load parallel/20240822
+module load fastqc/0.12.1
+
+# Activate conda env
+module load conda/latest 
+conda activate /work/pi_hputnam_uri_edu/conda/envs/cutadapt 
+
 cd /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/data/raw
 
 # Array of target samples (MXX numbers only)
@@ -375,7 +395,7 @@ for sample in "${target_samples[@]}"; do
             "${R1_raw[0]}" "${R2_raw[0]}"
 
         # Step 2: Adapter trimming
-        cutadapt -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT -a A{100} -q 20,20 --minimum-length=20 \
+        cutadapt -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT --poly-a -q 20,20 --minimum-length=20 \
             -o "${sample}_R1_AdapterPolyGTrimmed.fastq.gz" \
             -p "${sample}_R2_AdapterPolyGTrimmed.fastq.gz" \
             "${sample}_R1_PolyGTrimmed.fastq.gz" "${sample}_R2_PolyGTrimmed.fastq.gz"
@@ -397,7 +417,65 @@ for sample in "${target_samples[@]}"; do
     fi
 done
 
+# Deactivate conda env
+conda deactivate
+
+# Load MultiQC modules 
+module load uri/main
+module load all/MultiQC/1.12-foss-2021b
+
+cd /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/output/fastqc/trim_round2
+multiqc *
+
+echo "MultiQC complete!" $(date)
 ```
+
+Submitted batch job 33026985. Trimming occurred! But I forgot to create the `/scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/trim_data_round2/` directory so no fastqc was done. Let's do that in an interactive session 
+
+```
+salloc
+
+mv /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/data/raw/*AdapterPolyGTrimmed.fastq.gz /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/trim_data_round2
+```
+
+Run QC as a job. I also accidently deleted the M85 R1 but that is okay for now. `nano trim_round2_QC.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 24:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/scripts 
+
+# load modules needed
+#module load parallel/20240822
+module load fastqc/0.12.1
+
+cd /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/trim_data_round2
+
+fastqc *AdapterPolyGTrimmed.fastq.gz -o /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/output/fastqc/trim_round2 
+
+echo "fastqc complete" $(date)
+
+# Load MultiQC modules 
+module load uri/main
+module load all/MultiQC/1.12-foss-2021b
+
+cd /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/output/fastqc/trim_round2
+multiqc *
+
+echo "MultiQC complete!" $(date)
+```
+
+Submitted batch job 33041843
+
+
 
 
 
