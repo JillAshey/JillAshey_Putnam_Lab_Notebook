@@ -187,12 +187,7 @@ multiqc *
 echo "MultiQC complete..." $(date)
 ```
 
-Submitted batch job 33041964
+Submitted batch job 33041964. Trimming looks great! Trimmed QC can be found [here](https://github.com/JillAshey/DevelopmentalTimeseries/blob/main/data/Molecular/egg_sperm/trim_multiqc_report.html). 
 
-
-
-
-
-The egg and sperm samples were prepared in different ways so I will have to trim them in different ways. In the Van Etten et al. paper, they used CLC Genomics Workbench to trim. 
-
+Time to align! 
 
