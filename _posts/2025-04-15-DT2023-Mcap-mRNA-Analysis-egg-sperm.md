@@ -189,5 +189,267 @@ echo "MultiQC complete..." $(date)
 
 Submitted batch job 33041964. Trimming looks great! Trimmed QC can be found [here](https://github.com/JillAshey/DevelopmentalTimeseries/blob/main/data/Molecular/egg_sperm/trim_multiqc_report.html). 
 
-Time to align! 
+Time to align! `nano align.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=100GB
+#SBATCH -t 12:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/egg_sperm/scripts 
+
+# load modules needed
+module load uri/main
+module load all/HISAT2/2.2.1-gompi-2022a
+module load all/SAMtools/1.18-GCC-12.3.0
+
+echo "Building genome reference" $(date)
+
+# index the reference genome for Pacuta output index to working directory
+hisat2-build -f /work/pi_hputnam_uri_edu/HI_Genomes/MCapV3/Montipora_capitata_HIv3.assembly.fasta /work/pi_hputnam_uri_edu/HI_Genomes/MCapV3/McapV3_hisat2_ref
+echo "Referece genome indexed. Starting alingment" $(date)
+
+# This script exports alignments as bam files
+# sorts the bam file because Stringtie takes a sorted file for input (--dta)
+# removes the sam file because it is no longer needed
+
+cd /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/egg_sperm_trim
+
+echo "Align egg samples (PE)" $(date)
+# Paired-end files
+for ID in SRR11452251 SRR11452262 SRR11452263; do
+    R1="${ID}_1_AdapterTrimmed.fastq"
+    R2="${ID}_2_AdapterTrimmed.fastq"
+    sample_name="${ID}"
+    
+    hisat2 -p 8 --rna-strandness RF --dta \
+        -x /work/pi_hputnam_uri_edu/HI_Genomes/MCapV3/McapV3_hisat2_ref \
+        -1 ${R1} -2 ${R2} -S ${sample_name}.sam
+
+    samtools sort -@ 8 -o ${sample_name}.bam ${sample_name}.sam
+    echo "${sample_name} bam-ified!"
+    rm ${sample_name}.sam
+done
+echo "Egg samples (PE) aligned!" $(date)
+
+echo "Align sperm samples (SE)" $(date)
+ID="SRR4048723"
+READ="${ID}_AdapterTrimmed.fastq"
+
+hisat2 -p 8 --dta \
+    -x /work/pi_hputnam_uri_edu/HI_Genomes/MCapV3/McapV3_hisat2_ref \
+    -U ${READ} -S ${ID}.sam
+
+samtools sort -@ 8 -o ${ID}.bam ${ID}.sam
+echo "${ID} bam-ified!"
+rm ${ID}.sam
+echo "Sperm samples (SE) aligned!" $(date)
+
+echo "Alignment complete!" $(date)
+```
+
+Submitted batch job 33167366. Important note: For the sperm sample: do not specify `--rna-strandness`, as it is unstranded. For the egg samples, set `--rna-strandness RF`. 
+
+Alingment complete! Took 1.5 hours. 
+
+```
+19257744 reads; of these:
+  19257744 (100.00%) were paired; of these:
+    7874384 (40.89%) aligned concordantly 0 times
+    7691727 (39.94%) aligned concordantly exactly 1 time
+    3691633 (19.17%) aligned concordantly >1 times
+    ----
+    7874384 pairs aligned concordantly 0 times; of these:
+      146546 (1.86%) aligned discordantly 1 time
+    ----
+    7727838 pairs aligned 0 times concordantly or discordantly; of these:
+      15455676 mates make up the pairs; of these:
+        14657075 (94.83%) aligned 0 times
+        599112 (3.88%) aligned exactly 1 time
+        199489 (1.29%) aligned >1 times
+61.94% overall alignment rate
+[bam_sort_core] merging from 3 files and 8 in-memory blocks...
+22408812 reads; of these:
+  22408812 (100.00%) were paired; of these:
+    6983155 (31.16%) aligned concordantly 0 times
+    8980110 (40.07%) aligned concordantly exactly 1 time
+    6445547 (28.76%) aligned concordantly >1 times
+    ----
+    6983155 pairs aligned concordantly 0 times; of these:
+      226933 (3.25%) aligned discordantly 1 time
+    ----
+    6756222 pairs aligned 0 times concordantly or discordantly; of these:
+      13512444 mates make up the pairs; of these:
+        12316684 (91.15%) aligned 0 times
+        846830 (6.27%) aligned exactly 1 time
+        348930 (2.58%) aligned >1 times
+72.52% overall alignment rate
+[bam_sort_core] merging from 5 files and 8 in-memory blocks...
+21204959 reads; of these:
+  21204959 (100.00%) were paired; of these:
+    5630028 (26.55%) aligned concordantly 0 times
+    10575974 (49.88%) aligned concordantly exactly 1 time
+    4998957 (23.57%) aligned concordantly >1 times
+    ----
+    5630028 pairs aligned concordantly 0 times; of these:
+      188403 (3.35%) aligned discordantly 1 time
+    ----
+    5441625 pairs aligned 0 times concordantly or discordantly; of these:
+      10883250 mates make up the pairs; of these:
+        9800975 (90.06%) aligned 0 times
+        819802 (7.53%) aligned exactly 1 time
+        262473 (2.41%) aligned >1 times
+76.89% overall alignment rate
+[bam_sort_core] merging from 4 files and 8 in-memory blocks...
+17901354 reads; of these:
+  17901354 (100.00%) were unpaired; of these:
+    3546701 (19.81%) aligned 0 times
+    12504646 (69.85%) aligned exactly 1 time
+    1850007 (10.33%) aligned >1 times
+80.19% overall alignment rate
+```
+
+Alignment rates look great. Time to assemble! `nano assemble.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=100GB
+#SBATCH -t 12:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/egg_sperm/scripts 
+
+# load modules needed
+module load uri/main
+module load all/StringTie/2.2.1-GCC-11.2.0
+
+echo "Assembling transcripts using stringtie" $(date)
+
+cd /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/egg_sperm_trim
+
+array1=($(ls *.bam)) #Make an array of sequences to assemble
+
+for i in ${array1[@]}; do
+    stringtie -p 8 -e -B -G /work/pi_hputnam_uri_edu/HI_Genomes/MCapV3/Montipora_capitata_HIv3.genes_fixed.gff3 -A ${i}.gene_abund.tab -o ${i}.gtf ${i}
+done
+
+echo "Assembly complete " $(date)
+```
+
+Submitted batch job 33316146
+
+Do the rest of the assembly in interactive mode. 
+
+```
+cd /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/egg_sperm_trim
+salloc 
+module load uri/main
+module load all/StringTie/2.2.1-GCC-11.2.0
+
+# List of gtfs
+ls *.gtf > gtf_list.txt
+
+# Merge gtfs into single gtf 
+stringtie --merge -e -p 8 -G /work/pi_hputnam_uri_edu/HI_Genomes/MCapV3/Montipora_capitata_HIv3.genes_fixed.gff3 -o Mcap_egg_sperm_merged.gtf gtf_list.txt #Merge GTFs 
+
+module load all/GffCompare/0.12.6-GCC-11.2.0
+gffcompare -r /work/pi_hputnam_uri_edu/HI_Genomes/MCapV3/Montipora_capitata_HIv3.genes_fixed.gff3 -G -o merged Mcap_egg_sperm_merged.gtf #Compute the accuracy 
+54384 reference transcripts loaded.
+  2 duplicate reference transcripts discarded.
+  54384 query transfrags loaded.
+```
+
+Look at merge stats 
+
+```
+# gffcompare v0.12.6 | Command line was:
+#gffcompare -r /work/pi_hputnam_uri_edu/HI_Genomes/MCapV3/Montipora_capitata_HIv3.genes.gff3 -G -o merged Mcap_egg_sperm_merged.gtf
+#
+#= Summary for dataset: Mcap_egg_sperm_merged.gtf 
+#     Query mRNAs :   54384 in   54185 loci  (36023 multi-exon transcripts)
+#            (141 multi-transcript loci, ~1.0 transcripts per locus)
+# Reference mRNAs :   54382 in   54185 loci  (36023 multi-exon)
+# Super-loci w/ reference transcripts:    54185
+#-----------------| Sensitivity | Precision  |
+        Base level:   100.0     |   100.0    |
+        Exon level:   100.0     |   100.0    |
+      Intron level:   100.0     |   100.0    |
+Intron chain level:   100.0     |   100.0    |
+  Transcript level:   100.0     |   100.0    |
+       Locus level:   100.0     |   100.0    |
+     Matching intron chains:   36023
+       Matching transcripts:   54375
+              Matching loci:   54185
+          Missed exons:       0/256029  (  0.0%)
+           Novel exons:       0/256029  (  0.0%)
+        Missed introns:       0/201643  (  0.0%)
+         Novel introns:       0/201643  (  0.0%)
+           Missed loci:       0/54185   (  0.0%)
+            Novel loci:       0/54185   (  0.0%)
+ Total union super-loci across all input datasets: 54185 
+54384 out of 54384 consensus transcripts written in merged.annotated.gtf (0 discarded as redundant)
+```
+
+Make gtf list text file for count matrix generation
+
+```
+for filename in *bam.gtf; do echo $filename $PWD/$filename; done > listGTF.txt
+```
+
+Download the prepDE.py script from [here](https://github.com/gpertea/stringtie/blob/master/prepDE.py) and put it in the scripts folder. Load python and compile the gene count matrix
+
+```
+salloc 
+module load uri/main
+module load Python/2.7.18-GCCcore-9.3.0
+
+python /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/egg_sperm/scripts/prepDE.py -g Mcap_egg_sperm_gene_count_matrix.csv -i listGTF.txt
+```
+
+Keeps saying `Illegal instruction`. Try running as a job. `nano prepDE.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=100GB
+#SBATCH -t 12:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/egg_sperm/scripts 
+
+module load uri/main
+module load Python/2.7.18-GCCcore-9.3.0
+
+cd /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/egg_sperm_trim
+
+echo "Creating count matrices " $(date)
+
+python /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/egg_sperm/scripts/prepDE.py -g Mcap_egg_sperm_gene_count_matrix.csv -i listGTF.txt
+
+echo "Count matrices complete" $(date)
+```
+
+Submitted batch job 33316331. Success! Move csvs to work directory
+
+```
+mv /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/egg_sperm_trim/*csv /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/egg_sperm/output
+```
+
+Download csvs to computer. 
+
 

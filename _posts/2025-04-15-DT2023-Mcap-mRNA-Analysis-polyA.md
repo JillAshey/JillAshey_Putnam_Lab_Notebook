@@ -353,7 +353,6 @@ cutadapt --version
 
 Successful installation. Okay lets try running this. In the scripts folder: `nano trim_round2_cutadaptv5.sh`
 
-
 ```
 #!/usr/bin/env bash
 #SBATCH --export=NONE
@@ -473,10 +472,195 @@ multiqc *
 echo "MultiQC complete!" $(date)
 ```
 
-Submitted batch job 33041843
+Submitted batch job 33041843. MultiQC report can be found [here](https://github.com/JillAshey/DevelopmentalTimeseries/blob/main/data/Molecular/mRNA_polyA/trim_round2_multiqc_report.html). There is still polyA tail on the R2 samples...and many of them have a lot of reads ~30bp. wtf????? I'm going to run QC on the intermediate cutadapt files (`*PolyGTrimmed.fastq.gz`) to see what the differences are. 
+
+In the scripts folder: `nano trim_round2_QC_PolyGTrimmed.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 24:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/scripts 
+
+# load modules needed
+#module load parallel/20240822
+module load fastqc/0.12.1
+
+cd /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/data/raw
+
+fastqc *PolyGTrimmed.fastq.gz -o /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/output/fastqc/trim_round2_PolyGTrimmed 
+
+echo "fastqc complete" $(date)
+
+# Load MultiQC modules 
+module load uri/main
+module load all/MultiQC/1.12-foss-2021b
+
+cd /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/output/fastqc/trim_round2_PolyGTrimmed
+multiqc *
+
+echo "MultiQC complete!" $(date)
+```
+
+Submitted batch job 33173364. Here, we see that the reads are still 150bp long and adapter is still present. 
 
 
+Let's try trimming `*PolyGTrimmed.fastq.gz` by specifying the length of polyA we want to trim. `nano trim_round3_cutadaptv5.sh`
 
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 24:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/scripts 
+
+# load modules needed
+module load parallel/20240822
+module load fastqc/0.12.1
+
+# Activate conda env
+module load conda/latest 
+conda activate /work/pi_hputnam_uri_edu/conda/envs/cutadapt 
+
+cd /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/data/raw
+
+# Array of target samples (MXX numbers only)
+target_samples=("M6" "M7" "M8" "M9" "M10" "M11" "M13" "M14" "M23" "M24" "M26" "M28" "M35" "M36" "M37" "M39" "M47" "M48" "M51" "M52" "M60" "M61" "M62" "M63" "M72" "M73" "M74" "M75" "M85" "M86" "M87" "M88")
+
+echo "Trimming started at" $(date)
+
+# Process each target sample
+for sample in "${target_samples[@]}"; do
+    # Find corresponding raw files
+    R1_polyg_trim=(${sample}_R1_PolyGTrimmed.fastq.gz)
+    R2_polyg_trim=(${sample}_R2_PolyGTrimmed.fastq.gz)
+    
+    # Run cutadapt
+    cutadapt \
+        -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \
+        -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT \
+        -a "A{20}" \
+        -A "A{20}" \
+        -q 20,20 \
+        --minimum-length=20 \
+        -o "${sample}_R1_AdapterPolyATrimmed.fastq.gz" \
+        -p "${sample}_R2_AdapterPolyATrimmed.fastq.gz" \
+        "${R1_polyg_trim[0]}" "${R2_polyg_trim[0]}"
+done
+
+echo "Trimming complete, starting QC" $(date)   
+
+fastqc *AdapterPolyGATrimmed.fastq.gz
+
+# Load MultiQC modules 
+module load uri/main
+module load all/MultiQC/1.12-foss-2021b
+multiqc *
+
+echo "MultiQC complete!" $(date)   
+```
+
+Submitted batch job 33316139. QC didn't work. `nano trim_round3_QC.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 24:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/scripts 
+
+# load modules needed
+#module load parallel/20240822
+module load fastqc/0.12.1
+
+cd /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/trim_round3
+
+fastqc *AdapterPolyATrimmed.fastq.gz -o /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/output/fastqc/trim_round3
+
+echo "fastqc complete" $(date)
+
+# Load MultiQC modules 
+module load uri/main
+module load all/MultiQC/1.12-foss-2021b
+
+cd /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/output/fastqc/trim_round3
+multiqc *
+
+echo "MultiQC complete!" $(date)
+```
+
+Submitted batch job 33320990. Still not removing all of the polyA tail. Use A10 a10 instead of A20. 
+
+`nano trim_round4_cutadaptv5.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 24:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/scripts 
+
+# load modules needed
+module load parallel/20240822
+module load fastqc/0.12.1
+
+# Activate conda env
+module load conda/latest 
+conda activate /work/pi_hputnam_uri_edu/conda/envs/cutadapt 
+
+cd /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/data/raw
+
+# Array of target samples (MXX numbers only)
+target_samples=("M6" "M7" "M8" "M9" "M10" "M11" "M13" "M14" "M23" "M24" "M26" "M28" "M35" "M36" "M37" "M39" "M47" "M48" "M51" "M52" "M60" "M61" "M62" "M63" "M72" "M73" "M74" "M75" "M85" "M86" "M87" "M88")
+
+echo "Trimming started at" $(date)
+
+# Process each target sample
+for sample in "${target_samples[@]}"; do
+    # Find corresponding raw files
+    R1_polyg_trim=(${sample}_R1_PolyGTrimmed.fastq.gz)
+    R2_polyg_trim=(${sample}_R2_PolyGTrimmed.fastq.gz)
+    
+    # Run cutadapt
+    cutadapt \
+        -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \
+        -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT \
+        -a "A{10}" \
+        -A "A{10}" \
+        -q 20,20 \
+        --minimum-length=20 \
+        -o "${sample}_R1_AdapterPolyA10Trimmed.fastq.gz" \
+        -p "${sample}_R2_AdapterPolyA10Trimmed.fastq.gz" \
+        "${R1_polyg_trim[0]}" "${R2_polyg_trim[0]}"
+done
+```
+
+Submitted batch job 33322136
 
 
 
