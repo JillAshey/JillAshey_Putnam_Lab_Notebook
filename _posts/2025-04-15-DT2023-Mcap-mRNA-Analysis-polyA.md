@@ -608,9 +608,7 @@ multiqc *
 echo "MultiQC complete!" $(date)
 ```
 
-Submitted batch job 33320990. Still not removing all of the polyA tail. Use A10 a10 instead of A20. 
-
-`nano trim_round4_cutadaptv5.sh`
+Submitted batch job 33320990. Still not removing all of the polyA tail. Use A10 a10 instead of A20. `nano trim_round4_cutadaptv5.sh`
 
 ```
 #!/usr/bin/env bash
@@ -660,7 +658,306 @@ for sample in "${target_samples[@]}"; do
 done
 ```
 
-Submitted batch job 33322136
+Submitted batch job 33322136. Run QC. `nano trim_round4_QC.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 24:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/scripts 
+
+# load modules needed
+#module load parallel/20240822
+module load fastqc/0.12.1
+
+mv /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/data/raw/*AdapterPolyA10Trimmed.fastq.gz /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/trim_round4
+
+cd /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/trim_round4
+
+fastqc *AdapterPolyA10Trimmed.fastq.gz -o /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/output/fastqc/trim_round4
+
+echo "fastqc complete" $(date)
+
+# Load MultiQC modules 
+module load uri/main
+module load all/MultiQC/1.12-foss-2021b
+
+cd /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/output/fastqc/trim_round4
+multiqc *
+
+echo "MultiQC complete!" $(date)
+```
+
+Submitted batch job 33328319. 
+
+may need to run the adapter and polyA trimming parts separately... `nano trim_round5_cutadaptv5.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 24:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/scripts 
+
+# load modules needed
+module load parallel/20240822
+module load fastqc/0.12.1
+
+# Activate conda env
+module load conda/latest 
+conda activate /work/pi_hputnam_uri_edu/conda/envs/cutadapt 
+
+cd /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/data/raw
+
+# Array of target samples (MXX numbers only)
+target_samples=("M6" "M7" "M8" "M9" "M10" "M11" "M13" "M14" "M23" "M24" "M26" "M28" "M35" "M36" "M37" "M39" "M47" "M48" "M51" "M52" "M60" "M61" "M62" "M63" "M72" "M73" "M74" "M75" "M85" "M86" "M87" "M88")
+
+# Process each target sample
+for sample in "${target_samples[@]}"; do
+    # Find corresponding raw files
+    R1_raw=(${sample}_S*_R1_001.fastq.gz)
+    R2_raw=(${sample}_S*_R2_001.fastq.gz)
+    
+    # Verify files exist
+    if [ ${#R1_raw[@]} -eq 1 ] && [ ${#R2_raw[@]} -eq 1 ]; then
+        # Step 1: PolyG trimming
+        cutadapt --nextseq-trim=20 -q 20,20 --minimum-length=20 \
+            -o "${sample}_R1_PolyGTrimmed.fastq.gz" \
+            -p "${sample}_R2_PolyGTrimmed.fastq.gz" \
+            "${R1_raw[0]}" "${R2_raw[0]}"
+          echo "polyG trimming complete for ${sample}" $(date)
+
+		# Step 2: adapter trimming 
+    cutadapt \
+        -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \
+        -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT \
+        -q 20,20 \
+        --minimum-length=20 \
+        -o "${sample}_R1_AdapterPolyGTrimmed.fastq.gz" \
+        -p "${sample}_R2_AdapterPolyGTrimmed.fastq.gz" \
+           "${sample}_R1_PolyGTrimmed.fastq.gz" "${sample}_R2_PolyGTrimmed.fastq.gz"
+     echo "Adapter trimming complete for ${sample}" $(date)
+     
+     		# Step 3: polyA trimming 
+	cutadapt \
+        -a "A{10}" \
+        -A "A{10}" \
+        -q 20,20 \
+        --minimum-length=20 \
+        -o "${sample}_R1_AdapterPolyGA10Trimmed.fastq.gz" \
+        -p "${sample}_R2_AdapterPolyGA10Trimmed.fastq.gz" \
+        "${sample}_R1_AdapterPolyGTrimmed.fastq.gz" "${sample}_R2_AdapterPolyGTrimmed.fastq.gz"
+      echo "PolyA trimming complete for ${sample}" $(date)
+	fi
+done
+
+echo "Trimming complete, run fastQC" $(date)
+
+mv *Trimmed.fastq.gz /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/trim_round5
+
+cd /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/trim_round5
+
+fastqc *AdapterPolyGA10Trimmed.fastq.gz -o /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/output/fastqc/trim_round5
+
+echo "fastqc complete" $(date)
+
+# Load MultiQC modules 
+module load uri/main
+module load all/MultiQC/1.12-foss-2021b
+
+cd /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/output/fastqc/trim_round5
+multiqc *
+
+echo "MultiQC complete!" $(date)
+```
+
+Submitted batch job 33332147. FINALLY!!!!! SUCCESS!!!!!!! 
+
+TIME TO ALIGN!!!! In the scripts folder: `nano align_R2.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 24:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/scripts 
+
+## Genome has already been indexed for hisat2
+
+# load modules needed
+module load uri/main
+module load all/HISAT2/2.2.1-gompi-2022a
+module load all/SAMtools/1.18-GCC-12.3.0
+
+cd /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/trim_round5
+
+echo "Aligning polyA R2 samples!" $(date)
+
+for READ in *_R2_AdapterPolyGA10Trimmed.fastq.gz; do
+    ID=$(echo "$READ" | cut -d'_' -f1)
+
+    # Run alignment
+    hisat2 --rna-strandness F -p 8 --dta -x /work/pi_hputnam_uri_edu/HI_Genomes/MCapV3/McapV3_hisat2_ref -U "$READ" -S "${ID}.sam"
+    
+    # Convert to BAM and sort
+    samtools sort -@ 8 -o "${ID}.bam" "${ID}.sam"
+    echo "${ID} bam-ified!"
+    
+    # Remove SAM file
+    rm "${ID}.sam"
+done
+
+echo "PolyA R2 samples alignment complete!" $(date)
+```
+
+Submitted batch job 33409631
+
+Assemble! `nano assemble_R2.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 24:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/scripts 
+
+# load modules needed
+module load uri/main
+module load all/StringTie/2.2.1-GCC-11.2.0
+
+echo "Assembling transcripts using stringtie" $(date)
+
+cd /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/trim_round5
+
+array1=($(ls *.bam)) #Make an array of sequences to assemble
+
+for i in ${array1[@]}; do
+    stringtie -p 8 -e -B -G /work/pi_hputnam_uri_edu/HI_Genomes/MCapV3/Montipora_capitata_HIv3.genes_fixed.gff3 -A ${i}.gene_abund.tab -o ${i}.gtf ${i}
+done
+
+echo "Assembly complete " $(date)
+```
+
+Submitted batch job 33420828. TPM information can be seen in the gtf files. 
+
+Interactive mode! 
+
+```
+cd /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/trim_round5
+salloc 
+module load uri/main
+module load all/StringTie/2.2.1-GCC-11.2.0
+
+# List of gtfs
+ls *.gtf > gtf_list.txt
+
+# Merge gtfs into single gtf 
+stringtie --merge -e -p 8 -G /work/pi_hputnam_uri_edu/HI_Genomes/MCapV3/Montipora_capitata_HIv3.genes_fixed.gff3 -o Mcap_polyA_merged.gtf gtf_list.txt #Merge GTFs 
+
+module load all/GffCompare/0.12.6-GCC-11.2.0
+gffcompare -r /work/pi_hputnam_uri_edu/HI_Genomes/MCapV3/Montipora_capitata_HIv3.genes_fixed.gff3 -G -o merged Mcap_polyA_merged.gtf #Compute the accuracy 
+54384 reference transcripts loaded.
+  2 duplicate reference transcripts discarded.
+  54384 query transfrags loaded.
+```
+
+Look at merge stats 
+
+```
+
+# gffcompare v0.12.6 | Command line was:
+#gffcompare -r /work/pi_hputnam_uri_edu/HI_Genomes/MCapV3/Montipora_capitata_HIv3.genes_fixed.gff3 -G -o merged Mcap_polyA_merged.gtf
+#
+#= Summary for dataset: Mcap_polyA_merged.gtf 
+#     Query mRNAs :   54384 in   54185 loci  (36023 multi-exon transcripts)
+#            (141 multi-transcript loci, ~1.0 transcripts per locus)
+# Reference mRNAs :   54382 in   54185 loci  (36023 multi-exon)
+# Super-loci w/ reference transcripts:    54185
+#-----------------| Sensitivity | Precision  |
+        Base level:   100.0     |   100.0    |
+        Exon level:   100.0     |   100.0    |
+      Intron level:   100.0     |   100.0    |
+Intron chain level:   100.0     |   100.0    |
+  Transcript level:    99.9     |    99.9    |
+       Locus level:   100.0     |   100.0    |
+     Matching intron chains:   36023
+       Matching transcripts:   54349
+              Matching loci:   54183
+          Missed exons:       0/256029  (  0.0%)
+           Novel exons:       0/256028  (  0.0%)
+        Missed introns:       0/201643  (  0.0%)
+         Novel introns:       0/201643  (  0.0%)
+           Missed loci:       0/54185   (  0.0%)
+            Novel loci:       0/54185   (  0.0%)
+ Total union super-loci across all input datasets: 54185 
+54384 out of 54384 consensus transcripts written in merged.annotated.gtf (0 discarded as redundant)
+```
+
+Make gtf list text file for count matrix generation 
+
+```
+for filename in *bam.gtf; do echo $filename $PWD/$filename; done > listGTF.txt
+```
+
+Run as a job. `nano prepDE.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 24:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/scripts 
+
+module load uri/main
+module load Python/2.7.18-GCCcore-9.3.0
+
+cd /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/trim_round5
+
+echo "Creating count matrices " $(date)
+
+python /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/egg_sperm/scripts/prepDE.py -g Mcap_polyA_gene_count_matrix.csv -i listGTF.txt
+
+echo "Count matrices complete" $(date)
+```
+
+Submitted batch job 33422229. Move csvs to output folder and download to computer
+
+```
+cd /scratch/workspace/jillashey_uri_edu-ashey_scratch/Mcap2023/trim_round5
+
+mv *count_matrix.csv /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/polyA/output/
+```
 
 
 
