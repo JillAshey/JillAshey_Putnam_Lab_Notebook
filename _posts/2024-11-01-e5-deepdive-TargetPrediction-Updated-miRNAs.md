@@ -138,7 +138,16 @@ wc -l /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_parsed
 echo "Apul miranda script complete" $(date)
 ```
 
-Submitted batch job 361539
+Submitted batch job 361539. Results: 
+
+```
+counting number of interactions attempted Thu Feb 13 12:15:50 EST 2025
+1730469
+Parsing output Thu Feb 13 12:15:54 EST 2025
+counting number of putative interactions predicted Thu Feb 13 12:15:54 EST 2025
+38193 /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_parsed_apul_updated.txt
+Apul miranda script complete Thu Feb 13 12:15:54 EST 2025
+```
 
 ### Pevermanni 
 
@@ -259,8 +268,16 @@ wc -l /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_parsed
 echo "Peve miranda script complete" $(date)
 ```
 
-Submitted batch job 361535
+Submitted batch job 361535. Results: 
 
+```
+counting number of interactions attempted Thu Feb 13 12:38:41 EST 2025
+1817505
+Parsing output Thu Feb 13 12:38:47 EST 2025
+counting number of putative interactions predicted Thu Feb 13 12:38:48 EST 2025
+43736 /data/putnamlab/jillashey/e5/output/miranda/miranda_strict_all_mrna_parsed_peve_updated.txt
+Peve miranda script complete Thu Feb 13 12:38:48 EST 2025
+```
 
 ### Ptuahiniensis
 

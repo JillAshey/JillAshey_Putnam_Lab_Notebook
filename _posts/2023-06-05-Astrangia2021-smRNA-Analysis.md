@@ -7963,8 +7963,52 @@ Submitted batch job 349437. Ran in about 2 days.
 
 Downloaded output to computer and identified putative novel and known miRNAs. There were ~240 putative miRNAs total. I will need to look at pdfs to determine MFE and total number of binding bps in hairpin structure. 
 
+## Went with shortstack. 
+
+Map miRNAs to CDS. 
+
+In the scripts folder: `nano miranda_strict_mrna_shortstack.sh`
+
+```
+#!/bin/bash -i
+#SBATCH -t 48:00:00
+#SBATCH --nodes=1 --ntasks-per-node=10
+#SBATCH --export=NONE
+#SBATCH --mem=500GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/Astrangia2021/smRNA/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+echo "Apoc starting miranda run with all genes and miRNAs with energy cutoff <-20 and strict binding invoked"$(date)
+echo "Using updated miRNAs from short stack"
+echo "Using mRNA sequences as miRNA targets"
 
 
+#module load Miniconda3/4.9.2
+conda activate /data/putnamlab/conda/miranda 
+
+miranda /data/putnamlab/jillashey/Astrangia2021/smRNA/shortstack/mir_coords_fixed_mature.fasta /data/putnamlab/jillashey/Astrangia_Genome/apoculata_mrna_v2.0.fasta -en -20 -strict -out /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_mrna_apoc_shortstack.tab
+
+conda deactivate
+
+echo "miranda run finished!" $(date)
+echo "counting number of interactions attempted" $(date)
+
+zgrep -c "Performing Scan" /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_mrna_apoc_shortstack.tab
+
+echo "Parsing output" $(date)
+grep -A 1 "Scores for this hit:" /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_mrna_apoc_shortstack.tab | sort | grep '>' > /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_mrna_apoc_shortstack_parsed.txt
+
+echo "counting number of putative interactions predicted" $(date)
+wc -l /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_mrna_apoc_shortstack_parsed.txt
+
+echo "Apoc miranda script complete" $(date)
+```
+
+Submitted batch job 365009
 
 
 
