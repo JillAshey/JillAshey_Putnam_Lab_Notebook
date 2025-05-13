@@ -1012,8 +1012,139 @@ echo "Orthofinder complete" $(date)
 
 Submitted batch job 364464
 
+I want to look at the trees for 
 
  
 
+
+
+Make an array with reference IDs
+
+```
+declare -A protein_refs
+protein_refs=(
+    [dgcr8]="Q8WYQ5"
+    [hyl1]="O04492"
+)
+
+for BLASTFILE in *_vs_miRNA_biogenesis.txt; do
+    PREFIX=$(basename "$BLASTFILE" _vs_miRNA_biogenesis.txt)
+
+    for protein in "${!protein_refs[@]}"; do
+        refs=${protein_refs[$protein]}
+        awk_cmd=''
+
+        for id in $refs; do
+            awk_cmd="$awk_cmd \$1 ~ /$id/ ||"
+        done
+        # Remove the last '||'
+        awk_cmd=${awk_cmd%||}
+
+        awk "$awk_cmd {print \$2}" "$BLASTFILE" | sort | uniq > "${PREFIX}_${protein}_targets.txt"
+        echo "Extracted targets for $protein from $BLASTFILE"
+    done
+done
+
+# Loop through each species' target list
+for TARGETFILE in *_dgcr8_targets.txt; do
+    PREFIX=$(basename "$TARGETFILE" _targets.txt)  # Get the species_protein name
+
+    # Extract species name from the prefix — this assumes the first part is the species code
+    SPECIES=$(echo "$PREFIX" | cut -d'_' -f1)
+
+    # Map species code to the full FASTA path (adjust these to match your actual files!)
+    FASTA="/data/putnamlab/jillashey/mirna_prot_corals/refs/${SPECIES}_protein.fasta"
+
+    if [[ ! -f "$FASTA" ]]; then
+        echo "FASTA file for $SPECIES not found at: $FASTA"
+        continue
+    fi
+
+    # Use awk to extract matched sequences
+    awk 'NR==FNR { targets[$1]; next }
+         /^>/ {
+             header=$0;
+             id=substr($1,2);
+             if (id in targets) {
+                 print header;
+                 print_next=1;
+             } else {
+                 print_next=0;
+             }
+             next
+         }
+         print_next' "$TARGETFILE" "$FASTA" > "${PREFIX}_extracted_hits.fasta"
+
+    echo "Extracted sequences for: $TARGETFILE into ${PREFIX}_extracted_hits.fasta"
+done
+
+for TARGETFILE in *_hyl1_targets.txt; do
+    PREFIX=$(basename "$TARGETFILE" _targets.txt)  # Get the species_protein name
+
+    # Extract species name from the prefix — this assumes the first part is the species code
+    SPECIES=$(echo "$PREFIX" | cut -d'_' -f1)
+
+    # Map species code to the full FASTA path (adjust these to match your actual files!)
+    FASTA="/data/putnamlab/jillashey/mirna_prot_corals/refs/${SPECIES}_protein.fasta"
+
+    if [[ ! -f "$FASTA" ]]; then
+        echo "FASTA file for $SPECIES not found at: $FASTA"
+        continue
+    fi
+
+    # Use awk to extract matched sequences
+    awk 'NR==FNR { targets[$1]; next }
+         /^>/ {
+             header=$0;
+             id=substr($1,2);
+             if (id in targets) {
+                 print header;
+                 print_next=1;
+             } else {
+                 print_next=0;
+             }
+             next
+         }
+         print_next' "$TARGETFILE" "$FASTA" > "${PREFIX}_extracted_hits.fasta"
+
+    echo "Extracted sequences for: $TARGETFILE into ${PREFIX}_extracted_hits.fasta"
+done
+
+cat *_dgcr8_extracted_hits.fasta > combined_dgcr8.fasta
+cat *_hyl1_extracted_hits.fasta > combined_hyl1.fasta
+```
+
+Run trees! In the scripts: `nano run_trees_separate_dicer_partners.sh`
+
+```
+#!/bin/bash
+#SBATCH --job-name="phylo_tree"
+#SBATCH --nodes=1 --ntasks-per-node=5
+#SBATCH -t 100:00:00
+#SBATCH --export=NONE
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=jillashey@uri.edu #your email to send notifications
+#SBATCH --mem=100GB
+#SBATCH --account=putnamlab
+#SBATCH -D /data/putnamlab/jillashey/mirna_prot_corals/scripts
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+
+module load MAFFT/7.505-GCC-11.3.0-with-extensions
+module load IQ-TREE/2.2.2.3-gompi-2022a
+
+cd /data/putnamlab/jillashey/mirna_prot_corals/output/blast
+
+echo "Align sequences with one another" $(date)
+mafft --auto combined_dgcr8.fasta > dgcr8_aligned.fasta
+mafft --auto combined_hyl1.fasta > hyl1_aligned.fasta
+
+echo "Build tree using iqtree2" $(date)
+iqtree2 -s dgcr8_aligned.fasta -m MFP -B 1000  -nt AUTO
+iqtree2 -s hyl1_aligned.fasta -m MFP -B 1000  -nt AUTO
+echo "tree building using iqtree2 complete!" $(date)
+```
+
+Submitted batch job 365130
 
 

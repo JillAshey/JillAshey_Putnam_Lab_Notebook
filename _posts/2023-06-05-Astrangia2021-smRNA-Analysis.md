@@ -8008,7 +8008,15 @@ wc -l /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_m
 echo "Apoc miranda script complete" $(date)
 ```
 
-Submitted batch job 365009
+Submitted batch job 365009. Results: 
+
+```
+counting number of interactions attempted Mon May 5 14:52:16 EDT 2025
+2457384
+Parsing output Mon May 5 14:52:23 EDT 2025
+counting number of putative interactions predicted Mon May 5 14:52:24 EDT 2025
+12731 /data/putnamlab/jillashey/Astrangia2021/smRNA/miranda/miranda_strict_all_mrna_apoc_shortstack_parsed.txt
+```
 
 
 
@@ -8016,24 +8024,4 @@ Submitted batch job 365009
 
 
 
-
-
-
-
-### Look into these: 
-
-Understanding mirdeep2 output -- I understand the mirdeep2 output but I do not understand the known miRNA output info. On the summary table that is outputted with the csv/html, it says XXXX # of known miRNAs were detected. However, In the `/data/putnamlab/jillashey/Astrangia2021/smRNA/mirdeep2/AST-1560/dir_prepare_signature1705975309` folder, there is a file (`mature_vs_precursors.arf`) that has info about known sequences which I am confused by. It looks like these are known miRNAs that were identified in the Astrangia genome, as they are given genomic coordinates. I may need to go through these files and make sure I am not missing anything. For instance, when I look up `chromosome_7_11677` (genomic coordinates for known miRNA ola-miR-100) in that file, it provides me with 80 other matches that have the same genomic coordinates and are the same as miR-100. I may need to go through these files for each sample to make sure that I am not missing any known info. 
-
-General mirdeep2 questions
-- How do I find the MFE? Is it calculated by mirdeep2 or by the quantifier module? I think it is linked to the randfold step. Need to look into this. 
-- I looked at Gajigan & Conaco 2017 mirdeep2 pdf outputs from their supplementary materials and they got similar MFE values in their pdfs. However, in Table S5, they have MFE info that is <-25 kcal/mol. How did they calculate the MFE that mirdeep2 gave them to the MFE that was displayed in their table??
-- After I identify the putative miRNAs, I should blast against tRNA and rRNA dbs
-
-
-
-Interpretation of mirdeep2 output
-- https://ccbr.github.io/pipeliner-docs/miRNA-seq/miRSeq-Output-Files/
-
-good resource for miranda 
-- https://bioinformaticsworkbook.org/dataAnalysis/SmallRNA/Miranda_miRNA_Target_Prediction.html#gsc.tab=0 
 
