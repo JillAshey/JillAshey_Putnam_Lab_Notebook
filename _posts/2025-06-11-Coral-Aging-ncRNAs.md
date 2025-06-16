@@ -134,8 +134,8 @@ module load fastp/0.23.2-GCC-11.2.0
 # Set paths
 RAW_DIR="/work/pi_hputnam_uri_edu/jillashey/coral_aging/data/raw"
 TRIM_DIR="/scratch3/workspace/jillashey_uri_edu-coral_age/trim"
-FASTQC_DIR="/data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/fastqc/trim"
-MULTIQC_DIR="/data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/fastqc/trim"
+FASTQC_DIR="/work/pi_hputnam_uri_edu/jillashey/coral_aging/output/fastqc/trim"
+MULTIQC_DIR="/work/pi_hputnam_uri_edu/jillashey/coral_aging/output/fastqc/trim"
 
 echo "Starting trimming and QC pipeline..."
 
@@ -183,4 +183,138 @@ multiqc "$FASTQC_DIR" -o "$MULTIQC_DIR"
 echo "MultiQC complete. All done!"
 ```
 
-Submitted batch job 38139904
+trim batch job 38139904. QC batch job 38154121. Trimmed QC is [here](https://github.com/JillAshey/Coral_Aging/blob/main/data/mcap/trim_mcap_age_multiqc_report.html). Trimming looks great!! 
+
+Align trimmed reads. In the scripts folder: `nano align.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=2
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 100:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/coral_aging/scripts
+
+# Load modules 
+module load uri/main
+module load HISAT2/2.2.1-gompi-2022a
+module load SAMtools/1.18-GCC-12.3.0
+
+# Set directories
+TRIM_DIR="/scratch3/workspace/jillashey_uri_edu-coral_age/trim"
+BAM_DIR="/scratch3/workspace/jillashey_uri_edu-coral_age/bam"
+HISAT2_INDEX="/work/pi_hputnam_uri_edu/HI_Genomes/MCapV3/McapV3_hisat2_ref" 
+
+## hisat2 reference for Mcap V3 already built and in HI_Genomes folder 
+
+# Get list of trimmed R1 files
+array=($(ls "$TRIM_DIR"/trim.*_R1_001.fastq.gz))
+
+# Alignment loop
+for R1 in "${array[@]}"; do
+    # Get basename (e.g., trim.sample -> sample)
+    basefile=$(basename "$R1")
+    sample_name=$(echo "$basefile" | cut -d '.' -f2)
+
+    R2="${R1/_R1_/_R2_}"
+
+    echo "Aligning sample: $sample_name"
+    echo "  Input R1: $R1"
+    echo "  Input R2: $R2"
+
+    # Run HISAT2 alignment
+    hisat2 -p 8 --rna-strandness RF --dta \
+        -x "$HISAT2_INDEX" \
+        -1 "$R1" -2 "$R2" \
+        -S "${sample_name}.sam"
+
+    # Convert to sorted BAM
+    samtools sort -@ 8 -o "$BAM_DIR/${sample_name}.bam" "${sample_name}.sam"
+    echo "  -> ${sample_name}.bam created in $BAM_DIR"
+
+    # Remove intermediate SAM
+    rm "${sample_name}.sam"
+done
+
+echo "Alignment complete!" $(date)
+
+# Mapping summary
+SUMMARY_FILE="$BAM_DIR/mapped_reads_counts_Mcap.txt"
+echo "Sample Mapping Summary - $(date)" > "$SUMMARY_FILE"
+
+for BAM in "$BAM_DIR"/*.bam; do
+    echo "$(basename "$BAM")" >> "$SUMMARY_FILE"
+    samtools flagstat "$BAM" | grep "mapped (" >> "$SUMMARY_FILE"
+done
+
+echo "Mapping summary saved to $SUMMARY_FILE"
+```
+
+Submitted batch job 38207703
+
+
+
+
+
+
+
+
+
+
+
+
+Run stringtie to assemble reads 
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=2
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 100:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/coral_aging/scripts
+
+# Load modules 
+module load uri/main
+module load StringTie/2.2.1-GCC-11.2.0
+
+# Set directories
+BAM_DIR="/scratch3/workspace/jillashey_uri_edu-coral_age/bam"
+STRING_DIR="/scratch3/workspace/jillashey_uri_edu-coral_age/stringtie"
+GFF="/work/pi_hputnam_uri_edu/HI_Genomes/MCapV3/Montipora_capitata_HIv3.genes_fixed.gff3"
+
+# Get list of bam files 
+array=($(ls "$BAM_DIR"/*bam))
+
+echo "Assembling transcripts using stringtie" $(date)
+
+# Loop through and run StringTie
+for i in "${array1[@]}"; do
+    sample_name=$(basename "$i" .bam)
+
+    echo "Running StringTie on $sample_name"
+
+    stringtie "$i" \
+        -p 8 \
+        -e \
+        -B \
+        -G "$GFF" \
+        -A "$STRING_DIR/${sample_name}.gene_abund.tab" \
+        -o "$STRING_DIR/${sample_name}.gtf"
+
+    echo "Done with $sample_name"
+done
+
+echo "All transcript assemblies complete!" $(date)
+```
+
+
