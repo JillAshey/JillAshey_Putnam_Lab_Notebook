@@ -70,3 +70,31 @@ Some modifications
 - Used 12 ng RNA input instead of 11 ng
 - For the polyA R1 reagent, used 3uL of polyA R1 reagent + 2uL of DNase/RNase free water instead of 5 uL of polyA R1 reagent 
 - MD-4-12 - some of primer liquid was stuck to foil, difficult to get the full 10uL of primer 
+
+### QC
+
+Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/blob/master/_posts/2019-07-30-DNA-Tapestation.md) to visualize libraries. Here's an example of what the library should look like on a Tapestation: 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/switchfree_lib_prep_library_example.png)
+
+I ran the tapestation on the libraries on 6/17/25. See the full report [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_ENCORE_2025-06-17.pdf).
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_overview_20250617.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-4-20_20250617.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-2-15_20250617.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-1-14_20250617.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-5-16_20250617.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-2-17_20250617.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-1-10_20250617.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-2-1_20250617.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-4-12_20250617.png)
+
+These look pretty good! MD-1-10 has multiple peaks, should probably redo. MD-5-16 also has 2 peaks but they are relatively close together. 
