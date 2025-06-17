@@ -17,8 +17,8 @@ The kit needs a minimum of 10 ng of total RNA or a maximum of 500 ng of total RN
 
 | TubeID | Qubit RNA avg (ng/uL) | Strip tube # | RNA (uL) | Ultrapure water (uL) | Total starting volume (ul) | Primer |
 | ------ | -------------- | ------------ | -------- | -------------------- | -------------------------- | ------ |
-| MDec-D1      | 27.3           | 1            | 0.5      | 4.5                 | 5.0                        | XX      |
-| MD-5-7      | 19.2           | 2           | 0.6      | 4.4                 | 5.0                        | XX     |
+| MDec-D1      | 27.3           | 1            | 0.5      | 4.5                 | 5.0                        | 75      |
+| MD-5-7      | 19.2           | 2           | 0.6      | 4.4                 | 5.0                        | 76     |
 
 Here's the SwitchFree library prep workflow: 
 
@@ -65,4 +65,14 @@ Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/bl
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/switchfree_lib_prep_library_example.png)
 
-I ran the tapestation on the libraries on XXXXX. See the full report [here](XXXXX). 
+I ran the tapestation on the libraries on 6/11/25. See the full report [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_ENCORE_2025-06-11.pdf). The first two samples are mine and the last two samples were prepped by Flo. 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_overview_20250611.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-D1_20250611.png) 
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-5-7_20250611.png)
+
+Mine do not look so good, kinda messy and not super high concentration. Flo's look great though! 
+
+I used some reagents from Federica's switchfree kit from January 2025 so that may have affected the results. Moving forward, I will only use reagents from the new switchfree kits. 
