@@ -265,10 +265,7 @@ Submitted batch job 38207703
 
 
 
-
-
-
-Run stringtie to assemble reads 
+Run stringtie to assemble reads. In the scripts folder: `nano assemble.sh`
 
 ```
 #!/usr/bin/env bash
@@ -316,5 +313,8 @@ done
 
 echo "All transcript assemblies complete!" $(date)
 ```
+
+Submitted batch job 38277523
+
 
 
