@@ -452,11 +452,108 @@ Ran the above code and installed here: `/work/pi_hputnam_uri_edu/pgrams/CPC2_sta
 Run CPC2 using my data 
 
 ```
-source venv/bin/activate
-cd $CPC_HOME
-bin/CPC2.py -i mcap_age_lncRNA_candidates.fasta -o mcap_age_CPC2
+cd /work/pi_hputnam_uri_edu/pgrams/CPC2_standalone-1.0.1
+source ../venv/bin/activate
+export CPC_HOME="$PWD"
+
+python bin/CPC2.py \
+  -i /scratch3/workspace/jillashey_uri_edu-coral_age/stringtie/mcap_age_lncRNA_candidates.fasta -o /scratch3/workspace/jillashey_uri_edu-coral_age/stringtie/mcap_age_CPC2.txt
+```  
+  
+Look at results! 
+
+```
+head mcap_age_CPC2.txt
+#ID     transcript_length       peptide_length  Fickett_score   pI      ORF_integrity   coding_probabi
+lity    label
+Montipora_capitata_HIv3___Scaffold_1:82396-95409        13013   184     0.34138 9.893076515197755    1
+0.817981        coding
+Montipora_capitata_HIv3___Scaffold_1:109800-163388      53588   1078    0.2921  7.529540824890138    1
+1       coding
+Montipora_capitata_HIv3___Scaffold_1:162567-163156      589     140     0.3788  8.867577934265139    1
+0.688879        coding
+Montipora_capitata_HIv3___Scaffold_1:169949-170561      612     204     0.46457000000000004     8.5183
+52699279784     1       0.998454        coding
+Montipora_capitata_HIv3___Scaffold_1:170981-172082      1101    367     0.45627 9.624243354797361    1
+1       coding
+Montipora_capitata_HIv3___Scaffold_1:176399-276376      99977   349     0.29367000000000004     9.5263
+15879821777     1       0.995895        coding
+Montipora_capitata_HIv3___Scaffold_1:204190-204451      261     87      0.35153 10.518226432800294   1
+0.105992        noncoding
+Montipora_capitata_HIv3___Scaffold_1:223365-223638      273     91      0.45305 9.851301002502442    1
+0.43786 noncoding
+Montipora_capitata_HIv3___Scaffold_1:330241-330991      750     53      0.44283 4.5459486007690435   1
+0.100661        noncoding
+
+wc -l mcap_age_CPC2.txt
+54315 mcap_age_CPC2.txt
 ```
 
+Filter by noncoding transcripts 
+
+```
+awk '$8 != "coding"' mcap_age_CPC2.txt > mcap_age_noncoding_transcripts_info.txt
+wc -l mcap_age_noncoding_transcripts_info.txt
+31444 mcap_age_noncoding_transcripts_info.txt
+
+awk '$8 == "noncoding" {print $1}' mcap_age_CPC2.txt > mcap_age_noncoding_transcripts_ids.txt
+wc -l mcap_age_noncoding_transcripts_ids.txt
+31443 mcap_age_noncoding_transcripts_ids.txt
+```
+
+Extract putative lncRNAs from fasta
+
+```
+sed 's/^transcript:://' mcap_age_noncoding_transcripts_ids.txt > mcap_age_noncoding_transcripts_ids_modified.txt
+
+grep -A 1 -Ff mcap_age_noncoding_transcripts_ids_modified.txt mcap_age_lncRNA_candidates.fasta | sed '/^--$/d' > mcap_age_lncRNA_putative.fasta
+```
+
+To remove potential contimation from rRNAs or tRNAs, download rfam database and blast putative lncRNAs against it. In the scripts folder: `nano rfam_blast.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=2
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 100:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/coral_aging/scripts
+
+# Load modules 
+module load uri/main
+module load BLAST+/2.15.0-gompi-2023a
+
+echo "Download rfam sequences" $(date)
+
+cd /scratch3/workspace/jillashey_uri_edu-coral_age/rfam_ref
+
+wget -r -np -nd -A .fa.gz ftp://ftp.ebi.ac.uk/pub/databases/Rfam/CURRENT/fasta_files/
+
+echo "Download complete, cat all sequences" $(date)
+
+cat *fa.gz > rfam_seqs.fa.gz
+rm RF*
+gunzip rfam_seqs.fa.gz
+
+echo "Cat and unzip complete" $(date)
+echo "Blasting putative lncRNAs against rfam db" $(date)
+echo "Making blast db" $(date)
+
+makeblastdb -in /scratch3/workspace/jillashey_uri_edu-coral_age/rfam_ref/rfam_seqs.fa -out /scratch3/workspace/jillashey_uri_edu-coral_age/rfam_ref/rfam_db -dbtype nucl
+
+echo "Db creation complete, blast putative lncRNAs against rfam db" $(date)
+
+blastn -query /scratch3/workspace/jillashey_uri_edu-coral_age/stringtie/mcap_age_lncRNA_putative.fasta -db /scratch3/workspace/jillashey_uri_edu-coral_age/rfam_ref/rfam_db -out /scratch3/workspace/jillashey_uri_edu-coral_age/blast/mcap_age_lncRNA_rfam_blastn.tab -evalue 1E-40 -num_threads 10 -max_target_seqs 1 -max_hsps 1 -outfmt 6
+
+echo "Blast complete" $(date)
+```
+
+Submitted batch job 38305252
 
 
 
@@ -467,10 +564,9 @@ bin/CPC2.py -i mcap_age_lncRNA_candidates.fasta -o mcap_age_CPC2
 
 
 
-
-To remove potential contimation from rRNAs or tRNAs, download rfam database and blast putative lncRNAs against it. 
-
-
+```
+kallisto/0.48.0-gompi-2022a
+```
 
 
 
