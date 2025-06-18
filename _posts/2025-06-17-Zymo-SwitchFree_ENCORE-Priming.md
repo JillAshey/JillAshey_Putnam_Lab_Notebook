@@ -77,4 +77,22 @@ Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/bl
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/switchfree_lib_prep_library_example.png)
 
-I ran the tapestation on the libraries on 6/17/25. See the full report [here](XXX).
+I ran the tapestation on the libraries on 6/17/25. See the full report [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_ENCORE_2025-06-17_part2.pdf).
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_overview_20250617_part2.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-2-9_20250617.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-1-9_20250617.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-2-21_20250617.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-5-9_20250617.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-5-5_20250617.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-4-1_20250617.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-5-22_20250617.png)
+
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-2-6_20250617.png)
