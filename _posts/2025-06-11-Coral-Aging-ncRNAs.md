@@ -509,6 +509,30 @@ sed 's/^transcript:://' mcap_age_noncoding_transcripts_ids.txt > mcap_age_noncod
 grep -A 1 -Ff mcap_age_noncoding_transcripts_ids_modified.txt mcap_age_lncRNA_candidates.fasta | sed '/^--$/d' > mcap_age_lncRNA_putative.fasta
 ```
 
+- extract putative lncrna from gtf 
+- filter fasta and gtf by seqs identified by blast 
+- gtf to bed 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 To remove potential contimation from rRNAs or tRNAs, download rfam database and blast putative lncRNAs against it. In the scripts folder: `nano rfam_blast.sh`
 
 ```
@@ -553,19 +577,87 @@ blastn -query /scratch3/workspace/jillashey_uri_edu-coral_age/stringtie/mcap_age
 echo "Blast complete" $(date)
 ```
 
-Submitted batch job 38305252
-
-
-
-
-
-
-
-
-
+Submitted batch job 38305252. Look at blast output 
 
 ```
-kallisto/0.48.0-gompi-2022a
+cd /scratch3/workspace/jillashey_uri_edu-coral_age/blast/
+
+head mcap_age_lncRNA_rfam_blastn.tab 
+Montipora_capitata_HIv3___Scaffold_10:50987091-51005681 MU825396.1/212773-212653        96.694  121     4       0       10869   10989   121     1       3.87e-48        202
+Montipora_capitata_HIv3___Scaffold_1013:6609-13142      MU826834.1/1912895-1913082      95.531  179     6       2       3345    3522    188     11      1.32e-73        285
+Montipora_capitata_HIv3___Scaffold_1013:13927-20177     MU827310.1/718302-718465        96.951  164     5       0       2981    3144    164     1       7.61e-71        276
+Montipora_capitata_HIv3___Scaffold_11:3287015-3291500   MU827309.1/2350248-2350386      96.063  127     5       0       4035    4161    127     1       2.04e-50        207
+Montipora_capitata_HIv3___Scaffold_13:24569367-24573028 MU827310.1/717380-717262        95.798  119     5       0       1580    1698    1       119     4.65e-46        193
+Montipora_capitata_HIv3___Scaffold_13:24617531-24626060 LJWW01001071.1/6624-6820        95.690  116     3       2       2761    2876    142     29      1.80e-43        185
+Montipora_capitata_HIv3___Scaffold_13:24738989-24746769 MU826834.1/1912895-1913082      95.506  178     5       2       3075    3251    188     13      2.04e-72        281
+Montipora_capitata_HIv3___Scaffold_13:24798335-24808343 LSMT01000541.1/6279-6088        97.917  192     4       0       2639    2830    192     1       7.14e-88        333
+Montipora_capitata_HIv3___Scaffold_4:36816332-36834523  MU827817.1/523255-523552        90.333  300     25      4       17249   17546   1       298     7.52e-105       390
+Montipora_capitata_HIv3___Scaffold_4:31137676-31146429  MU826834.1/1905971-1906134      93.252  163     11      0       4963    5125    163     1       3.89e-60        241
+15 mcap_age_lncRNA_rfam_blastn.tab
+```
+
+Only 15 sequences got hits as possible contamination. Make a list of these
+
+```
+awk '{print $1}' mcap_age_lncRNA_rfam_blastn.tab > sequences_to_remove.txt
+```
+
+Remove these sequences from putative fasta file 
+
+```
+cd ../stringtie
+grep -v -F -f <(sed 's/^/>/' /scratch3/workspace/jillashey_uri_edu-coral_age/blast/sequences_to_remove.txt) mcap_age_lncRNA_putative.fasta | sed '/^$/d' > mcap_age_lncRNA_putative_purge.fasta
+
+zgrep -c ">" mcap_age_lncRNA_putative.fasta
+31443
+zgrep -c ">" mcap_age_lncRNA_putative_purge.fasta
+31428
+```
+
+Quantify putative lncRNA counts with kallisto. Steven quantified lncRNAs from [deep dive](https://github.com/urol-e5/deep-dive-expression/blob/main/E-Peve/code/07-Peve-lncRNA-matrix.qmd) with feature counts but I think either will work. In the scripts folder: `nano kallisto.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=2
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 100:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/coral_aging/scripts
+
+# Load modules 
+module load uri/main
+module avail Trinity/2.15.1-foss-2022a
+module avail kallisto/0.48.0-gompi-2022a
+
+echo "Creating kallisto index from lncRNA fasta" $(date)
+
+kallisto index -i /scratch3/workspace/jillashey_uri_edu-coral_age/kallisto/mcap_age_lncRNA_index /scratch3/workspace/jillashey_uri_edu-coral_age/stringtie/mcap_age_lncRNA_putative_purge.fasta
+
+echo "lncRNA index creation complete, starting read alignment" $(date)
+
+
+
+
+
+
+array=($(ls /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/data/trim/*R1_001.fastq.gz)) # call the clean sequences - make an array to align
+
+for i in ${array[@]}; do
+    # Extract just the filename from the input FASTQ file path
+    filename=$(basename ${i})
+    # Construct the output directory path
+    output_dir="/data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/kallisto/kallisto.${filename}"
+    # Run kallisto quant
+    kallisto quant -i /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/kallisto/mcap_lncRNA_index -o ${output_dir} ${i} $(echo ${i} | sed 's/_R1/_R2/')
+done
+
+echo "lncRNA alignment complete!" $(date)
+
 ```
 
 
