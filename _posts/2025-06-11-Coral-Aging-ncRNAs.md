@@ -449,7 +449,7 @@ bin/CPC2.py -i data/example.fa -o example_output
 
 Ran the above code and installed here: `/work/pi_hputnam_uri_edu/pgrams/CPC2_standalone-1.0.1`. 
 
-Run CPC2 using my data 
+Run CPC2 using my data (needs a fasta file to run)
 
 ```
 cd /work/pi_hputnam_uri_edu/pgrams/CPC2_standalone-1.0.1
@@ -501,37 +501,11 @@ wc -l mcap_age_noncoding_transcripts_ids.txt
 31443 mcap_age_noncoding_transcripts_ids.txt
 ```
 
-Extract putative lncRNAs from fasta
+Extract putative lncRNAs from fasta  
 
 ```
-sed 's/^transcript:://' mcap_age_noncoding_transcripts_ids.txt > mcap_age_noncoding_transcripts_ids_modified.txt
-
-grep -A 1 -Ff mcap_age_noncoding_transcripts_ids_modified.txt mcap_age_lncRNA_candidates.fasta | sed '/^--$/d' > mcap_age_lncRNA_putative.fasta
+grep -A 1 -Ff mcap_age_noncoding_transcripts_ids.txt mcap_age_lncRNA_candidates.fasta | sed '/^--$/d' > mcap_age_lncRNA_putative.fasta
 ```
-
-- extract putative lncrna from gtf 
-- filter fasta and gtf by seqs identified by blast 
-- gtf to bed 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 To remove potential contimation from rRNAs or tRNAs, download rfam database and blast putative lncRNAs against it. In the scripts folder: `nano rfam_blast.sh`
 
@@ -614,7 +588,7 @@ zgrep -c ">" mcap_age_lncRNA_putative_purge.fasta
 31428
 ```
 
-Quantify putative lncRNA counts with kallisto. Steven quantified lncRNAs from [deep dive](https://github.com/urol-e5/deep-dive-expression/blob/main/E-Peve/code/07-Peve-lncRNA-matrix.qmd) with feature counts but I think either will work. In the scripts folder: `nano kallisto.sh`
+Quantify putative lncRNA counts with kallisto. Steven quantified lncRNAs from [deep dive](https://github.com/urol-e5/deep-dive-expression/blob/main/E-Peve/code/07-Peve-lncRNA-matrix.qmd) with feature counts but I think either will work. We can always try feature counts in the future. In the scripts folder: `nano kallisto.sh`
 
 ```
 #!/usr/bin/env bash
@@ -631,34 +605,72 @@ Quantify putative lncRNA counts with kallisto. Steven quantified lncRNAs from [d
 
 # Load modules 
 module load uri/main
-module avail Trinity/2.15.1-foss-2022a
-module avail kallisto/0.48.0-gompi-2022a
+#module load Trinity/2.15.1-foss-2022a
+module load kallisto/0.48.0-gompi-2022a
 
 echo "Creating kallisto index from lncRNA fasta" $(date)
 
-kallisto index -i /scratch3/workspace/jillashey_uri_edu-coral_age/kallisto/mcap_age_lncRNA_index /scratch3/workspace/jillashey_uri_edu-coral_age/stringtie/mcap_age_lncRNA_putative_purge.fasta
+# Build kallisto index
+kallisto index -i /scratch3/workspace/jillashey_uri_edu-coral_age/kallisto/mcap_age_lncRNA_index \
+  /scratch3/workspace/jillashey_uri_edu-coral_age/stringtie/mcap_age_lncRNA_putative_purge.fasta
 
 echo "lncRNA index creation complete, starting read alignment" $(date)
 
+# Get list of all R1 files
+array=($(ls /scratch3/workspace/jillashey_uri_edu-coral_age/trim/*R1_001.fastq.gz))
 
-
-
-
-
-array=($(ls /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/data/trim/*R1_001.fastq.gz)) # call the clean sequences - make an array to align
-
-for i in ${array[@]}; do
-    # Extract just the filename from the input FASTQ file path
-    filename=$(basename ${i})
-    # Construct the output directory path
-    output_dir="/data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/kallisto/kallisto.${filename}"
-    # Run kallisto quant
-    kallisto quant -i /data/putnamlab/jillashey/DT_Mcap_2023/mRNA/output/kallisto/mcap_lncRNA_index -o ${output_dir} ${i} $(echo ${i} | sed 's/_R1/_R2/')
+# Loop through R1 files and run kallisto quant
+for i in "${array[@]}"; do
+    # Derive sample name
+    sample=$(basename "${i}" | sed 's/_R1_001\.fastq\.gz//')
+    # Define output directory
+    output_dir="/scratch3/workspace/jillashey_uri_edu-coral_age/kallisto/${sample}"
+    # Define matching R2
+    r2=$(echo "${i}" | sed 's/_R1/_R2/')
+    
+    # Run kallisto
+    kallisto quant -i /scratch3/workspace/jillashey_uri_edu-coral_age/kallisto/mcap_age_lncRNA_index \
+      -o "${output_dir}" "${i}" "${r2}"
 done
 
 echo "lncRNA alignment complete!" $(date)
+```
+
+Submitted batch job 38405314
+
+Success! Use trinity to generate count matrix. `nano trinity_gene_matrix.sh`
 
 ```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=2
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 100:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/coral_aging/scripts
+
+# Load modules 
+module load uri/main
+#module load Trinity/2.15.1-foss-2022a
+
+echo "Use trinity to generate lncRNA count matrix" $(date)
+
+perl $EBROOTTRINITY/trinityrnaseq-v2.15.1/util/abundance_estimates_to_matrix.pl \
+--est_method kallisto \
+--gene_trans_map none \
+--out_prefix /scratch3/workspace/jillashey_uri_edu-coral_age/kallisto/mcap_age_lncRNA_count_matrix \
+--name_sample_by_basedir \
+/scratch3/workspace/jillashey_uri_edu-coral_age/kallisto/*/abundance.tsv
+
+echo "LncRNA count matrix created!" $(date)
+```
+
+Submitted batch job 38607513. Failed. 
+
 
 
 
