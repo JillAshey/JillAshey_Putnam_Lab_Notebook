@@ -1,7 +1,7 @@
 ---
 layout: post
 title: SwitchFree library prep for ENCORE priming
-date: '2025-06-24'
+date: '2025-06-30'
 categories:
 tags: [DNA, RNA, Library prep, Protocols]
 projects: Kit test 
@@ -11,18 +11,20 @@ projects: Kit test
 
 This post details the info about the SwitchFree library prep. See Zymo's protocol [here](https://files.zymoresearch.com/protocols/_r3008_r3009__zymo_seq_switchfree_3_mrna_library_kit.pdf). 
 
-I will be prepping samples from Flo's ENCORE priming experiment conducted in Bermuda 2024 (see github [repo](https://github.com/flofields/Coral_Priming_Experiments_Summer_2024) for more information on the experiment). Today, I am prepping 4 samples with Natalie!
+I will be prepping samples from Flo's ENCORE priming experiment conducted in Bermuda 2024 (see github [repo](https://github.com/flofields/Coral_Priming_Experiments_Summer_2024) for more information on the experiment). Today, I am prepping 8 samples. 
 
 The kit needs a minimum of 10 ng of total RNA or a maximum of 500 ng of total RNA, which is a large range. We will be using 12 ng of total RNA as input. Here's a breakdown of input RNA volumes for each sample:
 
 | TubeID | Qubit RNA avg (ng/uL) | Strip tube # | RNA (uL) | Ultrapure water (uL) | Total starting volume (ul) | Primer |
 | ------ | -------------- | ------------ | -------- | -------------------- | -------------------------- | ------ |
-| MD-4-25      | 18.3           | 1            | 1      | 4                | 5.0                        | 77      |
-| MD-1-10      | 11.1           | 2           | 1.3      | 3.7                 | 5.0                        | 78     |
-| MD-1-17      | 16.7           | 3           | 1      | 4                 | 5.0                        | 79     |
-| MD-1-6      | 36.5          | 4           | 1      | 4                 | 5.0                        | 80     |
-
-MD-4-25 was initially prepped by Flo but failed so I am redoing it. MD-1-10 was initially prepped by me but had multiple peaks (see notebook [post](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/_posts/2025-06-16-Zymo-SwitchFree_ENCORE-Priming.md)) so I am redoing it. MD-1-17 and MD-1-6 are new samples. 
+| MD-4-21      | 15.2           | 1            | 1      | 4                | 5.0                        | 1      |
+| MD-5-6      | 15.1           | 2           | 1      | 4                | 5.0                        | 2     |
+| MD-2-23      | 10.15           | 3           | 1.2      | 3.8                 | 5.0                        | 7     |
+| MD-2-8      | 13.6          | 4           | 1      | 4                 | 5.0                        | 58     |
+| MD-1-4      | 13.7          | 5           | 1      | 4                 | 5.0                        | 85     |
+| MD-5-20      | 4.79          | 6           | 2.5      | 2.5                 | 5.0                        | 86     |
+| MD-5-3      | 43.5          | 7           | 1      | 4                 | 5.0                        | 87     |
+| MD-1-7      | 27.6          | 8           | 1      | 4                 | 5.0                        | 88     |
 
 Here's the SwitchFree library prep workflow: 
 
@@ -67,7 +69,8 @@ Some modifications
 
 - Used 12 ng RNA input instead of 11 ng
 - For the polyA R1 reagent, used 3uL of polyA R1 reagent + 2uL of DNase/RNase free water instead of 5 uL of polyA R1 reagent 
-- Sections 1, 2, and 3 was done on 6/24/25; QC was done on 6/25/25
+- Sections 1 and 3 were done on 6/30/25; Section 3 and QC were done on 7/1/25
+- In Section 3, after the thermocycler library amplification, samples sat at 4C for ~45 mins while I had a brief meeting 
 
 ### QC
 
@@ -75,16 +78,4 @@ Run [DNA Tapestation](https://github.com/meschedl/MESPutnam_Open_Lab_Notebook/bl
 
 ![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/switchfree_lib_prep_library_example.png)
 
-I ran the tapestation on the libraries on 6/25/25. See the full report [here](https://github.com/JillAshey/JillAshey_Putnam_Lab_Notebook/blob/master/images/tapestation/DNA_ENCORE_2025-06-25.pdf).
-
-![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_overview_20250625.png)
-
-![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-4-25_20250625.png)
-
-![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-1-10_20250625.png)
-
-![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-1-17_20250625.png)
-
-![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/tapestation/DNA_TS_MD-1-6_20250625.png)
-
-All of them look quite good! 
+I ran the tapestation on the libraries on 7/1/25. See the full report [here](XXXXX).

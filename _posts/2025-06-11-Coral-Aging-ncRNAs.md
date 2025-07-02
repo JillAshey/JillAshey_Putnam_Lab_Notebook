@@ -638,38 +638,32 @@ echo "lncRNA alignment complete!" $(date)
 
 Submitted batch job 38405314
 
-Success! Use trinity to generate count matrix. `nano trinity_gene_matrix.sh`
+Success! Generare a counts matrix in R with tximport. First, make text file for the path and sample names
 
 ```
-#!/usr/bin/env bash
-#SBATCH --export=NONE
-#SBATCH --nodes=1 --ntasks-per-node=2
-#SBATCH --partition=uri-cpu
-#SBATCH --no-requeue
-#SBATCH --mem=200GB
-#SBATCH -t 100:00:00
-#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
-#SBATCH -o slurm-%j.out
-#SBATCH -e slurm-%j.error
-#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/coral_aging/scripts
-
-# Load modules 
-module load uri/main
-#module load Trinity/2.15.1-foss-2022a
-
-echo "Use trinity to generate lncRNA count matrix" $(date)
-
-perl $EBROOTTRINITY/trinityrnaseq-v2.15.1/util/abundance_estimates_to_matrix.pl \
---est_method kallisto \
---gene_trans_map none \
---out_prefix /scratch3/workspace/jillashey_uri_edu-coral_age/kallisto/mcap_age_lncRNA_count_matrix \
---name_sample_by_basedir \
-/scratch3/workspace/jillashey_uri_edu-coral_age/kallisto/*/abundance.tsv
-
-echo "LncRNA count matrix created!" $(date)
+cd /scratch3/workspace/jillashey_uri_edu-coral_age/kallisto
+for d in */; do     echo -e "${d%/}\t$(readlink -f "$d/abundance.tsv")"; done > path_to_samples.txt
 ```
 
-Submitted batch job 38607513. Failed. 
+In R, generate counts matrix with tximport. 
+
+```
+library(tidyverse)
+library(tximport)
+library(readr)
+
+# Read sample paths
+samples <- read.delim("/scratch3/workspace/jillashey_uri_edu-coral_age/kallisto/path_to_samples.txt", header = F)
+colnames(samples) <- c("sample", "path")
+files <- setNames(samples$path, samples$sample)
+
+# Import abundance estimates
+txi <- tximport(files, type = "kallisto", txOut = TRUE)
+
+# Write count matrix to file
+write.csv(txi$counts, file = "/work/pi_hputnam_uri_edu/jillashey/coral_aging/output/mcap_age_lncRNA_counts_matrix.csv")
+
+```
 
 
 
