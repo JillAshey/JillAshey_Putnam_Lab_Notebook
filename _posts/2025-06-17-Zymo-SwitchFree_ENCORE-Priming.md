@@ -24,7 +24,7 @@ The kit needs a minimum of 10 ng of total RNA or a maximum of 500 ng of total RN
 | MD-5-5      | 11          | 5           | 1.1      | 3.9                 | 5.0                        | 49     |
 | MD-4-1      | 24.9          | 6           | 1     | 4                 | 5.0                        | 50     |
 | MD-5-22      | 21          | 7           | 1     | 4                 | 5.0                        | 51     |
-| MD-4-1      | 16.05          | 8           | 1     | 4                 | 5.0                        | 52     |
+| MD-2-6      | 16.05          | 8           | 1     | 4                 | 5.0                        | 52     |
 
 
 Here's the SwitchFree library prep workflow: 
