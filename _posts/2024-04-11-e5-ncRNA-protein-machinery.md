@@ -667,3 +667,114 @@ Links for the muscle alignment to use w/ Jalview. Copy these links into the Jalv
 - RNase P: https://www.ebi.ac.uk/Tools/services/rest/muscle/result/muscle-I20240507-030615-0015-90999376-p1m/aln-clustalw
 - Xpo5: https://www.ebi.ac.uk/Tools/services/rest/muscle/result/muscle-I20240507-030715-0512-87536698-p1m/aln-clustalw
 
+### Redo Apul using new Apul genome 
+
+ON UNITY! 
+
+Copied the fasta files of the query seqs onto Unity. Now build an Apul protein db and blast the fastas against the db. 
+
+`nano apul_ncRNA_prot_blastp.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=2
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 100:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/e5/ncRNA_prots
+
+# Load modules 
+module load uri/main
+module load BLAST+/2.15.0-gompi-2023a
+
+cd /work/pi_hputnam_uri_edu/jillashey/e5/ncRNA_prots
+
+echo "Making Apul blast db for e5 deep dive expression protein seqs" $(date)
+
+makeblastdb -in /work/pi_hputnam_uri_edu/jillashey/e5/Apulchra-genome.pep.faa -out /work/pi_hputnam_uri_edu/jillashey/e5/ncRNA_prots/Apul_prot -dbtype prot
+
+echo "Apul Blast db creation complete" $(date)
+
+echo "AGO2 for Apul blastp" $(date)
+blastp -query ago2.fasta -db Apul_prot -out apul_ago2_blastp.tab -evalue 1E-40 -num_threads 15 -max_target_seqs 1 -max_hsps 1 -outfmt 6
+
+echo "DGCR8 for Apul blastp" $(date)
+blastp -query dgcr8.fasta -db Apul_prot -out apul_dgcr8_blastp.tab -evalue 1E-40 -num_threads 15 -max_target_seqs 1 -max_hsps 1 -outfmt 6
+
+echo "Dicer for Apul blastp" $(date)
+blastp -query dicer.fasta -db Apul_prot -out apul_dicer_blastp.tab -evalue 1E-40 -num_threads 15 -max_target_seqs 1 -max_hsps 1 -outfmt 6
+
+echo "DNMT1 for Apul blastp" $(date)
+blastp -query dnmt1.fasta -db Apul_prot -out apul_dnmt1_blastp.tab -evalue 1E-40 -num_threads 15 -max_target_seqs 1 -max_hsps 1 -outfmt 6
+
+echo "DNMT3a for Apul blastp" $(date)
+blastp -query dnmt3a.fasta -db Apul_prot -out apul_dnmt3a_blastp.tab -evalue 1E-40 -num_threads 15 -max_target_seqs 1 -max_hsps 1 -outfmt 6
+
+echo "Drosha for Apul blastp" $(date)
+blastp -query drosha.fasta -db Apul_prot -out apul_drosha_blastp.tab -evalue 1E-40 -num_threads 15 -max_target_seqs 1 -max_hsps 1 -outfmt 6
+
+echo "pip5k1a for Apul blastp" $(date)
+blastp -query pip5k1a.fasta -db Apul_prot -out apul_pip5k1a_blastp.tab -evalue 1E-40 -num_threads 15 -max_target_seqs 1 -max_hsps 1 -outfmt 6
+
+echo "piwi for Apul blastp" $(date)
+blastp -query piwi.fasta -db Apul_prot -out apul_piwi_blastp.tab -evalue 1E-40 -num_threads 15 -max_target_seqs 1 -max_hsps 1 -outfmt 6
+
+echo "rnase p for Apul blastp" $(date)
+blastp -query rnase_p.fasta -db Apul_prot -out apul_rnase_p_blastp.tab -evalue 1E-40 -num_threads 15 -max_target_seqs 1 -max_hsps 1 -outfmt 6
+
+echo "xpo5 for Apul blastp" $(date)
+blastp -query xpo5.fasta -db Apul_prot -out apul_xpo5_blastp.tab -evalue 1E-40 -num_threads 15 -max_target_seqs 1 -max_hsps 1 -outfmt 6
+
+echo "Blast complete!" $(date)
+```
+
+Submitted batch job 40369015
+
+Similar to above, select the second column from each file and remove any duplicates. Then use the gene list to subset the protein fasta for the seqs of interest 
+
+```
+# ago2 
+awk '{print $2}' apul_ago2_blastp.tab | sort | uniq > apul_ago2_genelist.txt
+grep -A 1 -f apul_ago2_genelist.txt /work/pi_hputnam_uri_edu/jillashey/e5/Apulchra-genome.pep.faa | grep -v "^--$" > apul_ago2.fasta
+
+# dgcr8
+awk '{print $2}' apul_dgcr8_blastp.tab | sort | uniq > apul_dgcr8_genelist.txt
+grep -A 1 -f apul_dgcr8_genelist.txt /work/pi_hputnam_uri_edu/jillashey/e5/Apulchra-genome.pep.faa | grep -v "^--$" > apul_dgcr8.fasta
+
+# dicer
+awk '{print $2}' apul_dicer_blastp.tab | sort | uniq > apul_dicer_genelist.txt
+grep -A 1 -f apul_dicer_genelist.txt /work/pi_hputnam_uri_edu/jillashey/e5/Apulchra-genome.pep.faa | grep -v "^--$" > apul_dicer.fasta
+
+# dnmt1
+awk '{print $2}' apul_dnmt1_blastp.tab | sort | uniq > apul_dnmt1_genelist.txt
+grep -A 1 -f apul_dnmt1_genelist.txt /work/pi_hputnam_uri_edu/jillashey/e5/Apulchra-genome.pep.faa | grep -v "^--$" > apul_dnmt1.fasta
+
+# dnmt3a
+awk '{print $2}' apul_dnmt3a_blastp.tab | sort | uniq > apul_dnmt3a_genelist.txt
+grep -A 1 -f apul_dnmt3a_genelist.txt /work/pi_hputnam_uri_edu/jillashey/e5/Apulchra-genome.pep.faa | grep -v "^--$" > apul_dnmt3a.fasta
+
+# drosha
+awk '{print $2}' apul_drosha_blastp.tab | sort | uniq > apul_drosha_genelist.txt
+grep -A 1 -f apul_drosha_genelist.txt /work/pi_hputnam_uri_edu/jillashey/e5/Apulchra-genome.pep.faa | grep -v "^--$" > apul_drosha.fasta
+
+# pip5k1a
+awk '{print $2}' apul_pip5k1a_blastp.tab | sort | uniq > apul_pip5k1a_genelist.txt
+grep -A 1 -f apul_pip5k1a_genelist.txt /work/pi_hputnam_uri_edu/jillashey/e5/Apulchra-genome.pep.faa | grep -v "^--$" > apul_pip5k1a.fasta
+
+# piwi
+awk '{print $2}' apul_piwi_blastp.tab | sort | uniq > apul_piwi_genelist.txt
+grep -A 1 -f apul_piwi_genelist.txt /work/pi_hputnam_uri_edu/jillashey/e5/Apulchra-genome.pep.faa | grep -v "^--$" > apul_piwi.fasta
+
+# rnase p
+awk '{print $2}' apul_rnase_p_blastp.tab | sort | uniq > apul_rnase_p_genelist.txt
+grep -A 1 -f apul_rnase_p_genelist.txt /work/pi_hputnam_uri_edu/jillashey/e5/Apulchra-genome.pep.faa | grep -v "^--$" > apul_rnase_p.fasta
+
+# xpo5
+awk '{print $2}' apul_xpo5_blastp.tab | sort | uniq > apul_xpo5_genelist.txt
+grep -A 1 -f apul_xpo5_genelist.txt /work/pi_hputnam_uri_edu/jillashey/e5/Apulchra-genome.pep.faa | grep -v "^--$" > apul_xpo5.fasta
+```
