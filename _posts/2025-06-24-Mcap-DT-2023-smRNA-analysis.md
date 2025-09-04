@@ -46,3 +46,33 @@ echo "Initial QC of smRNA data complete." $(date)
 ```
 
 Submitted batch job 38607468
+
+Time to trim using fastp! In the scripts folder: `nano fastp_trim.sh`
+
+```
+#!/usr/bin/env bash
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=2
+#SBATCH --partition=uri-cpu
+#SBATCH --no-requeue
+#SBATCH --mem=200GB
+#SBATCH -t 100:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH -o slurm-%j.out
+#SBATCH -e slurm-%j.error
+#SBATCH -D /work/pi_hputnam_uri_edu/jillashey/Mcap_2023/smRNA/scripts 
+
+# load modules needed
+module load parallel/20240822
+module load fastqc/0.12.1
+module load uri/main
+module load all/MultiQC/1.12-foss-2021b
+
+
+```
+
+
+
+
+
+
