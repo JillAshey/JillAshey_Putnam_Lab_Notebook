@@ -127,4 +127,4 @@ Now that the samples have been properly amplified and cleaned, they are ready to
 
 ### Plate maps 
 
-![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/master/images/plate_maps_its2_20240520.png)
+![](https://raw.githubusercontent.com/JillAshey/JillAshey_Putnam_Lab_Notebook/refs/heads/master/images/plate_map_update_20260927.png)
